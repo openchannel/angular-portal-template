@@ -1,0 +1,108 @@
+<!-- <fa-icon icon="plus" class="plus-icon cursor-pointer" [class.cursor-na]="uploading"></fa-icon> -->
+<!-- <div class="input-type-file cursor-pointer" [class.cursor-na]="uploading">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+
+    <input
+      [title]="'Add More Images'"
+      #fileInput
+      type="file"
+      accept="{{ contentType }}"
+      name="file"
+      class="cursor-pointer"
+      [disabled]="uploading"
+      [class.cursor-na]="uploading"
+      (change)="fileChangeEvent($event, cropperModal)"
+    />
+</div> -->
+<div id="upload-attorney_document" class="customized dropzone">
+  <div class="dz-default dz-message">
+    <input type="file" 
+      class="form-control cursor-pointer" 
+      name="qms_certificate" 
+      value="" 
+      id="attorney-document"
+      [title]="'Add More Images'"
+      #fileInput
+      type="file"
+      accept="{{ contentType }}"
+      name="file"
+      [disabled]="uploading"
+      [class.cursor-na]="uploading"
+      (change)="fileChangeEvent($event, cropperModal)" />
+    <!-- <input name="qmsCertificate" type="hidden" #qmsCertificate="ngModel"
+      [(ngModel)]="partnerRequestModel.qmsCertificate" required="required" /> -->
+    <div class="temp">
+      <span>Drag and drop to upload<br /> <span class="or"> or </span></span>
+    </div>
+    <div class="temp-1">
+      <button type="button" class="btn btn-primary upload-btn dz-clickable">
+        <i class="fa fa-cloud-upload"></i>
+        <span>Upload logo</span>
+      </button>
+    </div>
+  </div>
+</div>
+<span *ngIf="invalidFileDroppedError">
+  <span id="glypcnemail" class="glyphicon glyphicon-remove form-control-feedback validerrors">
+    <i class="fas fa-exclamation-circle"></i> {{invalidFileDroppedError}}
+  </span>
+</span>    
+
+<!--cropper modal for bulk edit-->
+<ng-template #cropperModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title">Edit Image</h4>
+      <button type="button" class="close" aria-describedby="modal-title" (click)="d('Cross click'); resetSelection()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body d-flex flex-column">
+      <div class="file-cropper-body w-100 d-flex flex-column">
+        <image-cropper
+          [imageChangedEvent]="browsedFileEvent"
+          [maintainAspectRatio]="maintainAspectRatio"
+          [aspectRatio]="aspectRatio"
+          format="png"
+          (imageCropped)="imageCropped($event)"
+          (imageLoaded)="imageLoaded()"
+          (cropperReady)="cropperReady()"
+          (loadImageFailed)="loadImageFailed()"
+          style="padding: 0px;"
+        >
+        </image-cropper>
+          <!-- [resizeToWidth]="resizeToWidth"
+          [resizeToHeight]="resizeToHeight" -->
+  
+        <div class="w-100 my-2 text-center" *ngIf="hasImageLoadError">
+          {{ imageLoadErrorMessage }}
+        </div>
+        <div *ngIf="uploadImageInProcess" class="fileUploader-new">
+          <div class="controls upload-progress">
+					  <div class="row">
+						<div class="col">
+						  <div class="">
+                {{fileName}}
+						  </div>
+						  <div class="progress">
+							<div
+							  class="progress-bar"
+                role="progressbar"
+                [style.width.%]="[loaderValue]"
+							  aria-valuenow="[loaderValue]"
+							  aria-valuemin="0"
+							  aria-valuemax="100"
+							></div>
+						  </div>
+						</div>
+					  </div>
+					</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn pr-2 pt-3 btn-white" [disabled]="uploadImageInProcess" (click)="d('Cross click'); resetSelection()">Reset</button>
+          <button type="button" class="btn btn-primary" [disabled]="hasImageLoadError || uploadImageInProcess" (click)="uploadFile();" 
+          [ngClass]="{'process': uploadImageInProcess }">{{ uploadImageInProcess ? '':'Upload'}}</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <!--end cropper modal for bulk edit-->

@@ -1,0 +1,359 @@
+
+.scroll-section-container{
+  padding-left: 28px !important;
+}
+
+.mark-app-active{
+  text-align: right;    
+  font-size: 16px;
+  vertical-align: middle;
+  line-height: 1;
+  span{
+    opacity: 0.8;
+  }    
+}
+
+.scroll-section {
+  margin-top: 10px;
+  .app-heading {
+    font-size: 24px;
+    font-family: "CentraleSans-500";
+    margin-bottom: 14px;
+  }
+  .app-version {
+    font-size: 20px;
+    text-align: right;
+  }
+  .company-name {
+    font-size: 14px;
+    font-family: "CentraleSans-500";
+    color: rgba(33, 33, 33, 0.5);
+    margin-bottom: 18px;
+  }
+
+  .app-integration {
+    margin-top: 13px;
+    .link-btn {
+      width: 45px;
+      height: 40px;
+      display: inline-block;
+      background: #d0e3ed;
+      border-radius: 2px;
+      text-align: center;
+      margin-right: 7px;
+      img {
+        margin-top: 9px;
+      }
+    }
+  }
+
+  .border-1 {
+    margin-left: -40px;
+    margin-right: -16px;
+  }
+  .border-2 {
+    margin-left: -25px;
+    margin-right: -18px;
+  }
+  .section-title {
+    font-family: "CentraleSans-500";
+    margin-bottom: 24px;
+    font-size: 16px;
+  }
+  .section-subtitle {
+    margin-bottom: 20px;
+    font-size: 14px;
+    opacity: 0.63;
+  }
+  p {
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+  .link-blue {
+    color: #008cba !important;
+  }
+  .img-wrapper {
+    //max-width: 694px;
+    max-height: 368px;
+    padding: 0;
+    object-fit: contain;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .btn-primary.sign-in {
+    min-width: 92px;
+  }
+
+  ngb-carousel{
+    margin-right: 40px;
+    margin-left: 5px;
+  }
+
+  .table-bordered.table-pricing {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    border: 0;
+    .table-header {
+      color: #0a0c1e;
+      font-size: 16px;
+      font-family: "CentraleSans-500";
+      padding: 23px 20px;
+    }
+    .col-1 {
+      width: 240px;
+      border-right: 1px solid #dee2e6;
+    }
+    .col-2 {
+      width: 455px;
+    }
+    .td-1 {
+      color: #2e2e2e;
+      font-size: 16px;
+      .td-space1 {
+        padding: 9px 20px;
+      }
+      .td-space1.selected {
+        color: #008cba;
+        background-color: rgba(20, 116, 164, 0.1);
+      }
+    }
+    .td-2 {
+    }
+    .tier-val {
+      opacity: 0.8;
+      padding: 13px 35px;
+      color: #212121;
+      font-size: 16px;
+    }
+    .amount {
+      padding: 13px 35px;
+      color: #252525;
+      font-size: 16px;
+    }
+    .fa-info-circle {
+      color: #868686;
+      margin-left: 10px;
+    }
+    thead {
+      th {
+        border-bottom: 1px solid #dee2e6;
+        border-top: 0;
+      }
+    }
+    th,
+    td {
+      border: 0;
+      padding: 0;
+    }
+  }
+}
+.star {
+  cursor: default;
+}
+
+.sec-timeline {
+  margin-top: 20px;
+  margin-bottom: 50px;
+  .sec-wid {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 490px;
+  }
+  .line-circle {
+    background-color: #a0a0a0;
+    height: 26px;
+    width: 26px;
+    box-sizing: border-box;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(1);
+    opacity: 1;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+    margin-right: 12px;
+    margin-left: 12px;
+    font-size: 60px;
+    color: #fff;
+    img {
+      height: 12px;
+    }
+  }
+  .t-divider.divider-active {
+    border-top: 1px solid #1474a4;
+  }
+  .line-circle.circle-active {
+    background-color: #1474a4;
+  }
+  .title-t1 {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #212121;
+  }
+  .title-t2 {
+    padding-left: 158px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(33, 33, 33, 0.5);
+  }
+  .title-t3 {
+    padding-left: 160px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(33, 33, 33, 0.5);
+  }
+  .t-divider {
+    max-width: 167px;
+    border-top: 1px solid rgba(33, 33, 33, 0.1);
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
+// Review page scss start
+.review-container {
+  margin-left: -13px;
+  .review-heading {
+    font-size: 16px;
+    font-family: "CentraleSans-500";
+    color: #212121;
+    margin-bottom: 4px;
+  }
+  .top-divider {
+    border-top: 1px solid #e8e8e8;
+    margin: 4px 0 22px -23px;
+  }
+  .user-name {
+    font-size: 16px;
+    color: #212121;
+    margin-bottom: 5px;
+    margin-top: 22px;
+  }
+  .review-date {
+    color: rgba(33, 33, 33, 0.5);
+    font-size: 14px;
+    display: block;
+    margin-top: 5px;
+  }
+  .review-text {
+    opacity: 0.8;
+    font-size: 16px;
+    color: #212121;
+    margin-top: 8px;
+    margin-right: -20px;
+  }
+  .rating-review{
+    font-size: 14px;
+    color: #1474a4;
+    text-align: right;
+    padding: 15px 0px 0 0;
+    margin-bottom: 24px;
+  }
+  .rating-value{
+    font-size: 24px;
+    color: #e65800;
+    font-family: "CentraleSans-500";
+    text-align: right;
+    padding: 5px 16px 0 16px;
+  }
+  .star-rate{
+    text-align: right;
+    margin-bottom: 24px;
+    .fa-star{
+    font-size: 30px;
+  }
+  ngb-rating{
+    display: block !important;
+  } 
+  }
+  ngb-rating.review-list{
+    .fill{
+      color:#f07c00;
+    }
+  }
+}
+
+.user-reviews {
+  .value {
+    margin-left: 10px;
+  }
+}
+
+.review-dialog {
+.modal-header {
+  padding: 20px 12px 22px 24px;
+}
+.modal-body{
+  padding-left: 24px;
+  padding-bottom: 0;
+  h5{
+    font-size: 16px;
+    color: #212121;
+    font-family: "CentraleSans-Normal";
+    margin-bottom: 0;
+  }
+  .dialog-message{
+    font-size: 14px;
+    color: rgba(33, 33, 33, 0.5);
+    margin-bottom: 22px;
+    margin-top: 4px;
+}
+.fa-star{
+  font-size: 30px;
+  margin-bottom: 26px;
+  cursor: pointer;
+}
+}
+}
+// Review page scss end
+// Media Query - max-width: 767px Start
+@media (max-width: 767px) {
+  .sidebar-info {
+    padding-left: 0;
+  }
+  .sec-timeline {
+    .sec-wid {
+      align-items: center;
+      justify-content: center;
+      max-width: 490px;
+    }
+    .t-divider {
+      max-width: 80px;
+    }
+    .title-t2 {
+      padding-left: 62px;
+    }
+    .title-t3 {
+      padding-left: 69px;
+    }
+    .line-circle {
+      height: 24px;
+      width: 24px;
+      margin-right: 10px;
+      margin-left: 10px;
+    }
+  }
+}
+// Media Query - max-width: 767px End
+// iPad Media Query - and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) Start
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
+  .sec-timeline {
+    .title-t2 {
+      padding-left: 160px;
+    }
+  }
+}
+// iPad Media Query - and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) End
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+  .sidebar-info {
+    padding-left: 15px;
+  }
+  .sec-timeline {
+    .title-t2 {
+      padding-left: 160px;
+    }
+  }
+}

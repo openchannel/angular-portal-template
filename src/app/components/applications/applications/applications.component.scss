@@ -1,0 +1,248 @@
+.container{
+  padding-left: 5px;
+    .rows.app-rows{
+      padding-right: -10px;
+    }
+}
+
+select.filter-select{
+  border: 0px;
+}
+select.filter-select:focus{
+  outline: none !important;
+  box-shadow: none;
+}
+
+.badge-links{
+  margin-top: -3px;
+}
+
+.badge-links a {
+  margin-right: 12px;
+  background-color: rgba(13, 52, 89, 0.1);
+  color: #0d3459;
+  padding: 5px 8px 5px 12px;
+  border-radius: 20px;
+  font-weight: normal;
+  line-height: 1.38;
+  font-size: 1em;
+  margin-top: 3px;
+}
+
+.badge-links a img {
+  margin-left: 10px;
+  margin-top: -2px;
+  width: 18px;
+}
+ .company-name {
+  font-size: 14px;
+  font-family: "CentraleSans-500";
+  color: rgba(33, 33, 33, 0.5);
+  margin-bottom: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-reviews {
+    height: 16px;
+    margin-bottom: 12px;
+    .value{
+      margin-left: 0px;
+    }
+}
+.app-card.card {
+  padding: 0;
+  border: 0px;
+  border-top: 2px solid #1474a4;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 0px;
+  transition: 0.25s;
+  cursor: pointer;
+}
+.card-wrapper {
+  padding: 0 0 16px 16px;
+}
+.app-card {
+  .card-header {
+    background: transparent;
+    border: 0px;
+    padding: 0px;
+  }
+  .app-icon {
+    text-align: center;
+    padding: 0;
+    height: 53px;
+    .app-logo {
+      max-height: 26px;
+      margin-top: 20px;
+    }
+  }
+  .card-body {
+    padding: 13px 16px;
+    .app-text {
+      line-height: 1.38;
+      color: rgba(33, 33, 33, 0.8);
+      font-size: 16px;
+      height: 152px;
+      overflow: hidden;
+      margin-bottom: 0px;
+      -webkit-line-clamp: 7;
+      text-overflow: ellipsis;
+      -webkit-box-orient: vertical;      
+      display: -webkit-box;
+    }
+  }
+  .app-title {
+    font-size: 20px;
+    font-family: "CentraleSans-500";
+    line-height: 1.2;
+    height: 48px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .card-footer {
+    padding: 0px;
+    padding-bottom: 27px;
+    transition: 0.25s;
+    border: none;
+    background: transparent;
+    .ribbon {
+      text-align: right;
+      font-size: 14px;
+      color: #808080;
+      margin-bottom: 30px;
+      .fda {
+        background: #f5f5f5;
+        border-right: 1px solid #fff;
+        padding: 5px 20px 5px 8px;
+        display: inline-block;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+      }
+      .fa,
+      .fas,
+      .far {
+        margin-right: 8px;
+        font-size: 16px;
+        margin-top: 2px;
+        vertical-align: text-top;
+        width: 20px;
+        height: 20px;
+        position: relative;
+      }
+      .fa-times-circle,
+      .fa-clock {
+        color: #b0b0b0;
+      }
+
+      .fa-check-circle {
+        color: #00c764;
+      }
+      .ce {
+        background: #f5f5f5;
+        padding: 5px 30px 5px 8px;
+        display: inline-block;
+      }
+    }
+    .btn-footer {
+      height: 24px;
+      .btn-active {
+        display: inline;
+        padding-right: 16px;
+        float: right;
+        color: rgba(33, 33, 33, 0.8);
+
+        img {
+          margin-right: 11px;
+          margin-bottom: 3px;
+        }
+      }
+    }
+    .c-check{
+      visibility: hidden;
+    }
+    .checked-active {
+      visibility: visible;
+    }
+  }
+  .card-footer:hover .c-check{
+    visibility: visible;
+  }
+}
+
+.app-card.card:hover {
+  .card-footer {
+    background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0) 3%,
+      rgba(0, 117, 168, 0.04)
+    );
+  }
+   .c-check{
+    visibility: visible;
+  }
+
+}
+
+.app-empty {
+  text-align: center;
+  clear: both;
+  padding-top: 40px;
+  h4 {
+    font-size: 20px;
+    color: #2970aa;
+    font-family: "CentraleSans-500";
+  }
+  p {
+    font-size: 16px;
+    color: #70aac6;
+  }
+}
+
+.app-empty{
+    text-align: center;
+    clear: both;
+    padding-top: 40px;
+    h4{
+        font-size: 20px;
+        color: #2970aa;
+        font-family: "CentraleSans-500";
+    }
+    p{
+        font-size: 16px;
+        color: #70aac6;
+    }
+}
+
+.half {
+  position: absolute;
+  display: inline-block;
+  overflow: hidden;
+  color: #e65800;
+  }
+.btn-compare {
+  position: fixed;
+  bottom: 15%;
+  right: 0;
+  width: 213px;
+  height: 56px;
+  text-align: left !important;
+  z-index: 4;
+}
+#content {
+  padding: 20px 0 15px 17px;
+}
+
+// Media Query - max-width: 767px Start
+@media (max-width: 767px) {
+  .card-wrapper {
+    padding: 8px;
+  }
+  .badge-links a {
+    margin-top: 15px;
+  }
+  .nav-pills .nav-link {
+    padding: 12px 0;
+  }
+}
+// Media Query - max-width: 767px End

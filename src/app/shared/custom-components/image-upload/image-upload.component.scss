@@ -1,0 +1,97 @@
+.form-img {
+    max-height: 95px;
+    border-radius: 4px;
+  }
+  
+  .m-widget5__pic {
+    margin-right: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  
+  .form-img-edit {
+    max-height: 95px;
+    border-radius: 4px;
+  }
+  
+  .no-img {
+    height: 150px;
+    width: 150px;
+    border: 2px dashed #cbcdd2;
+    font-size: 18px;
+    color: #cbcdd2;
+  }
+  
+  .img-cont {
+    margin-right: 16px;
+    margin-bottom: 16px;
+  
+    .cross-icon {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      border-radius: 50%;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.79);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #4a90e2;
+    }
+  }
+  
+  .img-cropper-modal-actions-inline {
+    width: 100%;
+    margin: 5px 0 0 !important;
+  
+    button {
+      padding: 6px 12px !important;
+    }
+  }
+  
+  .is-external {
+    max-width: 62px;
+    margin: 5px auto -10px;
+    font-size: 10px;
+    background-color: #eee !important;
+    color: gray !important;
+  
+    fa-icon {
+      font-size: 9px;
+    }
+  }
+
+  .modal-header{
+    padding-bottom: 0px;
+  }
+  .modal-footer{
+    padding: 0px;
+  }
+
+  
+  .progress {
+    height: 4px;
+  }
+  .progress .progress-bar {
+    height: 4px;
+    background-color: #f76700;
+  }
+
+
+  // .progress {
+  //   display: -webkit-box;
+  //   display: -webkit-flex;
+  //   display: -ms-flexbox;
+  //   display: flex;
+  //   overflow: hidden;
+  //   font-size: 0.75rem;
+  //   line-height: 1rem;
+  //   text-align: center;
+  //   background-color: #eceeef;
+  //   border-radius: 0.25rem;
+  //   color: #fff;
+  // }
+  
