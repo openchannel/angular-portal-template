@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   signupUrl = "/signup";
   forgotPwdUrl = "/forgot-password";
 
+  loginModel = new LoginModel();
   constructor(private authenticationService: AuthenticationService
   ) { }
 

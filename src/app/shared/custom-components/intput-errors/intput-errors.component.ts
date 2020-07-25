@@ -23,13 +23,12 @@ export class IntputErrorsComponent implements OnInit {
     'uniqueName': (params) => params.message,
     'telephoneNumbers': (params) => params.message,
     'telephoneNumber': (params) => params.errorMessages,
-    'emailValidator': () => 'Email seems to be invalid',
     'websiteValidator': () => 'Please enter a valid URL',
     'appImageFileValidator': () => 'Please provide valid png/jpg/jpeg/gif image file',
     'appExpiredDateValidator': () => 'Please fill valid current or future date',
     'whiteSpaceValidator': () => 'Please fill valid value',
     'domainValidator': () => 'Please enter a valid domain',
-    'phoneNumberValidator':(params) => params.message
+    'phoneNumberValidator': (params) => params.message
   };
 
   @Input()

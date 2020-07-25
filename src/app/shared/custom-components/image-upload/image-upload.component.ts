@@ -6,7 +6,6 @@ import { base64ToFile } from 'ngx-image-cropper';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { UploadFileResponseModel } from '../../models/upload-file-response-model';
 import { AbstractControlDirective, AbstractControl } from '@angular/forms';
-import { ImageFileValidatorDirective } from '../image-file-validator.directive';
 
 @Component({
   selector: 'app-image-upload',
