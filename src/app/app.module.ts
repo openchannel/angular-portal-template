@@ -26,6 +26,8 @@ import { SsoLoginComponent } from './components/sso-login/sso-login.component';
 import { DatePipe } from '@angular/common';
 import { SignupComponent } from './components/signup/signup.component';
 import { NewAppComponent } from './components/applications/new-app/new-app.component';
+import { OcCommonServiceModule } from 'oc-ng-common-service';
+import { OcCommonLibModule } from 'oc-ng-common-component';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { NewAppComponent } from './components/applications/new-app/new-app.compo
     AppRoutingModule,
     HttpClientModule,
     CustomComponentsModule,
-    NgSelectModule
+    NgSelectModule,
+    OcCommonServiceModule,
+    OcCommonLibModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
   { provide: NgbDateAdapter, useClass: CustomAdapter }, DatePipe],
