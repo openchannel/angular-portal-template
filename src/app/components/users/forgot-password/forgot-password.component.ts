@@ -12,27 +12,19 @@ import { Router } from '@angular/router';
 })
 export class ForgotPasswordComponent implements OnInit {
 
-  email: string;
-  inProcess = false;
-
+  signupUrl = "/signup";
+  loginUrl = "/login"
   constructor(private router: Router, private userService: UserService) { }
 
   ngOnInit(): void {
   }
 
-  forgotPassword(forgetPwdForm: NgForm): void {
-    if (!forgetPwdForm.valid) {
-      forgetPwdForm.control.markAllAsTouched();
-      return;
+  resetPwd(event) {
+    console.log(event);
+    if (event === true) {
+      //api code 
     }
-    this.inProcess = true;
-    this.userService.forgotPassword(this.email).subscribe((res) => {
-      this.inProcess = false;
-      this.router.navigate(['/confirm-forgot-password']);
-    },
-      (err) => {
-        // error message
-        this.inProcess = false;
-      });
   }
+
+
 }

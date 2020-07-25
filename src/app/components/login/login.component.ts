@@ -12,31 +12,20 @@ import { UserService } from 'src/app/shared/services/user.service';
 })
 export class LoginComponent implements OnInit {
 
-  loginModel = new LoginModel();
-  inProcess = false;
+  signupUrl = "/signup";
+  forgotPwdUrl = "/forgot-password";
+
   constructor(private authenticationService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
   }
 
-  doLogin(loginForm: NgForm): void {
-    if (!loginForm.valid) {
-      loginForm.control.markAllAsTouched();
-      return;
+  login(event) {
+    console.log(event);
+    if (event === true) {
+      //api code 
     }
-    this.inProcess = true;
-    this.authenticationService.login(this.loginModel).subscribe((res) => {
-      this.authenticationService.persist(res);
-      if (this.authenticationService.isLoggedIn()) {
-        this.authenticationService.saveLoggedInUserProfile();
-      }
-    },
-      (res) => {
-        // handle error response
-        this.inProcess = false;
-      });
-
   }
 
 }
