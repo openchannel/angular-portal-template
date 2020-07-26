@@ -34,7 +34,7 @@
             (change)="uploadFile(fileInput,$event.target.files)">
         </div>
         
-        <intput-errors [control]="fileControl"></intput-errors>
+        <!-- <oc-error [control]="fileControl"></oc-error> -->
         <span *ngIf="invalidFileDroppedError">
             <span id="glypcnemail" class="glyphicon glyphicon-remove form-control-feedback validerrors">
               <i class="fas fa-exclamation-circle"></i> {{invalidFileDroppedError}}
