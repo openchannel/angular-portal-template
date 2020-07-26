@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IntputErrorsComponent } from './intput-errors/intput-errors.component';
 import { NotificationComponent } from './notification/notification.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CamelcasePipe } from './camelcase.pipe';
@@ -15,7 +14,6 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
 
 @NgModule({
    declarations: [
-      IntputErrorsComponent,
       NotificationComponent,
       CamelcasePipe,
       DialogComponent,
@@ -32,7 +30,6 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
       ImageCropperModule
    ],
    exports: [
-      IntputErrorsComponent,
       LoaderComponent,
       NotificationComponent,
       ImageFileValidatorDirective,
