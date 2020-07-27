@@ -1,9 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from 'src/app/shared/services/authentication.service';
-import { LoginModel } from 'src/app/shared/models/login-model';
-import { Router } from '@angular/router';
-import { NgForm } from '@angular/forms';
-import { UserService } from 'src/app/shared/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +10,7 @@ export class LoginComponent implements OnInit {
   signupUrl = "/signup";
   forgotPwdUrl = "/forgot-password";
 
-  loginModel = new LoginModel();
-  constructor(private authenticationService: AuthenticationService
+  constructor(
   ) { }
 
   ngOnInit(): void {

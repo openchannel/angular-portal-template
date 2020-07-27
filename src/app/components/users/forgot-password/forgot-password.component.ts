@@ -1,8 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from 'src/app/shared/services/authentication.service';
-
-import { NgForm } from '@angular/forms';
-import { UserService } from 'src/app/shared/services/user.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,7 +10,7 @@ export class ForgotPasswordComponent implements OnInit {
 
   signupUrl = "/signup";
   loginUrl = "/login"
-  constructor(private router: Router, private userService: UserService) { }
+  constructor() { }
 
   ngOnInit(): void {
   }

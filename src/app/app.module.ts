@@ -16,18 +16,15 @@ import { CustomComponentsModule } from './shared/custom-components/custom-compon
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CustomAdapter } from './core/datepicker-adapter';
 import { LoaderComponent } from './shared/custom-components/loader/loader.component';
-import { NotFoundComponent } from './components/not-found/not-found.component';
-import { ApplicationsComponent } from './components/applications/applications/applications.component';
-import { ApplicationDetailComponent } from './components/applications/application-detail/application-detail.component';
-import { MyApplicationsComponent } from './components/applications/my-applications/my-applications.component';
-import { MyProfileComponent } from './components/profile/my-profile/my-profile.component';
-import { ChangePasswordComponent } from './components/profile/change-password/change-password.component';
-import { SsoLoginComponent } from './components/sso-login/sso-login.component';
 import { DatePipe } from '@angular/common';
 import { SignupComponent } from './components/signup/signup.component';
-import { NewAppComponent } from './components/applications/new-app/new-app.component';
 import { OcCommonServiceModule } from 'oc-ng-common-service';
 import { OcCommonLibModule } from 'oc-ng-common-component';
+import { AppStoreComponent } from './components/applications/app-store/app-store.component';
+import { AppListComponent } from './components/applications/app-list/app-list.component';
+import { AppDetailComponent } from './components/applications/app-detail/app-detail.component';
+import { AppDeveloperComponent } from './components/applications/app-developer/app-developer.component';
+import { AppNewComponent } from './components/applications/app-new/app-new.component';
 
 @NgModule({
   declarations: [
@@ -38,16 +35,13 @@ import { OcCommonLibModule } from 'oc-ng-common-component';
     CommonLayoutComponent,
     LoginComponent,
     ForgotPasswordComponent,
-    NotFoundComponent,
-    ApplicationsComponent,
-    ApplicationDetailComponent,
     SignupComponent,
-    MyApplicationsComponent,
-    MyProfileComponent,
-    ChangePasswordComponent,
-    SsoLoginComponent,
     SignupComponent,
-    NewAppComponent
+    AppStoreComponent,
+    AppListComponent,
+    AppDetailComponent,
+    AppDeveloperComponent,
+    AppNewComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
