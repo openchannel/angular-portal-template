@@ -3,6 +3,20 @@
         <h1>Your App Store Platform</h1>
         <p>A design template for implementing your app store with OpenChannel</p>
         <oc-text-searh></oc-text-searh>
-        <oc-featured-apps></oc-featured-apps>
+        <oc-featured-apps [data]="featuredApp" [label]="getValue('Featured')"></oc-featured-apps>
+        <oc-app-galary [appsArr]="recentlyAddedApps" [seeAllUrl]="getValue('https://google.com')"
+            [appGalaryTitle]="getValue('Recently Added')"
+            [appGalaryDescription]="getValue('The latest apps that help you and your team work and build faster')">
+        </oc-app-galary>
+        <oc-app-categories [data]="categories" [categoryHeaderTitle]="getValue('Categories to Explore')">
+        </oc-app-categories>
+        <oc-app-galary [appsArr]="recentlyAddedApps" [seeAllUrl]="getValue('https://google.com')"
+            [appGalaryTitle]="getValue('Most Popular')"
+            [appGalaryDescription]="getValue('The most used apps that help you and your team get more done')">
+        </oc-app-galary>
+        <oc-app-galary [appsArr]="recentlyAddedApps" [seeAllUrl]="getValue('https://google.com')"
+            [appGalaryTitle]="getValue('Apps for Analytics')"
+            [appGalaryDescription]="getValue('Get insights and analytics to make the better decisions')">
+        </oc-app-galary>
     </div>
 </div>
