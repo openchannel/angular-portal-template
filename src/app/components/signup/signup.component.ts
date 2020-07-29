@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { UserServiceService } from 'oc-ng-common-service';
+import { UserServiceService, SignUp } from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-signup',
@@ -18,7 +18,13 @@ export class SignupComponent implements OnInit {
   signup(event) {
     console.log(event);
     if (event === true) {
-      console.log(this.userService.getUsers());
+      let model = new SignUp();
+      this.userService.signup(model).subscribe(res => {
+        console.log(res);
+      }
+
+      );
+      console.log(this.userService.signup(model));
     }
   }
 

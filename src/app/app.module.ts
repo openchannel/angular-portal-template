@@ -25,6 +25,7 @@ import { AppListComponent } from './components/applications/app-list/app-list.co
 import { AppDetailComponent } from './components/applications/app-detail/app-detail.component';
 import { AppDeveloperComponent } from './components/applications/app-developer/app-developer.component';
 import { AppNewComponent } from './components/applications/app-new/app-new.component';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,7 @@ import { AppNewComponent } from './components/applications/app-new/app-new.compo
     HttpClientModule,
     CustomComponentsModule,
     NgSelectModule,
-    OcCommonServiceModule,
+    OcCommonServiceModule.forRoot(environment),
     OcCommonLibModule
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
@@ -62,4 +63,6 @@ import { AppNewComponent } from './components/applications/app-new/app-new.compo
   bootstrap: [AppComponent],
   entryComponents: [LoaderComponent],
 })
-export class AppModule { }
+export class AppModule { 
+  
+}

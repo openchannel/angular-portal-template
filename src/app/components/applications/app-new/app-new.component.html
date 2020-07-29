@@ -1,1 +1,32 @@
-<p>app-new works!</p>
+<div class="bg-container">
+    <div class="container text-center">
+        <oc-label [text]="getValue('App Name')"></oc-label>
+        <oc-input></oc-input>
+        <oc-label [text]="getValue('Category')"></oc-label>
+        <div class="row">
+            <div class="col-md-6">
+                <oc-select></oc-select>
+            </div>
+            <div class="col-md-6">
+                <oc-button [type]="getValue('secondary')" [text]="getValue('+ Add Category')"></oc-button>
+            </div>
+            <oc-label [text]="getValue('Assembly')"></oc-label>
+        </div>
+
+        <oc-label [text]="getValue('Website URL')"></oc-label>
+        <oc-input></oc-input>
+        <oc-label [text]="getValue('Video URL')"></oc-label>
+        <oc-input></oc-input>
+        <div class="col-md-6 mt-5 embed-responsive embed-responsive-16by9">
+            <iframe width="420" height="315" [src]="getyouTubeId()" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <oc-label [text]="getValue('Icon')"></oc-label>
+        <oc-file-upload [files]="icons" [defaultFileIcon]="defaultFileIcon"></oc-file-upload>
+        <oc-label [text]="getValue('Product Images')"></oc-label>
+        <oc-file-upload [files]="files" [defaultFileIcon]="defaultfile" [isMultiFile]="isMultiFile"></oc-file-upload>
+        <oc-button [type]="getValue('link')" [text]="getValue('Cancel')"></oc-button>
+        <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')"></oc-button>
+        <oc-button [type]="getValue('primary')" [text]="getValue('Submit')"></oc-button>
+
+    </div>
+</div>
