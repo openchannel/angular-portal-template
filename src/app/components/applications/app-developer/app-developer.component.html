@@ -1,1 +1,45 @@
-<p>app-developer works!</p>
+<div class="bg-container">
+    <div class="container">
+        <div class="row py-5">
+            <div class="col-md">
+                <h1>Manage Apps</h1>
+            </div>
+            <div class="col-md-auto">
+                <oc-button text="Submit New App" type="primary">
+                </oc-button>
+            </div>
+        </div>
+
+        <div class="row app-manage-card">
+            <div class="col-md px-0">
+                <div class="time-selection active">
+                    <oc-radio></oc-radio>
+                    <oc-label text="Monthly"></oc-label>
+                </div>
+                <div class="time-selection ">
+                    <oc-radio></oc-radio>
+                    <oc-label text="Year"></oc-label>
+                </div>
+                <div class="time-selection ">
+                    <oc-radio></oc-radio>
+                    <oc-label text="All Time"></oc-label>
+                </div>
+            </div>
+            <div class="col-md-auto px-0">
+                <div class="time-selection active">
+                    <oc-label text="Downloads"></oc-label>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-3">
+            <oc-chart></oc-chart>
+        </div>
+
+        <div class="pb-1">
+            <oc-menu-grid></oc-menu-grid>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,18 @@
+.app-manage-card {
+  padding: 8px;
+  border: 1px solid #c9d5ea;
+  border-radius: 4px;
+  margin: 0;
+  .time-selection {
+    padding: 11px;
+    width: 152px;
+    height: 50px;
+    text-align: center;
+    display: inline-block;
+  }
+  .time-selection.active {
+    border: 1px solid #c9d5ea;
+    border-radius: 4px;
+    background-color: white;
+  }
+}
