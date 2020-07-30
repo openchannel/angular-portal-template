@@ -6,6 +6,10 @@
   background: url(https://drive.google.com/u/0/uc?id=1k78AbOR1AuBnPr8JJz8L504QjnnKCqJQ&export=download) center center no-repeat;
   background-size: cover;
 }
-.bg-container.height-s {
+.bg-container.bg-s {
   min-height: 100%;
+}
+.container.container-s {
+  width: 730px;
+  margin: 0 auto;
 }
