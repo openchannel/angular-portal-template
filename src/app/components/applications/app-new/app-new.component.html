@@ -9,61 +9,90 @@
 
 
 <div class="container container-s">
-    <div class="row">
-        <div class="col-md-3">
-            <oc-label [text]="getValue('App Name')"></oc-label>
+    <div class="row form-group mt-5">
+        <div class="col-md-3 pl-0">
+            <oc-label [text]="getValue('App Name')" class="label-l"></oc-label>
+            <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
+                alt="info-icon">
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9 pl-0 pr-1">
             <oc-input></oc-input>
         </div>
     </div>
-    <!-- <div class="row">
-        <div class="col-md-3">
-        </div>
-        <div class="col-md-9">
-        </div>
-    </div> -->
-    <div class="row">
-        <div class="col-md-3">
+
+    <div class="row form-group">
+        <div class="col-md-3 pl-0">
             <oc-label [text]="getValue('Category')"></oc-label>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 pl-0">
             <oc-select></oc-select>
             <!-- <oc-label [text]="getValue('Assembly')"></oc-label> -->
         </div>
-        <div class="col-md-3">
-            <oc-button [type]="getValue('secondary')" [text]="getValue('+ Add Category')"></oc-button>
+        <div class="col-md-3 pl-0 pr-1">
+            <span class="add-category">
+                <img src="https://drive.google.com/u/0/uc?id=1ISG4afo0ho7k8ExvykfKbEvVSYjRBBse&export=download"
+                    class="pr-2" alt="add-icon">Add Category
+            </span>
+            <!-- <oc-button [type]="getValue('secondary')" [text]="getValue('+ Add Category')"></oc-button> -->
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-3">
+    <div class="row form-group">
+        <div class="col-md-3 pl-0">
             <oc-label [text]="getValue('Website URL')"></oc-label>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9 pl-0 pr-1">
             <oc-input></oc-input>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-3">
+    <div class="row form-group">
+        <div class="col-md-3 pl-0">
             <oc-label [text]="getValue('Video URL')"></oc-label>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9 pl-0 pr-1">
             <oc-input></oc-input>
-            <div class="mt-5 embed-responsive embed-responsive-16by9">
+            <div class="embed-responsive embed-responsive-16by9 video-box">
                 <iframe width="420" height="315" [src]="getyouTubeId()" frameborder="0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
+    <div class="row form-group">
+        <div class="col-md-3 pl-0">
+            <oc-label [text]="getValue('Icon')"></oc-label>
+            <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
+                alt="info-icon">
+        </div>
+        <div class="col-md-9 pl-0 pr-1">
+            <oc-file-upload [files]="icons" [defaultFileIcon]="defaultFileIcon"></oc-file-upload>
 
-    <oc-label [text]="getValue('Icon')"></oc-label>
-    <oc-file-upload [files]="icons" [defaultFileIcon]="defaultFileIcon"></oc-file-upload>
-    <oc-label [text]="getValue('Product Images')"></oc-label>
-    <oc-file-upload [files]="files" [defaultFileIcon]="defaultfile" [isMultiFile]="isMultiFile"></oc-file-upload>
-    <oc-button [type]="getValue('link')" [text]="getValue('Cancel')"></oc-button>
-    <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')"></oc-button>
-    <oc-button [type]="getValue('primary')" [text]="getValue('Submit')"></oc-button>
+        </div>
+    </div>
 
+    <div class="row form-group">
+        <div class="col-md-3 pl-0">
+            <oc-label [text]="getValue('Product Images')"></oc-label>
+            <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
+                alt="info-icon">
+        </div>
+        <div class="col-md-9 pl-0 pr-1">
+            <oc-file-upload [files]="files" [defaultFileIcon]="defaultfile" [isMultiFile]="isMultiFile">
+            </oc-file-upload>
+        </div>
+    </div>
+
+    <div class="row form-group mb-5">
+        <div class="col-md-3 pl-0">
+            <oc-button [type]="getValue('link')" [text]="getValue('Cancel')"></oc-button>
+        </div>
+        <div class="col-md pl-0">
+            <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')"></oc-button>
+        </div>
+        <div class="col-md text-right pr-1">
+            <oc-button [type]="getValue('primary')" [text]="getValue('Submit')"></oc-button>
+        </div>
+    </div>
 </div>
+
+<div class="footer-divider"></div>
