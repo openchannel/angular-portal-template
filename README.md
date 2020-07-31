@@ -1,6 +1,7 @@
 # template3-portal-frontend
 
+## Setup & Run
 npm install
-npm install oc-ng-common-service-0.0.1.tgz
-npm install oc-ng-common-component-0.0.1.tgz
+npm install file:<absolute path to common service project dist>
+npm install file:<absolute path to common component project dist>
 ng serve
