@@ -21,7 +21,7 @@ export class AppNewComponent implements OnInit {
   videoUrl = '';
   
   appCategories = ["cat1","cat2","cat3"];
-  selectedCats = [];
+  selectedCats:string[] = [];
 
   constructor(public sanitizer: DomSanitizer) { }
 
@@ -59,8 +59,8 @@ export class AppNewComponent implements OnInit {
     file4.fileUploadProgress = 100;
     file4.fileIconUrl = "https://stage1-philips-market-test.openchannel.io/assets/img/item-1.png"
     file4.fileUrl = "https://stage1-philips-market-test.openchannel.io/assets/img/item-1.png";
-    file4.fileSize = 2048000;
-    file4.fileUploadTime = 1595942005169;
+    file4.size = 2048000;
+    file4.uploadDate = 1595942005169;
 
     this.icons = [file4],
       this.defaultFileIcon = 'https://stage1-philips-market-test.openchannel.io/assets/img/item-1.png'
@@ -80,5 +80,10 @@ export class AppNewComponent implements OnInit {
     this.videoUrl = "https://www.youtube.com/embed/" + video_id;
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
   }
+  
+  saveNewApp(){
+  }
 
+  updateCategory(){
+  }
 }
