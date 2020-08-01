@@ -68,7 +68,7 @@
                 alt="info-icon">
         </div>
         <div class="col-md-9 pl-0 pr-1">
-            <oc-file-upload [fileDetailArr]="icons" [defaultFileIcon]="defaultFileIcon" fileType='singleImage'></oc-file-upload>
+            <oc-file-upload [(fileDetailArr)]="icons" [defaultFileIcon]="defaultFileIconUrl" fileType='singleImage'></oc-file-upload>
 
         </div>
     </div>
@@ -80,7 +80,7 @@
                 alt="info-icon">
         </div>
         <div class="col-md-9 pl-0 pr-1">
-            <oc-file-upload [fileDetailArr]="files" [defaultFileIcon]="defaultfile" [isMultiFile]="isMultiFile" fileType='multiImage'>
+            <oc-file-upload [(fileDetailArr)]="productImages" [defaultFileIcon]="defaultFileIconUrl" fileType='multiImage'>
             </oc-file-upload>
         </div>
     </div>
