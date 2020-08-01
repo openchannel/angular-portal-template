@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { UserService } from './user.service';
+import { FileUploadDownloadService } from 'oc-ng-common-service';
 
 @Injectable({
     providedIn: 'root'
 })
 
 export class CommonService {
-    constructor(public userService: UserService) {
+    constructor(public fileDownoladService: FileUploadDownloadService) {
 
     }
 
@@ -71,7 +71,7 @@ export class CommonService {
 
     }
     downloadUploadedFiles(fileId) {
-        this.userService.downloadFileDetails(fileId).subscribe((res) => {
+        this.fileDownoladService.downloadFileDetails(fileId).subscribe((res) => {
             if (res && res.fileUrl) {
                 window.open(res.fileUrl, "_blank");
                 // this.downloadFileService.downloadFileFromUrl(res.fileUrl).subscribe();

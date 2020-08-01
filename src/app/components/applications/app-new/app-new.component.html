@@ -9,92 +9,127 @@
 
 
 <div class="container container-s">
-    <div class="row form-group mt-5">
-        <div class="col-md-3 pl-0">
-            <oc-label [text]="getValue('App Name')" class="label-l"></oc-label>
-            <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
-                alt="info-icon">
-        </div>
-        <div class="col-md-9 pl-0 pr-1">
-            <oc-input></oc-input>
-        </div>
-    </div>
+    <form novalidate #newAppform="ngForm">
 
-    <div class="row form-group">
-        <div class="col-md-3 pl-0">
-            <oc-label [text]="getValue('Category')"></oc-label>
-        </div>
-        <div class="col-md-9">           
-            <oc-app-category-select class="cold-md-9" [(predefinedValArr)]='appCategories' [(selectedValuesArr)]='selectedCats' (categoryCahnge) ='updateCategory()'>
-            </oc-app-category-select>
-        </div>
-        <!-- <div class="col-md-6 pl-0">
-            <oc-select></oc-select>
-        </div>
-        <div class="col-md-3 pl-0 pr-1">
-            <span class="add-category">
-                <img src="https://drive.google.com/u/0/uc?id=1ISG4afo0ho7k8ExvykfKbEvVSYjRBBse&export=download"
-                    class="pr-2" alt="add-icon">Add Category
-            </span>
-        </div> -->
-    </div>
-
-    <div class="row form-group">
-        <div class="col-md-3 pl-0">
-            <oc-label [text]="getValue('Website URL')"></oc-label>
-        </div>
-        <div class="col-md-9 pl-0 pr-1">
-            <oc-input></oc-input>
-        </div>
-    </div>
-
-    <div class="row form-group">
-        <div class="col-md-3 pl-0">
-            <oc-label [text]="getValue('Video URL')"></oc-label>
-        </div>
-        <div class="col-md-9 pl-0 pr-1">
-            <oc-input></oc-input>
-            <div class="embed-responsive embed-responsive-16by9 video-box">
-                <iframe width="420" height="315" [src]="getyouTubeId()" frameborder="0" allowfullscreen></iframe>
+        <div class="row form-group mt-5">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('App Name')"></oc-label>
+                <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
+                    alt="info-icon">
+            </div>
+            <div class="col-md-9 pl-0 pr-1">
+                <oc-input name="appName"
+                    #appName="ngModel" 
+                    [(ngModel)]="appDetails.name"   
+                    ngDefaultControl
+                    required="required"></oc-input>
+                <oc-error [control]="appName"> </oc-error>
             </div>
         </div>
-    </div>
 
-    <div class="row form-group">
-        <div class="col-md-3 pl-0">
-            <oc-label [text]="getValue('Icon')"></oc-label>
-            <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
-                alt="info-icon">
+        <div class="row form-group">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('Category')"></oc-label>
+            </div>
+            <div class="col-md-9">           
+                <oc-app-category-select class="cold-md-9" 
+                    [(predefinedValArr)]='appCategories' 
+                    [(selectedValuesArr)]='appDetails.customData.category' 
+                    (categoryCahnge) ='updateCategory()'
+                    name="appCategory"
+                    #appCategory="ngModel" 
+                    [ngModel]="appDetails.customData.category"   
+                    ngDefaultControl
+                    required="required"
+                >
+                </oc-app-category-select>
+                <oc-error [control]="appCategory"> </oc-error>
+            </div>
+            <!-- <div class="col-md-6 pl-0">
+                <oc-select></oc-select>
+            </div>
+            <div class="col-md-3 pl-0 pr-1">
+                <span class="add-category">
+                    <img src="https://drive.google.com/u/0/uc?id=1ISG4afo0ho7k8ExvykfKbEvVSYjRBBse&export=download"
+                        class="pr-2" alt="add-icon">Add Category
+                </span>
+            </div> -->
         </div>
-        <div class="col-md-9 pl-0 pr-1">
-            <oc-file-upload [(fileDetailArr)]="icons" [defaultFileIcon]="defaultFileIconUrl" fileType='singleImage'></oc-file-upload>
 
+        <div class="row form-group">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('Website URL')"></oc-label>
+            </div>
+            <div class="col-md-9 pl-0 pr-1">
+                <oc-input websiteValidator 
+                    name="websiteUrl"
+                    #websiteUrl="ngModel" 
+                    [(ngModel)]="appDetails.customData.website__url"   
+                    ngDefaultControl></oc-input>
+                <oc-error [control]="websiteUrl"> </oc-error>
+            </div>
         </div>
-    </div>
 
-    <div class="row form-group">
-        <div class="col-md-3 pl-0">
-            <oc-label [text]="getValue('Product Images')"></oc-label>
-            <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
-                alt="info-icon">
+        <div class="row form-group">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('Video URL')" ></oc-label>
+            </div>
+            <div class="col-md-9 pl-0 pr-1">
+                <oc-input websiteValidator 
+                    name="videoUrl"
+                    #videoUrl="ngModel" 
+                    [(ngModel)]="appDetails.customData.video__url"
+                    ngDefaultControl></oc-input>
+                <oc-error [control]="videoUrl"> </oc-error>
+                <div class="embed-responsive embed-responsive-16by9 video-box" *ngIf="this.appDetails?.customData?.video__url">
+                    <iframe width="420" height="315" [src]="getyouTubeId()" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
         </div>
-        <div class="col-md-9 pl-0 pr-1">
-            <oc-file-upload [(fileDetailArr)]="productImages" [defaultFileIcon]="defaultFileIconUrl" fileType='multiImage'>
-            </oc-file-upload>
-        </div>
-    </div>
 
-    <div class="row form-group mb-5">
-        <div class="col-md-3 pl-0">
-            <oc-button [type]="getValue('link')" [text]="getValue('Cancel')"></oc-button>
+        <div class="row form-group">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('Icon')"></oc-label>
+                <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
+                    alt="info-icon">
+            </div>
+            <div class="col-md-9 pl-0 pr-1">
+                <oc-file-upload [(fileDetailArr)]="icons" [defaultFileIcon]="defaultFileIconUrl" fileType='singleImage'></oc-file-upload>
+            </div>
         </div>
-        <div class="col-md pl-0">
-            <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')" (click)='saveNewApp()'></oc-button>
+        <div class="row form-group">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('Product Images')"></oc-label>
+                <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
+                    alt="info-icon">
+            </div>
+            <div class="col-md-9 pl-0 pr-1">
+                <oc-file-upload [(fileDetailArr)]="productImages" [defaultFileIcon]="defaultFileIconUrl" fileType='multiImage'>
+                </oc-file-upload>
+            </div>
         </div>
-        <div class="col-md text-right pr-1">
-            <oc-button [type]="getValue('primary')" [text]="getValue('Submit')"></oc-button>
+        <div class="row form-group">
+            <div class="col-md-3 pl-0">
+                <oc-label [text]="getValue('Summary')"></oc-label>
+            </div>
+            <div class="col-md-9 pl-0 pr-1">
+                <textarea [froalaEditor]  
+                [(froalaModel)]="appDetails.customData.summary">
+                </textarea>
+            </div>
         </div>
-    </div>
+        <div class="row form-group mb-5">
+            <div class="col-md-3 pl-0">
+                <oc-button [type]="getValue('link')" [text]="getValue('Cancel')"></oc-button>
+            </div>
+            <div class="col-md pl-0">
+                <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')" (click)='saveNewApp()'></oc-button>
+            </div>
+            <div class="col-md text-right pr-1">
+                <oc-button [type]="getValue('primary')" [text]="getValue('Submit')" (click)="submitApp(newAppform)"></oc-button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <div class="footer-divider"></div>
