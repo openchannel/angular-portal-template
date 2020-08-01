@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyValuePairMapper, ChartService, AppService, Application } from 'oc-ng-common-service';
+import { KeyValuePairMapper, ChartService, SellerAppService, SellerAppsWrapper } from 'oc-ng-common-service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,21 +11,20 @@ export class AppDeveloperComponent implements OnInit {
 
   labels = [];
   dataSets = [];
-  count = 40;
+  count;
 
-  radioGrp: string[];
-  modelText = 'month';
+  period = 'month';
 
   chartStaticstics: KeyValuePairMapper[];
-  chartProcessing = false;
-  isProcessing = false;
+  isChartProcessing = false;
+  isAppProcessing = false;
 
-  appList = new Application();
+  applications = new SellerAppsWrapper();
   fields = [];
 
   selectedChartField = "downloads";
 
-  constructor(public chartService: ChartService, public appService: AppService, public router: Router) {
+  constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router) {
 
     var downloadObj = {
       key: "Downloads",
@@ -52,12 +51,12 @@ export class AppDeveloperComponent implements OnInit {
 
   getChartStatistics() {
 
-    this.chartProcessing = true;
+    this.isChartProcessing = true;
     this.labels = [];
     this.dataSets = [];
 
     var obj = {
-      period: this.modelText,
+      period: this.period,
       field: this.selectedChartField,
 
     }
@@ -71,21 +70,17 @@ export class AppDeveloperComponent implements OnInit {
 
       });
 
-      this.chartProcessing = false;
-      //console.log('labels ', this.labels);
-      //console.log('datasets ', this.dataSets);
+      this.isChartProcessing = false;
 
     }, (err) => {
     });
   }
 
   getApps() {
-    this.isProcessing = true;
+    this.isAppProcessing = true;
     this.appService.getApps().subscribe(res => {
-      console.log(res);
-      this.appList.appList = res.list;
-      console.log(this.appList);
-      this.isProcessing = false;
+      this.applications.list = res.list;
+      this.isAppProcessing = false;
     })
   }
 

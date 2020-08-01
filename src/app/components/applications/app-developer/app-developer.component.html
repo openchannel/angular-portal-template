@@ -13,33 +13,25 @@
         <div class="row app-manage-card">
             <div class="col-md px-0">
                 <div class="time-selection" [ngClass]="{
-                    active: modelText === 'month'
+                    active: period === 'month'
                   }">
                     <div class="custom-control custom-radio">
                         <input type="radio" class="custom-control-input" id="month" value="month" name="name"
-                            [(ngModel)]="modelText" (ngModelChange)="getChartStatistics()">
+                            [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
                         <label class="custom-control-label" for="month">Month</label>
                     </div>
-                    <!-- <oc-label text="Month"></oc-label> -->
                 </div>
                 <div class="time-selection" [ngClass]="{
-                    active: modelText ==='day'
+                    active: period ==='day'
                   }">
                     <div class="custom-control custom-radio">
                         <input type="radio" class="custom-control-input" id="day" value="day" name="name"
-                            [(ngModel)]="modelText" (ngModelChange)="getChartStatistics()">
+                            [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
                         <label class="custom-control-label" for="day">Day</label>
                     </div>
-                    <!-- <oc-label text="Day"></oc-label> -->
+
                 </div>
-                <!-- <div class="time-selection ">
-                    <oc-radio></oc-radio>
-                    <oc-label text="Day"></oc-label>
-                </div> -->
-                <!-- <div class="time-selection ">
-                    <oc-radio></oc-radio>
-                    <oc-label text="All Time"></oc-label>
-                </div> -->
+
             </div>
             <!-- <div class="col-md-auto px-0"> -->
             <!-- <div class="time-selection active"> -->
@@ -49,12 +41,12 @@
             <!-- </div> -->
         </div>
 
-        <div class="my-3" *ngIf="!chartProcessing">
+        <div class="my-3" *ngIf="!isChartProcessing">
             <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count"></oc-chart>
         </div>
 
-        <div class="pb-1" *ngIf="!isProcessing">
-            <oc-menu-grid [appList]="appList"></oc-menu-grid>
+        <div class="pb-1" *ngIf="!isAppProcessing">
+            <oc-menu-grid [appList]="applications"></oc-menu-grid>
         </div>
 
     </div>
