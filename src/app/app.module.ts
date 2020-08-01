@@ -26,6 +26,8 @@ import { AppDetailComponent } from './components/applications/app-detail/app-det
 import { AppDeveloperComponent } from './components/applications/app-developer/app-developer.component';
 import { AppNewComponent } from './components/applications/app-new/app-new.component';
 import { environment } from 'src/environments/environment';
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+
 
 @NgModule({
   declarations: [
@@ -54,6 +56,7 @@ import { environment } from 'src/environments/environment';
     AppRoutingModule,
     HttpClientModule,
     CustomComponentsModule,
+    FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
     OcCommonLibModule

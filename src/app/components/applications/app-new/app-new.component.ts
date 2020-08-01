@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FileDetails } from 'oc-ng-common-service';
 import { DomSanitizer } from '@angular/platform-browser';
+import FroalaEditor from 'froala-editor';
 
 @Component({
   selector: 'app-app-new',
   templateUrl: './app-new.component.html',
-  styleUrls: ['./app-new.component.scss']
+  styleUrls: [
+    './app-new.component.scss']
 })
 export class AppNewComponent implements OnInit {
 
@@ -24,6 +26,19 @@ export class AppNewComponent implements OnInit {
   constructor(public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
+
+    FroalaEditor.DefineIcon('alert', {NAME: 'info'});
+    FroalaEditor.RegisterCommand('alert', {
+      title: 'Hello',
+      focus: false,
+      undo: false,
+      refreshAfterCallback: false,
+ 
+      callback: () => {
+        alert('Hello!');
+      }
+    });
+
 
     this.getyouTubeId();
     const file1 = new FileDetails()
