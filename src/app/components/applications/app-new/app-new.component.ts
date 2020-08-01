@@ -17,6 +17,9 @@ export class AppNewComponent implements OnInit {
   isMultiFile;
   url = "https://www.youtube.com/watch?v=dpnh-g55lPM";
   videoUrl = '';
+  
+  appCategories = ["cat1","cat2","cat3"];
+  selectedCats = [];
 
   constructor(public sanitizer: DomSanitizer) { }
 
@@ -58,7 +61,6 @@ export class AppNewComponent implements OnInit {
   }
 
   getyouTubeId() {
-    debugger;
     var video_id = this.url.split('v=')[1].split('&')[0];
     this.videoUrl = "https://www.youtube.com/embed/" + video_id;
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.videoUrl);
