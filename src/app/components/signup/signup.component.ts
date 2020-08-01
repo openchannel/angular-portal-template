@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {SellerSignup, SellerService } from 'oc-ng-common-service';
+import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup',
@@ -9,6 +11,10 @@ import {SellerSignup, SellerService } from 'oc-ng-common-service';
 export class SignupComponent implements OnInit {
 
   loginUrl = "/login";
+  companyLogoUrl = "./assets/img/logo-company.png";
+  termsAndConditionPageUrl = "https://my.openchannel.io/terms-of-service";
+  dataProcessingPolicyUrl = "https://my.openchannel.io/data-processing-policy";
+
   signupModel :SellerSignup;
   requestObj : any =  {
     "developer":{
@@ -22,7 +28,7 @@ export class SignupComponent implements OnInit {
       "password": ""
   }
   }; 
-  constructor(private sellerService : SellerService) {
+  constructor(private sellerService : SellerService,private notificationService: NotificationService,private router: Router) {
      this.signupModel = new SellerSignup();
    }
 
@@ -38,18 +44,10 @@ export class SignupComponent implements OnInit {
       this.requestObj.developerAccount.email = event.submitter.form[2].value;
       this.requestObj.extra.password = event.submitter.form[3].value;
       this.sellerService.signup(this.requestObj).subscribe(res => {
-        console.log(res);
+        this.notificationService.showSuccess("Your account is created successfully!");
+        this.router.navigateByUrl(this.loginUrl);
       });
     }
-  }
-
-  createApiRequestObj(signupModel:SellerSignup){     
-    console.log("sign up modal => "+JSON.stringify(signupModel));
-    this.requestObj.developer.name = signupModel.company;
-    this.requestObj.developerAccount.name = signupModel.uname;
-    this.requestObj.developerAccount.email = signupModel.email;
-    this.requestObj.extra.password = signupModel.password;
-    console.log("request obj => "+JSON.stringify(this.requestObj));
   }
 
 }

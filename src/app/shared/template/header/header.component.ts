@@ -7,6 +7,11 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+
+  constructor(public router:Router){
+
+  }
+
   ngOnInit(): void {
   }
 
