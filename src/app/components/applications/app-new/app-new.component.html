@@ -24,8 +24,9 @@
         <div class="col-md-3 pl-0">
             <oc-label [text]="getValue('Category')"></oc-label>
         </div>
-        <div class="col-md-9">
-            <oc-app-category-select></oc-app-category-select>
+        <div class="col-md-9">           
+            <oc-app-category-select class="cold-md-9" [(predefinedValArr)]='appCategories' [(selectedValuesArr)]='selectedCats' (categoryCahnge) ='updateCategory()'>
+            </oc-app-category-select>
         </div>
         <!-- <div class="col-md-6 pl-0">
             <oc-select></oc-select>
@@ -36,8 +37,6 @@
                     class="pr-2" alt="add-icon">Add Category
             </span>
         </div> -->
-        <oc-app-category-select class="cold-md-9" [(predefinedValArr)]='appCategories' [(selectedValuesArr)]='selectedCats' (categoryCahnge) ='updateCategory()'>
-        </oc-app-category-select>
     </div>
 
     <div class="row form-group">
