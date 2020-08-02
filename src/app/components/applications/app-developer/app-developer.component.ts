@@ -24,6 +24,8 @@ export class AppDeveloperComponent implements OnInit {
 
   selectedChartField = "downloads";
 
+  downloadUrl = "./assets/img/cloud-download.svg";
+
   constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router) {
 
     var downloadObj = {
