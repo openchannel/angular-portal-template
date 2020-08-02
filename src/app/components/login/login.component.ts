@@ -12,12 +12,16 @@ export class LoginComponent implements OnInit {
 
   signupUrl = "/signup";
   forgotPwdUrl = "/forgot-password";
+  successLoginFwdUrl = "/app-developer";
   signIn = new SellerSignin();
 
   constructor(private oauthService : OauthService,private router: Router
   ) { }
 
   ngOnInit(): void {
+    if (localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true') {
+        this.router.navigateByUrl(this.successLoginFwdUrl);        
+    }
   }
 
   login(event) {
@@ -29,10 +33,22 @@ export class LoginComponent implements OnInit {
       this.signIn.clientId = environment.client_id;
       this.signIn.clientSecret = environment.client_secret;
       this.oauthService.signIn(this.signIn).subscribe(res => {
-        localStorage.setItem("access_token",res.access_token);
-          this.router.navigateByUrl("/app-developer");
+      this.saveUserAfterLoginSuccess(res);
+      this.router.navigateByUrl(this.successLoginFwdUrl);
       });
     }
   }
 
+   /**
+    *  Save user details after login successful
+    * @param res 
+    */
+   saveUserAfterLoginSuccess(res){
+    localStorage.setItem("access_token",res.access_token);
+    if(this.signIn.isChecked){
+      localStorage.setItem("rememberMe","true");
+    }else {
+      localStorage.setItem("rememberMe","false");
+    }
+   }
 }
