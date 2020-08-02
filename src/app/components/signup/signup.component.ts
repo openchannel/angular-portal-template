@@ -37,17 +37,15 @@ export class SignupComponent implements OnInit {
   }
   
   signup(event) {
-    console.log(event.submitter);
-    if(event.submitter){
-      this.requestObj.developerAccount.name = event.submitter.form[0].value;
-      this.requestObj.developer.name = event.submitter.form[1].value;
-      this.requestObj.developerAccount.email = event.submitter.form[2].value;
-      this.requestObj.extra.password = event.submitter.form[3].value;
+    if(event === true){
+      this.requestObj.developerAccount.name = this.signupModel.uname;
+      this.requestObj.developer.name = this.signupModel.company;
+      this.requestObj.developerAccount.email = this.signupModel.email;
+      this.requestObj.extra.password = this.signupModel.password;
       this.sellerService.signup(this.requestObj).subscribe(res => {
         this.notificationService.showSuccess("Your account is created successfully!");
         this.router.navigateByUrl(this.loginUrl);
       });
-    }
+    }    
   }
-
 }

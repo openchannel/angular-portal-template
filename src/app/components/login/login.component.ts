@@ -23,13 +23,13 @@ export class LoginComponent implements OnInit {
   login(event) {
     console.log(event);
     if(event.submitter){
-      this.signIn.email = event.submitter.form[0].value;
-      this.signIn.password = event.submitter.form[1].value;
+      this.signIn.email = this.signIn.email;
+      this.signIn.password = this.signIn.password;
       this.signIn.grant_type = "password";
       this.signIn.clientId = environment.client_id;
       this.signIn.clientSecret = environment.client_secret;
       this.oauthService.signIn(this.signIn).subscribe(res => {
-        sessionStorage.setItem("access_token",res.access_token);
+        localStorage.setItem("access_token",res.access_token);
           this.router.navigateByUrl("/app-developer");
       });
     }
