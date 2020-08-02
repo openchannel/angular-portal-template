@@ -27,7 +27,8 @@ import { AppDeveloperComponent } from './components/applications/app-developer/a
 import { AppNewComponent } from './components/applications/app-new/app-new.component';
 import { environment } from 'src/environments/environment';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
-
+import 'froala-editor/js/plugins.pkgd.min.js';
+import 'froala-editor/js//plugins/code_view.min.js';
 
 @NgModule({
   declarations: [

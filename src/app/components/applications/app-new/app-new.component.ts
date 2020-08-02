@@ -5,6 +5,8 @@ import FroalaEditor from 'froala-editor';
 import { CommonService } from 'src/app/shared/services/common-service';
 import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
 import { SellerAppService } from 'oc-ng-common-service'
+import { DialogService } from 'src/app/shared/services/dialog.service';
+import { OcPopupComponent } from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-app-new',
@@ -21,7 +23,7 @@ export class AppNewComponent implements OnInit {
   videoUrl = '';
   
   defaultFileIconUrl = "https://drive.google.com/u/0/uc?id=1vDDzbS--o_UIgXFE_LmMfVmSAKuprCyb&export=download";
-  appCategories = ["cat1","cat2","cat3"];
+  appCategories = [{key : "cat1", value : "cat1"},{key : "cat2",value :"cat2"},{key : "cat3",value :"cat3"}];
   selectedCats:string[] = [];
 
   isSaveInPrcess = false;
@@ -29,7 +31,8 @@ export class AppNewComponent implements OnInit {
   constructor(public sanitizer: DomSanitizer,
     private commonservice: CommonService,
     private notificationService : NotificationService,
-    private sellerAppService : SellerAppService) { }
+    private sellerAppService : SellerAppService,
+    private dialogService: DialogService) { }
 
   ngOnInit(): void {
     this.appDetails.customData = new SellerAppCustomDataModel();
@@ -65,6 +68,16 @@ export class AppNewComponent implements OnInit {
   }
   
   saveNewApp(){
+    this.prepareFinalData();
+    this.isSaveInPrcess = true;
+    this.sellerAppService.saveApplication(this.appDetails).subscribe((res) => {
+      this.isSaveInPrcess = false;
+    },(err) => {
+      this.isSaveInPrcess = false;
+    });
+  }
+
+  prepareFinalData(){
     let iconFile = (this.icons && this.icons.length > 0)? this.icons[0] : null;
     if(iconFile){
       this.appDetails.customData.icon = iconFile.fileUrl;
@@ -74,12 +87,7 @@ export class AppNewComponent implements OnInit {
       let productImages = this.productImages.map(pImage => pImage.fileUrl);
       this.appDetails.customData.product__images = productImages;
     }
-    this.isSaveInPrcess = true;
-    this.sellerAppService.saveApplication(this.appDetails).subscribe((res) => {
-      this.isSaveInPrcess = false;
-    },(err) => {
-      this.isSaveInPrcess = false;
-    });
+    this.appDetails.customData.category=this.selectedCats;
   }
 
   /**
@@ -103,12 +111,33 @@ export class AppNewComponent implements OnInit {
       }
       return;
     }
-    this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
-      this.isSaveInPrcess = false;
-    },(err) => {
-      this.isSaveInPrcess = false;
+    this.prepareFinalData();
+    this.dialogService.showConfirmPopup(OcPopupComponent as Component, "Warning", 
+      "secondary", "Save as Draft", "Confirm",
+      "Submit this app to the Marketplace now?","","You can keep this app as draft",()=>{
+        this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
+          this.isSaveInPrcess = false;
+          this.dialogService.modalService.dismissAll();
+        },(err) => {
+          this.isSaveInPrcess = false;
+          this.dialogService.modalService.dismissAll();
+        });
+    }, ()=>{
+      this.saveNewApp();
+      this.dialogService.modalService.dismissAll();
     });
   }
 
+  public options: Object = {
+    charCounterCount: false,
+    toolbarButtons:   ['paragraphStyle','bold', 'italic', 'strikeThrough','textColor','backgroundColor','insertLink', 'formatOL', 'formatUL', 'outdent', 'indent','codeView'  ],
+    toolbarButtonsXS: ['paragraphStyle','bold', 'italic', 'strikeThrough','textColor','backgroundColor','insertLink', 'formatOL', 'formatUL', 'outdent', 'indent','codeView'  ],
+    toolbarButtonsSM: ['paragraphStyle','bold', 'italic', 'strikeThrough','textColor','backgroundColor','insertLink', 'formatOL', 'formatUL', 'outdent', 'indent','codeView'  ],
+    toolbarButtonsMD: ['paragraphStyle','bold', 'italic', 'strikeThrough','textColor','backgroundColor','insertLink', 'formatOL', 'formatUL', 'outdent', 'indent','codeView'  ],
+    key:'wFE7nG5G4G3H4A9C5eMRPYf1h1REb1BGQOQIc2CDBREJImA11C8D6B5B1G4F3F2F3C7',
+    attribution: false,
+    quickInsertTags: []
+
+  };
   
 }

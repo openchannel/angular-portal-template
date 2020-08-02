@@ -34,11 +34,11 @@
             <div class="col-md-9">           
                 <oc-app-category-select class="cold-md-9" 
                     [(predefinedValArr)]='appCategories' 
-                    [(selectedValuesArr)]='appDetails.customData.category' 
+                    [(selectedValuesArr)]='selectedCats' 
                     (categoryCahnge) ='updateCategory()'
                     name="appCategory"
                     #appCategory="ngModel" 
-                    [ngModel]="appDetails.customData.category"   
+                    [ngModel]="selectedCats"   
                     ngDefaultControl
                     required="required"
                 >
@@ -113,9 +113,9 @@
                 <oc-label [text]="getValue('Summary')"></oc-label>
             </div>
             <div class="col-md-9 pl-0 pr-1">
-                <textarea [froalaEditor]  
+                <div [froalaEditor]="options"   
                 [(froalaModel)]="appDetails.customData.summary">
-                </textarea>
+            </div>
             </div>
         </div>
         <div class="row form-group mb-5">
