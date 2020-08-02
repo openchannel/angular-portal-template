@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OauthService, SellerSignin } from 'oc-ng-common-service';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ export class LoginComponent implements OnInit {
   forgotPwdUrl = "/forgot-password";
   signIn = new SellerSignin();
 
-  constructor(private oauthService : OauthService
+  constructor(private oauthService : OauthService,private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -28,7 +29,8 @@ export class LoginComponent implements OnInit {
       this.signIn.clientId = environment.client_id;
       this.signIn.clientSecret = environment.client_secret;
       this.oauthService.signIn(this.signIn).subscribe(res => {
-          console.log(res);
+        sessionStorage.setItem("access_token",res.access_token);
+          this.router.navigateByUrl("/app-developer");
       });
     }
   }
