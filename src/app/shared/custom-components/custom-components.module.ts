@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ImageFileValidatorDirective } from './image-file-validator.directive';
 import { LoaderComponent } from './loader/loader.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
+import { OcCommonLibModule } from 'oc-ng-common-component';
 
 @NgModule({
    declarations: [
@@ -21,7 +22,8 @@ import { ImageCropperModule } from 'ngx-image-cropper';
       CommonModule,
       NgbModule,
       FormsModule,
-      ImageCropperModule
+      ImageCropperModule,
+      OcCommonLibModule
    ],
    exports: [
       LoaderComponent,

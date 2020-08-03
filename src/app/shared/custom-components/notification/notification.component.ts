@@ -1,11 +1,12 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { NotificationService } from './notification.service';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
   styleUrls: ['./notification.component.scss'],
-  host: {'[class.ngb-toasts]': 'true'}
+  host: {'[class.ngb-toasts]': 'true'},
+  encapsulation: ViewEncapsulation.None
 })
 export class NotificationComponent implements OnInit {
 
@@ -14,6 +15,10 @@ export class NotificationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  getValue(value) {
+    return value;
+  }
+  
   hideErrors() : void {    
     this.notificationService.hideErrors();
   };
