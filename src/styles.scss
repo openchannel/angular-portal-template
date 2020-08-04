@@ -19,3 +19,14 @@
 .footer-divider{
   border-top: 1px solid $info;
 }
+
+.fr-box.fr-basic{
+    border-radius: 4px 4px 0 0;
+    -moz-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    height: 248px;
+    .fr-wrapper {
+      border: 1px solid $info;
+      height: 196px;
+  }
+}

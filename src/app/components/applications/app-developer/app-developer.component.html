@@ -11,7 +11,7 @@
         </div>
 
         <div class="row app-manage-card">
-            <div class="col-md px-0">
+            <div class="col-md-9 px-0 mr-3">
                 <div class="time-selection" [ngClass]="{
                     active: period === 'month'
                   }">
@@ -33,12 +33,12 @@
                 </div>
 
             </div>
-            <!-- <div class="col-md-auto px-0"> -->
+            <div class="col-md px-0">
             <!-- <div class="time-selection active"> -->
             <oc-select [selectValArr]="fields" [(value)]="selectedChartField" (valueChange)="getChartStatistics()">
             </oc-select>
             <!-- </div> -->
-            <!-- </div> -->
+            </div>
         </div>
 
         <div class="my-3" *ngIf="!isChartProcessing">
