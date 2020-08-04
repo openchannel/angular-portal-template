@@ -22,7 +22,11 @@ export class AppNewComponent implements OnInit {
   appDetails:SellerAppDetailsModel = new SellerAppDetailsModel();
   videoUrl = '';
   
-  defaultFileIconUrl = "https://drive.google.com/u/0/uc?id=1vDDzbS--o_UIgXFE_LmMfVmSAKuprCyb&export=download";
+  defaultFileIconUrl = "./assets/img/app-icon.svg";
+  closeIconUrl = "./assets/img/close-icon.svg";
+  addIconUrl = "./assets/img/add-icon.svg";
+  uploadIconUrl = "./assets/img/upload-icon.svg";
+
   appCategories = [{key : "cat1", value : "cat1"},{key : "cat2",value :"cat2"},{key : "cat3",value :"cat3"}];
   selectedCats:string[] = [];
 
