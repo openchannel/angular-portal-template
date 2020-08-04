@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import {SellerSignup, SellerService } from 'oc-ng-common-service';
+import {SellerSignup, SellerService, AuthenticationService, OauthService, SellerSignin } from 'oc-ng-common-service';
 import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-signup',
@@ -28,7 +30,7 @@ export class SignupComponent implements OnInit {
       "password": ""
   }
   }; 
-  constructor(private sellerService : SellerService,private notificationService: NotificationService,private router: Router) {
+  constructor(private sellerService : SellerService,private notificationService: NotificationService,private router: Router,private authenticationService: AuthenticationService,private oauthService: OauthService ) {
      this.signupModel = new SellerSignup();
    }
 
@@ -46,7 +48,18 @@ export class SignupComponent implements OnInit {
       this.sellerService.signup(this.requestObj).subscribe(res => {
         this.inProcess =false;
         this.notificationService.showSuccess("Your account is created successfully!");
-        this.router.navigateByUrl(this.loginUrl);
+        var signInModel  = new SellerSignin();
+        signInModel.email = this.signupModel.email;
+        signInModel.password = this.signupModel.password;
+        signInModel.grant_type = 'password';
+        signInModel.clientId = environment.client_id;
+        signInModel.clientSecret = environment.client_secret;      
+        this.inProcess = true;
+        this.oauthService.signIn(signInModel).subscribe( (res) => {
+          this.authenticationService.saveUserAfterLoginSuccess(res,signInModel);
+          this.authenticationService.saveUserprofileInformation();
+          this.inProcess = false;
+        });
       },res => {
         this.inProcess =false;
       });
