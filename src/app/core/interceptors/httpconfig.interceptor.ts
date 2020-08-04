@@ -44,7 +44,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                     this.router.navigate(['/login']);   
                     localStorage.clear();    
                 }
-                else if (response.status == 403) {
+                if (response.status == 403) {
                     this.notificationService.showError([{ error: '403 Forbidden: Access is denied' }]);
                 } else if (response.error && response.error['validation-errors']) {
                     this.notificationService.showError(response.error['validation-errors']);
