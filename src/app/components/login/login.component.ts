@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { OauthService, SellerSignin } from 'oc-ng-common-service';
+import { OauthService, SellerSignin, SellerService } from 'oc-ng-common-service';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 
@@ -17,13 +17,13 @@ export class LoginComponent implements OnInit {
   signIn = new SellerSignin();
   inProcess = false;
 
-  constructor(private oauthService : OauthService,private router: Router
+  constructor(private oauthService : OauthService,private router: Router,private sellerService : SellerService
   ) { }
 
   ngOnInit(): void {
-    if (localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true') {
-        this.router.navigateByUrl(this.successLoginFwdUrl);        
-    }
+    if (localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' && localStorage.getItem("access_token")) {
+        this.saveUserprofileInformation();
+      }
   }
 
   login(event) {
@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
       this.inProcess = true;
       this.oauthService.signIn(this.signIn).subscribe(res => {
       this.saveUserAfterLoginSuccess(res);
-      this.router.navigateByUrl(this.successLoginFwdUrl);
+      this.saveUserprofileInformation();  
       },res => {
         this.inProcess = false;
       });
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
   }
 
    /**
-    *  Save user details after login successful
+    *  Save user details after login successful.
     * @param res 
     */
    saveUserAfterLoginSuccess(res){
@@ -55,5 +55,19 @@ export class LoginComponent implements OnInit {
     }else {
       localStorage.setItem("rememberMe","false");
     }
+   }
+
+   /**
+    * This method is responsible for save user profile information. 
+    */
+   saveUserprofileInformation(){
+      this.sellerService.getUserProfileDetails().subscribe(res => {
+          if (res) {
+            localStorage.setItem("email",res.email);
+          }
+          this.router.navigateByUrl(this.successLoginFwdUrl);
+      },res => {
+        this.inProcess = false;
+      });
    }
 }

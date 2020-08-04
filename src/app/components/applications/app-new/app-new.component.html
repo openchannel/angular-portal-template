@@ -13,7 +13,7 @@
 
         <div class="row form-group mt-5">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('App Name')"></oc-label>
+                <oc-label [text]="getValue('App Name')" [required]="true"></oc-label>
                 <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
                     alt="info-icon">
             </div>
@@ -29,7 +29,7 @@
 
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Category')"></oc-label>
+                <oc-label [text]="getValue('Category')" [required]="true"></oc-label>
             </div>
             <div class="col-md-9 pl-0 ">           
                 <oc-app-category-select class="cold-md-9" 

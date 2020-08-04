@@ -8,15 +8,21 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
+  sellerName : string = null;
   constructor(public router:Router){
-
+    console.log("header component loaded.");
+    this.displayUserInfo();
   }
 
   ngOnInit(): void {
   }
 
 
-
+  displayUserInfo(){
+      if (localStorage.getItem("email")) {
+        this.sellerName = localStorage.getItem("email");
+      }
+  }
 
 
 }
