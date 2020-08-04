@@ -10,9 +10,9 @@ export class HeaderComponent implements OnInit {
 
   sellerName : string = null;
   constructor(public router:Router){
-    console.log("header component loaded.");
-    this.displayUserInfo();
-  }
+ //   console.log("header component loaded.");
+     this.displayUserInfo();
+}
 
   ngOnInit(): void {
   }
@@ -24,5 +24,9 @@ export class HeaderComponent implements OnInit {
       }
   }
 
+  logout(){
+    localStorage.clear();
+    this.router.navigateByUrl("/login");
+  }
 
 }
