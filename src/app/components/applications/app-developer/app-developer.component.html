@@ -40,7 +40,10 @@
             <!-- </div> -->
             <!-- </div> -->
         </div>
-
+        <div class="my-3" *ngIf="isChartProcessing">
+            <div class="row chart-card" style="min-height: 375px;">
+            </div>
+        </div>
         <div class="my-3" *ngIf="!isChartProcessing">
             <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count" [downloadUrl]="downloadUrl"></oc-chart>
         </div>
