@@ -11,11 +11,11 @@ export class ForgotPasswordComponent implements OnInit {
 
   signupUrl = "/signup";
   loginUrl = "/login";
-  companyLogoUrl = "./assets/img/logo-company.png";
+  companyLogoUrl = "./assets/img/logo-company.svg";
   forgotPasswordDoneIconPath = "./assets/img/forgot-password-complete-icon.svg";
   forgotPwdPageState: boolean = true;
   constructor(private sellerService: SellerService,private router: Router) { }
-
+  inProcess = false;
   ngOnInit(): void {
   }
 
@@ -24,8 +24,12 @@ export class ForgotPasswordComponent implements OnInit {
     if (event.submitter) {
       var email = event.submitter.form[0].value;
       if (email && email!="") {
+        this.inProcess = true;
         this.sellerService.resetForgotPassword(email).subscribe(res => {
           this.forgotPwdPageState = false; 
+          this.inProcess = false;
+      },res => {
+        this.inProcess = false;
       });  
       }else {
           this.router.navigateByUrl(this.loginUrl);

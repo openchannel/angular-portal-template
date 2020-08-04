@@ -24,7 +24,7 @@
     {{ fieldError.field | titlecase | camelcase }}: {{ fieldError.message }}
   </li>
   <div class="toast-footer">
-    <oc-button [type]="'link'" [text]="'Dismiss'"></oc-button>
+    <oc-button [type]="'link'" [text]="'Dismiss'" (click)="hideFieldErrors()"></oc-button>
   </div>
 </ngb-toast>
 
@@ -38,7 +38,7 @@
 >
   <li [innerHTML]="message.message"></li>
   <div class="toast-footer">
-    <oc-button [type]="'link'" [text]="'Dismiss'"></oc-button>
+    <oc-button [type]="'link'" [text]="'Dismiss'" (click)="hideSuccessMessage()"></oc-button>
   </div>
 </ngb-toast>
 

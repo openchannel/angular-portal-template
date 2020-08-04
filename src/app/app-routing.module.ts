@@ -13,11 +13,12 @@ import { AppListComponent } from './components/applications/app-list/app-list.co
 import { AppNewComponent } from './components/applications/app-new/app-new.component';
 
 const routes: Routes = [
-  {
-    path: '', redirectTo: '', pathMatch: 'full', component: CommonLayoutComponent, children: [
-      { path: '', component: HomeComponent }
-    ]
-  },
+  //{
+  //   path: '', redirectTo: '', pathMatch: 'full', component: CommonLayoutComponent, children: [
+  //     { path: '', component: HomeComponent }
+  //   ]
+  // },
+  { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'signup', component: SignupComponent },

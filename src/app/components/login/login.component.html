@@ -1,3 +1,4 @@
 <div class="bg-container pt-5">
-    <oc-login [loginModel]="signIn" [forgotPwdUrl]="forgotPwdUrl" [signupUrl]="signupUrl" (submit)="login($event)"></oc-login>
+    <oc-login [loginModel]="signIn" [forgotPwdUrl]="forgotPwdUrl" [signupUrl]="signupUrl" [companyLogoUrl]="companyLogoUrl" 
+    (submit)="login($event)" [process]="inProcess"></oc-login>
 </div>

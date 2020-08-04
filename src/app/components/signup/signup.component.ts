@@ -11,10 +11,10 @@ import { Router } from '@angular/router';
 export class SignupComponent implements OnInit {
 
   loginUrl = "/login";
-  companyLogoUrl = "./assets/img/logo-company.png";
+  companyLogoUrl = "./assets/img/logo-company.svg";
   termsAndConditionPageUrl = "https://my.openchannel.io/terms-of-service";
   dataProcessingPolicyUrl = "https://my.openchannel.io/data-processing-policy";
-
+  inProcess = false;
   signupModel :SellerSignup;
   requestObj : any =  {
     "developer":{
@@ -42,9 +42,13 @@ export class SignupComponent implements OnInit {
       this.requestObj.developer.name = this.signupModel.company;
       this.requestObj.developerAccount.email = this.signupModel.email;
       this.requestObj.extra.password = this.signupModel.password;
+      this.inProcess = true;
       this.sellerService.signup(this.requestObj).subscribe(res => {
+        this.inProcess =false;
         this.notificationService.showSuccess("Your account is created successfully!");
         this.router.navigateByUrl(this.loginUrl);
+      },res => {
+        this.inProcess =false;
       });
     }    
   }
