@@ -32,11 +32,10 @@
                     <li class="nav-item dropdown" ngbDropdown>
                         <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
-                            {{ this.sellerName ? this.sellerName : 'My Profile' }}
+                            <!-- {{ this.sellerName ? this.sellerName : 'My Profile' }} -->
+                              My Profile
                         </a>
                         <div class="dropdown-menu" ngbDropdownMenu  aria-labelledby="navbarDropdown" *ngIf="this.sellerName != null">
-                            <!-- <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a> -->
                             <a class="dropdown-item" [routerLink]="" (click)="logout()">Logout</a>
                         </div>
                     </li>
