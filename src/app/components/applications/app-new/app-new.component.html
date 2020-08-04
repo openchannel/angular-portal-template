@@ -13,7 +13,7 @@
 
         <div class="row form-group mt-5">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('App Name')" [required]="true"></oc-label>
+                <oc-label [text]="getValue('App Name')" [required]="true" class="label-l"></oc-label>
                 <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
                     alt="info-icon">
             </div>
@@ -29,7 +29,7 @@
 
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Category')" [required]="true"></oc-label>
+                <oc-label [text]="getValue('Category')" [required]="true" class="label-l"></oc-label>
             </div>
             <div class="col-md-9 pl-0 ">           
                 <oc-app-category-select class="cold-md-9" 
@@ -58,7 +58,7 @@
 
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Website URL')"></oc-label>
+                <oc-label [text]="getValue('Website URL')" class="label-l"></oc-label>
             </div>
             <div class="col-md-9 pl-0 pr-1">
                 <oc-input websiteValidator 
@@ -72,7 +72,7 @@
 
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Video URL')" ></oc-label>
+                <oc-label [text]="getValue('Video URL')"  class="label-l"></oc-label>
             </div>
             <div class="col-md-9 pl-0 pr-1">
                 <oc-input websiteValidator 
@@ -90,7 +90,7 @@
 
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Icon')"></oc-label>
+                <oc-label [text]="getValue('Icon')" class="label-l"></oc-label>
                 <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
                     alt="info-icon">
             </div>
@@ -100,7 +100,7 @@
         </div>
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Product Images')"></oc-label>
+                <oc-label [text]="getValue('Product Images')" class="label-l"></oc-label>
                 <img src="https://drive.google.com/u/0/uc?id=1e9EzmKcn_nwaOqKmdOTA49R_Fthh8ddj&export=download" class="pl-1"
                     alt="info-icon">
             </div>
@@ -111,7 +111,7 @@
         </div>
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Summary')"></oc-label>
+                <oc-label [text]="getValue('Summary')" class="label-l"></oc-label>
             </div>
             <div class="col-md-9 pl-0 pr-1">
                 <div [froalaEditor]="options"   
