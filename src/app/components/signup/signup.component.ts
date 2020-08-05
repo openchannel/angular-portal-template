@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 export class SignupComponent implements OnInit {
 
   loginUrl = "/login";
-  companyLogoUrl = "./assets/img/logo-company.svg";
+  companyLogoUrl = "./assets/img/logo-company.png";
   termsAndConditionPageUrl = "https://my.openchannel.io/terms-of-service";
   dataProcessingPolicyUrl = "https://my.openchannel.io/data-processing-policy";
   inProcess = false;
