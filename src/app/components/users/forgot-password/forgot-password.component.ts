@@ -11,7 +11,7 @@ export class ForgotPasswordComponent implements OnInit {
 
   signupUrl = "/signup";
   loginUrl = "/login";
-  companyLogoUrl = "./assets/img/logo-company.svg";
+  companyLogoUrl = "./assets/img/logo-company.png";
   forgotPasswordDoneIconPath = "./assets/img/forgot-password-complete-icon.svg";
   forgotPwdPageState: boolean = true;
   constructor(private sellerService: SellerService,private router: Router) { }

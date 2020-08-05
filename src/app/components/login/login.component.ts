@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  companyLogoUrl = "./assets/img/logo-company.svg";
+  companyLogoUrl = "./assets/img/logo-company.png";
   signupUrl = "/signup";
   forgotPwdUrl = "/forgot-password";
   successLoginFwdUrl = "/app-developer";
