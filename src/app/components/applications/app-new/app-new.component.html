@@ -83,50 +83,64 @@
                     [(ngModel)]="appDetails.customData.video__url"
                     ngDefaultControl></oc-input>
                 <oc-error [control]="videoUrl"> </oc-error>
-                <div class="embed-responsive embed-responsive-16by9 video-box" *ngIf="this.appDetails?.customData?.video__url && videoUrl.valid">
+                <!-- <div class="embed-responsive embed-responsive-16by9 video-box" *ngIf="this.appDetails?.customData?.video__url && videoUrl.valid">
                     <iframe width="420" height="315" [src]="getyouTubeId()" frameborder="0" allowfullscreen ></iframe>
-                    <!-- <video width="420" height="315" src="https://www.youtube.com/watch?v=7bltudLEJGo"></video> -->
-                </div>
+                </div> -->
             </div>
         </div>
 
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-<oc-label [text]="getValue('Icon')" class="label-l"></oc-label>
+<oc-label [text]="getValue('Icon')" [required]="true" class="label-l"></oc-label>
                 <img src="assets/img/info-icon.svg" class="pl-1"
                     alt="info-icon">
             </div>
             <div class="col-md-9 pl-0 pr-1">
-                <oc-file-upload [uploadIconUrl]="uploadIconUrl" [(fileDetailArr)]="icons" [defaultFileIcon]="defaultFileIconUrl" fileType='singleImage'></oc-file-upload>
+                <oc-file-upload [uploadIconUrl]="uploadIconUrl"  
+                [(fileDetailArr)]="icons" [defaultFileIcon]="defaultFileIconUrl" 
+                fileType='singleImage'></oc-file-upload>
+                <!-- <oc-error [control]="iconImage"> </oc-error> -->
             </div>
         </div>
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Product Images')" class="label-l"></oc-label>
+                <oc-label [text]="getValue('Product Images')" [required]="true" class="label-l"></oc-label>
                 <img src="assets/img/info-icon.svg" class="pl-1"
                     alt="info-icon">
             </div>
             <div class="col-md-9 pl-0 pr-1">
-                <oc-file-upload [uploadIconUrl]="uploadIconUrl" [(fileDetailArr)]="productImages" [defaultFileIcon]="defaultFileIconUrl" fileType='multiImage'>
+                <oc-file-upload [uploadIconUrl]="uploadIconUrl" 
+                [(fileDetailArr)]="productImages" 
+                [defaultFileIcon]="defaultFileIconUrl" 
+                fileType='multiImage'
+                >
                 </oc-file-upload>
+                <!-- <input type="text" 
+                    required style="display: none;"> -->
+                <!-- <oc-error [control]="productImagesTool"> </oc-error> -->
             </div>
         </div>
         <div class="row form-group">
             <div class="col-md-3 pl-0">
-                <oc-label [text]="getValue('Summary')" class="label-l"></oc-label>
+                <oc-label [text]="getValue('Summary')" [required]="true" class="label-l"></oc-label>
             </div>
             <div class="col-md-9 pl-0 pr-1">
-                <div [froalaEditor]="options"   
-                [(froalaModel)]="appDetails.customData.summary">
-            </div>
+                <textarea [froalaEditor]="options"   
+                    [(froalaModel)]="appDetails.customData.summary"
+                    name="summary"
+                    #summary="ngModel" 
+                    [(ngModel)]="appDetails.customData.summary"
+                    ngDefaultControl
+                    required='required'></textarea>
+                <oc-error [control]="summary"> </oc-error>
             </div>
         </div>
         <div class="row form-group mb-5">
             <div class="col-md-3 pl-0">
-                <oc-button [type]="getValue('link')" [text]="getValue('Cancel')"></oc-button>
+                <oc-button [type]="getValue('link')" [text]="getValue('Cancel')" (click)="cancelNewApp()"></oc-button>
             </div>
             <div class="col-md pl-0">
-                <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')" (click)='saveNewApp()'></oc-button>
+                <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')" (click)='saveNewApp(newAppform)'></oc-button>
             </div>
             <div class="col-md text-right pr-1">
                 <oc-button [type]="getValue('primary')" [text]="getValue('Submit')" (click)="submitApp(newAppform)"></oc-button>

@@ -7,6 +7,7 @@ import { NotificationService } from 'src/app/shared/custom-components/notificati
 import { SellerAppService } from 'oc-ng-common-service'
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { OcPopupComponent } from 'oc-ng-common-component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-app-new',
@@ -27,7 +28,7 @@ export class AppNewComponent implements OnInit {
   addIconUrl = "./assets/img/add-icon.svg";
   uploadIconUrl = "./assets/img/upload-icon.svg";
 
-  appCategories = [{key : "cat1", value : "cat1"},{key : "cat2",value :"cat2"},{key : "cat3",value :"cat3"}];
+  appCategories = [{key : "Assembly", value : "Assembly"},{key : "Communication",value :"Communication"}];
   selectedCats:string[] = [];
 
   isSaveInPrcess = false;
@@ -36,7 +37,8 @@ export class AppNewComponent implements OnInit {
     private commonservice: CommonService,
     private notificationService : NotificationService,
     private sellerAppService : SellerAppService,
-    private dialogService: DialogService) { }
+    private dialogService: DialogService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.appDetails.customData = new SellerAppCustomDataModel();
@@ -71,11 +73,22 @@ export class AppNewComponent implements OnInit {
     return "";
   }
   
-  saveNewApp(){
+  saveNewApp(newAppform){
+    if(!newAppform.controls.appName.valid){
+      newAppform.controls.appName.markAsTouched();
+      try {
+        this.commonservice.scrollToFormInvalidField({ form: newAppform, adjustSize: 60 });
+      } catch (error) {
+        this.notificationService.showError([{ "message": "Please fill all required fields." }]);
+      }
+      return;
+    }
     this.prepareFinalData();
     this.isSaveInPrcess = true;
     this.sellerAppService.saveApplication(this.appDetails).subscribe((res) => {
       this.isSaveInPrcess = false;
+      this.router.navigate(['./app-developer']);
+      this.notificationService.showSuccess("Application saved successfully");
     },(err) => {
       this.isSaveInPrcess = false;
     });
@@ -106,6 +119,7 @@ export class AppNewComponent implements OnInit {
    * @param form 
    */
   submitApp(form){
+    this.prepareFinalData();
     if (!form.valid) {
       form.control.markAllAsTouched();
       try {
@@ -115,19 +129,20 @@ export class AppNewComponent implements OnInit {
       }
       return;
     }
-    this.prepareFinalData();
     this.dialogService.showConfirmPopup(OcPopupComponent as Component, "Warning", 
       "secondary", "Save as Draft", "Confirm",
       "Submit this app to the Marketplace now?","","You can keep this app as draft",()=>{
         this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();
+          this.router.navigate(['./app-developer']);
+          this.notificationService.showSuccess("Application submitted successfully");
         },(err) => {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();
         });
     }, ()=>{
-      this.saveNewApp();
+      this.saveNewApp(form);
       this.dialogService.modalService.dismissAll();
     });
   }
@@ -144,4 +159,12 @@ export class AppNewComponent implements OnInit {
 
   };
   
+
+  cancelNewApp(){
+    this.router.navigate(['./app-developer']);
+  }
+
+  updateProductFiles(productImages){
+    console.log("Updated : "+productImages);
+  }
 }
