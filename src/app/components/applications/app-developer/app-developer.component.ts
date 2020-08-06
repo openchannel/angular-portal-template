@@ -26,6 +26,7 @@ export class AppDeveloperComponent implements OnInit {
 
   downloadUrl = "./assets/img/cloud-download.svg";
   menuUrl = "./assets/img/dots-hr-icon.svg";
+  sortIcon = "./assets/img/dropdown-icon.svg";
 
   constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router) {
 
