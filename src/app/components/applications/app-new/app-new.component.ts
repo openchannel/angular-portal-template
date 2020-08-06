@@ -34,7 +34,7 @@ export class AppNewComponent implements OnInit {
   isSaveInPrcess = false;
   isFormSubmitted = false;
   customMsg = false;
-  iconMsg  = false;
+  iconMsg = false;
 
   completeIconUrl = "./assets/img/app-icon.svg";
   uploadingIconUrl = "./assets/img/uploading-icon.svg";
@@ -131,7 +131,7 @@ export class AppNewComponent implements OnInit {
       this.customMsg = true;
     }
 
-    if(!this.icons || this.icons.length < 1) {
+    if (!this.icons || this.icons.length < 1) {
       this.iconMsg = true;
     }
     if (!form.valid) {
@@ -183,13 +183,6 @@ export class AppNewComponent implements OnInit {
 
   updateProductFiles(productImages) {
     console.log("Updated : " + productImages);
-  }
-
-  changeCustomMsg($event) {
-
-      this.customMsg = $event;
-
-    console.log('Custom message    ', this.customMsg);
   }
 
 }
