@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
     <div class="container">
         <a class="navbar-brand" href="#">
-            <img src="assets/img/logo-company.svg" alt="brand-logo">
+            <img src="assets/img/logo-company.png" alt="brand-logo" class="company-logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,8 @@
                     <li class="nav-item dropdown" ngbDropdown>
                         <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
-                            {{ this.sellerName ? this.sellerName : 'My Profile' }}
+                            <!-- {{ this.sellerName ? this.sellerName : 'My Profile' }} -->
+                              My Profile
                         </a>
                         <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown"
                             *ngIf="this.sellerName != null">

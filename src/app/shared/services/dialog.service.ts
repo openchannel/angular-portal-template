@@ -54,6 +54,7 @@ export class DialogService {
         modalRef.componentInstance.cancelButtonText = cancelButtonText;
         modalRef.componentInstance.confirmButtonText = confirmButtonText;
         modalRef.componentInstance.confirmCallback = confirmCallback;
+        modalRef.componentInstance.closeIconUrl = "assets/img/close-icon.svg";
         if (cancelCallback) {
           modalRef.componentInstance.cancelCallback = cancelCallback;
         } else {
