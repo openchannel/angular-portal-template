@@ -48,18 +48,7 @@ export class SignupComponent implements OnInit {
       this.sellerService.signup(this.requestObj).subscribe(res => {
         this.inProcess =false;
         this.notificationService.showSuccess("Your account is created successfully!");
-        var signInModel  = new SellerSignin();
-        signInModel.email = this.signupModel.email;
-        signInModel.password = this.signupModel.password;
-        signInModel.grant_type = 'password';
-        signInModel.clientId = environment.client_id;
-        signInModel.clientSecret = environment.client_secret;      
-        this.inProcess = true;
-        this.oauthService.signIn(signInModel).subscribe( (res) => {
-          this.authenticationService.saveUserAfterLoginSuccess(res,signInModel);
-          this.authenticationService.saveUserprofileInformation();
-          this.inProcess = false;
-        });
+        this.router.navigateByUrl("/activate");
       },res => {
         this.inProcess =false;
       });

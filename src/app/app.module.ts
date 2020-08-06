@@ -34,6 +34,7 @@ import { ChangePasswordComponent } from './components/my-profile/change-password
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { EditAppDetailComponent } from './components/applications/edit-app-detail/edit-app-detail.component';
 import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
+import { ActivationComponent } from './components/activation/activation.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { EditAppComponent } from './components/applications/edit-app/edit-app.co
     ChangePasswordComponent,
     MyProfileComponent,
     EditAppDetailComponent,
-    EditAppComponent
+    EditAppComponent,
+    ActivationComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
