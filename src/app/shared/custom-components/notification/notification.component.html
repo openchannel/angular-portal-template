@@ -21,7 +21,7 @@
   (hide)="hideFieldErrors()"
 >
   <li *ngFor="let fieldError of notificationService.fieldErrors">
-    {{ fieldError.field | titlecase | camelcase }}: {{ fieldError.message }}
+    {{ fieldError.message }}
   </li>
   <div class="toast-footer">
     <oc-button [type]="'link'" [text]="'Dismiss'" (click)="hideFieldErrors()"></oc-button>

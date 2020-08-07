@@ -21,4 +21,7 @@ export class MyProfileComponent implements OnInit {
     this.selectedPage = pageName;
   }
 
+  goBack(){
+    history.back();
+  }
 }
