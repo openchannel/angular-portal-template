@@ -10,12 +10,15 @@ export class MyProfileComponent implements OnInit {
 
   selectedPage : 'myProfile'|'changePassword'  = 'myProfile';
   myProfile = new SellerMyProfile();
+  isProcessing=true;
 
   constructor() { }
 
   ngOnInit(): void {
+    
   }
 
+  
 
   gotoPage(pageName){
     this.selectedPage = pageName;
