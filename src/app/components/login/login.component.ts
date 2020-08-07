@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
 
   login(event) {
     console.log(event);
-    if(event.submitter){
+    if(event === true){
       this.signIn.email = this.signIn.email;
       this.signIn.password = this.signIn.password;
       this.signIn.grant_type = "password";
