@@ -29,6 +29,9 @@ import { environment } from 'src/environments/environment';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import 'froala-editor/js/plugins.pkgd.min.js';
 import 'froala-editor/js//plugins/code_view.min.js';
+import { GeneralProfileComponent } from './components/my-profile/general/general-profile.component';
+import { ChangePasswordComponent } from './components/my-profile/change-password/change-password.component';
+import { MyProfileComponent } from './components/my-profile/my-profile.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +48,10 @@ import 'froala-editor/js//plugins/code_view.min.js';
     AppListComponent,
     AppDetailComponent,
     AppDeveloperComponent,
-    AppNewComponent
+    AppNewComponent,
+    GeneralProfileComponent,
+    ChangePasswordComponent,
+    MyProfileComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

@@ -1,0 +1,27 @@
+<div class="col-md-12">
+    <form novalidate #myProfileform="ngForm">
+        <div class="row form-group mt-5">
+            <oc-label text="Name" class="col-md-12 label-m pl-0"></oc-label>
+                <!-- <img src="assets/img/info-icon.svg" class="pl-1" alt="info-icon"> -->
+            <oc-input name="sellerName" class="col-md-12 pl-0"
+                #sellerName="ngModel" 
+                [(ngModel)]="myProfile.name"   
+                ngDefaultControl
+                required="required"></oc-input>
+            <oc-error [control]="sellerName"> </oc-error>
+        </div>
+        <div class="row form-group mt-5">
+            <oc-label text="Email" class="col-md-12 label-m pl-0"></oc-label>
+                <!-- <img src="assets/img/info-icon.svg" class="pl-1" alt="info-icon"> -->
+            <oc-input name="sellerEmail" class="col-md-12 pl-0"
+                #sellerEmail="ngModel" 
+                [(ngModel)]="myProfile.email"   
+                ngDefaultControl
+                required="required"></oc-input>
+            <oc-error [control]="sellerEmail"> </oc-error>
+        </div>
+        <div class="col-md pl-0 pr-0">
+            <oc-button type="primary" text="Save" style="float: right;" (click)='saveGeneralProdile(myProfileform)'></oc-button>
+        </div>
+    </form>
+</div>
