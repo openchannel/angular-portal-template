@@ -32,6 +32,7 @@ import 'froala-editor/js//plugins/code_view.min.js';
 import { GeneralProfileComponent } from './components/my-profile/general/general-profile.component';
 import { ChangePasswordComponent } from './components/my-profile/change-password/change-password.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
+import { EditAppDetailComponent } from './components/applications/edit-app-detail/edit-app-detail.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { MyProfileComponent } from './components/my-profile/my-profile.component
     AppNewComponent,
     GeneralProfileComponent,
     ChangePasswordComponent,
-    MyProfileComponent
+    MyProfileComponent,
+    EditAppDetailComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
