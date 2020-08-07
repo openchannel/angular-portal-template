@@ -46,7 +46,7 @@ export class DialogService {
   showConfirmPopup(component: Component,title: string, type: string, 
       cancelButtonText:string, confirmButtonText: string,text: string, textVariable: string,
       informationalText: string, confirmCallback?, cancelCallback?){
-        const modalRef = this.modalService.open(component, { size: 'lg', backdrop: 'static' });
+        const modalRef = this.modalService.open(component, { size: 'lg submit-app', backdrop: 'static' });
         modalRef.componentInstance.title = title;
         modalRef.componentInstance.text = text;
         modalRef.componentInstance.textVariable = textVariable;

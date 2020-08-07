@@ -34,10 +34,11 @@
 
             </div>
             <div class="col-md px-0">
-            <!-- <div class="time-selection active"> -->
-            <oc-select [selectValArr]="fields" [(value)]="selectedChartField" (valueChange)="getChartStatistics()">
-            </oc-select>
-            <!-- </div> -->
+                <!-- <div class="time-selection active"> -->
+                <oc-select [selectValArr]="fields" [(value)]="selectedChartField" [ngModel]="selectedChartField"
+                    #selectedVal="ngModel" ngDefaultControl name="charfield" (valueChange)="getChartStatistics()">
+                </oc-select>
+                <!-- </div> -->
             </div>
         </div>
         <div class="my-3" *ngIf="isChartProcessing">
@@ -49,7 +50,7 @@
         </div>
 
         <div class="pb-1" *ngIf="!isAppProcessing">
-            <oc-menu-grid [menuUrl]="menuUrl" [appList]="applications" [sortIcon] = "sortIcon"></oc-menu-grid>
+            <oc-menu-grid [menuUrl]="menuUrl" [appList]="applications" [sortIcon]="sortIcon"></oc-menu-grid>
         </div>
 
     </div>
