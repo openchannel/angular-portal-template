@@ -16,6 +16,8 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   changePassword(changePasswordform){
-    
+    if(changePasswordform.valid){
+      
+    }
   }
 }
