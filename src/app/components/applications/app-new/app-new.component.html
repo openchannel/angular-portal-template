@@ -17,7 +17,7 @@
                 <img src="assets/img/info-icon.svg" class="pl-1"
                     alt="info-icon">
             </div>
-            <div class="col-md-9 pl-0 pr-1">
+            <div class="col-md-9 pl-1 pr-0">
                 <oc-input name="appName"
                     #appName="ngModel" 
                     [(ngModel)]="appDetails.name"   
@@ -31,7 +31,7 @@
             <div class="col-md-3 pl-0">
                 <oc-label [text]="getValue('Category')" [required]="true" class="label-l"></oc-label>
             </div>
-            <div class="col-md-9 pl-0 ">           
+            <div class="col-md-9 pl-1 pr-1">           
                 <oc-app-category-select class="cold-md-9" 
                     [(predefinedValArr)]='appCategories' 
                     [(selectedValuesArr)]='selectedCats' 
@@ -62,7 +62,7 @@
             <div class="col-md-3 pl-0">
                 <oc-label [text]="getValue('Website URL')" class="label-l"></oc-label>
             </div>
-            <div class="col-md-9 pl-0 pr-1">
+            <div class="col-md-9 pl-1 pr-0">
                 <oc-input websiteValidator 
                     name="websiteUrl"
                     #websiteUrl="ngModel" 
@@ -76,7 +76,7 @@
             <div class="col-md-3 pl-0">
                 <oc-label [text]="getValue('Video URL')"  class="label-l"></oc-label>
             </div>
-            <div class="col-md-9 pl-0 pr-1">
+            <div class="col-md-9 pl-1 pr-0">
                 <oc-input websiteValidator 
                     name="videoUrl"
                     #videoUrl="ngModel" 
@@ -95,7 +95,7 @@
                 <img src="assets/img/info-icon.svg" class="pl-1"
                     alt="info-icon">
             </div>
-            <div class="col-md-9 pl-0 pr-1">
+            <div class="col-md-9 pl-1 pr-0">
                 <oc-file-upload [uploadIconUrl]="uploadIconUrl"  
                 [(fileDetailArr)]="icons" [defaultFileIcon]="defaultFileIconUrl" 
                 fileType='singleImage'></oc-file-upload>
@@ -108,7 +108,7 @@
                 <img src="assets/img/info-icon.svg" class="pl-1"
                     alt="info-icon">
             </div>
-            <div class="col-md-9 pl-0 pr-1">
+            <div class="col-md-9 pl-1 pr-0">
                 <oc-file-upload [uploadIconUrl]="uploadIconUrl" 
                 [(fileDetailArr)]="productImages" 
                 [defaultFileIcon]="defaultFileIconUrl" 
@@ -124,7 +124,7 @@
             <div class="col-md-3 pl-0">
                 <oc-label [text]="getValue('Summary')" [required]="true" class="label-l"></oc-label>
             </div>
-            <div class="col-md-9 pl-0 pr-1">
+            <div class="col-md-9 pl-1 pr-0">
                 <textarea [froalaEditor]="options"   
                     [(froalaModel)]="appDetails.customData.summary"
                     name="summary"
@@ -135,14 +135,14 @@
                 <oc-error [control]="summary"> </oc-error>
             </div>
         </div>
-        <div class="row form-group mb-5">
+        <div class="row form-group my-5">
             <div class="col-md-3 pl-0">
-                <oc-button [type]="getValue('link')" [text]="getValue('Cancel')" (click)="cancelNewApp()"></oc-button>
+                <oc-button [type]="getValue('link')" [text]="getValue('Cancel')" (click)="cancelNewApp()" class="ml-n2"></oc-button>
             </div>
-            <div class="col-md pl-0">
+            <div class="col-md pl-1">
                 <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')" (click)='saveNewApp(newAppform)'></oc-button>
             </div>
-            <div class="col-md text-right pr-1">
+            <div class="col-md text-right pr-0">
                 <oc-button [type]="getValue('primary')" [text]="getValue('Submit')" (click)="submitApp(newAppform)"></oc-button>
             </div>
         </div>

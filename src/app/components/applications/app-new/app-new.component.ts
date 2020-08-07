@@ -131,7 +131,7 @@ export class AppNewComponent implements OnInit {
     }
     this.dialogService.showConfirmPopup(OcPopupComponent as Component, "Warning", 
       "secondary", "Save as Draft", "Confirm",
-      "Submit this app to the Marketplace now?","","You can keep this app as draft",()=>{
+      "Submit this app <br> to the Marketplace now?","","You can keep this app as draft",()=>{
         this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();

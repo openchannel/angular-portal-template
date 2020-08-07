@@ -4,6 +4,7 @@
   min-height: 100vh;
   background: url(assets/img/container-bg.svg) center center no-repeat;
   background-size: cover;
+  border-top: 1px solid rgb(201 213 234 / 0.50);
 }
 .bg-container.bg-s {
   min-height: 100%;
@@ -29,4 +30,9 @@
       border: 1px solid $info;
       height: 196px;
   }
+}
+
+.fr-box.fr-basic .fr-wrapper {
+  border: 1px solid $info !important;
+  border-bottom-color: $info !important;
 }
