@@ -27,6 +27,8 @@ export class AppDeveloperComponent implements OnInit {
   downloadUrl = "./assets/img/cloud-download.svg";
   menuUrl = "./assets/img/dots-hr-icon.svg";
   sortIcon = "./assets/img/dropdown-icon.svg";
+  editIcon = "./assets/img/delete.svg";
+  publishIcon = "./assets/img/publish.svg";
 
   constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router) {
 
@@ -91,4 +93,10 @@ export class AppDeveloperComponent implements OnInit {
   newApp() {
     this.router.navigateByUrl('app-new')
   }
+
+  changeField(value) {
+    this.selectedChartField = value;
+    this.getChartStatistics();
+  }
+
 }
