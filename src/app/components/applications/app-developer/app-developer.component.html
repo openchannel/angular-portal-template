@@ -35,9 +35,15 @@
             </div>
             <div class="col-md px-0">
                 <!-- <div class="time-selection active"> -->
-                <oc-select [selectValArr]="fields" [(value)]="selectedChartField" [ngModel]="selectedChartField"
-                    #selectedVal="ngModel" ngDefaultControl name="charfield" (valueChange)="getChartStatistics()">
-                </oc-select>
+                <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-outline-primary" id="dropdownBasic1"
+                        ngbDropdownToggle>{{selectedChartField}}</button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                        <button value="downloads" ngbDropdownItem (click)="changeField('downloads')">Downloads</button>
+                        <button value="views" ngbDropdownItem (click)="changeField('views')">Views</button>
+                    </div>
+                </div>
+
                 <!-- </div> -->
             </div>
         </div>
@@ -46,7 +52,8 @@
         </div>
 
         <div class="pb-1" *ngIf="!isAppProcessing">
-            <oc-menu-grid [menuUrl]="menuUrl" [appList]="applications" [sortIcon]="sortIcon"></oc-menu-grid>
+            <oc-menu-grid [menuUrl]="menuUrl" [appList]="applications" [sortIcon]="sortIcon" [editIcon]="editIcon"
+                [publishIcon]="publishIcon"></oc-menu-grid>
         </div>
 
     </div>
