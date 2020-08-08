@@ -11,7 +11,7 @@
         </div>
 
         <div class="row app-manage-card">
-            <div class="col-md-9 px-0 mr-3">
+            <div class="col-md-9 pl-0">
                 <div class="time-selection" [ngClass]="{
                     active: period === 'month'
                   }">
@@ -33,10 +33,10 @@
                 </div>
 
             </div>
-            <div class="col-md px-0">
+            <div class="col-md-3">
                 <!-- <div class="time-selection active"> -->
                 <div ngbDropdown class="d-inline-block">
-                    <button class="btn btn-outline-primary" id="dropdownBasic1"
+                    <button class="btn btn-secondary" id="dropdownBasic1"
                         ngbDropdownToggle>{{selectedChartField}}</button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                         <button value="downloads" ngbDropdownItem (click)="changeField('downloads')">Downloads</button>
@@ -48,7 +48,8 @@
             </div>
         </div>
         <div class="my-3">
-            <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count" [downloadUrl]="downloadUrl" [name]="period"></oc-chart>
+            <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count" [downloadUrl]="downloadUrl"
+                [name]="period"></oc-chart>
         </div>
 
         <div class="pb-1" *ngIf="!isAppProcessing">
