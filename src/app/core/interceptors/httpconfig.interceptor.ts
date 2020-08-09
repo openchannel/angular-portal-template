@@ -13,10 +13,12 @@ import { map, catchError } from 'rxjs/operators';
 import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
 import { LoaderService } from 'src/app/shared/services/loader.service';
 import { Router } from '@angular/router';
+import { OcErrorService } from 'oc-ng-common-component';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
-    constructor(private notificationService: NotificationService, private loaderService: LoaderService, private router: Router) { }
+    constructor(private notificationService: NotificationService, private loaderService: LoaderService
+        , private router: Router, private errorService: OcErrorService) { }
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const token: string = localStorage.getItem('access_token');
 
@@ -47,7 +49,8 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 if (response.status == 403) {
                     this.notificationService.showError([{ error: '403 Forbidden: Access is denied' }]);
                 } else if (response.error && response.error['validation-errors']) {
-                    this.notificationService.showError(response.error['validation-errors']);
+                    //this.notificationService.showError(response.error['validation-errors']);
+                    this.errorService.setServerErrorList(response.error['validation-errors']);
                 } else if (response.error.error_description) {
                     this.notificationService.showError([{ error: response.error.error_description }]);
                 } else if (response.error.message) {
