@@ -53,7 +53,7 @@
         </div>
 
         <div class="pb-1" *ngIf="!isAppProcessing">
-            <oc-menu-grid [menuUrl]="menuUrl" [appList]="applications" [sortIcon]="sortIcon" [editIcon]="editIcon"
+            <oc-menu-grid (menuClicked)="menuchange($event)" [menuUrl]="menuUrl" [appList]="applications" [sortIcon]="sortIcon" [editIcon]="editIcon"
                 [publishIcon]="publishIcon"></oc-menu-grid>
         </div>
 
