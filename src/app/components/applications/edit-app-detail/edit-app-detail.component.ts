@@ -24,7 +24,7 @@ export class EditAppDetailComponent implements OnInit {
 
   videoUrl = '';
 
-  defaultFileIconUrl = "./assets/img/app-icon.svg";
+  defaultFileIconUrl = "./assets/img/file-placeholder.svg";
   closeIconUrl = "./assets/img/close-icon.svg";
   addIconUrl = "./assets/img/add-icon.svg";
   uploadIconUrl = "./assets/img/upload-icon.svg";
@@ -172,7 +172,8 @@ export class EditAppDetailComponent implements OnInit {
     toolbarButtonsMD: ['paragraphStyle', 'bold', 'italic', 'strikeThrough', 'textColor', 'backgroundColor', 'insertLink', 'formatOL', 'formatUL', 'outdent', 'indent', 'codeView'],
     key: 'wFE7nG5G4G3H4A9C5eMRPYf1h1REb1BGQOQIc2CDBREJImA11C8D6B5B1G4F3F2F3C7',
     attribution: false,
-    quickInsertTags: []
+    quickInsertTags: [],
+    placeholderText: ''
 
   };
 
