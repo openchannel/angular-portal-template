@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyValuePairMapper, SellerAppsWrapper, ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel } from 'oc-ng-common-service';
-import { Router } from '@angular/router';
+import { KeyValuePairMapper, SellerAppsWrapper, ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel } from 'oc-ng-common-service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-edit-app',
@@ -12,6 +12,7 @@ export class EditAppComponent implements OnInit {
   dataSets = [];
   count;
 
+  appId:string;
   period = 'month';
 
   isChartProcessing = false;
@@ -31,7 +32,8 @@ export class EditAppComponent implements OnInit {
 
   constructor(public chartService: ChartService, 
     public appService: SellerAppService, 
-    public router: Router) {
+    public router: Router,
+    private route: ActivatedRoute) {
       var downloadObj = {
         key: "Downloads",
         value: "downloads"
@@ -45,13 +47,9 @@ export class EditAppComponent implements OnInit {
      }
 
   ngOnInit(): void {
-    this.appStatus.appCategory=["Communication", "Featured","Essential Apps"];
-    this.appStatus.appStatus="Draft";
-    this.appStatus.appName="Unicorn";
-    this.appStatus.appDescription="Collaborate with teammates anytime, anywhere";
-    this.appStatus.appLogoUrl="https://drive.google.com/u/0/uc?id=1KipwDw0K8xJC_StaAhsyDTEgcAoVHqDp&export=download";
-    this.appStatus.appSavedDate=1596811383535;
+    this.appId = this.route.snapshot.paramMap.get('appId');
     this.getChartStatistics();
+    this.getAppById();
   }
   getChartStatistics() {
 
@@ -62,7 +60,7 @@ export class EditAppComponent implements OnInit {
     var obj = {
       period: this.period,
       field: this.selectedChartField,
-
+      query:"{appId:"+this.appId+"}"
     }
     this.chartService.getStats(obj).subscribe((res) => {
 
@@ -84,5 +82,43 @@ export class EditAppComponent implements OnInit {
 
   cancelNewApp(){
     this.router.navigate(['./app-developer']);
+  }
+
+  getAppById(){
+    this.appService.getAppById(this.appId,'true').subscribe((res) => {
+      this.setAppDetailsAndAppStatus(res);
+    });
+  }
+
+  setAppDetailsAndAppStatus(appRes){
+    this.appDetails=new SellerAppDetailsModel();
+    this.appDetails.appId = appRes.appId;
+    this.appDetails.name = appRes.name;
+    let customData = new SellerAppCustomDataModel();
+    customData.category= appRes.customData.category;
+    customData.icon=appRes.customData.icon;
+    customData.product__images = appRes.customData.product__images;
+    customData.summary=appRes.customData.summary;
+    customData.video__url=appRes.customData.video__url;
+    customData.website__url=appRes.customData.website__url;
+    if(appRes.customData.icon__file){
+      customData.icon__file=[appRes.customData.icon__file];
+      customData.icon__file[0].fileUploadProgress=100;
+    }
+    if(appRes.customData.product__images__file){
+      customData.product__image__file=appRes.customData.product__images__file;
+      customData.product__image__file.forEach((pFile) => {
+        pFile.fileUploadProgress=100;
+      });
+    }
+    this.appDetails.customData=customData;
+
+    this.appStatus = new AppStatusDetails();
+    this.appStatus.appCategory=appRes.customData.category;
+    this.appStatus.appDescription=appRes.customData.summary;
+    this.appStatus.appLogoUrl=appRes.customData.icon;
+    this.appStatus.appName=appRes.name;
+    this.appStatus.appSavedDate=appRes.status?.lastUpdated;
+    this.appStatus.appStatus=appRes.status?.value;
   }
 }

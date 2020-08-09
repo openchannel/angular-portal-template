@@ -14,8 +14,8 @@ import { OcPopupComponent } from 'oc-ng-common-component';
 })
 export class EditAppDetailComponent implements OnInit {
 
-  icons: FileDetails[] = [];
-  productImages: FileDetails[] = [];
+  // icons: FileDetails[] = [];
+  // productImages: FileDetails[] = [];
 
   @Input() appDetails: SellerAppDetailsModel = new SellerAppDetailsModel();
 
@@ -30,7 +30,7 @@ export class EditAppDetailComponent implements OnInit {
   uploadIconUrl = "./assets/img/upload-icon.svg";
 
   appCategories = [{ key: "Assembly", value: "Assembly" }, { key: "Communication", value: "Communication" }];
-  selectedCats: string[] = [];
+  // selectedCats: string[] = [];
 
   isSaveInPrcess = false;
   isFormSubmitted = false;
@@ -46,9 +46,18 @@ export class EditAppDetailComponent implements OnInit {
     private dialogService: DialogService) { }
 
   ngOnInit(): void {
-    this.appDetails.customData = new SellerAppCustomDataModel();
-    this.appDetails.customData.category = [];
-    this.appDetails.customData.product__images = [];
+    if(!this.appDetails.customData){
+      this.appDetails.customData = new SellerAppCustomDataModel();
+      this.appDetails.customData.category = [];
+      this.appDetails.customData.product__images = [];
+      this.appDetails.customData.icon__file = [];
+      this.appDetails.customData.product__image__file=[];
+    }else{
+      this.appDetails.customData.icon__file = !this.appDetails.customData.icon__file ? [] :this.appDetails.customData.icon__file;
+      this.appDetails.customData.product__image__file = !this.appDetails.customData.product__image__file? [] : this.appDetails.customData.product__image__file;
+    }
+    // this.productImages=this.appDetails.customData.product__image__file;
+    // this.icons=[this.appDetails.customData.icon__file];
     FroalaEditor.DefineIcon('alert', { NAME: 'info' });
     FroalaEditor.RegisterCommand('alert', {
       title: 'Hello',
@@ -101,16 +110,19 @@ export class EditAppDetailComponent implements OnInit {
   }
 
   prepareFinalData() {
-    let iconFile = (this.icons && this.icons.length > 0) ? this.icons[0] : null;
+    let iconFile = (this.appDetails.customData.icon__file && this.appDetails.customData.icon__file.length > 0) ? this.appDetails.customData.icon__file[0] : null;
     if (iconFile) {
       this.appDetails.customData.icon = iconFile.fileUrl;
+    }else{
+      this.appDetails.customData.icon = null;
     }
-    let productImages = (this.productImages && this.productImages.length > 0) ? this.productImages : null;
+    let productImages = (this.appDetails.customData.product__image__file && this.appDetails.customData.product__image__file.length > 0) ? this.appDetails.customData.product__image__file : null;
     if (productImages && productImages.length > 0) {
-      let productImages = this.productImages.map(pImage => pImage.fileUrl);
+      let productImages = this.appDetails.customData.product__image__file.map(pImage => pImage.fileUrl);
       this.appDetails.customData.product__images = productImages;
+    }else{
+      this.appDetails.customData.product__images = [];
     }
-    this.appDetails.customData.category = this.selectedCats;
   }
 
   /**
@@ -127,11 +139,11 @@ export class EditAppDetailComponent implements OnInit {
   submitApp(form) {
     this.isFormSubmitted = true;
     this.prepareFinalData();
-    if (!this.productImages || this.productImages.length < 1) {
+    if (!this.appDetails.customData.product__image__file || this.appDetails.customData.product__image__file.length < 1) {
       this.customMsg = true;
     }
 
-    if (!this.icons || this.icons.length < 1) {
+    if (!this.appDetails.customData.icon__file || this.appDetails.customData.icon__file.length < 1) {
       this.iconMsg = true;
     }
     if (!form.valid) {

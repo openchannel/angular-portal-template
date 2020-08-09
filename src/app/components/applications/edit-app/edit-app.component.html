@@ -4,7 +4,7 @@
             <div class="container">
                 <img src="assets/img/arrow-left.svg" alt="arrow-icon">
                 <a href="/app-developer" class="font-m font-med pl-1">Back to Manage Apps</a>
-                <h1 class="mt-3">App Name</h1>
+                <h1 class="mt-3">{{appDetails.name}}</h1>
             </div>
         </div>
         <div class="row">
@@ -56,7 +56,12 @@
                         <oc-app-status-details [appStatus]="appStatus" ></oc-app-status-details>
                     </div>
                     <div class="col-md-10">
-                        <app-edit-app-detail [(appDetails)]=appDetails (saveOrSubmitApp)="gotoAppsList()" (cancelApp)="cancelNewApp()"></app-edit-app-detail>
+                        <div class="modal-header">
+                            Application Details
+                        </div>
+                        <div class="modal-body">
+                            <app-edit-app-detail [(appDetails)]=appDetails (saveOrSubmitApp)="gotoAppsList()" (cancelApp)="cancelNewApp()"></app-edit-app-detail>
+                        </div>
                     </div>
                 </div>
             </div>
