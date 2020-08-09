@@ -37,7 +37,8 @@
                 <!-- <div class="time-selection active"> -->
                 <div ngbDropdown class="d-inline-block">
                     <button class="btn btn-secondary" id="dropdownBasic1"
-                        ngbDropdownToggle>{{selectedChartField}}</button>
+                        ngbDropdownToggle>{{selectedChartField == 'views' ? 'Views':'Downloads'}}                                                
+                    </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                         <button value="downloads" ngbDropdownItem (click)="changeField('downloads')">Downloads</button>
                         <button value="views" ngbDropdownItem (click)="changeField('views')">Views</button>
