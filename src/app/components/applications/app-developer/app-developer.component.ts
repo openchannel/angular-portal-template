@@ -158,7 +158,7 @@ export class AppDeveloperComponent implements OnInit {
           });
         });
     } else if (this.menuItems.menu === 'edit') {
-      this.router.navigateByUrl('app-new');
+      this.router.navigateByUrl('edit-app/'+this.menuItems.appId);
     }
     console.log(this.menuItems);
   }
