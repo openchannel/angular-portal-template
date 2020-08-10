@@ -42,9 +42,18 @@ export class HttpConfigInterceptor implements HttpInterceptor {
             }),
             catchError((response: HttpErrorResponse) => {
                 this.loaderService.closeLoader(response.url);
+                    
                 if (response.status==401) {
-                    this.router.navigate(['/login']);   
-                    localStorage.clear();    
+                    //this is being invoked only from login page    
+                    if(response.url.endsWith("oauth/token")){
+                        this.errorService.setServerErrorList([{field:'email', 'message': "Wrong email"},
+                        {field:'password', 'message': "Wrong password"}]);   
+                        return throwError(response);
+                        //for all other screens 401 should redirect to login    
+                    }else{
+                        this.router.navigate(['/login']);   
+                        localStorage.clear();        
+                    }
                 }
                 if (response.status == 403) {
                     this.notificationService.showError([{ error: '403 Forbidden: Access is denied' }]);
