@@ -21,12 +21,13 @@
   border-top: 1px solid $info;
 }
 
+
+/** Flora Editor **/
 .fr-box{
   .second-toolbar{
     border-bottom:0px;
   }
 }
-
 .fr-toolbar {
   border: 1px solid $info !important;
 }
@@ -51,7 +52,6 @@
     border-bottom-right-radius: 0.25em;
   }
 }
-
 .fr-box.fr-basic .fr-wrapper {
   border: 1px solid $info !important;
   border-bottom-color: $info !important;
@@ -60,13 +60,12 @@
 .fr-box.fr-basic .fr-element {
   font-family: "Rubik Regular" !important;
   padding: 16px !important;
+  height: 100%;
   *{
     font-size: 14px;
   }
-
 }
-
-
+/** End Flora Editor **/
 
 // Dropdown menu style
 .dropdown-menu {

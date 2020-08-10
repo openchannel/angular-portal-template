@@ -88,7 +88,7 @@ export class EditAppDetailComponent implements OnInit {
     return "";
   }
 
-  saveNewApp(newAppform) {
+  saveNewApp(newAppform, callback?) {
     if (!newAppform.controls.appName.valid) {
       newAppform.controls.appName.markAsTouched();
       try {
@@ -96,16 +96,25 @@ export class EditAppDetailComponent implements OnInit {
       } catch (error) {
         this.notificationService.showError([{ "message": "Please fill all required fields." }]);
       }
+      if(callback){
+        callback();
+      }
       return;
     }
     this.prepareFinalData();
-    this.isSaveInPrcess = true;
+    this.isSaveInPrcess = callback ? false : true;
     this.sellerAppService.saveApplication(this.appDetails).subscribe((res) => {
       this.isSaveInPrcess = false;
       this.saveOrSubmitApp.emit();
       this.notificationService.showSuccess("Application saved successfully");
+      if(callback){
+        callback();
+      }
     }, (err) => {
       this.isSaveInPrcess = false;
+      if(callback){
+        callback();
+      }
     });
   }
 
@@ -158,7 +167,7 @@ export class EditAppDetailComponent implements OnInit {
 
 
 
-    this.dialogService.showAppConfirmPopup(OcPopupComponent as Component, "Warning",
+    const modalRef =  this.dialogService.showAppConfirmPopup(OcPopupComponent as Component, "Warning",
       "newApp", "Save as Draft", "Confirm",
       "Submit this app <br> to the Marketplace now?", "", "You can keep this app as draft", () => {
         this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
@@ -171,8 +180,10 @@ export class EditAppDetailComponent implements OnInit {
           this.dialogService.modalService.dismissAll();
         });
       }, () => {
-        this.saveNewApp(form);
-        this.dialogService.modalService.dismissAll();
+        modalRef.componentInstance.inProcess2 = true;
+        this.saveNewApp(form, res => {          
+          this.dialogService.modalService.dismissAll();
+        });        
       });
   }
 

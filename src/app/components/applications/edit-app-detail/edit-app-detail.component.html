@@ -70,7 +70,7 @@
                 <oc-file-upload [uploadIconUrl]="uploadIconUrl" [(fileDetailArr)]="appDetails.customData.icon__file"
                     [defaultFileIcon]="defaultFileIconUrl" fileType='singleImage'></oc-file-upload>
                 <!-- <oc-error [control]="iconImage"> </oc-error> -->
-                <span *ngIf="iconMsg" class="invalid-feedback">
+                <span *ngIf="iconMsg && !appDetails.customData.icon__file.length" class="invalid-feedback">
                     Please fill out this field
                 </span>
             </div>
@@ -84,7 +84,7 @@
                 <oc-file-upload [uploadIconUrl]="uploadIconUrl" [(fileDetailArr)]="appDetails.customData.product__image__file"
                     [defaultFileIcon]="defaultFileIconUrl" fileType='multiImage'>
                 </oc-file-upload>
-                <span *ngIf="customMsg" class="invalid-feedback">
+                <span *ngIf="customMsg && !appDetails.customData.product__image__file.length" class="invalid-feedback">
                     Please fill out this field
                 </span>
                 <!-- <input type="text" 
