@@ -36,7 +36,7 @@ export class ChangePasswordComponent implements OnInit {
       this.changePassModel.password='';
       changePasswordform.reset();
     },(err)=>{
-
+      this.isSaveInProcess=false;
     },()=>{
       this.isSaveInProcess=false;
     })

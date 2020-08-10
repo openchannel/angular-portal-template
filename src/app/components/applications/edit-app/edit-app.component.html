@@ -1,0 +1,70 @@
+<div class="bg-container">
+    <div class="container">
+        <div class="bg-container bg-s py-7">
+            <div class="container">
+                <img src="assets/img/arrow-left.svg" alt="arrow-icon">
+                <a href="/app-developer" class="font-m font-med pl-1">Back to Manage Apps</a>
+                <h1 class="mt-3">{{appDetails.name}}</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row app-manage-card">
+                    <div class="col-md-9 px-0 mr-3">
+                        <div class="time-selection" [ngClass]="{
+                            active: period === 'month'
+                          }">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="month" value="month" name="name"
+                                    [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
+                                <label class="custom-control-label cursor-pointer" for="month">Month</label>
+                            </div>
+                        </div>
+                        <div class="time-selection" [ngClass]="{
+                            active: period ==='day'
+                          }">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" id="day" value="day" name="name"
+                                    [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
+                                <label class="custom-control-label cursor-pointer" for="day">Day</label>
+                            </div>
+        
+                        </div>
+        
+                    </div>
+                    <div class="col-md px-0">
+                        <!-- <div class="time-selection active"> -->
+                        <oc-select [selectValArr]="fields" [(value)]="selectedChartField" [ngModel]="selectedChartField"
+                            #selectedVal="ngModel" ngDefaultControl name="charfield" (valueChange)="getChartStatistics()">
+                        </oc-select>
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="my-3" *ngIf="isChartProcessing">
+                    <div class="row chart-card" style="min-height: 375px;">
+                    </div>
+                </div>
+                <div class="my-3" *ngIf="!isChartProcessing">
+                    <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count" [downloadUrl]="downloadUrl"></oc-chart>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-2">
+                        <oc-app-status-details [appStatus]="appStatus" ></oc-app-status-details>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="modal-header">
+                            Application Details
+                        </div>
+                        <div class="modal-body">
+                            <app-edit-app-detail [(appDetails)]=appDetails (saveOrSubmitApp)="gotoAppsList()" (cancelApp)="cancelNewApp()"></app-edit-app-detail>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

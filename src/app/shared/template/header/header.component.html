@@ -25,26 +25,27 @@
             <form class="form-inline my-2 my-lg-0">
                 <ul class="navbar-nav">
                     <li class="">
-                        <a class="nav-link" href="#"><img
-                                src="https://drive.google.com/u/0/uc?id=1y9s4CmEcNoEfTjsl9VYu0D0Jq7VUepJY&export=download"
+                        <a class="nav-link" href="#">
+                            <img src="assets/img/search-icon.svg"
                                 class="pr-1" alt="search-icon"> Search</a>
                     </li>
                     <li class="">
-                        <a class="nav-link" href="#"><img
-                                src="assets/img/notification-icon.svg"
-                                alt="icon"></a>
+                        <a class="nav-link" href="#"><img src="assets/img/notification-icon.svg" alt="icon"></a>
                     </li>
                     <li class="nav-item dropdown" ngbDropdown>
                         <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle >
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
                             <!-- {{ this.sellerName ? this.sellerName : 'My Profile' }} -->
-                              My Profile
+                            My Profile
                         </a>
                         <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown"
                             *ngIf="this.sellerName != null">
                             <!-- <a class="dropdown-item" href="#">Action</a> -->
-                            <a class="dropdown-item" href="/my-profile">My Profile</a> 
-                            <a class="dropdown-item" [routerLink]="" (click)="logout()">Logout</a>
+                            <a class="dropdown-item" href="/my-profile">Profile</a>
+                            <a class="dropdown-item" [routerLink]="" (click)="logout()">Logout
+                                <img src="assets/img/logout.svg"
+                                    class="pl-5" alt="logout">
+                            </a>
                         </div>
                     </li>
                 </ul>

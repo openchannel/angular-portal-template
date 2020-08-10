@@ -26,14 +26,14 @@ export class GeneralProfileComponent implements OnInit {
       this.myProfile=res;
       this.developerDetails= this.myProfile?.developerAccount;
     },(err)=>{
-
+      this.isProcessing=false;
     },()=>{
       this.isProcessing=false;
     })
   }
 
 
-  saveGeneralProdile(myProfileform){
+  saveGeneralProfile(myProfileform){
     if (!myProfileform.valid) {
       myProfileform.control.markAllAsTouched();
       try {
@@ -47,7 +47,7 @@ export class GeneralProfileComponent implements OnInit {
     this.sellerService.updateProfileDetails(this.myProfile).subscribe((res)=>{
 
     },(err)=>{
-
+      this.isSaveInProcess=false;
     },()=>{
       this.isSaveInProcess=false;
     });

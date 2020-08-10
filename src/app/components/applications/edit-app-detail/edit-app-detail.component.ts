@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FileDetails, SellerAppDetailsModel, CommonService, SellerAppService, SellerAppCustomDataModel } from 'oc-ng-common-service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
-import { DialogService } from 'src/app/shared/services/dialog.service';
+import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';;
 import { Router } from '@angular/router';
 import FroalaEditor from 'froala-editor';
 import { OcPopupComponent } from 'oc-ng-common-component';
+import { DialogService } from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-edit-app-detail',
@@ -14,23 +14,23 @@ import { OcPopupComponent } from 'oc-ng-common-component';
 })
 export class EditAppDetailComponent implements OnInit {
 
-  icons: FileDetails[] = [];
-  productImages: FileDetails[] = [];
+  // icons: FileDetails[] = [];
+  // productImages: FileDetails[] = [];
 
   @Input() appDetails: SellerAppDetailsModel = new SellerAppDetailsModel();
 
   @Output() saveOrSubmitApp = new EventEmitter<any>();
   @Output() cancelApp = new EventEmitter<any>();
-  
+
   videoUrl = '';
 
-  defaultFileIconUrl = "./assets/img/app-icon.svg";
+  defaultFileIconUrl = "./assets/img/file-placeholder.svg";
   closeIconUrl = "./assets/img/close-icon.svg";
   addIconUrl = "./assets/img/add-icon.svg";
   uploadIconUrl = "./assets/img/upload-icon.svg";
 
   appCategories = [{ key: "Assembly", value: "Assembly" }, { key: "Communication", value: "Communication" }];
-  selectedCats: string[] = [];
+  // selectedCats: string[] = [];
 
   isSaveInPrcess = false;
   isFormSubmitted = false;
@@ -46,9 +46,18 @@ export class EditAppDetailComponent implements OnInit {
     private dialogService: DialogService) { }
 
   ngOnInit(): void {
-    this.appDetails.customData = new SellerAppCustomDataModel();
-    this.appDetails.customData.category = [];
-    this.appDetails.customData.product__images = [];
+    if(!this.appDetails.customData){
+      this.appDetails.customData = new SellerAppCustomDataModel();
+      this.appDetails.customData.category = [];
+      this.appDetails.customData.product__images = [];
+      this.appDetails.customData.icon__file = [];
+      this.appDetails.customData.product__image__file=[];
+    }else{
+      this.appDetails.customData.icon__file = !this.appDetails.customData.icon__file ? [] :this.appDetails.customData.icon__file;
+      this.appDetails.customData.product__image__file = !this.appDetails.customData.product__image__file? [] : this.appDetails.customData.product__image__file;
+    }
+    // this.productImages=this.appDetails.customData.product__image__file;
+    // this.icons=[this.appDetails.customData.icon__file];
     FroalaEditor.DefineIcon('alert', { NAME: 'info' });
     FroalaEditor.RegisterCommand('alert', {
       title: 'Hello',
@@ -63,7 +72,7 @@ export class EditAppDetailComponent implements OnInit {
     this.getyouTubeId();
   }
 
-  
+
   getValue(value) {
     return value;
   }
@@ -101,16 +110,19 @@ export class EditAppDetailComponent implements OnInit {
   }
 
   prepareFinalData() {
-    let iconFile = (this.icons && this.icons.length > 0) ? this.icons[0] : null;
+    let iconFile = (this.appDetails.customData.icon__file && this.appDetails.customData.icon__file.length > 0) ? this.appDetails.customData.icon__file[0] : null;
     if (iconFile) {
       this.appDetails.customData.icon = iconFile.fileUrl;
+    }else{
+      this.appDetails.customData.icon = null;
     }
-    let productImages = (this.productImages && this.productImages.length > 0) ? this.productImages : null;
+    let productImages = (this.appDetails.customData.product__image__file && this.appDetails.customData.product__image__file.length > 0) ? this.appDetails.customData.product__image__file : null;
     if (productImages && productImages.length > 0) {
-      let productImages = this.productImages.map(pImage => pImage.fileUrl);
+      let productImages = this.appDetails.customData.product__image__file.map(pImage => pImage.fileUrl);
       this.appDetails.customData.product__images = productImages;
+    }else{
+      this.appDetails.customData.product__images = [];
     }
-    this.appDetails.customData.category = this.selectedCats;
   }
 
   /**
@@ -127,11 +139,11 @@ export class EditAppDetailComponent implements OnInit {
   submitApp(form) {
     this.isFormSubmitted = true;
     this.prepareFinalData();
-    if (!this.productImages || this.productImages.length < 1) {
+    if (!this.appDetails.customData.product__image__file || this.appDetails.customData.product__image__file.length < 1) {
       this.customMsg = true;
     }
 
-    if (!this.icons || this.icons.length < 1) {
+    if (!this.appDetails.customData.icon__file || this.appDetails.customData.icon__file.length < 1) {
       this.iconMsg = true;
     }
     if (!form.valid) {
@@ -146,9 +158,9 @@ export class EditAppDetailComponent implements OnInit {
 
 
 
-    this.dialogService.showConfirmPopup(OcPopupComponent as Component, "Warning",
-      "secondary", "Save as Draft", "Confirm",
-      "Submit this app <br> to the Marketplace now?","","You can keep this app as draft",()=>{
+    this.dialogService.showAppConfirmPopup(OcPopupComponent as Component, "Warning",
+      "newApp", "Save as Draft", "Confirm",
+      "Submit this app <br> to the Marketplace now?", "", "You can keep this app as draft", () => {
         this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();
@@ -172,15 +184,16 @@ export class EditAppDetailComponent implements OnInit {
     toolbarButtonsMD: ['paragraphStyle', 'bold', 'italic', 'strikeThrough', 'textColor', 'backgroundColor', 'insertLink', 'formatOL', 'formatUL', 'outdent', 'indent', 'codeView'],
     key: 'wFE7nG5G4G3H4A9C5eMRPYf1h1REb1BGQOQIc2CDBREJImA11C8D6B5B1G4F3F2F3C7',
     attribution: false,
-    quickInsertTags: []
+    quickInsertTags: [],
+    placeholderText: ''
 
   };
-  
+
   updateProductFiles(productImages) {
     console.log("Updated : " + productImages);
   }
 
-  cancelNewApp(){
+  cancelNewApp() {
     this.cancelApp.emit();
   }
 }

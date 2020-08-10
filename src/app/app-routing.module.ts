@@ -12,6 +12,7 @@ import { AppDeveloperComponent } from './components/applications/app-developer/a
 import { AppListComponent } from './components/applications/app-list/app-list.component';
 import { AppNewComponent } from './components/applications/app-new/app-new.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
+import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 
 const routes: Routes = [
   //{
@@ -31,6 +32,9 @@ const routes: Routes = [
       { path: 'app-list', component: AppListComponent },
       { path: 'app-new', component: AppNewComponent },
       { path: 'my-profile', component: MyProfileComponent},
+      { path: 'edit-app/:appId', component: EditAppComponent},
+      
+
     ]
   },
   { path: '**', redirectTo: '/not-found' }

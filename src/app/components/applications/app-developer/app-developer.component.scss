@@ -1,13 +1,15 @@
 @import "~oc-ng-common-component/assets/styles/theme.scss";
 .app-manage-card {
   padding: 8px;
+  padding-top: 7px;
+  padding-bottom: 6px;
   border: 1px solid #c9d5ea;
   border-radius: 4px;
   margin: 0;
   .time-selection {
     padding: 11px;
     width: 152px;
-    height: 46px;
+    height: 50px;
     text-align: center;
     display: inline-block;
   }
@@ -17,7 +19,6 @@
     background-color: white;
   }
 }
-
 
 .chart-card {
   border: 1px solid $info;
@@ -42,4 +43,58 @@
       font-size: 14px;
     }
   }
+}
+
+.dropdown-toggle.btn-secondary {
+  border-radius: 4px;
+  color: #333333 !important;
+  font-size: 14px;
+  min-height: 50px !important;
+  text-align: left;
+  margin-left: 12px;
+  width: 247px;
+  padding-left: 16px;
+
+}
+.dropdown-toggle.btn-secondary[aria-expanded="true"]{
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+.dropdown-toggle[aria-expanded="true"]::before {
+  content: url(/assets/img/select-up.svg);
+  height: 6px;
+  width: 10px;
+  margin-top: -2px;
+  float: right;
+}
+.dropdown-toggle[aria-expanded="false"]::before {
+  content: url(/assets/img/select-down.svg);
+  height: 6px;
+  width: 10px;
+  margin-top: -2px;
+  float: right;
+}
+
+.dropdown-menu {
+  min-width: 247px;
+  top: -2px !important;
+  border-top: 0;
+  border-bottom: 0px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  .dropdown-item {
+    background-color: rgba(201, 213, 234, 0.1);
+  }
+  .dropdown-item:last-child{
+    border-bottom-right-radius: 0.25em;
+    border-bottom-left-radius: 0.25em;
+  }
+}
+
+button:focus {
+  outline: none;
 }

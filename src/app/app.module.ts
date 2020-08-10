@@ -33,6 +33,7 @@ import { GeneralProfileComponent } from './components/my-profile/general/general
 import { ChangePasswordComponent } from './components/my-profile/change-password/change-password.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { EditAppDetailComponent } from './components/applications/edit-app-detail/edit-app-detail.component';
+import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { EditAppDetailComponent } from './components/applications/edit-app-detai
     GeneralProfileComponent,
     ChangePasswordComponent,
     MyProfileComponent,
-    EditAppDetailComponent
+    EditAppDetailComponent,
+    EditAppComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
