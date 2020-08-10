@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FileDetails, SellerAppDetailsModel, CommonService, SellerAppService, SellerAppCustomDataModel } from 'oc-ng-common-service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
-import { DialogService } from 'src/app/shared/services/dialog.service';
+import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';;
 import { Router } from '@angular/router';
 import FroalaEditor from 'froala-editor';
 import { OcPopupComponent } from 'oc-ng-common-component';
+import { DialogService } from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-edit-app-detail',
@@ -21,10 +21,10 @@ export class EditAppDetailComponent implements OnInit {
 
   @Output() saveOrSubmitApp = new EventEmitter<any>();
   @Output() cancelApp = new EventEmitter<any>();
-  
+
   videoUrl = '';
 
-  defaultFileIconUrl = "./assets/img/app-icon.svg";
+  defaultFileIconUrl = "./assets/img/file-placeholder.svg";
   closeIconUrl = "./assets/img/close-icon.svg";
   addIconUrl = "./assets/img/add-icon.svg";
   uploadIconUrl = "./assets/img/upload-icon.svg";
@@ -72,7 +72,7 @@ export class EditAppDetailComponent implements OnInit {
     this.getyouTubeId();
   }
 
-  
+
   getValue(value) {
     return value;
   }
@@ -158,9 +158,9 @@ export class EditAppDetailComponent implements OnInit {
 
 
 
-    this.dialogService.showConfirmPopup(OcPopupComponent as Component, "Warning",
-      "secondary", "Save as Draft", "Confirm",
-      "Submit this app <br> to the Marketplace now?","","You can keep this app as draft",()=>{
+    this.dialogService.showAppConfirmPopup(OcPopupComponent as Component, "Warning",
+      "newApp", "Save as Draft", "Confirm",
+      "Submit this app <br> to the Marketplace now?", "", "You can keep this app as draft", () => {
         this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();
@@ -184,15 +184,16 @@ export class EditAppDetailComponent implements OnInit {
     toolbarButtonsMD: ['paragraphStyle', 'bold', 'italic', 'strikeThrough', 'textColor', 'backgroundColor', 'insertLink', 'formatOL', 'formatUL', 'outdent', 'indent', 'codeView'],
     key: 'wFE7nG5G4G3H4A9C5eMRPYf1h1REb1BGQOQIc2CDBREJImA11C8D6B5B1G4F3F2F3C7',
     attribution: false,
-    quickInsertTags: []
+    quickInsertTags: [],
+    placeholderText: ''
 
   };
-  
+
   updateProductFiles(productImages) {
     console.log("Updated : " + productImages);
   }
 
-  cancelNewApp(){
+  cancelNewApp() {
     this.cancelApp.emit();
   }
 }
