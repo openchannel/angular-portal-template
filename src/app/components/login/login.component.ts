@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { OauthService, SellerSignin, SellerService, AuthenticationService } from 'oc-ng-common-service';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { LoaderService } from 'src/app/shared/services/loader.service';
 
 @Component({
   selector: 'app-login',
@@ -16,13 +17,26 @@ export class LoginComponent implements OnInit {
   successLoginFwdUrl = "/app-developer";
   signIn = new SellerSignin();
   inProcess = false;
-
-  constructor(private oauthService : OauthService,private router: Router,private sellerService : SellerService,private authenticationService : AuthenticationService
+  isLoading = true;
+  constructor(private oauthService : OauthService,private router: Router,private sellerService : SellerService,
+    private authenticationService : AuthenticationService, private loaderService : LoaderService
   ) { }
 
   ngOnInit(): void {
-    if (localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' && localStorage.getItem("access_token")) {
-        this.authenticationService.saveUserprofileInformation();
+    this.loaderService.showLoader("1");
+      //localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' && 
+      if (localStorage.getItem("access_token")) {
+        this.authenticationService.saveUserprofileInformation(res => {
+            this.isLoading = false;
+            this.loaderService.closeLoader("1");
+            this.router.navigateByUrl("/app-developer");
+        },res => {
+          this.isLoading = false;
+          this.loaderService.closeLoader("1");
+        });
+      }else{
+        this.isLoading = false;
+        this.loaderService.closeLoader("1");
       }
   }
 
@@ -37,8 +51,10 @@ export class LoginComponent implements OnInit {
       this.inProcess = true;
       this.oauthService.signIn(this.signIn).subscribe(res => {
       this.authenticationService.saveUserAfterLoginSuccess(res,this.signIn);
-      this.authenticationService.saveUserprofileInformation();
-      this.inProcess = false;
+      this.authenticationService.saveUserprofileInformation(res => {
+        this.inProcess = false;
+        this.router.navigateByUrl("/app-developer");
+      });      
     },res => {
         this.inProcess = false;
       });

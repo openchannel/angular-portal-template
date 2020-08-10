@@ -42,15 +42,23 @@ export class HttpConfigInterceptor implements HttpInterceptor {
             }),
             catchError((response: HttpErrorResponse) => {
                 this.loaderService.closeLoader(response.url);
+                    
                 if (response.status==401) {
-                    this.router.navigate(['/login']);   
-                    localStorage.clear();    
+                    //this is being invoked only from login page    
+                    if(response.url.endsWith("oauth/token")){
+                        this.errorService.setServerErrorList([{field:'email', 'message': "Wrong email"},
+                        {field:'password', 'message': "Wrong password"}]);   
+                        return throwError(response);
+                        //for all other screens 401 should redirect to login    
+                    }else{
+                        this.router.navigate(['/login']);   
+                        localStorage.clear();        
+                    }
                 }
                 if (response.status == 403) {
                     this.notificationService.showError([{ error: '403 Forbidden: Access is denied' }]);
                 } else if (response.error && response.error['validation-errors']) {
-                    //this.notificationService.showError(response.error['validation-errors']);
-                    this.errorService.setServerErrorList(response.error['validation-errors']);
+                    this.handleValidationError(response.error['validation-errors'])                    
                 } else if (response.error.error_description) {
                     this.notificationService.showError([{ error: response.error.error_description }]);
                 } else if (response.error.message) {
@@ -60,5 +68,13 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 }
                 return throwError(response);
             }));
+    }
+
+    handleValidationError(validationErrorList : any[]){
+        if(validationErrorList[0].field){
+            this.errorService.setServerErrorList(validationErrorList);
+        }else{
+            this.notificationService.showError(validationErrorList);
+        }        
     }
 }
