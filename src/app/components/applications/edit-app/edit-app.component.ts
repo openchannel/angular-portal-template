@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyValuePairMapper, SellerAppsWrapper, ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel } from 'oc-ng-common-service';
+import { ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel } from 'oc-ng-common-service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -17,10 +17,11 @@ export class EditAppComponent implements OnInit {
   period = 'month';
 
   isChartProcessing = false;
-  isAppProcessing = false;
+  isAppProcessing = true;
 
   fields = [];
 
+  parentOrChild :'parent'|'child' ='parent';
   selectedChartField = "downloads";
 
   downloadUrl = "./assets/img/cloud-download.svg";
@@ -86,8 +87,9 @@ export class EditAppComponent implements OnInit {
   }
 
   getAppById(){
-    this.appService.getAppById(this.appId,'true').subscribe((res) => {
+    this.appService.getAppById(this.appId,this.parentOrChild,'true').subscribe((res) => {
       this.setAppDetailsAndAppStatus(res);
+      this.isAppProcessing=false;
     });
   }
 
@@ -102,6 +104,7 @@ export class EditAppComponent implements OnInit {
     customData.summary=appRes.customData.summary;
     customData.video__url=appRes.customData.video__url;
     customData.website__url=appRes.customData.website__url;
+    customData.summary__plain__text=appRes.customData.summary__plain__text;
     if(appRes.customData.icon__file){
       customData.icon__file=[appRes.customData.icon__file];
       customData.icon__file[0].fileUploadProgress=100;
@@ -116,10 +119,10 @@ export class EditAppComponent implements OnInit {
 
     this.appStatus = new AppStatusDetails();
     this.appStatus.appCategory=appRes.customData.category;
-    this.appStatus.appDescription=appRes.customData.summary;
+    this.appStatus.appDescription=appRes.customData.summary__plain__text;
     this.appStatus.appLogoUrl=appRes.customData.icon;
     this.appStatus.appName=appRes.name;
     this.appStatus.appSavedDate=appRes.status?.lastUpdated;
-    this.appStatus.appStatus=appRes.status?.value;
+    this.appStatus.appStatus=appRes.prettyStatus;
   }
 }

@@ -1,4 +1,4 @@
-<form novalidate #myProfileform="ngForm" *ngIf="!isProcessing">
+<form novalidate #myProfileform="ngForm" >
     <div class="form-group">
         <oc-label text="Name"></oc-label>
         <!-- <img src="assets/img/info-icon.svg" class="pl-1" alt="info-icon"> -->
@@ -20,7 +20,7 @@
         <oc-error [field]="'email'" [control]="sellerEmail"> </oc-error>
     </div>
     <div class="col-md-6 float-right pr-0 mt-2">
-        <oc-button type="primary" text="Save" class="btn-block" [disabled]="isSaveInProcess" (click)='saveGeneralProfile(myProfileform)'>
+        <oc-button type="primary" text="Save" class="btn-block" [process]="isSaveInProcess" [disabled]="isSaveInProcess" (click)='saveGeneralProfile(myProfileform)'>
         </oc-button>
     </div>
 </form>

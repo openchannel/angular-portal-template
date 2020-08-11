@@ -4,10 +4,10 @@
 
 export const environment = {
   production: true,
-  apiUrl:'https://eu-philips-market-api-test.openchannel.io/',
-  client_id:'2clfh0t2mvonf3nc2hp5pmgduv',
-  client_secret:'latls65qhnudo7t1bulie98hq39fntdc3g7qv3qq82nnr1l13th',
-  openchannelUrl:'https://market.openchannel.io'
+  apiUrl:'',
+  client_id:'',
+  client_secret:'',
+  openchannelUrl:''
 };
 
 /*

@@ -33,8 +33,11 @@ export class ChangePasswordComponent implements OnInit {
     this.changePassModel.email= localStorage.getItem('email');
     this.isSaveInProcess=true;
     this.sellerService.changePassword(this.changePassModel).subscribe((res)=>{
-      this.changePassModel.password='';
+      // this.changePassModel.password='';
+      changePasswordform.resetForm();
       changePasswordform.reset();
+      changePasswordform.control.controls.currentPassword.setErrors(null);
+      this.notificationService.showSuccess("Password changed successfully");
     },(err)=>{
       this.isSaveInProcess=false;
     },()=>{

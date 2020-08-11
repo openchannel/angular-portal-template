@@ -132,6 +132,9 @@ export class EditAppDetailComponent implements OnInit {
     }else{
       this.appDetails.customData.product__images = [];
     }
+    var temp = document.createElement("div");
+    temp.innerHTML = this.appDetails.customData.summary;
+    this.appDetails.customData.summary__plain__text= temp.textContent || temp.innerText || "";
   }
 
   /**

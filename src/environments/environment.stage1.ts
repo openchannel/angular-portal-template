@@ -4,9 +4,9 @@
 
 export const environment = {
   production: true,
-  apiUrl:'https://stage1-philips-market-api-test.openchannel.io/',
-  client_id:'3tnh9k8o3b9lahui424su157ri',
-  client_secret:'cfb1dqb1oo1sh6mqbq1g51ddia7jr4ui0tp2rm4goiiis90vcjk',
+  apiUrl:'',
+  client_id:'5eab75729a35fb37ec6f452c',
+  client_secret:'iY8FU53HUafLg1XY1H7p-8nFDUxGW628hQ0tkiew_y0',
   openchannelUrl:'https://stage1-market.openchannel.io'
 };
 
