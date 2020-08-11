@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SellerMyProfile, SellerService, CommonService } from 'oc-ng-common-service'
+import { SellerMyProfile, SellerService, CommonService, DeveloperDetailsModel } from 'oc-ng-common-service'
 import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { NotificationService } from 'src/app/shared/custom-components/notificati
 export class GeneralProfileComponent implements OnInit {
 
   @Input() myProfile : SellerMyProfile = new SellerMyProfile();
-  developerDetails;
+  developerDetails=new DeveloperDetailsModel();
   @Input() isProcessing = true;
   isSaveInProcess=false;
   constructor(private sellerService: SellerService,
