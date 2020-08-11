@@ -16,7 +16,7 @@ export class EditAppComponent implements OnInit {
   period = 'month';
 
   isChartProcessing = false;
-  isAppProcessing = false;
+  isAppProcessing = true;
 
   fields = [];
 
@@ -87,6 +87,7 @@ export class EditAppComponent implements OnInit {
   getAppById(){
     this.appService.getAppById(this.appId,'true').subscribe((res) => {
       this.setAppDetailsAndAppStatus(res);
+      this.isAppProcessing=false;
     });
   }
 
@@ -101,6 +102,7 @@ export class EditAppComponent implements OnInit {
     customData.summary=appRes.customData.summary;
     customData.video__url=appRes.customData.video__url;
     customData.website__url=appRes.customData.website__url;
+    customData.summary__plain__text=appRes.customData.summary__plain__text;
     if(appRes.customData.icon__file){
       customData.icon__file=[appRes.customData.icon__file];
       customData.icon__file[0].fileUploadProgress=100;
@@ -115,7 +117,7 @@ export class EditAppComponent implements OnInit {
 
     this.appStatus = new AppStatusDetails();
     this.appStatus.appCategory=appRes.customData.category;
-    this.appStatus.appDescription=appRes.customData.summary;
+    this.appStatus.appDescription=appRes.customData.summary__plain__text;
     this.appStatus.appLogoUrl=appRes.customData.icon;
     this.appStatus.appName=appRes.name;
     this.appStatus.appSavedDate=appRes.status?.lastUpdated;
