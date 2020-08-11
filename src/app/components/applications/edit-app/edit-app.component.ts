@@ -43,8 +43,13 @@ export class EditAppComponent implements OnInit {
       }
       this.fields.push(downloadObj);
       var viewObj = {
-        key: "Views",
-        value: "views"
+        key: "Reviews",
+        value: "reviews"
+      }
+      this.fields.push(viewObj);
+      var viewObj = {
+        key: "Leads",
+        value: "leads"
       }
       this.fields.push(viewObj);
      }
