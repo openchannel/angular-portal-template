@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class SignupComponent implements OnInit {
 
   loginUrl = "/login";
+  activationUrl = "/activate";
   companyLogoUrl = "./assets/img/logo-company.png";
   termsAndConditionPageUrl = "https://my.openchannel.io/terms-of-service";
   dataProcessingPolicyUrl = "https://my.openchannel.io/data-processing-policy";

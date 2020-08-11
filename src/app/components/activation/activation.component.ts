@@ -12,7 +12,7 @@ import { NotificationService } from 'src/app/shared/custom-components/notificati
 export class ActivationComponent implements OnInit {
 
   constructor(private sellerService : SellerService,private oauthService: OauthService,private authenticationService: AuthenticationService,private router: Router,private notificationService: NotificationService) { }
-  companyLogoUrl = "./assets/img/logo-company.svg";
+  companyLogoUrl = "./assets/img/logo-company.png";
   signupUrl = "/signup";
   activationUrl = "";
   inProcess = false;
@@ -37,8 +37,12 @@ export class ActivationComponent implements OnInit {
         this.inProcess = true;
         this.oauthService.signIn(signInModel).subscribe( (res) => {
           this.authenticationService.saveUserAfterLoginSuccess(res,signInModel);
-          this.authenticationService.saveUserprofileInformation(()=>{  this.router.navigateByUrl("/app-developer");   });
-          this.inProcess = false;
+          this.authenticationService.saveUserprofileInformation(()=>{  
+            this.router.navigateByUrl("/app-developer");          
+            this.inProcess = false;
+          }
+        );
+          
         });
        },
         error => {
