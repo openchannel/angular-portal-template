@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyValuePairMapper, SellerAppsWrapper, ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel } from 'oc-ng-common-service';
+import { ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel } from 'oc-ng-common-service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -21,6 +21,7 @@ export class EditAppComponent implements OnInit {
 
   fields = [];
 
+  parentOrChild :'parent'|'child' ='parent';
   selectedChartField = "downloads";
 
   downloadUrl = "./assets/img/cloud-download.svg";
@@ -86,7 +87,7 @@ export class EditAppComponent implements OnInit {
   }
 
   getAppById(){
-    this.appService.getAppById(this.appId,'true').subscribe((res) => {
+    this.appService.getAppById(this.appId,this.parentOrChild,'true').subscribe((res) => {
       this.setAppDetailsAndAppStatus(res);
       this.isAppProcessing=false;
     });
@@ -122,6 +123,6 @@ export class EditAppComponent implements OnInit {
     this.appStatus.appLogoUrl=appRes.customData.icon;
     this.appStatus.appName=appRes.name;
     this.appStatus.appSavedDate=appRes.status?.lastUpdated;
-    this.appStatus.appStatus=appRes.status?.value;
+    this.appStatus.appStatus=appRes.prettyStatus;
   }
 }
