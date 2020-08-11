@@ -5,8 +5,8 @@
 export const environment = {
   production: true,
   apiUrl:'',
-  client_id:'',
-  client_secret:'',
+  client_id:'5eab75729a35fb37ec6f452c',
+  client_secret:'iY8FU53HUafLg1XY1H7p-8nFDUxGW628hQ0tkiew_y0',
   openchannelUrl:'https://stage1-market.openchannel.io'
 };
 

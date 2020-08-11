@@ -5,8 +5,8 @@
 export const environment = {
   production: true,
   apiUrl:'',
-  client_id:'5eab75729a35fb37ec6f452c',
-  client_secret:'iY8FU53HUafLg1XY1H7p-8nFDUxGW628hQ0tkiew_y0',
+  client_id:'5eab7a521741605ad1d219b5',
+  client_secret:'EwrABX2zrI9rHKvONfkGwY2G1k2Ev79xffG7U5egcaI',
   openchannelUrl:'https://dev1-market.openchannel.io'
 };
 
