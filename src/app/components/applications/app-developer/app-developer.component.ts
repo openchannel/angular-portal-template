@@ -14,6 +14,7 @@ export class AppDeveloperComponent implements OnInit {
   labels = [];
   dataSets = [];
   count;
+  countText;
   //used to detect ghaph data change.
   random;
   period = 'month';
@@ -85,10 +86,16 @@ export class AppDeveloperComponent implements OnInit {
       });
       this.count = res.count;
       this.random = Math.random();
+      this.countText = 'Total ' + this.capitalizeFirstLetter(this.selectedChartField);
+
       this.isChartProcessing = false;
 
     }, (err) => {
     });
+  }
+
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   getApps() {

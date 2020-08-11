@@ -11,6 +11,7 @@ export class EditAppComponent implements OnInit {
   labels = [];
   dataSets = [];
   count;
+  countText;
   // this is used to inform oc-chart compoment that something is changed.
   random;
   appId:string;
@@ -67,15 +68,21 @@ export class EditAppComponent implements OnInit {
     this.chartService.getStats(obj).subscribe((res) => {
 
       this.count = res.count;
+      this.countText = 'Total ' + this.capitalizeFirstLetter(this.selectedChartField); 
       res.data.forEach(c => {
         this.labels.push(c.key);
         this.dataSets.push(c.value);
       });      
       this.random = Math.random();
+      
       this.isChartProcessing = false;
 
     }, (err) => {
     });
+  }
+
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   gotoAppsList(){
