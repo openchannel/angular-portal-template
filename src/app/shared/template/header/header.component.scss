@@ -18,6 +18,11 @@
   font-family: "Rubik-Medium";
 }
 
+li.nav-item.dropdown:hover{
+  .dropdown-menu{
+    display: block;
+  }
+}
 // .top-header {
 //   .container {
 //     padding-left: 7px;
