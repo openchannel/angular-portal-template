@@ -14,7 +14,8 @@ export class AppDeveloperComponent implements OnInit {
   labels = [];
   dataSets = [];
   count;
-
+  //used to detect ghaph data change.
+  random;
   period = 'month';
 
   chartStaticstics: KeyValuePairMapper[];
@@ -76,14 +77,14 @@ export class AppDeveloperComponent implements OnInit {
     }
     this.chartService.getStats(obj).subscribe((res) => {
 
-      this.count = res.count;
       this.chartStaticstics = res.data;
       this.chartStaticstics.forEach(c => {
         this.labels.push(c.key);
         this.dataSets.push(c.value);
 
       });
-
+      this.count = res.count;
+      this.random = Math.random();
       this.isChartProcessing = false;
 
     }, (err) => {
