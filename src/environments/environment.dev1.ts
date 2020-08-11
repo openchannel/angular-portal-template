@@ -4,11 +4,12 @@
 
 export const environment = {
   production: true,
-  apiUrl:'https://dev1-philips-market-api-test.openchannel.io/',
-  client_id:'275ka9g70nak1f6ljcmdsu8flb',
-  client_secret:'1llh8o0rpc19oj9t03ge1gt5aula94a91uq1m8eef81rah4mjupj',
+  apiUrl:'',
+  client_id:'5eab75729a35fb37ec6f452c',
+  client_secret:'iY8FU53HUafLg1XY1H7p-8nFDUxGW628hQ0tkiew_y0',
   openchannelUrl:'https://dev1-market.openchannel.io'
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file
