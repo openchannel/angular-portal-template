@@ -58,8 +58,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 if (response.status == 403) {
                     this.notificationService.showError([{ error: '403 Forbidden: Access is denied' }]);
                 } else if (response.error && response.error['validation-errors']) {
-                    //this.notificationService.showError(response.error['validation-errors']);
-                    this.errorService.setServerErrorList(response.error['validation-errors']);
+                    this.handleValidationError(response.error['validation-errors'])                    
                 } else if (response.error.error_description) {
                     this.notificationService.showError([{ error: response.error.error_description }]);
                 } else if (response.error.message) {
@@ -69,5 +68,13 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 }
                 return throwError(response);
             }));
+    }
+
+    handleValidationError(validationErrorList : any[]){
+        if(validationErrorList[0].field){
+            this.errorService.setServerErrorList(validationErrorList);
+        }else{
+            this.notificationService.showError(validationErrorList);
+        }        
     }
 }
