@@ -45,7 +45,7 @@ export class GeneralProfileComponent implements OnInit {
     }
     this.isSaveInProcess=true;
     this.sellerService.updateProfileDetails(this.myProfile).subscribe((res)=>{
-
+      this.notificationService.showSuccess("Profile saved successfully");
     },(err)=>{
       this.isSaveInProcess=false;
     },()=>{

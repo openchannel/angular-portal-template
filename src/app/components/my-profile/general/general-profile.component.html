@@ -20,7 +20,7 @@
         <oc-error [field]="'email'" [control]="sellerEmail"> </oc-error>
     </div>
     <div class="col-md-6 float-right pr-0 mt-2">
-        <oc-button type="primary" text="Save" class="btn-block" [disabled]="isSaveInProcess" (click)='saveGeneralProfile(myProfileform)'>
+        <oc-button type="primary" text="Save" class="btn-block" [process]="isSaveInProcess" [disabled]="isSaveInProcess" (click)='saveGeneralProfile(myProfileform)'>
         </oc-button>
     </div>
 </form>
