@@ -11,7 +11,8 @@ export class EditAppComponent implements OnInit {
   labels = [];
   dataSets = [];
   count;
-
+  // this is used to inform oc-chart compoment that something is changed.
+  random;
   appId:string;
   period = 'month';
 
@@ -68,8 +69,8 @@ export class EditAppComponent implements OnInit {
       res.data.forEach(c => {
         this.labels.push(c.key);
         this.dataSets.push(c.value);
-      });
-
+      });      
+      this.random = Math.random();
       this.isChartProcessing = false;
 
     }, (err) => {
