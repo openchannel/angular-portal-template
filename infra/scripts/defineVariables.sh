@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export PHILIPSFRONTEND_STACKNAME="$CLUSTER_NAME-service-philips-market-frontend"
+export PHILIPSFRONTEND_PROJECTNAME="$PHILIPSFRONTEND_STACKNAME"

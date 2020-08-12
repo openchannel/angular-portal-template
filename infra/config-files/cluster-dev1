@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export CLUSTER_CERTIFICATE='arn:aws:acm:us-west-2:680845230092:certificate/6d166d59-9d3b-4b7c-9c07-34cb83376e90'
+export REGION='us-west-2'
+export HOSTED_ZONE_NAME='openchannel.io.'
+export CLUSTER_NAME='market-dev1-cluster'
+export TEST_FRONTEND_SITENAME='dev1-philips-market-test.openchannel.io'
