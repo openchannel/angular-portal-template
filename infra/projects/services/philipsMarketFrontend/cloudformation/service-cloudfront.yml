@@ -110,8 +110,8 @@ Resources:
     Properties:
       Name: !If
             - hasTypeProj
-            - !Sub '/ECS-CLUSTER/${ClusterName}/philips-market-frontend/BASE_DOMAIN_PHILIPS_FRONTEND_${TypeProj}'
-            - !Sub '/ECS-CLUSTER/${ClusterName}/philips-market-frontend/BASE_DOMAIN_PHILIPS_FRONTEND'
+            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/BASE_DOMAIN_TEMPLATE3_FRONTEND_${TypeProj}'
+            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/BASE_DOMAIN_TEMPLATE3_FRONTEND'
       Value: !Ref CNAME
       Type: String
   DashboardDistributionId:
@@ -119,8 +119,8 @@ Resources:
     Properties:
       Name: !If
             - hasTypeProj
-            - !Sub '/ECS-CLUSTER/${ClusterName}/philips-market-frontend/DISTRIBUTION_ID_PHILIPS_FRONTEND_${TypeProj}'
-            - !Sub '/ECS-CLUSTER/${ClusterName}/philips-market-frontend/DISTRIBUTION_ID_PHILIPS_FRONTEND'
+            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/DISTRIBUTION_ID_TEMPLATE3_FRONTEND_${TypeProj}'
+            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/DISTRIBUTION_ID_TEMPLATE3_FRONTEND'
       Value: !Ref CfnDistribution
       Type: String
   S3Name:
@@ -128,7 +128,7 @@ Resources:
     Properties:
       Name: !If
             - hasTypeProj
-            - !Sub '/ECS-CLUSTER/${ClusterName}/philips-market-frontend/AWS_S3_PHILIPS_FRONTEND_${TypeProj}'
-            - !Sub '/ECS-CLUSTER/${ClusterName}/philips-market-frontend/AWS_S3_PHILIPS_FRONTEND'
+            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/AWS_S3_TEMPLATE3_FRONTEND_${TypeProj}'
+            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/AWS_S3_TEMPLATE3_FRONTEND'
       Value: !Ref EncryptedS3Bucket
       Type: String

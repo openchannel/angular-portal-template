@@ -15,7 +15,6 @@ definitions:
           - unzip awscliv2.zip
           - ./aws/install
           # Update repo with scripts and update AWS keys
-          # - cp -r infra/projects/services/philipsMarketFrontend .
           - cp infra/scripts/* .
           - cp infra/cloudformation/* .
           - chmod +x *.sh

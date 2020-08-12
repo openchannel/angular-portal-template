@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IFS="." #delimiter
-read -ra SITE <<< "$PHILIPSFRONTEND_SITENAME"
+read -ra SITE <<< "$TEMPLATE3FRONTEND_SITENAME"
 sitename="${SITE[0]}"
 
 qtd=$(($(echo "$sitename" | wc -c)-1))

@@ -2,7 +2,7 @@
 
 export CLUSTER_CERTIFICATE='arn:aws:acm:eu-central-1:680845230092:certificate/24e823b3-4bfc-4946-80ac-679ad2a43c45'
 export REGION='eu-central-1'
-export CLUSTER_NAME='market-eu-cluster'
+export CLUSTER_NAME='portal-eu-cluster'
 export HOSTED_ZONE_NAME='openchannel.io.'
-export TEST_FRONTEND_SITENAME='eu-philips-market-test.openchannel.io'
-export LIVE_FRONTEND_SITENAME='eu-philips-market-live.openchannel.io'
+export TEST_FRONTEND_SITENAME='eu-template3-portal-test.openchannel.io'
+export LIVE_FRONTEND_SITENAME='eu-template3-portal-live.openchannel.io'
