@@ -23,7 +23,13 @@ definitions:
           # Export envs
           - export CONFIG_FILE="infra/config-files/cluster-${CONFIG_FILE_SUFFIX}"
           - export arn=`cat ${CONFIG_FILE} | grep CLUSTER_CERTIFICATE | cut -d'=' -f2`
+          - echo $arn
+          - echo ${arn:1:-1}
           - export CERTIFICATE_ARN=${arn:1:-1}
+          - echo $CERTIFICATE_ARN
+          - cat ${CONFIG_FILE}
+          - cat ${CONFIG_FILE} | grep CLUSTER_CERTIFICATE
+          - cat ${CONFIG_FILE} | grep CLUSTER_CERTIFICATE | cut -d'=' -f2
           - export hz=`cat ${CONFIG_FILE} | grep HOSTED_ZONE_NAME | cut -d'=' -f2`
           - export HOSTED_ZONE=${hz:1:-1}
           - export rg=`cat ${CONFIG_FILE} | grep REGION | cut -d'=' -f2`
