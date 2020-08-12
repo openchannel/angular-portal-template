@@ -64,3 +64,7 @@ pipelines:
       - step:
           <<: *build-app-and-deploy
           deployment: eu
+    Deploy to Hosted US1:
+      - step:
+          <<: *build-app-and-deploy
+          deployment: hosted-us1
