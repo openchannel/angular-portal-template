@@ -11,11 +11,12 @@ else
         export CONFIG_FILE_SUFFIX="eu-test"
         ng build --configuration=${CONFIG_FILE_SUFFIX}
         export CONFIG_FILE_SUFFIX="eu"
-    elif [ "$CONFIG_FILE_SUFFIX" == "us1" || "$CONFIG_FILE_SUFFIX" == "hosted-us1" ]; then
+    elif [ "$CONFIG_FILE_SUFFIX" == "us1" ] || [ "$CONFIG_FILE_SUFFIX" == "hosted-us1" ]; then
+        SUFFIX_AUX="$CONFIG_FILE_SUFFIX"
         export CONFIG_FILE_SUFFIX="eu-test"
         sed -i "s|https://eu-philips-market-api-live.openchannel.io/|https://${SITENAME_TEST}/|g" src/environments/environment.eu-test.ts
         ng build --configuration=${CONFIG_FILE_SUFFIX}
-        export CONFIG_FILE_SUFFIX="us1"
+        export CONFIG_FILE_SUFFIX="$SUFFIX_AUX"
     else
         ng build --configuration=${CONFIG_FILE_SUFFIX}
     fi
