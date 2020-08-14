@@ -114,7 +114,7 @@
                 (click)='saveNewApp(newAppform)' [process]="isSaveInPrcess" [disabled]="isSaveInPrcess">
             </oc-button>
         </div>
-        <div class="col-md text-right pr-0" *ngIf="appStatus.appStatus !== 'In Review'">
+        <div class="col-md text-right pr-0">
             <oc-button [type]="getValue('primary')" [text]="getValue('Submit')" (click)="submitApp(newAppform)">
             </oc-button>
         </div>
