@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel } from 'oc-ng-common-service';
+import { ChartService, SellerAppService, AppStatusDetails, SellerAppDetailsModel, SellerAppCustomDataModel, CommonService } from 'oc-ng-common-service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -19,6 +19,7 @@ export class EditAppComponent implements OnInit {
 
   isChartProcessing = false;
   isAppProcessing = true;
+  //isLoading = true;
 
   fields = [];
 
@@ -36,7 +37,8 @@ export class EditAppComponent implements OnInit {
   constructor(public chartService: ChartService, 
     public appService: SellerAppService, 
     public router: Router,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private commonservice: CommonService) {
       var downloadObj = {
         key: "Downloads",
         value: "downloads"
@@ -55,10 +57,18 @@ export class EditAppComponent implements OnInit {
      }
 
   ngOnInit(): void {
+    this.commonservice.scrollToFormInvalidField({ form: null, adjustSize: 60 });
     this.appId = this.route.snapshot.paramMap.get('appId');
     this.getChartStatistics();
     this.getAppById();
   }
+
+  changeField(value) {
+    this.selectedChartField = value;
+    this.getChartStatistics();
+  }
+
+  
   getChartStatistics() {
 
     this.isChartProcessing = true;
@@ -101,7 +111,9 @@ export class EditAppComponent implements OnInit {
   getAppById(){
     this.appService.getAppById(this.appId,this.parentOrChild,'true').subscribe((res) => {
       this.setAppDetailsAndAppStatus(res);
-      this.isAppProcessing=false;
+      this.isAppProcessing=false;      
+    },(res) => {
+      this.isAppProcessing=false;      
     });
   }
 

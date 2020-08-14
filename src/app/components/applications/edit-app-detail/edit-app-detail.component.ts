@@ -21,6 +21,8 @@ export class EditAppDetailComponent implements OnInit {
 
   @Output() saveOrSubmitApp = new EventEmitter<any>();
   @Output() cancelApp = new EventEmitter<any>();
+  // to indicate weather its edit or addd
+  @Input() mode = 'ADD';
 
   videoUrl = '';
 
@@ -56,6 +58,14 @@ export class EditAppDetailComponent implements OnInit {
       this.appDetails.customData.icon__file = !this.appDetails.customData.icon__file ? [] :this.appDetails.customData.icon__file;
       this.appDetails.customData.product__image__file = !this.appDetails.customData.product__image__file? [] : this.appDetails.customData.product__image__file;
     }
+
+    if(this.appDetails.customData.category.length){
+      this.appCategories = this.appCategories.filter((category, index) => {
+          return this.appDetails.customData.category.indexOf(category.value) == -1; 
+      });
+    }
+
+
     // this.productImages=this.appDetails.customData.product__image__file;
     // this.icons=[this.appDetails.customData.icon__file];
     FroalaEditor.DefineIcon('alert', { NAME: 'info' });
@@ -158,6 +168,10 @@ export class EditAppDetailComponent implements OnInit {
     if (!this.appDetails.customData.icon__file || this.appDetails.customData.icon__file.length < 1) {
       this.iconMsg = true;
     }
+     if(this.appDetails.customData.category?.length) {
+       form.controls.appCategory.setErrors(null);
+     }
+
     if (!form.valid) {
       form.control.markAllAsTouched();
       try {
@@ -168,11 +182,11 @@ export class EditAppDetailComponent implements OnInit {
       return;
     }
 
-
+    const infoMessage =  (this.mode == 'ADD') ? "Submit this app <br> to the Marketplace now?" : "Submit changes <br> to the Marketplace now?";
 
     const modalRef =  this.dialogService.showAppConfirmPopup(OcPopupComponent as Component, "Warning",
       "newApp", "Save as Draft", "Confirm",
-      "Submit this app <br> to the Marketplace now?", "", "You can keep this app as draft", () => {
+      infoMessage, "", "You can keep this app as draft", () => {
         this.sellerAppService.submitApplication(this.appDetails).subscribe((res) => {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();

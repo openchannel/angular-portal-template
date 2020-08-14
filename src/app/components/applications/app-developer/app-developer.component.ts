@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { KeyValuePairMapper, ChartService, SellerAppService, SellerAppsWrapper } from 'oc-ng-common-service';
+import { KeyValuePairMapper, ChartService, SellerAppService, SellerAppsWrapper, CommonService } from 'oc-ng-common-service';
 import { Router } from '@angular/router';
 import { OcPopupComponent, DialogService } from 'oc-ng-common-component';
 import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
@@ -22,7 +22,8 @@ export class AppDeveloperComponent implements OnInit {
   chartStaticstics: KeyValuePairMapper[];
   isChartProcessing = false;
   isAppProcessing = false;
-
+  isAppsLoading = true;
+  isChartLoading = true;
   applications = new SellerAppsWrapper();
   fields = [];
 
@@ -41,7 +42,9 @@ export class AppDeveloperComponent implements OnInit {
     hasChild:false
   };
 
-  constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router, private modalService: DialogService, private notificationService: NotificationService) {
+  constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router, 
+    private modalService: DialogService, private notificationService: NotificationService,
+    private commonservice: CommonService) {
 
     var downloadObj = {
       key: "Downloads",
@@ -57,8 +60,10 @@ export class AppDeveloperComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.applications.list = [];
+    this.commonservice.scrollToFormInvalidField({ form: null, adjustSize: 60 });
     this.getChartStatistics();
-    this.getApps();
+    this.getApps('true');
   }
 
   getValue(value) {
@@ -68,7 +73,7 @@ export class AppDeveloperComponent implements OnInit {
 
   getChartStatistics() {
 
-    this.isChartProcessing = true;
+    this.isChartProcessing = true;    
     this.labels = [];
     this.dataSets = [];
 
@@ -90,8 +95,10 @@ export class AppDeveloperComponent implements OnInit {
       this.countText = 'Total ' + this.capitalizeFirstLetter(this.selectedChartField);
 
       this.isChartProcessing = false;
+      this.isChartLoading = false;
 
     }, (err) => {
+      this.isChartLoading = false;
     });
   }
 
@@ -99,11 +106,21 @@ export class AppDeveloperComponent implements OnInit {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  getApps() {
+  getApps(loader, callback?) {
     this.isAppProcessing = true;
-    this.appService.getApps().subscribe(res => {
+    this.appService.getApps(loader).subscribe(res => {
       this.applications.list = res.list;
       this.isAppProcessing = false;
+      this.isAppsLoading= false;
+      if(callback){
+        callback();
+      }
+    },(res) => {
+      this.isAppProcessing = false;      
+      this.isAppsLoading= false;
+      if(callback){
+        callback();
+      }
     })
   }
 
@@ -122,48 +139,51 @@ export class AppDeveloperComponent implements OnInit {
     if (this.menuItems.menu === 'delete') {
       let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete this app and all it's versions?" : 
           "Are you sure you want to delete this app version?";
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, "md", "warning", "confirm",
+      this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Delete", deleteMessage, "",
-        "You can keep this app as draft", (res) => {
-          this.appService.deleteApp(this.menuItems.appId).subscribe(res => {
-            this.notificationService.showSuccess("Application deleted successfully");
-            this.modalService.modalService.dismissAll();
-            this.getApps();
+        "This action is terminal and cannot be reverted", (res) => {
+          this.appService.deleteApp(this.menuItems.appId).subscribe(res => {            
+            this.getApps('false',(res)=> {
+              this.notificationService.showSuccess("Application deleted successfully");
+              this.modalService.modalService.dismissAll();  
+            });
           }, (err) => {
             this.modalService.modalService.dismissAll();
           });
 
         });
     } else if (this.menuItems.menu === 'suspend') {
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, "md", "warning", "confirm",
+      this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Suspend", "Are you sure you want to suspend this app?", "",
-        "You can keep this app as draft", (res) => {
+        "This action is terminal and cannot be reverted", (res) => {
 
           let suspend = [{
             appId: this.menuItems.appId,
             version: this.menuItems.version
           }]
           this.appService.suspendApp(suspend).subscribe(res => {
-            this.notificationService.showSuccess("Application suspended successfully");
-            this.modalService.modalService.dismissAll();
-            this.getApps();
+            this.getApps('false',(res)=> {
+              this.notificationService.showSuccess("Application suspended successfully");
+              this.modalService.modalService.dismissAll();  
+            });
           }, (err) => {
             this.modalService.modalService.dismissAll();
           });
         });
     } else if (this.menuItems.menu === 'publish') {
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, "md", "warning", "confirm",
+      this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Publish", "Are you sure you want to publish this app?", "",
-        "You can keep this app as draft", (res) => {
+        "This action is terminal and cannot be reverted", (res) => {
 
           let publish = {
             appId: this.menuItems.appId,
             version: this.menuItems.version
           }
-          this.appService.publishApp(publish).subscribe(res => {
-            this.notificationService.showSuccess("Application published successfully");
-            this.modalService.modalService.dismissAll();
-            this.getApps();
+          this.appService.publishApp(publish).subscribe(res => {            
+            this.getApps('false',(res)=> {
+              this.notificationService.showSuccess("Application published successfully");
+              this.modalService.modalService.dismissAll();  
+            });
           }, (err) => {
             this.modalService.modalService.dismissAll();
           });
