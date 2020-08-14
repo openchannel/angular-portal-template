@@ -137,8 +137,8 @@ export class AppDeveloperComponent implements OnInit {
 
     this.menuItems = event;
     if (this.menuItems.menu === 'delete') {
-      let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete this app and all it's versions?" : 
-          "Are you sure you want to delete this app version?";
+      let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete <br> this app and all it's versions?" : 
+          "Are you sure you want to delete <br> this app version?";
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Delete", deleteMessage, "",
         "This action is terminal and cannot be reverted", (res) => {
@@ -154,7 +154,7 @@ export class AppDeveloperComponent implements OnInit {
         });
     } else if (this.menuItems.menu === 'suspend') {
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-        "Cancel", "Suspend", "Are you sure you want to suspend this app?", "",
+        "Cancel", "Suspend", "Are you sure you want to <br> suspend this app?", "",
         "This action is terminal and cannot be reverted", (res) => {
 
           let suspend = [{
@@ -172,7 +172,7 @@ export class AppDeveloperComponent implements OnInit {
         });
     } else if (this.menuItems.menu === 'submit') {
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-        "Cancel", "Submit", "Are you sure you want to submit this app?", "",
+        "Cancel", "Submit", "Are you sure you want to <br> submit this app?", "",
         "This action is terminal and cannot be reverted", (res) => {
 
           let submit = {
