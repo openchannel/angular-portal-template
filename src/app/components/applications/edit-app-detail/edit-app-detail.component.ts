@@ -98,7 +98,7 @@ export class EditAppDetailComponent implements OnInit {
     return "";
   }
 
-  saveNewApp(newAppform, callback?) {
+  saveNewApp(newAppform, successCallback?, errorCallback?) {
     if (!newAppform.controls.appName.valid) {
       newAppform.controls.appName.markAsTouched();
       try {
@@ -106,24 +106,25 @@ export class EditAppDetailComponent implements OnInit {
       } catch (error) {
         this.notificationService.showError([{ "message": "Please fill all required fields." }]);
       }
-      if(callback){
-        callback();
+      if(successCallback){
+        successCallback();
       }
       return;
     }
     this.prepareFinalData();
-    this.isSaveInPrcess = callback ? false : true;
+    this.isSaveInPrcess = successCallback ? false : true;
     this.sellerAppService.saveApplication(this.appDetails).subscribe((res) => {
       this.isSaveInPrcess = false;
       this.saveOrSubmitApp.emit();
       this.notificationService.showSuccess("Application saved successfully");
-      if(callback){
-        callback();
+      if(successCallback){
+        successCallback();
       }
     }, (err) => {
       this.isSaveInPrcess = false;
-      if(callback){
-        callback();
+      this.commonservice.scrollToFormInvalidField({ form: newAppform, adjustSize: 60 });
+      if(errorCallback){
+        errorCallback();
       }
     });
   }
@@ -193,12 +194,15 @@ export class EditAppDetailComponent implements OnInit {
           this.saveOrSubmitApp.emit();
           this.notificationService.showSuccess("Application submitted successfully");
         }, (err) => {
+          this.commonservice.scrollToFormInvalidField({ form: form, adjustSize: 60 });
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();
         });
       }, () => {
         modalRef.componentInstance.inProcess2 = true;
         this.saveNewApp(form, res => {          
+          this.dialogService.modalService.dismissAll();
+        },res => {          
           this.dialogService.modalService.dismissAll();
         });        
       });
