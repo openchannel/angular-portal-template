@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { AuthenticationService } from 'oc-ng-common-service';
 
-import { AuthenticationService } from '../shared/services/authentication.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
@@ -11,22 +11,9 @@ export class AuthGuard implements CanActivate {
     ) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        const userAuthorities = this.authenticationService.getUserAuthorities();
-
-        // registration page accessible only when not logged in
-        if (!this.authenticationService.isLoggedIn() && state.url === '/account-request') {
-            return true;
-        } else if (this.authenticationService.isLoggedIn() && state.url === '/account-request') {
-            this.router.navigate(['/']);
-            return false;
-        }
+        const userAuthorities = this.authenticationService.isLoggedInUser();
 
         if (userAuthorities) {
-            // check if route is restricted by role
-            if (route.data.roles && route.data.roles.indexOf(userAuthorities) === -1) {
-                this.router.navigate(['/']);
-                return false;
-            }
             // authorised so return true
             return true;
         }

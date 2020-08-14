@@ -14,6 +14,7 @@ import { AppNewComponent } from './components/applications/app-new/app-new.compo
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 import { ActivationComponent } from './components/activation/activation.component';
+import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
   //{
@@ -28,13 +29,13 @@ const routes: Routes = [
   { path: 'activate', component: ActivationComponent},
   {
     path: '', component: CommonLayoutComponent, children: [
-      { path: 'app-store', component: AppStoreComponent },
-      { path: 'app-detail', component: AppDetailComponent },
-      { path: 'app-developer', component: AppDeveloperComponent },
-      { path: 'app-list', component: AppListComponent },
-      { path: 'app-new', component: AppNewComponent },
-      { path: 'my-profile', component: MyProfileComponent},
-      { path: 'edit-app/:appId/version/:versionId', component: EditAppComponent},
+      { path: 'app-store', component: AppStoreComponent, canActivate: [AuthGuard]},
+      { path: 'app-detail', component: AppDetailComponent, canActivate: [AuthGuard]},
+      { path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
+      { path: 'app-list', component: AppListComponent, canActivate: [AuthGuard]},
+      { path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
+      { path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
+      { path: 'edit-app/:appId/version/:versionId', component: EditAppComponent, canActivate: [AuthGuard]},
       
 
     ]
