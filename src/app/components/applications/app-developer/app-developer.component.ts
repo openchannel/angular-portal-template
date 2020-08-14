@@ -37,7 +37,8 @@ export class AppDeveloperComponent implements OnInit {
   menuItems = {
     menu: '',
     appId: '',
-    version: ''
+    version: '',
+    hasChild:false
   };
 
   constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router, private modalService: DialogService, private notificationService: NotificationService) {
@@ -119,8 +120,10 @@ export class AppDeveloperComponent implements OnInit {
 
     this.menuItems = event;
     if (this.menuItems.menu === 'delete') {
+      let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete this app and all it's versions?" : 
+          "Are you sure you want to delete this app version?";
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "md", "warning", "confirm",
-        "Cancel", "Delete", "Are you sure you want to delete this app?", "",
+        "Cancel", "Delete", deleteMessage, "",
         "You can keep this app as draft", (res) => {
           this.appService.deleteApp(this.menuItems.appId).subscribe(res => {
             this.notificationService.showSuccess("Application deleted successfully");
