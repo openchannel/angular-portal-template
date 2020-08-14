@@ -14,7 +14,7 @@ else
     elif [ "$CONFIG_FILE_SUFFIX" == "us1" ] || [ "$CONFIG_FILE_SUFFIX" == "hosted-us1" ]; then
         SUFFIX_AUX="$CONFIG_FILE_SUFFIX"
         export CONFIG_FILE_SUFFIX="us1-test"
-        sed -i "s|https://eu-template3-portal-api-live.openchannel.io/|https://${SITENAME_TEST}/|g" src/environments/environment.eu-test.ts
+        sed -i "s|https://eu-template3-portal-api-live.openchannel.io/|https://${SITENAME_TEST}/|g" src/environments/environment.us1-test.ts
         ng build --configuration=${CONFIG_FILE_SUFFIX}
         export CONFIG_FILE_SUFFIX="$SUFFIX_AUX"
     else
@@ -52,7 +52,7 @@ else
     elif [ "$CONFIG_FILE_SUFFIX" == "us1" ] || [ "$CONFIG_FILE_SUFFIX" == "hosted-us1" ]; then
         SUFFIX_AUX="$CONFIG_FILE_SUFFIX"
         export CONFIG_FILE_SUFFIX="us1-live"
-        sed -i "s|https://eu-template3-portal-api-live.openchannel.io/|https://${SITENAME_LIVE}/|g" src/environments/environment.eu-live.ts
+        sed -i "s|https://eu-template3-portal-api-live.openchannel.io/|https://${SITENAME_LIVE}/|g" src/environments/environment.us1-live.ts
         ng build --configuration=${CONFIG_FILE_SUFFIX}
         export CONFIG_FILE_SUFFIX="$SUFFIX_AUX"
     else
