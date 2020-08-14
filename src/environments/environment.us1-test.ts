@@ -4,11 +4,12 @@
 
 export const environment = {
   production: true,
-  apiUrl:'',
-  client_id:'5eab75729a35fb37ec6f452c',
-  client_secret:'iY8FU53HUafLg1XY1H7p-8nFDUxGW628hQ0tkiew_y0',
-  openchannelUrl:'https://stage1-market.openchannel.io'
+  apiUrl:'https://us1-template3-portal-api-test.openchannel.io/',
+  client_id:'5ebg7rrabovia2vcsqp2idk3u7',
+  client_secret:'8pq2sa6206pg89l2onh48u6uq169bqavs032i0s8lqgj5if3kbu',
+  openchannelUrl:'https://market.openchannel.io'
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file
