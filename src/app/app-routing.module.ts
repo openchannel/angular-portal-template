@@ -34,7 +34,7 @@ const routes: Routes = [
       { path: 'app-list', component: AppListComponent },
       { path: 'app-new', component: AppNewComponent },
       { path: 'my-profile', component: MyProfileComponent},
-      { path: 'edit-app/:appId', component: EditAppComponent},
+      { path: 'edit-app/:appId/version/:versionId', component: EditAppComponent},
       
 
     ]

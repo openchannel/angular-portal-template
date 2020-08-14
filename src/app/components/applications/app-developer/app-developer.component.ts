@@ -142,7 +142,7 @@ export class AppDeveloperComponent implements OnInit {
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Delete", deleteMessage, "",
         "This action is terminal and cannot be reverted", (res) => {
-          this.appService.deleteApp(this.menuItems.appId).subscribe(res => {            
+          this.appService.deleteApp(this.menuItems.appId,this.menuItems.version).subscribe(res => {            
             this.getApps('false',(res)=> {
               this.notificationService.showSuccess("Application deleted successfully");
               this.modalService.modalService.dismissAll();  
@@ -189,7 +189,7 @@ export class AppDeveloperComponent implements OnInit {
           });
         });
     } else if (this.menuItems.menu === 'edit') {
-      this.router.navigateByUrl('edit-app/'+this.menuItems.appId);
+      this.router.navigateByUrl('edit-app/'+this.menuItems.appId+"/version/"+this.menuItems.version);
     }
     console.log(this.menuItems);
   }

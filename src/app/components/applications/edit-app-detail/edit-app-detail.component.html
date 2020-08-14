@@ -7,7 +7,7 @@
         <div class="col-md-9 pl-1 pr-0">
             <oc-input name="appName" #appName="ngModel" [(ngModel)]="appDetails.name" [(modelName)]="appDetails.name"
                 ngDefaultControl required="required"></oc-input>
-            <oc-error [control]="appName" [field]="'name'"></oc-error>
+            <oc-error [control]="appName" field="name"></oc-error>
         </div>
     </div>
     <div class="row form-group">
@@ -109,12 +109,12 @@
             <oc-button [type]="getValue('link')" [text]="getValue('Cancel')" (click)="cancelNewApp()" class="ml-n1">
             </oc-button>
         </div>
-        <div class="col-md pl-1">
+        <div class="col-md pl-1" *ngIf="appStatus.appStatus !== 'Pending'">
             <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')"
                 (click)='saveNewApp(newAppform)' [process]="isSaveInPrcess" [disabled]="isSaveInPrcess">
             </oc-button>
         </div>
-        <div class="col-md text-right pr-0">
+        <div class="col-md text-right pr-0" *ngIf="appStatus.appStatus !== 'In Review'">
             <oc-button [type]="getValue('primary')" [text]="getValue('Submit')" (click)="submitApp(newAppform)">
             </oc-button>
         </div>

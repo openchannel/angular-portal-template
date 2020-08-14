@@ -68,7 +68,7 @@
                 </div>
                 <div class="card-body">
                     <app-edit-app-detail [(appDetails)]=appDetails (saveOrSubmitApp)="gotoAppsList()"
-                        (cancelApp)="cancelNewApp()" [mode]="'edit'"></app-edit-app-detail>
+                        (cancelApp)="cancelNewApp()" [appStatus]="appStatus" [mode]="'edit'"></app-edit-app-detail>
                 </div>
             </div>
         </div>

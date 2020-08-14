@@ -1,11 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FileDetails, SellerAppDetailsModel, CommonService, SellerAppService, SellerAppCustomDataModel } from 'oc-ng-common-service';
+import { FileDetails, SellerAppDetailsModel, CommonService, SellerAppService, SellerAppCustomDataModel, AppStatusDetails } from 'oc-ng-common-service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';;
 import { Router } from '@angular/router';
 import FroalaEditor from 'froala-editor';
-import { OcPopupComponent } from 'oc-ng-common-component';
-import { DialogService } from 'oc-ng-common-component';
+import { OcPopupComponent,DialogService } from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-edit-app-detail',
@@ -18,7 +17,7 @@ export class EditAppDetailComponent implements OnInit {
   // productImages: FileDetails[] = [];
 
   @Input() appDetails: SellerAppDetailsModel = new SellerAppDetailsModel();
-
+  @Input() appStatus = new AppStatusDetails();
   @Output() saveOrSubmitApp = new EventEmitter<any>();
   @Output() cancelApp = new EventEmitter<any>();
   // to indicate weather its edit or addd

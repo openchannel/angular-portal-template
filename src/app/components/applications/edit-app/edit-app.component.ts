@@ -15,6 +15,7 @@ export class EditAppComponent implements OnInit {
   // this is used to inform oc-chart compoment that something is changed.
   random;
   appId:string;
+  versionId:string;
   period = 'month';
 
   isChartProcessing = false;
@@ -59,6 +60,7 @@ export class EditAppComponent implements OnInit {
   ngOnInit(): void {
     this.commonservice.scrollToFormInvalidField({ form: null, adjustSize: 60 });
     this.appId = this.route.snapshot.paramMap.get('appId');
+    this.versionId = this.route.snapshot.paramMap.get("versionId");
     this.getChartStatistics();
     this.getAppById();
   }
@@ -78,7 +80,7 @@ export class EditAppComponent implements OnInit {
     var obj = {
       period: this.period,
       field: this.selectedChartField,
-      query:"{appId:"+this.appId+"}"
+      query:"{appId:"+this.appId+", version :"+this.versionId+"}"
     }
     this.chartService.getStats(obj).subscribe((res) => {
 
@@ -109,7 +111,7 @@ export class EditAppComponent implements OnInit {
   }
 
   getAppById(){
-    this.appService.getAppById(this.appId,this.parentOrChild,'true').subscribe((res) => {
+    this.appService.getAppById(this.appId,this.versionId,'true').subscribe((res) => {
       this.setAppDetailsAndAppStatus(res);
       this.isAppProcessing=false;      
     },(res) => {
@@ -120,6 +122,7 @@ export class EditAppComponent implements OnInit {
   setAppDetailsAndAppStatus(appRes){
     this.appDetails=new SellerAppDetailsModel();
     this.appDetails.appId = appRes.appId;
+    this.appDetails.version = appRes.version;
     this.appDetails.name = appRes.name;
     let customData = new SellerAppCustomDataModel();
     customData.category= appRes.customData.category;
