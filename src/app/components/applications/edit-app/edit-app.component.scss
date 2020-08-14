@@ -1,13 +1,18 @@
 @import "~oc-ng-common-component/assets/styles/theme.scss";
+.app-container{
+  min-height: 100vh;
+}
 .app-manage-card {
   padding: 8px;
+  padding-top: 7px;
+  padding-bottom: 6px;
   border: 1px solid #c9d5ea;
   border-radius: 4px;
   margin: 0;
   .time-selection {
     padding: 11px;
     width: 152px;
-    height: 46px;
+    height: 50px;
     text-align: center;
     display: inline-block;
   }
@@ -57,3 +62,4 @@
     border-bottom: 1px solid #c9d5ea;
   }
 }
+
