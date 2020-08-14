@@ -170,18 +170,18 @@ export class AppDeveloperComponent implements OnInit {
             this.modalService.modalService.dismissAll();
           });
         });
-    } else if (this.menuItems.menu === 'publish') {
+    } else if (this.menuItems.menu === 'submit') {
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-        "Cancel", "Publish", "Are you sure you want to publish this app?", "",
+        "Cancel", "Submit", "Are you sure you want to submit this app?", "",
         "This action is terminal and cannot be reverted", (res) => {
 
-          let publish = {
+          let submit = {
             appId: this.menuItems.appId,
             version: this.menuItems.version
           }
-          this.appService.publishApp(publish).subscribe(res => {            
+          this.appService.submitApp(submit).subscribe(res => {            
             this.getApps('false',(res)=> {
-              this.notificationService.showSuccess("Application published successfully");
+              this.notificationService.showSuccess("Application submitted successfully");
               this.modalService.modalService.dismissAll();  
             });
           }, (err) => {
