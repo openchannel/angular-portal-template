@@ -161,12 +161,21 @@ export class EditAppDetailComponent implements OnInit {
   submitApp(form) {
     this.isFormSubmitted = true;
     this.prepareFinalData();
+    let scrollingField=undefined;
     if (!this.appDetails.customData.product__image__file || this.appDetails.customData.product__image__file.length < 1) {
       this.customMsg = true;
+      scrollingField="productImages";
     }
 
     if (!this.appDetails.customData.icon__file || this.appDetails.customData.icon__file.length < 1) {
       this.iconMsg = true;
+      if(!scrollingField){
+        scrollingField="iconImage";
+      }
+    }
+    if(scrollingField){
+      this.commonservice.scrollToField({field:scrollingField, adjustSize:60});
+      return;
     }
      if(this.appDetails.customData.category?.length) {
        form.controls.appCategory.setErrors(null);

@@ -38,12 +38,12 @@
                 <div ngbDropdown class="d-inline-block">
                     <button class="btn btn-secondary" id="dropdownBasic1"
                         ngbDropdownToggle>{{ (selectedChartField == 'downloads' ? 'Downloads' :
-                        selectedChartField == 'reviews' ? 'Reviews' :
+                        selectedChartField == 'views' ? 'Views' :
                         selectedChartField == 'leads' ? 'Leads' : '')}}
                     </button>
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
                         <button value="downloads" ngbDropdownItem (click)="changeField('downloads')">Downloads</button>
-                        <button value="reviews" ngbDropdownItem (click)="changeField('reviews')">Reviews</button>
+                        <button value="views" ngbDropdownItem (click)="changeField('views')">Views</button>
                         <button value="leads" ngbDropdownItem (click)="changeField('leads')">Leads</button>
                     </div>
                 </div>
