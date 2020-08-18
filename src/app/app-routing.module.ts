@@ -15,6 +15,7 @@ import { MyProfileComponent } from './components/my-profile/my-profile.component
 import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 import { ActivationComponent } from './components/activation/activation.component';
 import { AuthGuard } from './_guards/auth.guard';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 const routes: Routes = [
   //{
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'confirm-forgot-password', component:ResetPasswordComponent},
   { path: 'signup', component: SignupComponent },
   { path: 'activate', component: ActivationComponent},
   {
