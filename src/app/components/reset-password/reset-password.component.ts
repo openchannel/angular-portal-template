@@ -15,7 +15,7 @@ export class ResetPasswordComponent implements OnInit {
     private router: Router,
     private notificationService: NotificationService) { }
   companyLogoUrl = "./assets/img/logo-company.png";
-  resetUrl = "";
+  resetUrl = "/forgot-password";
   inProcess = false;
 
   resetModel = new SellerResetPassword();
