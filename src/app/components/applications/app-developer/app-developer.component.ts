@@ -160,7 +160,7 @@ export class AppDeveloperComponent implements OnInit {
         version: this.menuItems.version
       }]
       this.appService.suspendApp(suspend).subscribe(res => {
-        this.getApps('false', (res) => {
+        this.getApps('true', (res) => {
           this.notificationService.showSuccess("Application suspended successfully");
           // this.modalService.modalService.dismissAll();  
         });
@@ -195,7 +195,7 @@ export class AppDeveloperComponent implements OnInit {
         version: this.menuItems.version
       }]
       this.appService.unsuspendApp(unsuspend).subscribe(res => {
-        this.getApps('false', (res) => {
+        this.getApps('true', (res) => {
           this.notificationService.showSuccess("Application unsuspended successfully");
           // this.modalService.modalService.dismissAll();  
         });
