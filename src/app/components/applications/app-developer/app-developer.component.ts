@@ -32,17 +32,15 @@ export class AppDeveloperComponent implements OnInit {
   downloadUrl = "./assets/img/cloud-download.svg";
   menuUrl = "./assets/img/dots-hr-icon.svg";
   sortIcon = "./assets/img/dropdown-icon.svg";
-  editIcon = "./assets/img/delete.svg";
-  publishIcon = "./assets/img/publish.svg";
 
   menuItems = {
     menu: '',
     appId: '',
     version: '',
-    hasChild:false
+    hasChild: false
   };
 
-  constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router, 
+  constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router,
     private modalService: DialogService, private notificationService: NotificationService,
     private commonservice: CommonService) {
 
@@ -73,7 +71,7 @@ export class AppDeveloperComponent implements OnInit {
 
   getChartStatistics() {
 
-    this.isChartProcessing = true;    
+    this.isChartProcessing = true;
     this.labels = [];
     this.dataSets = [];
 
@@ -111,14 +109,14 @@ export class AppDeveloperComponent implements OnInit {
     this.appService.getApps(loader).subscribe(res => {
       this.applications.list = res.list;
       this.isAppProcessing = false;
-      this.isAppsLoading= false;
-      if(callback){
+      this.isAppsLoading = false;
+      if (callback) {
         callback();
       }
-    },(res) => {
-      this.isAppProcessing = false;      
-      this.isAppsLoading= false;
-      if(callback){
+    }, (res) => {
+      this.isAppProcessing = false;
+      this.isAppsLoading = false;
+      if (callback) {
         callback();
       }
     })
@@ -137,15 +135,15 @@ export class AppDeveloperComponent implements OnInit {
 
     this.menuItems = event;
     if (this.menuItems.menu === 'delete') {
-      let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete <br> this app and all it's versions?" : 
-          "Are you sure you want to delete <br> this app version?";
+      let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete <br> this app and all it's versions?" :
+        "Are you sure you want to delete <br> this app version?";
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Delete", deleteMessage, "",
         "This action is terminal and cannot be reverted", (res) => {
-          this.appService.deleteApp(this.menuItems.appId,this.menuItems.version).subscribe(res => {            
-            this.getApps('false',(res)=> {
+          this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(res => {
+            this.getApps('false', (res) => {
               this.notificationService.showSuccess("Application deleted successfully");
-              this.modalService.modalService.dismissAll();  
+              this.modalService.modalService.dismissAll();
             });
           }, (err) => {
             this.modalService.modalService.dismissAll();
@@ -153,23 +151,23 @@ export class AppDeveloperComponent implements OnInit {
 
         });
     } else if (this.menuItems.menu === 'suspend') {
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-        "Cancel", "Suspend", "Are you sure you want to <br> suspend this app?", "",
-        "This action is terminal and cannot be reverted", (res) => {
+      // this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
+      //   "Cancel", "Suspend", "Are you sure you want to <br> suspend this app?", "",
+      //   "This action is terminal and cannot be reverted", (res) => {
 
-          let suspend = [{
-            appId: this.menuItems.appId,
-            version: this.menuItems.version
-          }]
-          this.appService.suspendApp(suspend).subscribe(res => {
-            this.getApps('false',(res)=> {
-              this.notificationService.showSuccess("Application suspended successfully");
-              this.modalService.modalService.dismissAll();  
-            });
-          }, (err) => {
-            this.modalService.modalService.dismissAll();
-          });
+      let suspend = [{
+        appId: this.menuItems.appId,
+        version: this.menuItems.version
+      }]
+      this.appService.suspendApp(suspend).subscribe(res => {
+        this.getApps('false', (res) => {
+          this.notificationService.showSuccess("Application suspended successfully");
+          // this.modalService.modalService.dismissAll();  
         });
+      }, (err) => {
+        // this.modalService.modalService.dismissAll();
+      });
+      // });
     } else if (this.menuItems.menu === 'submit') {
       this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
         "Cancel", "Submit", "Are you sure you want to <br> submit this app?", "",
@@ -179,19 +177,34 @@ export class AppDeveloperComponent implements OnInit {
             appId: this.menuItems.appId,
             version: this.menuItems.version
           }
-          this.appService.submitApp(submit).subscribe(res => {            
-            this.getApps('false',(res)=> {
+          this.appService.submitApp(submit).subscribe(res => {
+            this.getApps('false', (res) => {
               this.notificationService.showSuccess("Application submitted successfully");
-              this.modalService.modalService.dismissAll();  
+              this.modalService.modalService.dismissAll();
             });
           }, (err) => {
             this.modalService.modalService.dismissAll();
           });
         });
     } else if (this.menuItems.menu === 'edit') {
-      this.router.navigateByUrl('edit-app/'+this.menuItems.appId+"/version/"+this.menuItems.version);
+      this.router.navigateByUrl('edit-app/' + this.menuItems.appId + "/version/" + this.menuItems.version);
+    } else if (this.menuItems.menu === 'unsuspend') {
+
+      let unsuspend = [{
+        appId: this.menuItems.appId,
+        version: this.menuItems.version
+      }]
+      this.appService.unsuspendApp(unsuspend).subscribe(res => {
+        this.getApps('false', (res) => {
+          this.notificationService.showSuccess("Application unsuspended successfully");
+          // this.modalService.modalService.dismissAll();  
+        });
+      }, (err) => {
+        // this.modalService.modalService.dismissAll();
+      });
+      // });
     }
-    console.log(this.menuItems);
   }
+
 
 }
