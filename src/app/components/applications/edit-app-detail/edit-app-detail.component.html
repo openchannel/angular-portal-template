@@ -109,7 +109,7 @@
             <oc-button [type]="getValue('link')" [text]="getValue('Cancel')" (click)="cancelNewApp()" class="ml-n1">
             </oc-button>
         </div>
-        <div class="col-md pl-1" *ngIf="appStatus.appStatus !== 'Pending'">
+        <div class="col-md pl-1" *ngIf="appStatus.appStatus !== 'Pending' && appStatus.appStatus !== 'In Review' && appStatus.appStatus !== 'Rejected'">
             <oc-button [type]="getValue('secondary')" [text]="getValue('Save and Exit')"
                 (click)='saveNewApp(newAppform)' [process]="isSaveInPrcess" [disabled]="isSaveInPrcess">
             </oc-button>

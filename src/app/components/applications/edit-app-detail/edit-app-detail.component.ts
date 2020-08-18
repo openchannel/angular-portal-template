@@ -183,7 +183,7 @@ export class EditAppDetailComponent implements OnInit {
     }
 
     const infoMessage =  (this.mode == 'ADD') ? "Submit this app <br> to the Marketplace now?" : "Submit changes <br> to the Marketplace now?";
-    const type = this.appStatus.appStatus !== 'Pending' ? 'newApp' : 'newAppPending'; 
+    const type = this.appStatus.appStatus !== 'Pending' && this.appStatus.appStatus !== 'In Review' && this.appStatus.appStatus !== 'Rejected' ? 'newApp' : 'newAppPending';
     const modalRef =  this.dialogService.showAppConfirmPopup(OcPopupComponent as Component, "Warning",
       type, "Save as Draft", "Confirm",
       infoMessage, "", "You can keep this app as draft", () => {
