@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loaderService.showLoader("1");
-      //localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' && 
+      //localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' &&
       if (localStorage.getItem("access_token")) {
         this.authenticationService.saveUserprofileInformation(res => {
             this.isLoading = false;
@@ -41,50 +41,7 @@ export class LoginComponent implements OnInit {
   }
 
   login(event) {
-    console.log(event);
-    if(event === true){
-      this.signIn.email = this.signIn.email;
-      this.signIn.password = this.signIn.password;
-      this.signIn.grant_type = "password";
-      this.signIn.clientId = environment.client_id;
-      this.signIn.clientSecret = environment.client_secret;
-      this.inProcess = true;
-      this.oauthService.signIn(this.signIn).subscribe(res => {
-      this.authenticationService.saveUserAfterLoginSuccess(res,this.signIn);
-      this.authenticationService.saveUserprofileInformation(res => {
-        this.inProcess = false;
-        this.router.navigateByUrl("/app-developer");
-      });      
-    },res => {
-        this.inProcess = false;
-      });
-    }
+    this.router.navigateByUrl("/app-store");
   }
 
-  //  /**
-  //   *  Save user details after login successful.
-  //   * @param res 
-  //   */
-  //  saveUserAfterLoginSuccess(res){
-  //   localStorage.setItem("access_token",res.access_token);
-  //   if(this.signIn.isChecked){
-  //     localStorage.setItem("rememberMe","true");
-  //   }else {
-  //     localStorage.setItem("rememberMe","false");
-  //   }
-  //  }
-
-  //  /**
-  //   * This method is responsible for save user profile information. 
-  //   */
-  //  saveUserprofileInformation(){
-  //     this.sellerService.getUserProfileDetails().subscribe(res => {
-  //         if (res) {
-  //           localStorage.setItem("email",res.email);
-  //         }
-  //         this.router.navigateByUrl(this.successLoginFwdUrl);
-  //     },res => {
-  //       this.inProcess = false;
-  //     });
-  //  }
 }

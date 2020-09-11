@@ -8,16 +8,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./loader.component.scss']
 })
 export class LoaderComponent implements OnInit  {
- 
+
   loading: boolean;
 
-  
+
 
   constructor(public loaderService: LoaderService,
     private router: Router) {
 
     this.loaderService.inProcess.subscribe((v) => {
-      console.log(v);
       this.loading = v;
     });
 
@@ -25,15 +24,19 @@ export class LoaderComponent implements OnInit  {
   ngOnInit() {
   }
 
+  toggle() {
+    this.loading = !this.loading;
+  }
+
   getClass(){
-    
+
       if(this.router.url.split('?')[0] == "/applications"){
         return 'filter-menu';
       } else if(this.router.url.split('?')[0].includes("/invite/")
              || this.router.url.split('?')[0].includes("/sso/authenticate")){
           return '';
       }
-      return 'left-menu';      
+      return 'left-menu';
   }
-  
+
 }

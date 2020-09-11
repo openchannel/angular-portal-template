@@ -81,6 +81,6 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
   bootstrap: [AppComponent],
   entryComponents: [LoaderComponent],
 })
-export class AppModule { 
-  
+export class AppModule {
+
 }
