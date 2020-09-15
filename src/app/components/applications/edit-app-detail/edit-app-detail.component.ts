@@ -218,13 +218,6 @@ export class EditAppDetailComponent implements OnInit {
           this.isSaveInPrcess = false;
           this.dialogService.modalService.dismissAll();
         });
-      }, () => {
-        modalRef.componentInstance.inProcess2 = true;
-        this.saveNewApp(form, res => {
-          this.dialogService.modalService.dismissAll();
-        }, res => {
-          this.dialogService.modalService.dismissAll();
-        });
       });
   }
 

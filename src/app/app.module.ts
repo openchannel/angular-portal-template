@@ -36,6 +36,8 @@ import { EditAppDetailComponent } from './components/applications/edit-app-detai
 import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 import { ActivationComponent } from './components/activation/activation.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { FormListGeneratorComponent } from './components/applications/app-store/form-list-generator/form-list-generator.component';
+import { FormModalComponent } from './shared/modals/form-modal/form-modal.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
     EditAppDetailComponent,
     EditAppComponent,
     ActivationComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    FormListGeneratorComponent,
+    FormModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -79,7 +83,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
   { provide: NgbDateAdapter, useClass: CustomAdapter }, DatePipe],
   bootstrap: [AppComponent],
-  entryComponents: [LoaderComponent],
+  entryComponents: [LoaderComponent, FormModalComponent],
 })
 export class AppModule {
 
