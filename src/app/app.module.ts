@@ -36,6 +36,16 @@ import { EditAppDetailComponent } from './components/applications/edit-app-detai
 import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 import { ActivationComponent } from './components/activation/activation.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import {APOLLO_OPTIONS} from 'apollo-angular';
+import {HttpLink} from 'apollo-angular/http';
+import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+
+export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+  return {
+    link: httpLink.create({uri: environment.graphqlUrl}),
+    cache: new InMemoryCache(),
+  };
+}
 
 @NgModule({
   declarations: [
@@ -76,8 +86,15 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
     OcCommonServiceModule.forRoot(environment),
     OcCommonLibModule
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-  { provide: NgbDateAdapter, useClass: CustomAdapter }, DatePipe],
+  providers: [
+   { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
+   { provide: NgbDateAdapter, useClass: CustomAdapter },
+   {
+     provide: APOLLO_OPTIONS,
+     useFactory: createApollo,
+     deps: [HttpLink],
+   },
+   DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [LoaderComponent],
 })

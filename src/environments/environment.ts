@@ -9,7 +9,9 @@ export const environment = {
   client_secret:'on5jmqp7uq00vgeg9tnq4pii2f1f3pm84q45uq907e8vhmr24ta',
   //client_id:'5f20f800579d1a20c527d848',
   //client_secret:'5OqlDMSXRQX4aWCp5yWw8IT7RP-m1lhX2L0zSy4Ttj8',
-  openchannelUrl:'https://market.openchannel.io'
+  openchannelUrl:'https://market.openchannel.io',
+  graphqlUrl: 'http://localhost:8080/graphql',
+  auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8='
 };
 
 /*
