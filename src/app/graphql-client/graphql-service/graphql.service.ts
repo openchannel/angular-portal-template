@@ -80,6 +80,34 @@ export class GraphqlService {
       }
     }`;
 
+    private allFormsQuery = gql` query getAllForms{
+        getAllForms {
+            name
+            createdDate
+            createdDateTime
+            description
+            fields{
+                attributes
+                category
+                defaultValue
+                deleteable
+                description
+                id
+                label
+                options
+                required
+                specialType
+                subFieldDefinitions{
+                    id
+                }
+                type
+                valueIncompatible
+                wizardStep
+            }
+            formId
+        }
+    }`;
+
     private formSubmitMutation = gql` mutation submitForm($formId: String!, $submission: FormSubmissionRequestInput!) {
         submitForm(formId: $formId, submission: $submission) {
             app{
@@ -154,6 +182,10 @@ export class GraphqlService {
             variables: {
                 formId,
             }});
+    }
+
+    getAllForms(formId: string): Observable<ApolloQueryResult<any>> {
+        return this.apollo.query({query: this.allFormsQuery});
     }
 
     createFormSubmission(formId: string, submission: any) {
