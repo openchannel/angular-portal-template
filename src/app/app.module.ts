@@ -38,6 +38,16 @@ import { ActivationComponent } from './components/activation/activation.componen
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { FormListGeneratorComponent } from './components/applications/app-store/form-list-generator/form-list-generator.component';
 import { FormModalComponent } from './shared/modals/form-modal/form-modal.component';
+import {APOLLO_OPTIONS} from 'apollo-angular';
+import {HttpLink} from 'apollo-angular/http';
+import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+
+export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+  return {
+    link: httpLink.create({uri: environment.graphqlUrl}),
+    cache: new InMemoryCache(),
+  };
+}
 
 @NgModule({
   declarations: [
@@ -80,8 +90,15 @@ import { FormModalComponent } from './shared/modals/form-modal/form-modal.compon
     OcCommonServiceModule.forRoot(environment),
     OcCommonLibModule
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-  { provide: NgbDateAdapter, useClass: CustomAdapter }, DatePipe],
+  providers: [
+   { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
+   { provide: NgbDateAdapter, useClass: CustomAdapter },
+   {
+     provide: APOLLO_OPTIONS,
+     useFactory: createApollo,
+     deps: [HttpLink],
+   },
+   DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [LoaderComponent, FormModalComponent],
 })
