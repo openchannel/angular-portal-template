@@ -25,7 +25,7 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
   getAllFormsList(): void {
     this.subscriber.add(this.graphQLService.getAllForms('list').subscribe(
       (result: any) => {
-        console.log(result);
+        this.formJSONArray = result?.data?.getAllForms;
       }
     ));
   }
