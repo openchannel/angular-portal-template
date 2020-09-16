@@ -1,0 +1,11 @@
+<div class="forms-container mt-2">
+  <h3 class="p-2 forms-container-title">Forms</h3>
+  <section class="p-2">
+    <div class="row mb-2 align-items-center border-bottom-custom pb-2" *ngFor="let form of formJSONArray">
+      <h6 class="col-sm-8 text-center">{{form.name}}</h6>
+      <oc-button text="Show Form" type="primary" class="btn-block col-sm-4" (click)="openFormModal(form)">
+      </oc-button>
+    </div>
+  </section>
+</div>
+
