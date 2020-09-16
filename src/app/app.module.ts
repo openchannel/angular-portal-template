@@ -36,6 +36,8 @@ import { EditAppDetailComponent } from './components/applications/edit-app-detai
 import { EditAppComponent } from './components/applications/edit-app/edit-app.component';
 import { ActivationComponent } from './components/activation/activation.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { FormListGeneratorComponent } from './components/applications/app-store/form-list-generator/form-list-generator.component';
+import { FormModalComponent } from './shared/modals/form-modal/form-modal.component';
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
@@ -69,7 +71,9 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     EditAppDetailComponent,
     EditAppComponent,
     ActivationComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    FormListGeneratorComponent,
+    FormModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -96,7 +100,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
    },
    DatePipe],
   bootstrap: [AppComponent],
-  entryComponents: [LoaderComponent],
+  entryComponents: [LoaderComponent, FormModalComponent],
 })
 export class AppModule {
 

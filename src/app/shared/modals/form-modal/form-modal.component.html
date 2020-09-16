@@ -1,0 +1,4 @@
+<div class="p-3">
+  <h6 class="mt-2 mb-2 text-center">{{formData.name}}</h6>
+  <oc-form [formJsonData]="formData" (formSubmitted)="sendFormData($event)"></oc-form>
+</div>
