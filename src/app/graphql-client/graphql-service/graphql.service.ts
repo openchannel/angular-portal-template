@@ -134,7 +134,58 @@ export class GraphqlService {
         }
     }`;
 
-    constructor(private apollo: Apollo) {}
+    private allFormSubmissionsQuery = gql` query getAllFormSubmissions($formId: String!, $page: Int, $pageSize: Int,
+                                                                       $sortBy: String, $sortOrder: String) {
+        getAllFormSubmissions(formId: $formId, page: $page, pageSize: $pageSize, sortBy: $sortBy, sortOrder: $sortOrder) {
+            count
+            pageNumber
+            pages
+            list {
+              formId
+              formSubmissionId
+              submittedDateTime
+              submittedDate
+            }
+        }
+    }`;
+
+    private getFormSubmissionDataQuery = gql` query getFormSubmissionData($formId: String!, $formSubmissionId: String!, $customDataType: String) {
+        getFormSubmissionData(formId: $formId, formSubmissionId: $formSubmissionId, customDataType: $customDataType) {
+            formSubmissionId
+            formId
+            submittedDate
+            name
+            email
+            appId
+            developerId
+            userId
+            formData {
+                skills
+                role
+                name
+                aboutme
+            }
+        }
+    }`;
+
+
+    constructor(private apollo: Apollo) {
+    }
+
+    testGetAllFormSubmissions() {
+        const subscription = this.getAllFormSubmissions('test', 1, 10, 'submittedDate', 'DESC')
+            .subscribe(response => {
+                console.log('getAllFormSubmissions' + JSON.stringify(response));
+            }, err => console.log('ERROR getAllFormSubmissions : ' + JSON.stringify(err)), () => subscription.unsubscribe());
+
+    }
+
+    testGetFormSubmissionData() {
+        const subscription = this.getFormSubmissionData('test', '5f632676ed72363871e1c689')
+            .subscribe(response => {
+                console.log('getFormSubmissionData : ' + JSON.stringify(response));
+            }, err => console.log('ERROR getFormSubmissionData: ' + JSON.stringify(err)), () => subscription.unsubscribe());
+    }
 
     testCasesToConsole() {
 
@@ -173,7 +224,8 @@ export class GraphqlService {
             query: this.allAppsQuery,
             variables: {
                 developerId,
-            }});
+            }
+        });
     }
 
     getForm(formId: string): Observable<ApolloQueryResult<any>> {
@@ -181,17 +233,48 @@ export class GraphqlService {
             query: this.formQuery,
             variables: {
                 formId,
-            }});
+            }
+        });
     }
 
     getAllForms(formId: string): Observable<ApolloQueryResult<any>> {
         return this.apollo.query({query: this.allFormsQuery});
     }
 
+    /**
+     * @param formId : required parameter.
+     * @param page : page number
+     * @param pageSize : count elements for on the one page
+     * @param sortBy : field name
+     * @param sortOrder : 'ASC' or 'DESC'
+     */
+    getAllFormSubmissions(formId: string, page: number, pageSize: number, sortBy: string, sortOrder: string): Observable<ApolloQueryResult<any>> {
+        return this.apollo.query({
+            query: this.allFormSubmissionsQuery,
+            variables: {
+                formId,
+                page,
+                pageSize,
+                sortBy,
+                sortOrder
+            }
+        });
+    }
+
+    getFormSubmissionData(formId: string, formSubmissionId: string): Observable<ApolloQueryResult<any>> {
+        return this.apollo.query({
+            query: this.getFormSubmissionDataQuery,
+            variables: {
+                formId,
+                formSubmissionId
+            }
+        });
+    }
+
     createFormSubmission(formId: string, submission: any) {
         return this.apollo.mutate({
             mutation: this.formSubmitMutation,
-            variables: { formId, submission },
+            variables: {formId, submission},
         });
     }
 }
