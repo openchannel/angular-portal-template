@@ -3,12 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: true,
-  apiUrl:'https://us1-template3-portal-api-test.openchannel.io/',
-  client_id:'5ebg7rrabovia2vcsqp2idk3u7',
-  client_secret:'8pq2sa6206pg89l2onh48u6uq169bqavs032i0s8lqgj5if3kbu',
-  openchannelUrl:'https://market.openchannel.io',
-  graphqlUrl: 'https://countries.trevorblades.com/'
+    production: false,
+    apiUrl: 'http://localhost:9090/',
+    client_id: '43m9qbjigr8ed6i1het1rdnfso',
+    client_secret: 'on5jmqp7uq00vgeg9tnq4pii2f1f3pm84q45uq907e8vhmr24ta',
+    openchannelUrl: 'https://market.openchannel.io',
+    graphqlUrl: 'https://cead411b7189.ngrok.io/graphql',
+    auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8='
 };
 
 
