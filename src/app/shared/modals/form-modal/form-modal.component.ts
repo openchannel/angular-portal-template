@@ -29,7 +29,7 @@ export class FormModalComponent implements OnInit, OnDestroy {
   initSubmissionDetailsForm(): void {
     this.submissionDetailsForm = this.fb.group({
       name: [''],
-      appId: [''],
+      appId: [null],
       userId: [null],
       email: [''],
     });
