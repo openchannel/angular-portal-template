@@ -8,7 +8,7 @@ export const environment = {
     client_id: '43m9qbjigr8ed6i1het1rdnfso',
     client_secret: 'on5jmqp7uq00vgeg9tnq4pii2f1f3pm84q45uq907e8vhmr24ta',
     openchannelUrl: 'https://market.openchannel.io',
-    graphqlUrl: 'https://9134ffe0461f.ngrok.io/graphql',
+    graphqlUrl: 'https://c522a1401433.ngrok.io/graphql',
     auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8='
 };
 
