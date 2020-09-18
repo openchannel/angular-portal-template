@@ -41,6 +41,7 @@ import { FormModalComponent } from './shared/modals/form-modal/form-modal.compon
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+import { SubmissionsTableComponent } from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -73,7 +74,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ActivationComponent,
     ResetPasswordComponent,
     FormListGeneratorComponent,
-    FormModalComponent
+    FormModalComponent,
+    SubmissionsTableComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
