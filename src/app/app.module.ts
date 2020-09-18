@@ -42,6 +42,7 @@ import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
 import { SubmissionsTableComponent } from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
+import { SubmissionsDataViewModalComponent } from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -75,7 +76,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ResetPasswordComponent,
     FormListGeneratorComponent,
     FormModalComponent,
-    SubmissionsTableComponent
+    SubmissionsTableComponent,
+    SubmissionsDataViewModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -90,7 +92,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
-    OcCommonLibModule, ReactiveFormsModule
+    OcCommonLibModule,
+    ReactiveFormsModule
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
@@ -102,7 +105,11 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
    },
    DatePipe],
   bootstrap: [AppComponent],
-  entryComponents: [LoaderComponent, FormModalComponent],
+  entryComponents: [
+    LoaderComponent,
+    FormModalComponent,
+    SubmissionsDataViewModalComponent
+  ],
 })
 export class AppModule {
 
