@@ -38,7 +38,7 @@ export class SubmissionsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   getSubmissions() {
     this.subscriber.add(this.graphQLService
-      .getAllFormSubmissions(this.formId, this.pageNum, 20, 'submittedDate', 'ASC')
+      .getAllFormSubmissions(this.formId, this.pageNum, 50, 'submittedDate', 'ASC')
       .subscribe(res => {
           this.submissionsData = res.data.getAllFormSubmissions.list;
           this.pageCount = res.data.getAllFormSubmissions.pages;
