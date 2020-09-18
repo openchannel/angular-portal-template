@@ -35,13 +35,10 @@ export class SubmissionsDataViewModalComponent implements OnInit {
 
   checkForSpecialData(value): 'array' | 'html' | 'string' {
     if (Array.isArray(value)) {
-      console.log('array');
       return 'array';
     } else if (value.includes('</')) {
-      console.log('html');
       return 'html';
     } else {
-      console.log('string');
       return 'string';
     }
   }
