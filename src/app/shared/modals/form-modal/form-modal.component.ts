@@ -52,6 +52,10 @@ export class FormModalComponent implements OnInit, OnDestroy {
     }
   }
 
+  closeModal() {
+    this.activeModal.close();
+  }
+
   ngOnDestroy() {
     this.subscriber.unsubscribe();
   }
