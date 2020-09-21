@@ -43,6 +43,7 @@ import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
 import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
 import {CreateAppComponent} from './components/applications/app-apps/app-create-app/create-app.component';
 import {OcCommonLibModule, OcDropboxComponent} from 'oc-ng-common-component';
+import { AppTypesComponent } from './components/applications/app-apps/app-list/app-types/app-types.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -77,7 +78,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FormListGeneratorComponent,
     FormModalComponent,
     AppListComponent,
-    CreateAppComponent
+    CreateAppComponent,
+    AppTypesComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
