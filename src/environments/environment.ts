@@ -10,7 +10,7 @@ export const environment = {
   // client_id:'5f20f800579d1a20c527d848',
   // client_secret:'5OqlDMSXRQX4aWCp5yWw8IT7RP-m1lhX2L0zSy4Ttj8',
   openchannelUrl: 'https://market.openchannel.io',
-  graphqlUrl: 'https://c522a1401433.ngrok.io/graphql',
+  graphqlUrl: 'http://929d3693b8e6.ngrok.io/graphql',
   auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8='
 };
 

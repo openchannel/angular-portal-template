@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
+import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {AppItem} from './model/app-item.model';
+
 
 @Component({
     selector: 'app-app-list',

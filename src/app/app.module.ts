@@ -19,9 +19,8 @@ import { LoaderComponent } from './shared/custom-components/loader/loader.compon
 import { DatePipe } from '@angular/common';
 import { SignupComponent } from './components/signup/signup.component';
 import { OcCommonServiceModule } from 'oc-ng-common-service';
-import { OcCommonLibModule } from 'oc-ng-common-component';
 import { AppStoreComponent } from './components/applications/app-store/app-store.component';
-import { AppListComponent } from './components/applications/app-list/app-list.component';
+import { AppAppsComponent } from './components/applications/app-apps/app-apps.component';
 import { AppDetailComponent } from './components/applications/app-detail/app-detail.component';
 import { AppDeveloperComponent } from './components/applications/app-developer/app-developer.component';
 import { AppNewComponent } from './components/applications/app-new/app-new.component';
@@ -41,6 +40,9 @@ import { FormModalComponent } from './shared/modals/form-modal/form-modal.compon
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
+import {CreateAppComponent} from './components/applications/app-apps/app-create-app/create-app.component';
+import {OcCommonLibModule, OcDropboxComponent} from 'oc-ng-common-component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -61,7 +63,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     SignupComponent,
     SignupComponent,
     AppStoreComponent,
-    AppListComponent,
+    AppAppsComponent,
     AppDetailComponent,
     AppDeveloperComponent,
     AppNewComponent,
@@ -73,7 +75,9 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ActivationComponent,
     ResetPasswordComponent,
     FormListGeneratorComponent,
-    FormModalComponent
+    FormModalComponent,
+    AppListComponent,
+    CreateAppComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

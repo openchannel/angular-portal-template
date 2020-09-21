@@ -4,7 +4,7 @@ import {CommonLayoutComponent} from './layouts/common-layout/common-layout.compo
 import {AppStoreComponent} from './components/applications/app-store/app-store.component';
 import {AppDetailComponent} from './components/applications/app-detail/app-detail.component';
 import {AppDeveloperComponent} from './components/applications/app-developer/app-developer.component';
-import {AppListComponent} from './components/applications/app-list/app-list.component';
+import {AppAppsComponent} from './components/applications/app-apps/app-apps.component';
 import {AppNewComponent} from './components/applications/app-new/app-new.component';
 import {MyProfileComponent} from './components/my-profile/my-profile.component';
 import {EditAppComponent} from './components/applications/edit-app/edit-app.component';
@@ -18,7 +18,7 @@ const routes: Routes = [
       {path: 'app-store', component: AppStoreComponent},
       {path: 'app-detail', component: AppDetailComponent},
       {path: 'app-developer', component: AppDeveloperComponent},
-      {path: 'app-list', component: AppListComponent},
+      {path: 'app-list', component: AppAppsComponent},
       {path: 'app-new', component: AppNewComponent},
       {path: 'my-profile', component: MyProfileComponent},
       {path: 'edit-app/:appId/version/:versionId', component: EditAppComponent},
