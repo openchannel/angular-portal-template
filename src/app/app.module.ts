@@ -43,6 +43,8 @@ import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
 import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
 import {CreateAppComponent} from './components/applications/app-apps/app-create-app/create-app.component';
 import {OcCommonLibModule, OcDropboxComponent} from 'oc-ng-common-component';
+import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
+import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -102,6 +104,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
      useFactory: createApollo,
      deps: [HttpLink],
    },
+    {provide: AppsServiceImpl, useClass: MockAppsService},
    DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [LoaderComponent, FormModalComponent],

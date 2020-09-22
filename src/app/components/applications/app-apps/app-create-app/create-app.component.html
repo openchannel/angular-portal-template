@@ -1,43 +1,49 @@
 <div class="d-flex flex-column justify-content-start p-3">
     <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">New App</span></h3>
     <hr class="ml-0 mr-0 mt-1 mb-3">
-    <div class="d-flex flex-row align-items-center mb-1">
-        <oc-label text="Developer ID" required="true" class="text-nowrap mr-1 w-25"></oc-label>
-        <div class="d-flex flex-column w-100">
-            <oc-dropbox placeHolder="Choice type"
-                        [clearFormAfterSelect]="false"
-                        [items]="currentAppsId"
-                        customClassStyle="form-control"
-                        [dropElementTemplate]="currentAppsIdTemplate"
-                        (selectedItem)="updateNewAppName($event)"
-                        (currentText)="updateNewAppName($event)"
-                        (existsItems)="onEmptyExistsItemsOfAllAppsId($event)"
-                        class="w-100"></oc-dropbox>
+    <form [formGroup]="appDataGroup">
+        <div class="d-flex flex-row align-items-start mb-1">
+            <oc-label text="Developer ID" required="true" class="text-nowrap mr-1 w-25"></oc-label>
+            <div class="d-flex flex-column w-100">
+                <oc-dropbox formControlName="appId"
+                            placeHolder="Start typing the ID"
+                            [(ngModel)]="appIdModelText"
+                            [clearFormAfterSelect]="false"
+                            [customSearch]="customSearch"
+                            customClassStyle="form-control"
+                            [dropElementTemplate]="appIdTemplate"
+                            class="w-100"></oc-dropbox>
+                <oc-error [control]="appDataGroup.get('appId')"></oc-error>
+            </div>
         </div>
-    </div>
-    <div class="d-flex flex-row align-items-center">
-        <oc-label text="App type" required="true" class="text-nowrap mr-1 w-25"></oc-label>
-        <oc-dropbox placeHolder="Choice type"
-                    [clearFormAfterSelect]="false"
-                    [items]="currentAppsId"
-                    customClassStyle="form-control"
-                    class="w-100"></oc-dropbox>
-    </div>
+        <div class="d-flex flex-row align-items-start">
+            <oc-label text="App type" required="true" class="text-nowrap mr-1 w-25"></oc-label>
+            <div class="d-flex flex-column w-100">
+                <oc-dropbox formControlName="appType"
+                            placeHolder="Choice type"
+                            [(ngModel)]="appTypeModelText"
+                            [clearFormAfterSelect]="false"
+                            [items]="currentAppsTypes"
+                            [dropElementTemplate]="defaultDropElementTemplate"
+                            customClassStyle="form-control"
+                            class="w-100">
+                </oc-dropbox>
+                <oc-error [control]="appDataGroup.get('appType')"></oc-error>
+            </div>
+        </div>
+    </form>
 </div>
 
-<!-- todo update image src and 'alt' -->
-<ng-template #createNewAppIdTemplate>
-    <div class="d-flex flex-row flex-nowrap align-items-center" (click)="createNewAppId()">
-        <img src="assets/img/delete.svg" alt="delete.svg" class="mr-1">
-        <div>Create new Developer withId : <strong>{{currentTextAppId}}</strong></div>
+<ng-template #appIdTemplate let-result="result">
+    <div class="dropbox-custom-elements dropdown-create-app mt-1 mb-1 p-1">
+        <img src="./assets/img/human-icon.svg" class="human-icon mr-1" alt="human-icon">
+        <div class="description">{{currentAppAction.description}}<strong>{{result}}</strong></div>
     </div>
 </ng-template>
 
-
-<!-- todo update image src and 'alt' -->
-<ng-template #showAppIdTemplate let-result="result">
-    <div class="d-flex flex-row flex-nowrap align-items-center">
-        <img src="assets/img/delete.svg" alt="delete.svg" class="mr-1">
-        <div>Developer ID : <strong>{{result}}</strong></div>
+<ng-template #defaultDropElementTemplate let-result="result">
+    <div class="dropbox-custom-elements dropdown-show-app p-2 ">
+        <div class="custom-text">{{result}}</div>
     </div>
 </ng-template>
+
