@@ -24,12 +24,17 @@
             <oc-label text="Description"></oc-label>
             <oc-textarea formControlName="description"></oc-textarea>
           </div>
-          <div class="row">
-            <oc-button text="SAVE CHANGES" type="primary" [class]="'mr-1'"></oc-button>
-            <oc-button text="CANCEL" type="secondary"></oc-button>
+          <div class="row ml-0" *ngIf="formsStatus[i].editable">
+            <oc-button text="SAVE CHANGES" type="primary" [class]="'mr-2'"></oc-button>
+            <oc-button text="CANCEL" type="secondary"
+                       *ngIf="!formsStatus[i].existed"
+                       (click)="cancelForm(i)"></oc-button>
+            <oc-button text="RESET" type="secondary"
+                       *ngIf="formsStatus[i].existed" (click)="resetForm(i, appForm)"></oc-button>
           </div>
         </form>
       </ng-template>
     </ngb-panel>
   </ngb-accordion>
+  <oc-button text="ADD TYPE" type="primary" [class]="'mt-2'" (click)="addAppType()"></oc-button>
 </div>
