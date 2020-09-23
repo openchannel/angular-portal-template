@@ -48,6 +48,7 @@ import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
 import { AppTypeFieldsComponent } from './components/applications/app-apps/app-list/app-types/app-type-fields/app-type-fields.component';
 import { AppFieldsComponent } from './components/applications/app-apps/app-fields/app-fields.component';
+import { ConfirmationModalComponent } from './shared/modals/confirmation-modal/confirmation-modal.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -86,7 +87,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     AppFieldsComponent,
     CreateAppComponent,
     AppTypesComponent,
-    AppTypeFieldsComponent
+    AppTypeFieldsComponent,
+    ConfirmationModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -114,7 +116,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     {provide: AppsServiceImpl, useClass: MockAppsService},
    DatePipe],
   bootstrap: [AppComponent],
-  entryComponents: [LoaderComponent, FormModalComponent],
+  entryComponents: [LoaderComponent, FormModalComponent, ConfirmationModalComponent],
 })
 export class AppModule {
 
