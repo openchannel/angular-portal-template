@@ -78,7 +78,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     getFieldsByAppType(appType: string) {
         this.subscriptions.push(this.appsService.getFieldsByAppType(appType).subscribe((fieldsResponse) => {
-                console.log('all fields : ' + JSON.stringify(fieldsResponse.list));
             }, (error => {
                 console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
             })));

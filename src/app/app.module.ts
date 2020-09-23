@@ -49,6 +49,9 @@ import {MockAppsService} from './core/services/apps-services/mock-apps-service/m
 import { AppTypeFieldsComponent } from './components/applications/app-apps/app-list/app-types/app-type-fields/app-type-fields.component';
 import { AppFieldsComponent } from './components/applications/app-apps/app-fields/app-fields.component';
 import { ConfirmationModalComponent } from './shared/modals/confirmation-modal/confirmation-modal.component';
+import { AddFieldModalComponent } from './shared/modals/add-field-modal/add-field-modal.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -88,7 +91,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     CreateAppComponent,
     AppTypesComponent,
     AppTypeFieldsComponent,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    AddFieldModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -103,7 +107,10 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
-    OcCommonLibModule, ReactiveFormsModule
+    OcCommonLibModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    DragDropModule
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
@@ -116,7 +123,12 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     {provide: AppsServiceImpl, useClass: MockAppsService},
    DatePipe],
   bootstrap: [AppComponent],
-  entryComponents: [LoaderComponent, FormModalComponent, ConfirmationModalComponent],
+  entryComponents: [
+    LoaderComponent,
+    FormModalComponent,
+    ConfirmationModalComponent,
+    AddFieldModalComponent
+  ],
 })
 export class AppModule {
 
