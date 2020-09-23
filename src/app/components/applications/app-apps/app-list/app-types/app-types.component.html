@@ -33,6 +33,13 @@
                        *ngIf="formsStatus[i].existed" (click)="resetForm(i, appForm)"></oc-button>
           </div>
         </form>
+        <section class="mt-3">
+          <h5>Fields</h5>
+          <hr class="mt-2 mb-2">
+          <div>
+            <app-app-type-fields></app-app-type-fields>
+          </div>
+        </section>
       </ng-template>
     </ngb-panel>
   </ngb-accordion>

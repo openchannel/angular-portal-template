@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
-import {MockAppsService} from '../../../../core/services/apps-services/mock-apps-service/mock-apps-service.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppsServiceImpl} from '../../../../core/services/apps-services/model/apps-service-impl';
+import {AppField} from '../../../../core/services/apps-services/model/apps-model';
 
 @Component({
     selector: 'app-create-app',
@@ -20,13 +20,11 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         description: 'Create new Developer with ID : '
     }];
 
-    appIdModelText = '';
-    appTypeModelText = '';
-
     currentAppAction = this.appActions[0];
     currentAppsTypes: string [] = [];
 
     appDataGroup: FormGroup;
+    appFields: AppField[];
     subscriptions: Subscription [] = [];
 
     constructor(private appsService: AppsServiceImpl,
@@ -36,6 +34,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.initAppDataGroup();
         this.getAllAppTypes();
+        this.getFieldsByAppType('test');
     }
 
     initAppDataGroup(): void {
@@ -75,6 +74,14 @@ export class CreateAppComponent implements OnInit, OnDestroy {
             console.error('Can\'t get all Apps : ' + JSON.stringify(error));
             this.currentAppsTypes = [];
         }));
+    }
+
+    getFieldsByAppType(appType: string) {
+        this.subscriptions.push(this.appsService.getFieldsByAppType(appType).subscribe((fieldsResponse) => {
+                console.log('all fields : ' + JSON.stringify(fieldsResponse.list));
+            }, (error => {
+                console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
+            })));
     }
 
     ngOnDestroy(): void {

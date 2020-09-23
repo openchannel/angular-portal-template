@@ -46,6 +46,8 @@ import {OcCommonLibModule, OcDropboxComponent} from 'oc-ng-common-component';
 import { AppTypesComponent } from './components/applications/app-apps/app-list/app-types/app-types.component';
 import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
+import { AppTypeFieldsComponent } from './components/applications/app-apps/app-list/app-types/app-type-fields/app-type-fields.component';
+import { AppFieldsComponent } from './components/applications/app-apps/app-fields/app-fields.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -81,7 +83,10 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FormModalComponent,
     AppListComponent,
     CreateAppComponent,
-    AppTypesComponent
+    AppFieldsComponent,
+    CreateAppComponent,
+    AppTypesComponent,
+    AppTypeFieldsComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
