@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import {OAuthService} from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-header',
@@ -8,8 +9,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
-  sellerName : string = null;
-  constructor(public router:Router){
+  sellerName: string = null;
+  constructor(public router: Router,
+              private oauthService: OAuthService) {
  //   console.log("header component loaded.");
      this.displayUserInfo();
 }
@@ -18,15 +20,20 @@ export class HeaderComponent implements OnInit {
   }
 
 
-  displayUserInfo(){
-      if (localStorage.getItem("email")) {
-        this.sellerName = localStorage.getItem("email");
-      }
+  displayUserInfo() {
+      // if (localStorage.getItem('email')) {
+      //   this.sellerName = localStorage.getItem('email');
+      // }
+
+    const claims = this.oauthService.getIdentityClaims();
+    if (claims) {
+      this.sellerName = claims['name'];
+    }
   }
 
-  logout(){
-    localStorage.clear();
-    this.router.navigateByUrl("/login");
+  logout() {
+    this.oauthService.logOut();
+    this.router.navigateByUrl('/login');
   }
 
 }

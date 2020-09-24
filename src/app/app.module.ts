@@ -41,6 +41,8 @@ import { FormModalComponent } from './shared/modals/form-modal/form-modal.compon
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+import {OAuthModule} from 'angular-oauth2-oidc';
+import {AppService} from "./core/api/app.service";
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -88,7 +90,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
-    OcCommonLibModule, ReactiveFormsModule
+    OcCommonLibModule, ReactiveFormsModule,
+    OAuthModule.forRoot()
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
@@ -98,7 +101,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
      useFactory: createApollo,
      deps: [HttpLink],
    },
-   DatePipe],
+   DatePipe, AppService],
   bootstrap: [AppComponent],
   entryComponents: [LoaderComponent, FormModalComponent],
 })
