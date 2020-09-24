@@ -62,7 +62,7 @@ export interface FiledAttributes {
     accept?: string;
 
     // tags field (minCount, maxCount)
-    
+
     // dynamic field
     ordering?: string;
     rowLabel?: string;
@@ -70,4 +70,8 @@ export interface FiledAttributes {
     // number field
     min?: number;
     max?: number;
+}
+
+export interface AppType extends BasicApp {
+    fieldDefinitions: FieldDefinition [];
 }

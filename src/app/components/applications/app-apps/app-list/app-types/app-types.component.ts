@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GraphqlService } from '../../../../../graphql-client/graphql-service/graphql.service';
 import { Subscription } from 'rxjs';
+import { MockAppsService } from '../../../../../core/services/apps-services/mock-apps-service/mock-apps-service.service';
+import { AppType } from '../../../../../core/services/apps-services/model/apps-model';
 
 export interface FormStatus {
   editable: boolean;
@@ -23,8 +25,11 @@ export class AppTypesComponent implements OnInit, OnDestroy {
   private newAppFormSubscribers: Subscription [] = [];
   // array of Created App Type forms subscriptions
   private appTypeFormSubscribers: Subscription [] = [];
+  // main subscription for http requests
+  private requestSubscriber: Subscription = new Subscription();
   constructor(private fb: FormBuilder,
-              private graphQLService: GraphqlService) { }
+              private graphQLService: GraphqlService,
+              private mockService: MockAppsService) { }
 
   ngOnInit(): void {
     this.getAppTypes();
@@ -32,7 +37,19 @@ export class AppTypesComponent implements OnInit, OnDestroy {
 
   // todo this function will get all previously created apps
   getAppTypes(): void {
-    this.addAppType();
+    this.requestSubscriber.add(
+      this.mockService.getAppTypes().subscribe(
+        result => {
+          if (result.list && result.list.length > 0) {
+            this.appTypesData = result.list;
+            this.appTypesData.forEach((item, index) => {
+              this.fillAppType(item, index);
+            });
+          } else {
+            this.addAppType();
+          }
+        }
+      ));
   }
   /**
    * Adding Empty form to the App type forms
@@ -42,6 +59,7 @@ export class AppTypesComponent implements OnInit, OnDestroy {
       label: ['', Validators.required],
       id: ['', Validators.required],
       description: [''],
+      fieldDefinitions: this.fb.array([])
     });
     const formStatus = {
       editable: true,
@@ -62,17 +80,21 @@ export class AppTypesComponent implements OnInit, OnDestroy {
   /**
    * Adding form with data to the App type forms
    */
-  fillAppType(appTypeObj: {id: string, label: string, description: string}, index: number): void {
+  fillAppType(appTypeObj: AppType,
+              index: number): void {
     const appForm = this.fb.group({
       label: [appTypeObj.label, Validators.required],
-      id: {value: appTypeObj.id, disabled: true, validator: Validators.required},
+      id: [appTypeObj.id, Validators.required],
       description: [appTypeObj.description],
+      fieldDefinitions: this.fb.array(appTypeObj.fieldDefinitions)
     });
     const formStatus = {
       editable: false,
       existed: true
     };
     const formSubscription = new Subscription();
+
+    appForm.get('id').disable({onlySelf: true});
 
     formSubscription.add(appForm.valueChanges.subscribe(changes => {
       if (!this.formsStatus[index].editable) {
