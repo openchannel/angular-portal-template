@@ -446,7 +446,7 @@ export class MockAppsService extends AppsServiceImpl {
         return of(this.backEndGetApps(page, pageSize));
     }
 
-    getFieldsByAppType(appType: string): Observable<AllAppFields> {
+    getFieldsByAppType(appType: string): Observable<any> {
         return of(this.appFields);
     }
 

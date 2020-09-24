@@ -21,10 +21,10 @@
       <tr *ngFor="let field of fieldDefinitions; let i = index"
            cdkDrag class="cursor-drug">
         <td>{{field.label}}</td>
-        <td>{{field.type}}</td>
+        <td>{{field.type | camelCaseToNormal | titlecase}}</td>
         <td>
           <div class="row mb-1" *ngFor="let attribute of field.attributes | keyvalue">
-            <div class="col-5 p-0 font-bold">{{attribute.key}}</div>
+            <div class="col-5 p-0 font-bold">{{attribute.key | camelCaseToNormal | titlecase}}</div>
             <div class="col-7 pl-2 pr-0">
               {{attribute.value}}
             </div>

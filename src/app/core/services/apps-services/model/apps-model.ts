@@ -39,7 +39,7 @@ export interface FieldDefinition {
     label: string;
     defaultValue?: string;
     description?: string;
-    type: string;
+    type: FieldType;
     attributes?: FiledAttributes;
     subFieldDefinitions?: FieldDefinition [];
     options?: any [];
@@ -74,4 +74,31 @@ export interface FiledAttributes {
 
 export interface AppType extends BasicApp {
     fieldDefinitions: FieldDefinition [];
+}
+
+export enum FieldType {
+    // String Types
+    text = 'text',
+    longText = 'longText',
+    richText = 'richText',
+    color = 'color',
+    dropdownList = 'dropdownList',
+    // Numeric Types
+    number = 'number',
+    // Collection Types
+    multiFile = 'multiFile',
+    multiPrivateFile = 'multiPrivateFile',
+    multiImage = 'multiImage',
+    numberTags = 'numberTags',
+    booleanTags = 'booleanTags',
+    multiselectList = 'multiselectList',
+    dynamicFieldArray = 'dynamicFieldArray',
+    tags = 'tags',
+    // URL Types
+    websiteUrl = 'websiteUrl',
+    videoUrl = 'videoUrl',
+    singleFile = 'singleFile',
+    singleImage = 'singleImage',
+    // Email Types
+    emailAddress = 'emailAddress'
 }
