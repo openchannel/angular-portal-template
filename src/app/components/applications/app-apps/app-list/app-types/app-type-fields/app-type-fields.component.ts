@@ -3,6 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModalComponent } from '../../../../../../shared/modals/confirmation-modal/confirmation-modal.component';
 import { AddFieldModalComponent } from '../../../../../../shared/modals/add-field-modal/add-field-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { FieldPreviewModalComponent } from '../../../../../../shared/modals/field-preview-modal/field-preview-modal.component';
 
 @Component({
   selector: 'app-app-type-fields',
@@ -38,9 +39,14 @@ export class AppTypeFieldsComponent implements OnInit {
   }
 
   editField(fullFieldData?: any, index?: number): void {
-    const modalRef = this.modalService.open(AddFieldModalComponent);
+    const modalRef = this.modalService.open(AddFieldModalComponent, { size: 'lg' });
 
-    modalRef.componentInstance.fieldData = fullFieldData;
+    if (fullFieldData) {
+      modalRef.componentInstance.fieldData = fullFieldData;
+      modalRef.componentInstance.action = 'Edit';
+    } else {
+      modalRef.componentInstance.action = 'Add';
+    }
 
     modalRef.result.then(result => {
       if (result.status === 'success') {
@@ -55,7 +61,8 @@ export class AppTypeFieldsComponent implements OnInit {
   }
 
   previewField(fullFieldData): void {
-    // todo open preview modal
+    const modalRef = this.modalService.open(FieldPreviewModalComponent, { size: 'lg' });
+    modalRef.componentInstance.fieldFullData = fullFieldData;
   }
 
   itemDropped(event: CdkDragDrop<any[]>) {

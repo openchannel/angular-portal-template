@@ -79,10 +79,10 @@ export interface AppType extends BasicApp {
 export enum FieldType {
     // String Types
     text = 'text',
-    longText = 'longText',
+    // longText = 'longText',
     richText = 'richText',
     // color = 'color',
-    // dropdownList = 'dropdownList',
+    dropdownList = 'dropdownList',
     // Numeric Types
     // number = 'number',
     // Collection Types

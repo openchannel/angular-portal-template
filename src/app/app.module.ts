@@ -54,6 +54,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FieldOptionsComponent } from './shared/modals/add-field-modal/field-options/field-options.component';
 import { CamelCaseToNormalPipe } from './shared/custom-components/camel-case-to-normal.pipe';
+import { FieldPreviewModalComponent } from './shared/modals/field-preview-modal/field-preview-modal.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -96,7 +97,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ConfirmationModalComponent,
     AddFieldModalComponent,
     FieldOptionsComponent,
-    CamelCaseToNormalPipe
+    CamelCaseToNormalPipe,
+    FieldPreviewModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -131,7 +133,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
-    AddFieldModalComponent
+    AddFieldModalComponent,
+    FieldPreviewModalComponent
   ],
 })
 export class AppModule {
