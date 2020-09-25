@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import {environment} from '../../../environments/environment';
+import {OAuthService} from 'angular-oauth2-oidc';
 
 export class Foo {
     constructor(
@@ -17,7 +18,7 @@ export class AppService {
     public clientId = '0oa11pl24mzaaTWK24x7';
     // public redirectUri = 'http://localhost:8089/';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private oauthService: OAuthService) {}
 
     retrieveToken(code) {
         const params = new URLSearchParams();
@@ -25,12 +26,13 @@ export class AppService {
         params.append('client_id', this.clientId);
         // params.append('redirect_uri', this.redirectUri);
         params.append('code', code);
+        params.append('state', '13412431');
 
         const headers = new HttpHeaders({
             'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
             Authorization: 'Basic ' + btoa(this.clientId + ':K2ZLxiPS1Eq_Ai4TAE06FLEFIe5HZ1Xi32tpc3Ru')
         });
-        this.http.post(environment.apiUrl + 'oauth/token', params.toString(), { headers })
+        this.http.post(environment.apiUrl + 'login', params.toString(), { headers })
             .subscribe(
                 data => this.saveToken(data),
                 err => alert('Invalid Credentials')
@@ -59,5 +61,25 @@ export class AppService {
         // Cookie.delete('access_token');
         localStorage.removeItem('access_token');
         window.location.reload();
+    }
+
+    initToken() {
+        // const params = new URLSearchParams();
+        // params.append('grant_type', 'authorization_code');
+        // params.append('client_id', this.clientId);
+        // // params.append('redirect_uri', this.redirectUri);
+        // params.append('code', code);
+        // params.append('state', '13412431');
+
+        const headers = new HttpHeaders({
+            // 'Content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+            Authorization: this.oauthService.getIdToken(),
+            // id_token: this.oauthService.getIdToken(),
+        });
+        this.http.post(environment.apiUrl + 'login', null, { headers })
+            .subscribe(
+                data => this.saveToken(data),
+                err => alert('Invalid Credentials')
+            );
     }
 }
