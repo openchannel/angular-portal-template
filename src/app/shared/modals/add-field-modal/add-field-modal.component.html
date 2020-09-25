@@ -1,0 +1,11 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title">{{action}} Field</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeModalWithResult('cancel')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <app-field-options (optionsValue)="getOptionsValue($event)" [type]="fieldData.type"></app-field-options>
+  </div>
+</div>

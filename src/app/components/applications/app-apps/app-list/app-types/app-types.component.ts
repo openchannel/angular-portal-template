@@ -18,7 +18,7 @@ export interface FormStatus {
 export class AppTypesComponent implements OnInit, OnDestroy {
 
   public appTypes: FormArray = new FormArray([]);
-  public appTypesData: any [];
+  public appTypesData: AppType [];
   // array for checking status of current form
   public formsStatus: FormStatus [] = [];
   // array of New Type App form subscriptions
