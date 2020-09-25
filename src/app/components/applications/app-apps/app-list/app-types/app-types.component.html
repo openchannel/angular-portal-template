@@ -25,7 +25,8 @@
             <oc-textarea formControlName="description"></oc-textarea>
           </div>
           <div class="row ml-0" *ngIf="formsStatus[i].editable">
-            <oc-button text="SAVE CHANGES" type="primary" [class]="'mr-2'"></oc-button>
+            <oc-button text="SAVE CHANGES" type="primary" [class]="'mr-2'"
+                       (click)="saveAppTypeData(appForm, i)"></oc-button>
             <oc-button text="CANCEL" type="secondary"
                        *ngIf="!formsStatus[i].existed"
                        (click)="cancelForm(i)"></oc-button>
@@ -38,7 +39,8 @@
           <h5>Fields</h5>
           <hr class="mt-2 mb-2">
           <div>
-            <app-app-type-fields [fieldDefinitions]="appTypesData[i]?.fieldDefinitions">
+            <app-app-type-fields [fieldDefinitions]="appTypesData[i]?.fieldDefinitions"
+                                 (fieldsChanging)="catchFieldChanging($event, appForm)">
             </app-app-type-fields>
           </div>
         </section>

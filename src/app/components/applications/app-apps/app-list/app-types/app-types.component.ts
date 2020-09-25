@@ -35,13 +35,12 @@ export class AppTypesComponent implements OnInit, OnDestroy {
     this.getAppTypes();
   }
 
-  // todo this function will get all previously created apps
   getAppTypes(): void {
     this.requestSubscriber.add(
-      this.mockService.getAppTypes().subscribe(
+      this.graphQLService.getAppTypes().subscribe(
         result => {
-          if (result.list && result.list.length > 0) {
-            this.appTypesData = result.list;
+          if (result.data.getAppTypes.list && result.data.getAppTypes.list.length > 0) {
+            this.appTypesData = result.data.getAppTypes.list;
             this.appTypesData.forEach((item, index) => {
               this.fillAppType(item, index);
             });
@@ -59,7 +58,7 @@ export class AppTypesComponent implements OnInit, OnDestroy {
       label: ['', Validators.required],
       id: ['', Validators.required],
       description: [''],
-      fieldDefinitions: this.fb.array([])
+      fieldDefinitions: ['']
     });
     const formStatus = {
       editable: true,
@@ -86,7 +85,7 @@ export class AppTypesComponent implements OnInit, OnDestroy {
       label: [appTypeObj.label, Validators.required],
       id: [appTypeObj.id, Validators.required],
       description: [appTypeObj.description],
-      fieldDefinitions: this.fb.array(appTypeObj.fieldDefinitions)
+      fieldDefinitions: [appTypeObj.fieldDefinitions]
     });
     const formStatus = {
       editable: false,
@@ -123,6 +122,22 @@ export class AppTypesComponent implements OnInit, OnDestroy {
     form.get('label').setValue(this.appTypesData[index].label);
     form.get('description').setValue(this.appTypesData[index].description);
     this.formsStatus[index].editable = false;
+  }
+
+  saveAppTypeData(appTypeForm: any, index?: number) {
+    const appData = appTypeForm.getRawValue();
+    this.graphQLService.updateAppType(appData.id, appData).subscribe(
+      result => {
+        if (index) {
+          this.formsStatus[index].editable = false;
+        }
+      }
+    );
+  }
+
+  catchFieldChanging(fieldsDefinitions, appTypeForm) {
+    appTypeForm.get('fieldDefinitions').setValue(fieldsDefinitions);
+    this.saveAppTypeData(appTypeForm);
   }
 
   ngOnDestroy() {

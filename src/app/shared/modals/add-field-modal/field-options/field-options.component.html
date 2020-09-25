@@ -12,12 +12,15 @@
       <ng-container *ngIf="control.key === 'accept'">
         <oc-tags [availableTags]="fileExtensions"
                  [(ngModel)]="extensionsResultArray"
+                 [ngModelOptions]="{standalone: true}"
                  placeHolderDropBoxName="Select Accept Types"
-                 placeHolderInputName="Add Accept Types"></oc-tags>
+                 placeHolderInputName="Add Accept Types"
+                 title="Accept"></oc-tags>
       </ng-container>
       <ng-container *ngIf="control.key === 'hash'">
         <oc-dropbox [items]="hashes"
-                    [(ngModel)]="resultHashes" placeHolder="Select Hash Values"></oc-dropbox>
+                    [(ngModel)]="resultHashes" placeHolder="Select Hash Values"
+                    [ngModelOptions]="{standalone: true}"></oc-dropbox>
       </ng-container>
     </div>
   </form>

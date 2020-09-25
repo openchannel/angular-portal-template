@@ -86,9 +86,9 @@ export enum FieldType {
     // Numeric Types
     // number = 'number',
     // Collection Types
-    // multiFile = 'multiFile',
+    multiFile = 'multiFile',
     // multiPrivateFile = 'multiPrivateFile',
-    // multiImage = 'multiImage',
+    multiImage = 'multiImage',
     // numberTags = 'numberTags',
     // booleanTags = 'booleanTags',
     // multiselectList = 'multiselectList',

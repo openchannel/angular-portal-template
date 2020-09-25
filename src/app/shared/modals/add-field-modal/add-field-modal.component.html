@@ -26,10 +26,13 @@
         <oc-select formControlName="type" [selectValArr]="allTypes"></oc-select>
         <oc-error [control]="fieldForm.get('type')"></oc-error>
       </div>
-      <div class="form-group" *ngIf="fieldForm.get('type').value === 'tags'">
+      <div class="form-group" *ngIf="fieldForm.get('type').value === 'tags' ||
+                              fieldForm.get('type').value === 'dropdownList'">
         <oc-tags [(ngModel)]="optionsForTags"
+                 [ngModelOptions]="{standalone: true}"
                  title="Options"
-                 [ngModelOptions]="{standalone: true}"></oc-tags>
+                 placeHolderInputName="Add Values"
+                 ></oc-tags>
       </div>
       <app-field-options (optionsValue)="getOptionsValue($event)"
                          [type]="fieldForm.get('type').value"
@@ -50,7 +53,29 @@
         <div class="form-group" *ngSwitchCase="'tags'">
           <oc-tags formControlName="defaultValue"
                    title="Default value"
-                   [availableTags]="optionsForTags"></oc-tags>
+                   [availableTags]="optionsForTags"
+                   placeHolderInputName="Add Default Value"
+                   placeHolderDropBoxName="Select Default Value"></oc-tags>
+        </div>
+        <div *ngSwitchCase="'multiFile'" class="mt-2 mb-2">
+          <oc-label text="Default Value"></oc-label>
+          <oc-file-upload
+                  formControlName="defaultValue"
+                  isMultiFile="true"
+                  fileType="'multiFile'"
+                  uploadIconUrl="https://stage1-philips-market-test.openchannel.io/assets/img/item-1.png"
+                  [mockUploadingFile]="mockUploadingFile" >
+          </oc-file-upload>
+        </div>
+        <div *ngSwitchCase="'multiImage'" class="mt-2 mb-2">
+          <oc-label text="Default Value"></oc-label>
+          <oc-file-upload
+                  formControlName="defaultValue"
+                  isMultiFile="true"
+                  fileType="'multiImage'"
+                  [uploadIconUrl]="'https://stage1-philips-market-test.openchannel.io/assets/img/item-1.png'"
+                  [mockUploadingFile]="mockUploadingFile">
+          </oc-file-upload>
         </div>
       </ng-container>
       <div class="form-group">

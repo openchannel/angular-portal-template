@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FieldType, FiledAttributes } from '../../../core/services/apps-services/model/apps-model';
 import { Subscription } from 'rxjs';
+import { FileDetails } from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-add-field-modal',
@@ -79,6 +80,9 @@ export class AddFieldModalComponent implements OnInit, OnDestroy {
     });
     this.fieldForm.get('id').disable({onlySelf: true});
     this.attributesData = this.fieldData.attributes;
+    if (this.fieldData.options) {
+      this.optionsForTags = this.fieldData.options;
+    }
   }
 
   fillTypesArray() {
@@ -103,6 +107,16 @@ export class AddFieldModalComponent implements OnInit, OnDestroy {
     } else {
       this.activeModal.close(modalData);
     }
+  }
+
+  mockUploadingFile(): FileDetails {
+    const currentDate = new Date().getDate();
+    const fileDetails = new FileDetails();
+    fileDetails.uploadDate = currentDate;
+    fileDetails.fileId = `file_id_${currentDate}`;
+    fileDetails.fileUploadProgress = 100;
+    fileDetails.fileUrl = 'https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2015/04/irkutsk_and_lake_baikal/15342550-1-eng-GB/Irkutsk_and_Lake_Baikal.jpg';
+    return fileDetails;
   }
 
   ngOnDestroy() {

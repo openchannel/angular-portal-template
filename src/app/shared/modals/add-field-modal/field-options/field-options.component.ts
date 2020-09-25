@@ -25,7 +25,7 @@ export class FieldOptionsComponent implements OnInit, OnChanges, OnDestroy {
   public fileExtensions: string [];
   public extensionsResultArray: string [];
   public resultHashes: string [];
-  public isRequired: boolean = false;
+  public isRequired: boolean = true;
 
   private firstType: FieldType;
   private subscriber: Subscription = new Subscription();
@@ -56,7 +56,7 @@ export class FieldOptionsComponent implements OnInit, OnChanges, OnDestroy {
   initOptionsForm(): void {
     switch (this.type) {
       case FieldType.text:
-      case FieldType.longText:
+      // case FieldType.longText:
       case FieldType.richText:
         this.optionsForm = this.fb.group({
           minChars: [],
@@ -114,7 +114,9 @@ export class FieldOptionsComponent implements OnInit, OnChanges, OnDestroy {
         group[key] = new FormControl(optionsFields[key]);
       });
       this.optionsForm = new FormGroup(group);
-      this.isRequired = optionsFields.required;
+      if (optionsFields.required) {
+        this.isRequired = optionsFields.required;
+      }
     }
   }
 

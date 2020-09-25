@@ -17,23 +17,25 @@ export class AppTypeFieldsComponent implements OnInit {
   /** Sending fields data to the parent */
   @Output() fieldsChanging = new EventEmitter<any>();
 
+  public newFieldDefinitions = [];
   constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
+    this.newFieldDefinitions = this.fieldDefinitions;
   }
 
   deleteField(index: number): void {
     const modalRef = this.modalService.open(ConfirmationModalComponent);
 
     modalRef.componentInstance.modalText = 'Are you sure you want to delete '
-      + this.fieldDefinitions[index].label + ' field?';
+      + this.newFieldDefinitions[index].label + ' field?';
     modalRef.componentInstance.action = 'Delete';
     modalRef.componentInstance.buttonText = 'DELETE';
 
     modalRef.result.then(result => {
       if (result === 'success') {
-        this.fieldDefinitions.splice(index, 1);
-        this.fieldsChanging.emit(this.fieldDefinitions);
+        this.newFieldDefinitions = this.newFieldDefinitions.splice(index, 1);
+        this.fieldsChanging.emit(this.newFieldDefinitions);
       }
     });
   }
@@ -51,11 +53,11 @@ export class AppTypeFieldsComponent implements OnInit {
     modalRef.result.then(result => {
       if (result.status === 'success') {
         if (index) {
-          this.fieldDefinitions.splice(index, 1, result.fieldData);
+          this.newFieldDefinitions = this.newFieldDefinitions.splice(index, 1, result.fieldData);
         } else {
-          this.fieldDefinitions.push(result.fieldData);
+          this.newFieldDefinitions = [...this.newFieldDefinitions, result.fieldData];
         }
-        this.fieldsChanging.emit(this.fieldDefinitions);
+        this.fieldsChanging.emit(this.newFieldDefinitions);
       }
     });
   }
@@ -66,7 +68,7 @@ export class AppTypeFieldsComponent implements OnInit {
   }
 
   itemDropped(event: CdkDragDrop<any[]>) {
-    moveItemInArray(this.fieldDefinitions, event.previousIndex, event.currentIndex);
-    this.fieldsChanging.emit(this.fieldDefinitions);
+    moveItemInArray(this.newFieldDefinitions, event.previousIndex, event.currentIndex);
+    this.fieldsChanging.emit(this.newFieldDefinitions);
   }
 }

@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody cdkDropList (cdkDropListDropped)="itemDropped($event)">
-      <tr *ngFor="let field of fieldDefinitions; let i = index"
+      <tr *ngFor="let field of newFieldDefinitions; let i = index"
            cdkDrag class="cursor-drug">
         <td>{{field.label}}</td>
         <td>{{field.type | camelCaseToNormal | titlecase}}</td>
