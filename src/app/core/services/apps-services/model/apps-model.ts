@@ -81,24 +81,24 @@ export enum FieldType {
     text = 'text',
     longText = 'longText',
     richText = 'richText',
-    color = 'color',
-    dropdownList = 'dropdownList',
+    // color = 'color',
+    // dropdownList = 'dropdownList',
     // Numeric Types
-    number = 'number',
+    // number = 'number',
     // Collection Types
-    multiFile = 'multiFile',
-    multiPrivateFile = 'multiPrivateFile',
-    multiImage = 'multiImage',
-    numberTags = 'numberTags',
-    booleanTags = 'booleanTags',
-    multiselectList = 'multiselectList',
-    dynamicFieldArray = 'dynamicFieldArray',
+    // multiFile = 'multiFile',
+    // multiPrivateFile = 'multiPrivateFile',
+    // multiImage = 'multiImage',
+    // numberTags = 'numberTags',
+    // booleanTags = 'booleanTags',
+    // multiselectList = 'multiselectList',
+    // dynamicFieldArray = 'dynamicFieldArray',
     tags = 'tags',
     // URL Types
-    websiteUrl = 'websiteUrl',
-    videoUrl = 'videoUrl',
-    singleFile = 'singleFile',
-    singleImage = 'singleImage',
+    // websiteUrl = 'websiteUrl',
+    // videoUrl = 'videoUrl',
+    // singleFile = 'singleFile',
+    // singleImage = 'singleImage',
     // Email Types
-    emailAddress = 'emailAddress'
+    // emailAddress = 'emailAddress'
 }

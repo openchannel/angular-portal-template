@@ -25,7 +25,7 @@ export class FieldOptionsComponent implements OnInit, OnChanges, OnDestroy {
   public fileExtensions: string [];
   public extensionsResultArray: string [];
   public resultHashes: string [];
-  public isRequired: boolean;
+  public isRequired: boolean = false;
 
   private firstType: FieldType;
   private subscriber: Subscription = new Subscription();
@@ -64,41 +64,41 @@ export class FieldOptionsComponent implements OnInit, OnChanges, OnDestroy {
           required: []
         });
         break;
-      case FieldType.multiselectList:
+      // case FieldType.multiselectList:
       case FieldType.tags:
-      case FieldType.booleanTags:
-      case FieldType.numberTags:
-      case FieldType.dynamicFieldArray:
+      // case FieldType.booleanTags:
+      // case FieldType.numberTags:
+      // case FieldType.dynamicFieldArray:
         this.optionsForm = this.fb.group({
           minCount: [],
           maxCount: [],
           required: []
         });
         break;
-      case FieldType.number:
-        this.optionsForm = this.fb.group({
-          min: [],
-          max: [],
-          required: []
-        });
-        break;
-      case FieldType.singleFile:
-        this.optionsForm = this.fb.group({
-          accept: [],
-          hash: [],
-          required: []
-        });
-        break;
-      case FieldType.singleImage:
-      case FieldType.multiImage:
-        this.optionsForm = this.fb.group({
-          accept: [],
-          hash: [],
-          required: [],
-          height: [],
-          width: []
-        });
-        break;
+      // case FieldType.number:
+      //   this.optionsForm = this.fb.group({
+      //     min: [],
+      //     max: [],
+      //     required: []
+      //   });
+      //   break;
+      // case FieldType.singleFile:
+      //   this.optionsForm = this.fb.group({
+      //     accept: [],
+      //     hash: [],
+      //     required: []
+      //   });
+      //   break;
+      // case FieldType.singleImage:
+      // case FieldType.multiImage:
+      //   this.optionsForm = this.fb.group({
+      //     accept: [],
+      //     hash: [],
+      //     required: [],
+      //     height: [],
+      //     width: []
+      //   });
+      //   break;
       default:
         this.optionsForm = this.fb.group({
           required: []
