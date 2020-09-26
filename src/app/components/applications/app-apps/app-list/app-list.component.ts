@@ -48,8 +48,6 @@ export class AppListComponent implements OnInit {
         this.graphqlClient.getAllApps().subscribe((response: { data: { allApps: AppItem[] } }) => {
             if (response && response.data && response.data.allApps) {
                 this.apps = response.data.allApps;
-            } else {
-                console.log('ERROR Get all apps.');
             }
         }, () => console.log('ERROR Get all apps.'));
     }

@@ -1,20 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { OauthService, SellerSignin, SellerService, AuthenticationService } from 'oc-ng-common-service';
-import { environment } from 'src/environments/environment';
+import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
-import { LoaderService } from 'src/app/shared/services/loader.service';
-import {AuthConfig, OAuthService, OAuthStorage} from 'angular-oauth2-oidc';
+import {LoaderService} from 'src/app/shared/services/loader.service';
+import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
 import {AppService} from '../../core/api/app.service';
-
-export const authConfig: AuthConfig = {
-  issuer: 'https://dev-587258.okta.com',
-  redirectUri: window.location.origin,
-  clientId: '0oa11492lhqJkCy7r4x7',
-  // requestAccessToken: true,
-  // responseType: 'code',
-  // openUri: (value: string) => console.log(value),
-};
+import {GraphqlService} from "../../graphql-client/graphql-service/graphql.service";
 
 @Component({
   selector: 'app-login',
@@ -27,75 +18,52 @@ export class LoginComponent implements OnInit {
   signupUrl = '/signup';
   forgotPwdUrl = '/forgot-password';
   successLoginFwdUrl = '/app-developer';
-  signIn = new SellerSignin();
   inProcess = false;
   isLoading = true;
+  //todo remove
+  tokenInfo: string;
+
+  // todo add ts type
+  authConfig: any;
+
   constructor(private oauthService: OAuthService, private appService: AppService, private router: Router,
-              private authenticationService: AuthenticationService, private loaderService: LoaderService, private route: ActivatedRoute
+              private authenticationService: AuthenticationService, private loaderService: LoaderService,
+              private route: ActivatedRoute,
+              private graphqlService: GraphqlService
   ) {
-    // console.log(window.location.origin);
-    // console.log(this.oauthService.getAccessToken());
-    // console.log(this.oauthService.getRefreshToken());
-    // console.log(this.oauthService.getIdToken());
-    // console.log(this.oauthService.authorizationHeader());
-    // this.oauthService.loadUserProfile().then(value => console.log(value));
   }
 
   ngOnInit(): void {
-    // console.log(this.oauthService.getAccessToken());
-    // console.log(this.oauthService.authorizationHeader());
-    // // this.oauthService.logOut();
-    this.isLoading = false;
-    // console.log(this.oauthService.hasValidAccessToken());
-    this.oauthService.configure(authConfig);
-    this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(value => {
-      // if (this.oauthService.hasValidIdToken()) {
-      //   this.router.navigateByUrl('/app-developer');
-      // }
-      console.log(value);
-      this.appService.initToken();
-    });
-    // if (this.appService.checkCredentials()) {
-    //   this.router.navigateByUrl('/app-developer');
-    // }
-    // const code = this.route.snapshot.queryParamMap.get('code');
-    // console.log(code);
-    // if (code) {
-    //   this.appService.retrieveToken(code);
-    // }
-    // this.loaderService.showLoader('1');
-    //   // localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' &&
-    // if (localStorage.getItem('access_token')) {
-    //     this.authenticationService.saveUserprofileInformation(res => {
-    //         this.isLoading = false;
-    //         this.loaderService.closeLoader('1');
-    //         this.router.navigateByUrl('/app-developer');
-    //     }, res => {
-    //       this.isLoading = false;
-    //       this.loaderService.closeLoader('1');
-    //     });
-    //   } else {
-    //     this.isLoading = false;
-    //     this.loaderService.closeLoader('1');
-    //   }
+    this.isLoading = true;
+    var hasAccessToken = this.oauthService.hasValidAccessToken();
+    if (hasAccessToken) {
+      console.log(this.oauthService.getIdToken())
+    }
+
+    this.graphqlService.getAuthConfig().subscribe(({data: {authConfig}}) => {
+        this.authConfig = authConfig;
+        this.oauthService.configure({
+          ...authConfig,
+          redirectUri: authConfig.redirectUri || window.location.origin
+        });
+
+        this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+        this.oauthService.loadDiscoveryDocumentAndTryLogin({
+          onTokenReceived: receivedTokens => {
+            console.log("receivedTokens", receivedTokens)
+            //todo call verification here
+            this.graphqlService.loginUser(receivedTokens.idToken).subscribe(value => console.log("this.graphqlService.loginUser", value));
+            this.tokenInfo = JSON.stringify(receivedTokens, null, 4);
+          }
+        });
+
+      }, err => console.error("getAuthConfig", err),
+      () => this.isLoading = false);
+
   }
 
   login() {
-    // this.oauthService.openUri = (value: string) => console.log(value);
-
-    this.oauthService.initImplicitFlow();
-    // this.storage.
-    // window.location.href = `${authConfig.issuer}/oauth2/v1/authorize?response_type=code&client_id=${authConfig.clientId}&redirect_uri=${authConfig.redirectUri}&scope=openid%20profile&state=1134123412`;
-  }
-
-  get givenName() {
-    // const claims = this.oauthService.getIdentityClaims();
-    // if (!claims) {
-    //   return null;
-    // }
-    // return claims['name'];
-    return null;
+    this.oauthService.initLoginFlow();
   }
 
 }
