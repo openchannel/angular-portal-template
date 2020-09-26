@@ -3,9 +3,9 @@ import {Observable} from 'rxjs';
 
 export abstract class AppsServiceImpl {
 
-    abstract getDevelopersById(developerId: string, page: number, countForPage: number): Observable<DeveloperSearchPage>;
+    abstract getDevelopersById(marketId: string, developerId: string, page: number, countForPage: number): Observable<DeveloperSearchPage>;
 
-    abstract getApps(page: number, pageSize: number): Observable<BasicAppsPage>;
+    abstract getApps(marketId: string, page: number, pageSize: number): Observable<BasicAppsPage>;
 
-    abstract getFieldsByAppType(appType: string): Observable<AllAppFields>;
+    abstract getFieldsByAppType(marketId: string, appType: string): Observable<AllAppFields>;
 }

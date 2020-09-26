@@ -3,7 +3,7 @@ import {Observable, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppsServiceImpl} from '../../../../core/services/apps-services/model/apps-service-impl';
-import {AppField} from '../../../../core/services/apps-services/model/apps-model';
+import {FieldDefinition} from '../../../../core/services/apps-services/model/apps-model';
 
 @Component({
     selector: 'app-create-app',
@@ -20,11 +20,17 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         description: 'Create new Developer with ID : '
     }];
 
+    // todo change this id
+    currentMarketId = 'test_market_id';
+
     currentAppAction = this.appActions[0];
     currentAppsTypes: string [] = [];
 
-    appDataGroup: FormGroup;
-    appFields: AppField[];
+    appDataFormGroup: FormGroup;
+    appFields: {
+        fields: FieldDefinition []
+    };
+
     subscriptions: Subscription [] = [];
 
     constructor(private appsService: AppsServiceImpl,
@@ -33,12 +39,12 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.initAppDataGroup();
+        this.addListenerAppTypeField();
         this.getAllAppTypes();
-        this.getFieldsByAppType('test');
     }
 
     initAppDataGroup(): void {
-        this.appDataGroup = this.fb.group({
+        this.appDataFormGroup = this.fb.group({
             appId: ['', Validators.required],
             appType: ['', Validators.required]
         });
@@ -46,7 +52,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     customSearch = (text$: Observable<string>) =>
         text$.pipe(debounceTime(200), distinctUntilChanged(), switchMap(termDeveloperId =>
-            this.appsService.getDevelopersById(termDeveloperId, 1, 100).toPromise().then(developersResponse => {
+            this.appsService.getDevelopersById(this.currentMarketId, termDeveloperId, 1, 100).toPromise().then(developersResponse => {
                 if (developersResponse?.list.length === 0) {
                     const normalizedDeveloperId = termDeveloperId.trim();
                     if (normalizedDeveloperId.length > 0) {
@@ -63,24 +69,46 @@ export class CreateAppComponent implements OnInit, OnDestroy {
             })
         ));
 
-    getAllAppTypes(): void {
-        this.subscriptions.push(this.appsService.getApps(1, 100).subscribe(appResponse => {
+    private addListenerAppTypeField(): void {
+        this.subscriptions.push(this.appDataFormGroup.get('appType').valueChanges
+            .pipe(debounceTime(200), distinctUntilChanged())
+            .subscribe(appType => {
+                if (appType) {
+                    this.getFieldsByAppType(appType);
+                } else {
+                    this.appFields = null;
+                }
+            }, () => this.appFields = null));
+    }
+
+    private getAllAppTypes(): void {
+        this.currentAppsTypes = [];
+        this.subscriptions.push(this.appsService.getApps(this.currentMarketId, 1, 100).subscribe(appResponse => {
             if (appResponse.list) {
                 this.currentAppsTypes = appResponse.list.map(app => app.label);
-            } else {
-                this.currentAppsTypes = [];
             }
         }, (error) => {
             console.error('Can\'t get all Apps : ' + JSON.stringify(error));
-            this.currentAppsTypes = [];
         }));
     }
 
-    getFieldsByAppType(appType: string) {
-        this.subscriptions.push(this.appsService.getFieldsByAppType(appType).subscribe((fieldsResponse) => {
+    private getFieldsByAppType(appType: string) {
+        this.appFields = null;
+        this.subscriptions.push(this.appsService.getFieldsByAppType(this.currentMarketId, appType)
+            .subscribe((fieldsResponse) => {
+                if (fieldsResponse?.list) {
+                    this.appFields = {
+                        fields: fieldsResponse.list.filter(field => field.fieldDefinition).map(f => f.fieldDefinition)
+                    };
+                } else {
+                }
             }, (error => {
                 console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
             })));
+    }
+
+    saveApp(fields: any) {
+        // todo data for saving (appDataGroup.value, fields)
     }
 
     ngOnDestroy(): void {
