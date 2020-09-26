@@ -141,10 +141,14 @@ export class GraphqlService {
             pageNumber
             pages
             list {
-              formId
-              formSubmissionId
-              submittedDateTime
-              submittedDate
+               formId
+               formSubmissionId
+               submittedDate
+               name
+               email
+               appId
+               developerId
+               userId
             }
         }
     }`;
