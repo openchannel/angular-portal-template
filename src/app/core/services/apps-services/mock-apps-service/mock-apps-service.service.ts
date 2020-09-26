@@ -519,7 +519,7 @@ export class MockAppsService extends AppsServiceImpl {
         return of(this.backEndGetAppsByDeveloperId(developerId, page, pageSize));
     }
 
-    getApps(marketId: string, page: number, pageSize: number): Observable<BasicAppsPage> {
+    getApps(page: number, pageSize: number): Observable<BasicAppsPage> {
         return of(this.backEndGetApps(page, pageSize));
     }
 

@@ -20,9 +20,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         description: 'Create new Developer with ID : '
     }];
 
-    // todo change this id
-    currentMarketId = 'test_market_id';
-
     currentAppAction = this.appActions[0];
     currentAppsTypes: string [] = [];
 
@@ -52,7 +49,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     customSearch = (text$: Observable<string>) =>
         text$.pipe(debounceTime(200), distinctUntilChanged(), switchMap(termDeveloperId =>
-            this.appsService.getDevelopersById(this.currentMarketId, termDeveloperId, 1, 100).toPromise().then(developersResponse => {
+            this.appsService.getDevelopersById(termDeveloperId, 1, 100).toPromise().then(developersResponse => {
                 if (developersResponse?.list.length === 0) {
                     const normalizedDeveloperId = termDeveloperId.trim();
                     if (normalizedDeveloperId.length > 0) {
@@ -83,7 +80,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     private getAllAppTypes(): void {
         this.currentAppsTypes = [];
-        this.subscriptions.push(this.appsService.getApps(this.currentMarketId, 1, 100).subscribe(appResponse => {
+        this.subscriptions.push(this.appsService.getApps(1, 100).subscribe(appResponse => {
             if (appResponse.list) {
                 this.currentAppsTypes = appResponse.list.map(app => app.label);
             }
@@ -94,7 +91,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     private getFieldsByAppType(appType: string) {
         this.appFields = null;
-        this.subscriptions.push(this.appsService.getFieldsByAppType(this.currentMarketId, appType)
+        this.subscriptions.push(this.appsService.getFieldsByAppType(appType)
             .subscribe((fieldsResponse) => {
                 if (fieldsResponse?.list) {
                     this.appFields = {

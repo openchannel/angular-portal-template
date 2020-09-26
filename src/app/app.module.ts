@@ -47,7 +47,6 @@ import { AppTypesComponent } from './components/applications/app-apps/app-list/a
 import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
 import { AppTypeFieldsComponent } from './components/applications/app-apps/app-list/app-types/app-type-fields/app-type-fields.component';
-import { AppFieldsComponent } from './components/applications/app-apps/app-fields/app-fields.component';
 import { ConfirmationModalComponent } from './shared/modals/confirmation-modal/confirmation-modal.component';
 import { AddFieldModalComponent } from './shared/modals/add-field-modal/add-field-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -89,13 +88,11 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ActivationComponent,
     ResetPasswordComponent,
     FormListGeneratorComponent,
-    FormModalComponent,
     SubmissionsTableComponent,
-    SubmissionsDataViewModalComponent
+    SubmissionsDataViewModalComponent,
     FormModalComponent,
     AppListComponent,
     CreateAppComponent,
-    AppFieldsComponent,
     CreateAppComponent,
     AppTypesComponent,
     AppTypeFieldsComponent,
@@ -118,8 +115,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
-    OcCommonLibModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
     OcCommonLibModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
