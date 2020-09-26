@@ -11,7 +11,7 @@ import { OcCommonLibModule } from 'oc-ng-common-component';
 
 @NgModule({
    declarations: [
-      NotificationComponent,      
+      NotificationComponent,
       ImageFileValidatorDirective,
       FileSizePipe,
       LoaderComponent

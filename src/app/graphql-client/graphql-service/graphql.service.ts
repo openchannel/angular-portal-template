@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {Apollo, gql} from 'apollo-angular';
 import {ApolloQueryResult} from '@apollo/client/core';
 import {Observable} from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AppType } from '../../core/services/apps-services/model/apps-model';
 
 
 @Injectable({
@@ -134,6 +136,35 @@ export class GraphqlService {
         }
     }`;
 
+    private updateAppTypeMutation = gql` mutation updateAppType($appTypeId: String!, $submission: TypeDefinitionRequestInput!) {
+        updateAppType(appTypeId: $appTypeId, submission: $submission) {
+            id
+            label
+            description
+            fieldDefinitions {
+                id
+                label
+                description
+                defaultValue
+                type
+                attributes
+                deleteable
+                options
+                category
+                subFieldDefinitions {
+                    id
+                    label
+                    description
+                    defaultValue
+                    type
+                    attributes
+                    deleteable
+                    options
+                }
+            }
+        }
+    }`;
+
     private allFormSubmissionsQuery = gql` query getAllFormSubmissions($formId: String!, $page: Int, $pageSize: Int,
                                                                        $sortBy: String, $sortOrder: String) {
         getAllFormSubmissions(formId: $formId, page: $page, pageSize: $pageSize, sortBy: $sortBy, sortOrder: $sortOrder) {
@@ -141,10 +172,14 @@ export class GraphqlService {
             pageNumber
             pages
             list {
-              formId
-              formSubmissionId
-              submittedDateTime
-              submittedDate
+               formId
+               formSubmissionId
+               submittedDate
+               name
+               email
+               appId
+               developerId
+               userId
             }
         }
     }`;
@@ -168,6 +203,48 @@ export class GraphqlService {
         }
     }`;
 
+    private getAppTypesQuery = gql` query getAppTypes($page: Int, $pageSize: Int, $disableFields: Boolean) {
+        getAppTypes(page: $page, pageSize: $pageSize, disableFields: $disableFields) {
+            pages
+            pageNumber
+            list {
+                id
+                label
+                description
+                fieldDefinitions {
+                    id
+                    label
+                    description
+                    defaultValue
+                    type
+                    attributes
+                    deleteable
+                    options
+                    category
+                    subFieldDefinitions {
+                        id
+                        label
+                        description
+                        defaultValue
+                        type
+                        attributes
+                        deleteable
+                        options
+                    }
+                }
+            }
+        }
+    }`;
+
+    private getDevelopersQuery = gql` query getDevelopers($searchText: String, $page: Int, $pageSize: Int) {
+        getDevelopers(page: $page, searchText: $searchText, pageSize: $pageSize) {
+            pages
+            pageNumber
+            list {
+                developerId
+            }
+        }
+    }`;
 
     constructor(private apollo: Apollo) {
     }
@@ -277,4 +354,33 @@ export class GraphqlService {
             variables: {formId, submission},
         });
     }
+
+  getAppTypes(page?: number, pageSize?: number, disableFields?: boolean): Observable<ApolloQueryResult<any>> {
+    return this.apollo.query({
+      query: this.getAppTypesQuery,
+      variables: {
+        page,
+        pageSize,
+        disableFields
+      }
+    });
+  }
+
+  getDevelopers(searchText?: string, page?: number, pageSize?: string) {
+      return this.apollo.query({
+        query: this.getDevelopersQuery,
+        variables: {
+          searchText,
+          page,
+          pageSize
+        }
+      });
+  }
+
+  updateAppType(appTypeId: string, submission: any) {
+      return this.apollo.mutate({
+        mutation: this.updateAppTypeMutation,
+        variables: {appTypeId, submission}
+      });
+  }
 }
