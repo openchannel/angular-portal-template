@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
 import {AppService} from '../../core/api/app.service';
 import {GraphqlService} from "../../graphql-client/graphql-service/graphql.service";
+import {AuthService} from "../../core/services/apps-services/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   authConfig: any;
 
   constructor(private oauthService: OAuthService, private appService: AppService, private router: Router,
-              private authenticationService: AuthenticationService, private loaderService: LoaderService,
+              private authService: AuthService, private loaderService: LoaderService,
               private route: ActivatedRoute,
               private graphqlService: GraphqlService
   ) {
@@ -35,14 +35,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    var hasAccessToken = this.oauthService.hasValidAccessToken();
-    if (hasAccessToken) {
-      console.log(this.oauthService.getIdToken())
-    }
+    this.oauthService.hasValidAccessToken();
 
     this.graphqlService.getAuthConfig().subscribe(({data: {authConfig}}) => {
         this.authConfig = authConfig;
-        console.log(authConfig)
+
         this.oauthService.configure({
           ...authConfig,
           redirectUri: authConfig.redirectUri || window.location.origin
@@ -51,9 +48,12 @@ export class LoginComponent implements OnInit {
         this.oauthService.tokenValidationHandler = new JwksValidationHandler();
         this.oauthService.loadDiscoveryDocumentAndTryLogin({
           onTokenReceived: receivedTokens => {
-            console.log("receivedTokens", receivedTokens)
-            //todo call verification here
-            this.graphqlService.loginUser(receivedTokens.idToken).subscribe(value => console.log("this.graphqlService.loginUser", value));
+
+            this.graphqlService.loginUser(receivedTokens.idToken).subscribe(({data: {loginOrRegisterUser: user}}) => {
+              this.authService.persist(user.accessToken, user.refreshToken);
+              this.router.navigate(['/app-store']);
+            });
+
             this.tokenInfo = JSON.stringify(receivedTokens, null, 4);
           }
         });

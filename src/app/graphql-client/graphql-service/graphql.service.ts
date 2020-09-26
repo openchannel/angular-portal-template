@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Apollo, gql} from 'apollo-angular';
 import {ApolloQueryResult, FetchResult} from '@apollo/client/core';
 import {Observable} from 'rxjs';
+import {AuthService} from "../../core/services/apps-services/auth.service";
 
 
 @Injectable({
@@ -262,9 +263,10 @@ export class GraphqlService {
   }`;
 
 
-  private loginOrRegisterUser = gql`mutation loginOrRegisterUser($loginRequest: LoginRequestInput!) {
+  private loginOrRegisterUser = gql`mutation login($loginRequest: LoginRequestInput!) {
     loginOrRegisterUser(request: $loginRequest) {
       accessToken
+      refreshToken
     }
   }`
 

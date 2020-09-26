@@ -58,10 +58,27 @@ import { CamelCaseToNormalPipe } from './shared/custom-components/camel-case-to-
 import { FieldPreviewModalComponent } from './shared/modals/field-preview-modal/field-preview-modal.component';
 import { SubmissionsTableComponent } from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import { SubmissionsDataViewModalComponent } from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
+import {AuthService} from "./core/services/apps-services/auth.service";
+import {setContext} from "@apollo/client/link/context";
 
-export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+export function createApollo(httpLink: HttpLink, authService: AuthService): ApolloClientOptions<any> {
+
+  const httpLinkUri = httpLink.create({uri: environment.graphqlUrl});
+
+  const authLink = setContext((_, { headers }) => {
+    // get the authentication token from local storage if it exists
+    const token = authService.accessToken;
+    // return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      }
+    }
+  });
+
   return {
-    link: httpLink.create({uri: environment.graphqlUrl}),
+    link: authLink.concat(httpLinkUri),
     cache: new InMemoryCache(),
   };
 }
@@ -130,7 +147,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
    {
      provide: APOLLO_OPTIONS,
      useFactory: createApollo,
-     deps: [HttpLink],
+     deps: [HttpLink, AuthService],
    },
     {provide: AppsServiceImpl, useClass: MockAppsService},
    DatePipe,
