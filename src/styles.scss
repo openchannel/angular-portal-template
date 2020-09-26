@@ -104,7 +104,7 @@
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }
-  
+
   .dropdown-toggle::after {
     display: none;
   }
@@ -121,7 +121,7 @@
     width: 10px;
     margin-top: -2px;
     float: right;
-  }  
+  }
   .dropdown-menu {
     min-width: 247px;
     top: -2px !important;
@@ -143,3 +143,11 @@ button:focus {
   outline: none !important;
 }
 
+
+.forms-container {
+  border: 1px solid #c9d5ea;
+  border-radius: 4px;
+  &-title {
+    border-bottom: 1px solid #c9d5ea;
+  }
+}
