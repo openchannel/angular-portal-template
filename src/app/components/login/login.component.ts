@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
 
     this.graphqlService.getAuthConfig().subscribe(({data: {authConfig}}) => {
         this.authConfig = authConfig;
+        console.log(authConfig)
         this.oauthService.configure({
           ...authConfig,
           redirectUri: authConfig.redirectUri || window.location.origin
