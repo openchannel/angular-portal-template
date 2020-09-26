@@ -55,6 +55,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FieldOptionsComponent } from './shared/modals/add-field-modal/field-options/field-options.component';
 import { CamelCaseToNormalPipe } from './shared/custom-components/camel-case-to-normal.pipe';
 import { FieldPreviewModalComponent } from './shared/modals/field-preview-modal/field-preview-modal.component';
+import { SubmissionsTableComponent } from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
+import { SubmissionsDataViewModalComponent } from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -88,6 +90,9 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ResetPasswordComponent,
     FormListGeneratorComponent,
     FormModalComponent,
+    SubmissionsTableComponent,
+    SubmissionsDataViewModalComponent
+    FormModalComponent,
     AppListComponent,
     CreateAppComponent,
     AppFieldsComponent,
@@ -114,6 +119,8 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
     OcCommonLibModule,
+    ReactiveFormsModule
+    OcCommonLibModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     DragDropModule
@@ -130,6 +137,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
    DatePipe],
   bootstrap: [AppComponent],
   entryComponents: [
+    SubmissionsDataViewModalComponent,
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
