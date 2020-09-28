@@ -181,8 +181,8 @@ export class GraphqlService {
     }
   }`;
 
-  private createAppTypeMutation = gql` mutation createAppType($appTypeId: String!, $typeDefinition: TypeDefinitionRequestInput!) {
-    createAppType(appTypeId: $appTypeId, typeDefinition: $typeDefinition) {
+  private createAppTypeMutation = gql` mutation createAppType($typeDefinition: TypeDefinitionRequestInput!) {
+    createAppType(typeDefinition: $typeDefinition) {
       id
       label
       description
@@ -424,10 +424,10 @@ export class GraphqlService {
     });
   }
 
-  createAppType(appTypeId: string, typeDefinition: any) {
+  createAppType(typeDefinition: any) {
     return this.apollo.mutate({
       mutation: this.createAppTypeMutation,
-      variables: {appTypeId, typeDefinition}
+      variables: {typeDefinition}
     });
   }
 }
