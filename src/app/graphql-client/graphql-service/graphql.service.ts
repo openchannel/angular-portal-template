@@ -10,6 +10,7 @@ import {AuthService} from "../../core/services/apps-services/auth.service";
 })
 export class GraphqlService {
 
+
   private authSettingsQuery = gql`
     query authConfig {
       authConfig {
@@ -24,7 +25,6 @@ export class GraphqlService {
     }
 
   `;
-
 
   private allAppsQuery = gql` query getApps ($developerId: String) {
     allApps (developerId: $developerId) {
@@ -282,7 +282,7 @@ export class GraphqlService {
   }`;
 
   private getDevelopersQuery = gql` query getDevelopers($searchText: String, $page: Int, $pageSize: Int) {
-    getDevelopers(page: $page, searchText: $searchText, pageSize: $pageSize) {
+    getDevelopers(searchText: $searchText, page: $page, pageSize: $pageSize) {
       pages
       pageNumber
       list {
@@ -297,7 +297,7 @@ export class GraphqlService {
       accessToken
       refreshToken
     }
-  }`
+  }`;
 
   constructor(private apollo: Apollo) {
   }
@@ -406,7 +406,7 @@ export class GraphqlService {
     });
   }
 
-  getDevelopers(searchText?: string, page?: number, pageSize?: string) {
+  getDevelopers(searchText?: string, page?: number, pageSize?: number) {
     return this.apollo.query({
       query: this.getDevelopersQuery,
       variables: {
