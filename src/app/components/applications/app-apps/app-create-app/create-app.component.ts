@@ -51,7 +51,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     customSearch = (text$: Observable<string>) =>
         text$.pipe(debounceTime(200), distinctUntilChanged(), switchMap(termDeveloperId =>
-            this.graphqlService.getDevelopersById(termDeveloperId, 1, 20).toPromise().then(developersResponse => {
+            this.graphqlService.getDevelopers(termDeveloperId, 1, 20).toPromise().then((developersResponse: any) => {
                 const developers = developersResponse?.data?.getDevelopers?.list;
                 if (developers?.length === 0) {
                     const normalizedDeveloperId = termDeveloperId.trim();

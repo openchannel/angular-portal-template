@@ -253,7 +253,7 @@ export class GraphqlService {
   }`;
 
   private getDevelopersQuery = gql` query getDevelopers($searchText: String, $page: Int, $pageSize: Int) {
-    getDevelopers(page: $page, searchText: $searchText, pageSize: $pageSize) {
+    getDevelopers(searchText: $searchText, page: $page, pageSize: $pageSize) {
       pages
       pageNumber
       list {
@@ -268,7 +268,7 @@ export class GraphqlService {
       accessToken
       refreshToken
     }
-  }`
+  }`;
 
   constructor(private apollo: Apollo) {
   }
@@ -377,7 +377,7 @@ export class GraphqlService {
     });
   }
 
-  getDevelopers(searchText?: string, page?: number, pageSize?: string) {
+  getDevelopers(searchText?: string, page?: number, pageSize?: number) {
     return this.apollo.query({
       query: this.getDevelopersQuery,
       variables: {
