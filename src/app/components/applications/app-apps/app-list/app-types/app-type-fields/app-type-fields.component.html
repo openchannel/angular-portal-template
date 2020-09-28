@@ -1,4 +1,4 @@
-<div>
+<div class="table-responsive-lg">
   <table class="table border-bottom">
     <thead>
       <tr>
@@ -32,7 +32,7 @@
         </td>
         <td>{{field.description}}</td>
         <td>
-          <div class="row">
+          <div class="row flex-nowrap">
             <div class="fields-button fields-delete-btn mr-1 cursor-pointer"
                  *ngIf="field.category !== 'FIXED'"
                  (click)="deleteField(i)">

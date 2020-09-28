@@ -152,8 +152,37 @@ export class GraphqlService {
   }`;
 
 
-  private updateAppTypeMutation = gql` mutation updateAppType($appTypeId: String!, $submission: TypeDefinitionRequestInput!) {
-    updateAppType(appTypeId: $appTypeId, submission: $submission) {
+  private updateAppTypeMutation = gql` mutation updateAppType($appTypeId: String!, $typeDefinition: TypeDefinitionRequestInput!) {
+    updateAppType(appTypeId: $appTypeId, typeDefinition: $typeDefinition) {
+      id
+      label
+      description
+      fieldDefinitions {
+        id
+        label
+        description
+        defaultValue
+        type
+        attributes
+        deleteable
+        options
+        category
+        subFieldDefinitions {
+          id
+          label
+          description
+          defaultValue
+          type
+          attributes
+          deleteable
+          options
+        }
+      }
+    }
+  }`;
+
+  private createAppTypeMutation = gql` mutation createAppType($appTypeId: String!, $typeDefinition: TypeDefinitionRequestInput!) {
+    createAppType(appTypeId: $appTypeId, typeDefinition: $typeDefinition) {
       id
       label
       description
@@ -388,10 +417,17 @@ export class GraphqlService {
     });
   }
 
-  updateAppType(appTypeId: string, submission: any) {
+  updateAppType(appTypeId: string, typeDefinition: any) {
     return this.apollo.mutate({
       mutation: this.updateAppTypeMutation,
-      variables: {appTypeId, submission}
+      variables: {appTypeId, typeDefinition}
+    });
+  }
+
+  createAppType(appTypeId: string, typeDefinition: any) {
+    return this.apollo.mutate({
+      mutation: this.createAppTypeMutation,
+      variables: {appTypeId, typeDefinition}
     });
   }
 }

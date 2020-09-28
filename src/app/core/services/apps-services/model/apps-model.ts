@@ -44,6 +44,7 @@ export interface FieldDefinition {
     subFieldDefinitions?: FieldDefinition [];
     options?: any [];
     deleteable: boolean;
+    category?: string;
 }
 
 export interface FiledAttributes {
