@@ -5,14 +5,14 @@
         <div class="d-flex flex-row align-items-start mb-1">
             <oc-label text="Developer ID" required="true" class="text-nowrap mr-1 w-25"></oc-label>
             <div class="d-flex flex-column w-100">
-                <oc-dropbox formControlName="appId"
+                <oc-dropbox formControlName="developerId"
                             placeHolder="Start typing the ID"
                             customClassStyle="form-control"
                             [clearFormAfterSelect]="false"
                             [customSearch]="customSearch"
-                            [dropElementTemplate]="appIdTemplate"
+                            [dropElementTemplate]="developerIdTemplate"
                             class="w-100"></oc-dropbox>
-                <oc-error [control]="appDataFormGroup.get('appId')"></oc-error>
+                <oc-error [control]="appDataFormGroup.get('developerId')"></oc-error>
             </div>
         </div>
         <div class="d-flex flex-row align-items-start">
@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<ng-template #appIdTemplate let-result="result">
+<ng-template #developerIdTemplate let-result="result">
     <div class="dropbox-custom-elements dropdown-create-app mt-1 mb-1 p-1">
         <img src="./assets/img/human-icon.svg" class="human-icon mr-1" alt="human-icon">
         <div class="description">{{currentAppAction.description}}<strong>{{result}}</strong></div>

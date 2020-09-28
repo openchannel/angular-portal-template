@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -32,6 +32,9 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     subscriptions: Subscription [] = [];
 
+    @Output()
+    createdApp = new EventEmitter<boolean>();
+
     constructor(private appsService: AppsServiceImpl,
                 private fb: FormBuilder,
                 private graphqlService: GraphqlService) {
@@ -45,7 +48,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     initAppDataGroup(): void {
         this.appDataFormGroup = this.fb.group({
-            appId: ['', Validators.required],
+            developerId: ['', Validators.required],
             appType: ['', Validators.required]
         });
     }
@@ -117,7 +120,26 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }
 
     saveApp(fields: any) {
-        // todo data for saving (appDataGroup.value, fields)
+        this.subscriptions.push(this.graphqlService.createApp(this.buildDataForSaving(fields))
+            .subscribe((response) => {
+               this.createdApp.emit(true);
+            }, () => {
+                this.currentAppAction = this.appActions[0];
+                console.log('Can\'t save a new app.');
+            }));
+    }
+
+    buildDataForSaving(fields: any): any {
+        const formGroupData = this.appDataFormGroup.value;
+        return {
+            developerId: formGroupData?.developerId,
+            type: formGroupData?.appType,
+            name: fields?.name,
+            autoApprove: true,
+            customData: {
+                ...fields
+            }
+        };
     }
 
     ngOnDestroy(): void {

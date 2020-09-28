@@ -69,6 +69,13 @@ export class GraphqlService {
     }
   }`;
 
+  private createAppMutation = gql` mutation createApp($appVersion: AppVersionRequestInput!) {
+    createAndPublishApp(appVersion: $appVersion) {
+      appId
+      version
+    }
+  }`;
+
   private formQuery = gql` query getForm($formId: String!){
     getForm(formId: $formId){
       name
@@ -392,6 +399,13 @@ export class GraphqlService {
     return this.apollo.mutate({
       mutation: this.formSubmitMutation,
       variables: {formId, submission},
+    });
+  }
+
+  createApp(appVersion: any) {
+    return this.apollo.mutate({
+      mutation: this.createAppMutation,
+      variables: {appVersion}
     });
   }
 
