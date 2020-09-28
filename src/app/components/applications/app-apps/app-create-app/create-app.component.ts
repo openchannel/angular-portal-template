@@ -22,7 +22,8 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }];
 
     currentAppAction = this.appActions[0];
-    currentAppsTypes: string [] = [];
+    currentAppsTypesItems: string [] = [];
+    existsAppsTypes: string [] = [];
 
     appDataFormGroup: FormGroup;
     appFields: {
@@ -86,25 +87,29 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }
 
     private getAllAppTypes(): void {
-        this.currentAppsTypes = [];
-        this.subscriptions.push(this.appsService.getApps(1, 100).subscribe(appResponse => {
-            if (appResponse.list) {
-                this.currentAppsTypes = appResponse.list.map(app => app.label);
-            }
-        }, (error) => {
-            console.error('Can\'t get all Apps : ' + JSON.stringify(error));
-        }));
+        this.currentAppsTypesItems = [];
+        this.existsAppsTypes = [];
+        this.subscriptions.push(this.graphqlService.getAppTypes(1, 100, true)
+            .subscribe((appResponse: any) => {
+                const appTypes = appResponse?.data?.getAppTypes?.list;
+                if (appTypes && appTypes.length > 0) {
+                    this.existsAppsTypes = appTypes;
+                    this.currentAppsTypesItems = appTypes.map(app => app.id).filter(app => app && app.length > 0);
+                }
+            }, (error) => {
+                console.error('Can\'t get all Apps : ' + JSON.stringify(error));
+            }));
     }
 
     private getFieldsByAppType(appType: string) {
         this.appFields = null;
-        this.subscriptions.push(this.appsService.getFieldsByAppType(appType)
-            .subscribe((fieldsResponse) => {
-                if (fieldsResponse?.list) {
+        this.subscriptions.push(this.graphqlService.getAppType(appType)
+            .subscribe((appTypeResponse: any) => {
+                const fieldDefinitions = appTypeResponse?.data?.getAppType?.fieldDefinitions;
+                if (fieldDefinitions && fieldDefinitions.length > 0) {
                     this.appFields = {
-                        fields: fieldsResponse.list.filter(field => field.fieldDefinition).map(f => f.fieldDefinition)
+                        fields: fieldDefinitions
                     };
-                } else {
                 }
             }, (error => {
                 console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));

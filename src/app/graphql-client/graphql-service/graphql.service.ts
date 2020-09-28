@@ -252,6 +252,35 @@ export class GraphqlService {
     }
   }`;
 
+  private getOneAppTypeQuery = gql` query getAppType($appTypeId: String!) {
+    getAppType(appTypeId: $appTypeId) {
+      id
+      label
+      description
+      fieldDefinitions {
+        id
+        label
+        description
+        defaultValue
+        type
+        attributes
+        deleteable
+        options
+        category
+        subFieldDefinitions {
+          id
+          label
+          description
+          defaultValue
+          type
+          attributes
+          deleteable
+          options
+        }
+      }
+    }
+  }`;
+
   private getDevelopersQuery = gql` query getDevelopers($searchText: String, $page: Int, $pageSize: Int) {
     getDevelopers(searchText: $searchText, page: $page, pageSize: $pageSize) {
       pages
@@ -373,6 +402,15 @@ export class GraphqlService {
         page,
         pageSize,
         disableFields
+      }
+    });
+  }
+
+  getAppType(appTypeId: string): Observable<ApolloQueryResult<any>> {
+    return this.apollo.query({
+      query: this.getOneAppTypeQuery,
+      variables: {
+        appTypeId
       }
     });
   }
