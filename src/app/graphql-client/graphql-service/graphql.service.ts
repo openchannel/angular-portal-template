@@ -168,6 +168,17 @@ export class GraphqlService {
         }
     }`;
 
+    private getDevelopersQuery = gql` query getDevelopers($searchText: String, $page: Int, $pageSize: Int , $sortBy: String, $sortOrder: String) {
+        getDevelopers(searchText: $searchText, page: $page, pageSize: $pageSize, sortBy: $sortBy, sortOrder: $sortOrder) {
+            count
+            pageNumber
+            pages
+            list {
+                developerId
+            }
+        }
+    }`;
+
 
     constructor(private apollo: Apollo) {
     }
@@ -185,6 +196,13 @@ export class GraphqlService {
             .subscribe(response => {
                 console.log('getFormSubmissionData : ' + JSON.stringify(response));
             }, err => console.log('ERROR getFormSubmissionData: ' + JSON.stringify(err)), () => subscription.unsubscribe());
+    }
+
+    testGetDevelopers() {
+        const subscription = this.getDevelopersById('', 'A', 1, 100)
+            .subscribe(response => {
+                console.log('getDevelopersById : ' + JSON.stringify(response));
+            }, err => console.log('ERROR getDevelopersById: ' + JSON.stringify(err)), () => subscription.unsubscribe());
     }
 
     testCasesToConsole() {
@@ -275,6 +293,17 @@ export class GraphqlService {
         return this.apollo.mutate({
             mutation: this.formSubmitMutation,
             variables: {formId, submission},
+        });
+    }
+
+    getDevelopersById(marketId: string, searchText: string, page: number, pageSize: number): Observable<ApolloQueryResult<any>> {
+        return this.apollo.query({
+            query: this.getDevelopersQuery,
+            variables: {
+                searchText,
+                page,
+                pageSize,
+            }
         });
     }
 }

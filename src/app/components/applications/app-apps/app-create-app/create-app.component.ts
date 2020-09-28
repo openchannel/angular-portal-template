@@ -4,6 +4,7 @@ import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppsServiceImpl} from '../../../../core/services/apps-services/model/apps-service-impl';
 import {FieldDefinition} from '../../../../core/services/apps-services/model/apps-model';
+import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 
 @Component({
     selector: 'app-create-app',
@@ -34,7 +35,8 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     subscriptions: Subscription [] = [];
 
     constructor(private appsService: AppsServiceImpl,
-                private fb: FormBuilder) {
+                private fb: FormBuilder,
+                private graphqlService: GraphqlService) {
     }
 
     ngOnInit(): void {
@@ -52,8 +54,9 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     customSearch = (text$: Observable<string>) =>
         text$.pipe(debounceTime(200), distinctUntilChanged(), switchMap(termDeveloperId =>
-            this.appsService.getDevelopersById(this.currentMarketId, termDeveloperId, 1, 100).toPromise().then(developersResponse => {
-                if (developersResponse?.list.length === 0) {
+            this.graphqlService.getDevelopersById(this.currentMarketId, termDeveloperId, 1, 20).toPromise().then(developersResponse => {
+                const developers = developersResponse?.data?.getDevelopers?.list;
+                if (developers?.length === 0) {
                     const normalizedDeveloperId = termDeveloperId.trim();
                     if (normalizedDeveloperId.length > 0) {
                         this.currentAppAction = this.appActions.find((e) => e.type === 'CREATE');
@@ -61,7 +64,11 @@ export class CreateAppComponent implements OnInit, OnDestroy {
                     }
                 } else {
                     this.currentAppAction = this.appActions.find((e) => e.type === 'SEARCH');
-                    return developersResponse.list.map(developer => developer.developerId);
+                    if (developers) {
+                        return developers.map(developer => developer.developerId);
+                    } else {
+                        return [];
+                    }
                 }
             }).catch(error => {
                 console.error('Can\'t get developers id' + JSON.stringify(error));
