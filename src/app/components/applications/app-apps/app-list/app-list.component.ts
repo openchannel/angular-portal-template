@@ -31,6 +31,9 @@ export class AppListComponent implements OnInit {
     }, {
         display: 'Suspended',
         id: 'suspended'
+    }, {
+        display: 'App Types',
+        id: 'appTypes'
     }];
     currentTab = this.tabs[0];
 
@@ -45,8 +48,6 @@ export class AppListComponent implements OnInit {
         this.graphqlClient.getAllApps().subscribe((response: { data: { allApps: AppItem[] } }) => {
             if (response && response.data && response.data.allApps) {
                 this.apps = response.data.allApps;
-            } else {
-                console.log('ERROR Get all apps.');
             }
         }, () => console.log('ERROR Get all apps.'));
     }

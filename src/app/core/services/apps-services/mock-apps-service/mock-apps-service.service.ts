@@ -1,6 +1,7 @@
+/* tslint:disable:object-literal-key-quotes */
 import {Injectable} from '@angular/core';
 import {AppsServiceImpl} from '../model/apps-service-impl';
-import {AllAppFields, BasicApp, BasicAppsPage, Developer, DeveloperSearchPage} from '../model/apps-model';
+import { AllAppFields, AppType, BasicApp, BasicAppsPage, Developer, DeveloperSearchPage } from '../model/apps-model';
 import {Observable, of} from 'rxjs';
 
 @Injectable({
@@ -330,15 +331,199 @@ export class MockAppsService extends AppsServiceImpl {
         ]
     };
 
-    getDevelopersById(marketId: string, developerId: string, page: number, pageSize: number): Observable<DeveloperSearchPage> {
+    appTypesData = {
+        list: [
+          {
+          id: 'test',
+          label: 'test',
+          description: 'test',
+          fieldDefinitions: [
+            {
+                id: 'name',
+                label: 'Name',
+                defaultValue: '10',
+                type: 'text',
+                category: 'FIXED',
+                required: true,
+                attributes:
+                  {
+                      maxChars: 10,
+                      required: true,
+                      minChars: 1
+                  },
+                deleteable: false
+            }, {
+                  id: 'multiple-image',
+                  label: 'multiple-image',
+                  description: 'multiple-image',
+                  type: 'multiImage',
+                  category: 'CUSTOM',
+                  attributes: {
+                      width: '100',
+                      required: null,
+                      hash: 'MD5',
+                      accept: 'image/jpeg',
+                      height: '100'
+                  },
+                  deleteable: false
+              },
+              {
+                  id: 'softkit-tags',
+                  label: 'softkit tags',
+                  description: 'softkit tags',
+                  type: 'tags',
+                  category: 'CUSTOM',
+                  attributes: {minCount: 2, maxCount: 3, required: true},
+                  options: ['softkit', 'vitalii', 'diana'],
+                  deleteable: false
+              },
+              {
+                  id: 'dynamic-fields',
+                  label: 'dynamic fields',
+                  description: 'dynamic fields',
+                  type: 'dynamicFieldArray',
+                  category: 'CUSTOM',
+                  attributes: {
+                      ordering: 'append',
+                      minCount: 1,
+                      rowLabel: '',
+                      maxCount: 2,
+                      required: null
+                  },
+                  subFieldDefinitions: [{
+                      id: 'name',
+                      label: 'name',
+                      description: 'name',
+                      type: 'text',
+                      category: 'CUSTOM',
+                      attributes: {maxChars: 25, required: null, minChars: 1},
+                      deleteable: false
+                  },
+                  {
+                      id: 'age',
+                      label: 'age',
+                      description: 'age',
+                      type: 'number',
+                      category: 'CUSTOM',
+                      attributes: {'min': 1, 'max': 200, 'required': null},
+                      deleteable: false
+                  }],
+                  deleteable: false
+              }, {
+                  id: 'test1',
+                  label: 'test1',
+                  description: 'test',
+                  type: 'richText',
+                  category: 'CUSTOM',
+                  attributes: {maxChars: 123, required: null, minChars: 12},
+                  deleteable: false
+              }, {
+                  id: 'asd',
+                  label: 'asd',
+                  description: 'asd',
+                  defaultValue: 'sldfkjsdf@gmail.com',
+                  type: 'emailAddress',
+                  category: 'CUSTOM',
+                  attributes: {required: true},
+                  deleteable: false
+              }, {
+                  id: 'd',
+                  label: 'd',
+                  description: 'd',
+                  defaultValue: '3',
+                  type: 'dropdownList',
+                  category: 'CUSTOM',
+                  attributes: {required: null},
+                  options: ['123', '3', '4', '35', '6', '2'],
+                  deleteable: false
+              }, {
+                  id: 'mf',
+                  label: 'mf',
+                  description: 'mf',
+                  type: 'multiFile',
+                  category: 'CUSTOM',
+                  attributes: {required: null, hash: 'MD5', accept: 'video/3gpp'},
+                  deleteable: false
+              }]
+          },
+            {
+                id: 'car',
+                label: 'Car',
+                description: 'car type',
+                fieldDefinitions: [{
+                    id: 'name',
+                    label: 'Name',
+                    type: 'text',
+                    category: 'FIXED',
+                    required: true,
+                    attributes: {required: true},
+                    deleteable: false
+                }, {
+                    id: 'asd',
+                    label: 'asd',
+                    defaultValue: '5f54b29e28ca7479dd8eba50',
+                    type: 'app',
+                    category: 'CUSTOM',
+                    attributes: {required: null},
+                    deleteable: false
+                }]
+            },
+            {
+                id: 'asdf',
+                label: 'asdf',
+                description: 'asdf',
+                fieldDefinitions: [{
+                    id: 'name',
+                    label: 'Name',
+                    type: 'text',
+                    category: 'FIXED',
+                    required: true,
+                    attributes: {required: true},
+                    deleteable: false
+                }]
+            },
+            {
+                id: 'test1',
+                label: 'test1',
+                description: 'test1',
+                fieldDefinitions: [{
+                    id: 'test-text',
+                    label: 'test text',
+                    type: 'text',
+                    category: 'CUSTOM',
+                    attributes: {maxChars: null, required: null, minChars: null},
+                    deleteable: false
+                },
+                {
+                    id: 'name',
+                    label: 'Name',
+                    type: 'text',
+                    category: 'FIXED',
+                    required: true,
+                    attributes: {required: true},
+                    deleteable: false
+                },
+                {
+                    id: 'testname',
+                    label: 'testname',
+                    type: 'longText',
+                    category: 'CUSTOM',
+                    attributes: {maxChars: null, required: null, minChars: null},
+                    deleteable: false
+                }]
+            }
+          ]
+    };
+
+    getDevelopersById(developerId: string, page: number, pageSize: number): Observable<DeveloperSearchPage> {
         return of(this.backEndGetAppsByDeveloperId(developerId, page, pageSize));
     }
 
-    getApps(marketId: string, page: number, pageSize: number): Observable<BasicAppsPage> {
+    getApps(page: number, pageSize: number): Observable<BasicAppsPage> {
         return of(this.backEndGetApps(page, pageSize));
     }
 
-    getFieldsByAppType(marketId: string, appType: string): Observable<AllAppFields> {
+    getFieldsByAppType(appType: string): Observable<any> {
         return of(this.appFields);
     }
 
@@ -378,5 +563,9 @@ export class MockAppsService extends AppsServiceImpl {
         }
         const startSlice = page * pageSize;
         return array.slice(startSlice, startSlice + pageSize);
+    }
+
+    getAppTypes(): Observable<any> {
+        return of(this.appTypesData);
     }
 }

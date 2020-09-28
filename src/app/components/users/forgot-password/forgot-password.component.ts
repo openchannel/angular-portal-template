@@ -21,15 +21,14 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   resetPwd(event) {
-    console.log(event);
     if (event === true) {
         this.inProcess = true;
         this.sellerService.resetForgotPassword(this.signIn.email).subscribe(res => {
-          this.forgotPwdPageState = false; 
+          this.forgotPwdPageState = false;
           this.inProcess = false;
       },res => {
         this.inProcess = false;
-      });  
+      });
     }
   }
 

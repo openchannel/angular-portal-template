@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class FormListGeneratorComponent implements OnInit, OnDestroy {
 
   public formJSONArray: any[] = [];
+  public expandTables: boolean[] = [];
 
   private subscriber: Subscription = new Subscription();
 
@@ -20,10 +21,11 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getAllFormsList();
+    this.expandTables.fill(false);
   }
 
   getAllFormsList(): void {
-    this.subscriber.add(this.graphQLService.getAllForms('list').subscribe(
+    this.subscriber.add(this.graphQLService.getAllForms().subscribe(
       (result: any) => {
         this.formJSONArray = result?.data?.getAllForms;
       }
@@ -33,6 +35,10 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
   openFormModal(formFieldsData: any): void {
     const modalRef = this.modalService.open(FormModalComponent, { size: 'lg' });
     modalRef.componentInstance.formData = formFieldsData;
+  }
+
+  changeActiveFormId(expand: boolean, index: number) {
+    this.expandTables[index] = expand;
   }
 
   ngOnDestroy(): void {

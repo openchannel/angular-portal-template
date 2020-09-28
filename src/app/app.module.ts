@@ -40,15 +40,45 @@ import { FormModalComponent } from './shared/modals/form-modal/form-modal.compon
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+import {OAuthModule} from 'angular-oauth2-oidc';
+import {AppService} from "./core/api/app.service";
 import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
 import {CreateAppComponent} from './components/applications/app-apps/app-create-app/create-app.component';
 import {OcCommonLibModule, OcDropboxComponent} from 'oc-ng-common-component';
+import { AppTypesComponent } from './components/applications/app-apps/app-list/app-types/app-types.component';
 import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
+import { AppTypeFieldsComponent } from './components/applications/app-apps/app-list/app-types/app-type-fields/app-type-fields.component';
+import { ConfirmationModalComponent } from './shared/modals/confirmation-modal/confirmation-modal.component';
+import { AddFieldModalComponent } from './shared/modals/add-field-modal/add-field-modal.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { FieldOptionsComponent } from './shared/modals/add-field-modal/field-options/field-options.component';
+import { CamelCaseToNormalPipe } from './shared/custom-components/camel-case-to-normal.pipe';
+import { FieldPreviewModalComponent } from './shared/modals/field-preview-modal/field-preview-modal.component';
+import { SubmissionsTableComponent } from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
+import { SubmissionsDataViewModalComponent } from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
+import {AuthService} from "./core/services/apps-services/auth.service";
+import {setContext} from "@apollo/client/link/context";
 
-export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+export function createApollo(httpLink: HttpLink, authService: AuthService): ApolloClientOptions<any> {
+
+  const httpLinkUri = httpLink.create({uri: environment.graphqlUrl});
+
+  const authLink = setContext((_, { headers }) => {
+    // get the authentication token from local storage if it exists
+    const token = authService.accessToken;
+    // return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      }
+    }
+  });
+
   return {
-    link: httpLink.create({uri: environment.graphqlUrl}),
+    link: authLink.concat(httpLinkUri),
     cache: new InMemoryCache(),
   };
 }
@@ -77,9 +107,19 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     ActivationComponent,
     ResetPasswordComponent,
     FormListGeneratorComponent,
+    SubmissionsTableComponent,
+    SubmissionsDataViewModalComponent,
     FormModalComponent,
     AppListComponent,
     CreateAppComponent,
+    CreateAppComponent,
+    AppTypesComponent,
+    AppTypeFieldsComponent,
+    ConfirmationModalComponent,
+    AddFieldModalComponent,
+    FieldOptionsComponent,
+    CamelCaseToNormalPipe,
+    FieldPreviewModalComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -94,7 +134,12 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
-    OcCommonLibModule, ReactiveFormsModule
+    ReactiveFormsModule,
+    OcCommonLibModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    DragDropModule,
+    OAuthModule.forRoot()
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
@@ -102,12 +147,20 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
    {
      provide: APOLLO_OPTIONS,
      useFactory: createApollo,
-     deps: [HttpLink],
+     deps: [HttpLink, AuthService],
    },
     {provide: AppsServiceImpl, useClass: MockAppsService},
-   DatePipe],
+   DatePipe,
+   AppService],
   bootstrap: [AppComponent],
-  entryComponents: [LoaderComponent, FormModalComponent],
+  entryComponents: [
+    SubmissionsDataViewModalComponent,
+    LoaderComponent,
+    FormModalComponent,
+    ConfirmationModalComponent,
+    AddFieldModalComponent,
+    FieldPreviewModalComponent
+  ],
 })
 export class AppModule {
 

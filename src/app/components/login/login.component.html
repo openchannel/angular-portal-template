@@ -1,4 +1,6 @@
 <div class="bg-container pt-5" [hidden]="isLoading">
-    <oc-login [loginModel]="signIn" [forgotPwdUrl]="forgotPwdUrl" [signupUrl]="signupUrl" [companyLogoUrl]="companyLogoUrl" 
-    (submit)="login($event)" [process]="inProcess"></oc-login>
+    <oc-login
+            [loginButtonText]="'Log In Through ' + (authConfig?.type || '') "
+            [companyLogoUrl]="companyLogoUrl" (submit)="login()"></oc-login>
+    <div>{{tokenInfo}}</div>
 </div>

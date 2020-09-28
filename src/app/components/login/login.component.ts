@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { OauthService, SellerSignin, SellerService, AuthenticationService } from 'oc-ng-common-service';
-import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
-import { LoaderService } from 'src/app/shared/services/loader.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {LoaderService} from 'src/app/shared/services/loader.service';
+import {OAuthService} from 'angular-oauth2-oidc';
+import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
+import {AppService} from '../../core/api/app.service';
+import {GraphqlService} from "../../graphql-client/graphql-service/graphql.service";
+import {AuthService} from "../../core/services/apps-services/auth.service";
 
 @Component({
   selector: 'app-login',
@@ -11,37 +14,57 @@ import { LoaderService } from 'src/app/shared/services/loader.service';
 })
 export class LoginComponent implements OnInit {
 
-  companyLogoUrl = "./assets/img/logo-company.png";
-  signupUrl = "/signup";
-  forgotPwdUrl = "/forgot-password";
-  successLoginFwdUrl = "/app-developer";
-  signIn = new SellerSignin();
+  companyLogoUrl = './assets/img/logo-company.png';
+  signupUrl = '/signup';
+  forgotPwdUrl = '/forgot-password';
+  successLoginFwdUrl = '/app-developer';
   inProcess = false;
   isLoading = true;
-  constructor(private oauthService : OauthService,private router: Router,private sellerService : SellerService,
-    private authenticationService : AuthenticationService, private loaderService : LoaderService
-  ) { }
+  //todo remove
+  tokenInfo: string;
 
-  ngOnInit(): void {
-    this.loaderService.showLoader("1");
-      //localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' &&
-      if (localStorage.getItem("access_token")) {
-        this.authenticationService.saveUserprofileInformation(res => {
-            this.isLoading = false;
-            this.loaderService.closeLoader("1");
-            this.router.navigateByUrl("/app-developer");
-        },res => {
-          this.isLoading = false;
-          this.loaderService.closeLoader("1");
-        });
-      }else{
-        this.isLoading = false;
-        this.loaderService.closeLoader("1");
-      }
+  // todo add ts type
+  authConfig: any;
+
+  constructor(private oauthService: OAuthService, private appService: AppService, private router: Router,
+              private authService: AuthService, private loaderService: LoaderService,
+              private route: ActivatedRoute,
+              private graphqlService: GraphqlService
+  ) {
   }
 
-  login(event) {
-    this.router.navigateByUrl("/app-store");
+  ngOnInit(): void {
+    this.isLoading = true;
+    this.oauthService.hasValidAccessToken();
+
+    this.graphqlService.getAuthConfig().subscribe(({data: {authConfig}}) => {
+        this.authConfig = authConfig;
+
+        this.oauthService.configure({
+          ...authConfig,
+          redirectUri: authConfig.redirectUri || window.location.origin
+        });
+
+        this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+        this.oauthService.loadDiscoveryDocumentAndTryLogin({
+          onTokenReceived: receivedTokens => {
+
+            this.graphqlService.loginUser(receivedTokens.idToken).subscribe(({data: {loginOrRegisterUser: user}}) => {
+              this.authService.persist(user.accessToken, user.refreshToken);
+              this.router.navigate(['/app-store']);
+            });
+
+            this.tokenInfo = JSON.stringify(receivedTokens, null, 4);
+          }
+        });
+
+      }, err => console.error("getAuthConfig", err),
+      () => this.isLoading = false);
+
+  }
+
+  login() {
+    this.oauthService.initLoginFlow();
   }
 
 }
