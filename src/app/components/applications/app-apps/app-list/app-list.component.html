@@ -52,4 +52,7 @@
             </div>
         </div>
     </ng-template>
+    <div *ngIf="currentTab.id === 'appTypes'; else appList">
+        <app-app-types></app-app-types>
+    </div>
 </div>
