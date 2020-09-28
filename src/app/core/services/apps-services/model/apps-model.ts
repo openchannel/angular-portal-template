@@ -18,7 +18,7 @@ export interface AllAppFields {
 
 export interface Developer {
     developerId: string;
-    type: any;
+    type?: any;
 }
 
 export interface BasicApp {
