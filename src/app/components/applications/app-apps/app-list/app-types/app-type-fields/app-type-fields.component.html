@@ -8,7 +8,7 @@
         <td class="fields-secondary-color font-bold">
           Type
         </td>
-        <td class="fields-secondary-color font-bold">
+        <td class="fields-secondary-color font-bold custom-padding">
           Attributes
         </td>
         <td class="fields-secondary-color font-bold">
@@ -19,20 +19,23 @@
     </thead>
     <tbody cdkDropList (cdkDropListDropped)="itemDropped($event)">
       <tr *ngFor="let field of newFieldDefinitions; let i = index"
-           cdkDrag class="cursor-drug">
-        <td>{{field.label}}</td>
-        <td>{{field.type | camelCaseToNormal | titlecase}}</td>
+           cdkDrag class="cursor-drug font-responsive">
+        <td class="fixed-sel">{{field.label}}</td>
+        <td class="fixed-sel">{{field.type | camelCaseToNormal | titlecase}}</td>
         <td>
-          <div class="row mb-1" *ngFor="let attribute of field.attributes | keyvalue">
-            <div class="col-5 p-0 font-bold">{{attribute.key | camelCaseToNormal | titlecase}}</div>
-            <div class="col-7 pl-2 pr-0">
+          <div class="row mb-1 ml-0 mr-0 flex-nowrap" *ngFor="let attribute of field.attributes | keyvalue">
+            <div class="p-0 pl-2 font-bold" style="width: 120px;">{{attribute.key | camelCaseToNormal | titlecase}}</div>
+            <div class="col-6 pl-2 pr-0" *ngIf="attribute.key === 'required'">
+              {{attribute.value ? 'Yes' : 'No'}}
+            </div>
+            <div class="col-7 pl-2 pr-0" *ngIf="attribute.key !== 'required'">
               {{attribute.value}}
             </div>
           </div>
         </td>
-        <td>{{field.description}}</td>
+        <td style="min-width: 200px">{{field.description}}</td>
         <td>
-          <div class="row flex-nowrap">
+          <div class="row flex-nowrap fixed-sel">
             <div class="fields-button fields-delete-btn mr-1 cursor-pointer"
                  *ngIf="field.category !== 'FIXED'"
                  (click)="deleteField(i)">
