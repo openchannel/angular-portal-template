@@ -39,7 +39,7 @@ import { FormListGeneratorComponent } from './components/applications/app-store/
 import { FormModalComponent } from './shared/modals/form-modal/form-modal.component';
 import {APOLLO_OPTIONS} from 'apollo-angular';
 import {HttpLink} from 'apollo-angular/http';
-import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
+import {ApolloClientOptions, DefaultOptions, InMemoryCache} from '@apollo/client/core';
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {AppService} from "./core/api/app.service";
 import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
@@ -65,6 +65,17 @@ export function createApollo(httpLink: HttpLink, authService: AuthService): Apol
 
   const httpLinkUri = httpLink.create({uri: environment.graphqlUrl});
 
+  const defaultOptions: DefaultOptions = {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+  };
+
   const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists
     const token = authService.accessToken;
@@ -80,6 +91,7 @@ export function createApollo(httpLink: HttpLink, authService: AuthService): Apol
   return {
     link: authLink.concat(httpLinkUri),
     cache: new InMemoryCache(),
+    defaultOptions
   };
 }
 
