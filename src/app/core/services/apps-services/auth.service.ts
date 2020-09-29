@@ -9,13 +9,13 @@ export class AuthService {
   public refreshToken: string;
 
   constructor() {
-    this.accessToken = window.sessionStorage.getItem("accessToken");
-    this.refreshToken = window.sessionStorage.getItem("refreshToken");
+    this.accessToken = window.sessionStorage.getItem('accessToken');
+    this.refreshToken = window.sessionStorage.getItem('refreshToken');
   }
 
   persist(accessToken: string, refreshToken: string) {
-    window.sessionStorage.setItem("accessToken", this.accessToken);
-    window.sessionStorage.setItem("refreshToken", this.refreshToken);
+    window.sessionStorage.setItem('accessToken', this.accessToken);
+    window.sessionStorage.setItem('refreshToken', this.refreshToken);
 
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
@@ -23,7 +23,15 @@ export class AuthService {
 
 
   isLoggedInUser() {
-    return !!this.accessToken && !!this.refreshToken
+    return !!this.accessToken && !!this.refreshToken;
+  }
+
+  clearTokensInStorage(): void {
+    window.sessionStorage.removeItem('accessToken');
+    window.sessionStorage.removeItem('refreshToken');
+
+    this.accessToken = undefined;
+    this.refreshToken = undefined;
   }
 
 }

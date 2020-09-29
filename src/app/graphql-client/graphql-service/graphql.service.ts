@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Apollo, gql} from 'apollo-angular';
 import {ApolloQueryResult, FetchResult} from '@apollo/client/core';
 import {Observable} from 'rxjs';
-import {AuthService} from "../../core/services/apps-services/auth.service";
 
 
 @Injectable({
@@ -150,6 +149,13 @@ export class GraphqlService {
       }
     }
   }`;
+
+  private logOutSettingsQuery = gql`
+    query authConfig {
+      logOutConfig {
+        endSessionEndpoint
+      }
+    }`;
 
 
   private updateAppTypeMutation = gql` mutation updateAppType($appTypeId: String!, $typeDefinition: TypeDefinitionRequestInput!) {
@@ -341,7 +347,7 @@ export class GraphqlService {
   }
 
   getAuthConfig(): Observable<ApolloQueryResult<any>> {
-    return this.apollo.query({query: this.authSettingsQuery})
+    return this.apollo.query({query: this.authSettingsQuery});
   }
 
   getAllForms(): Observable<ApolloQueryResult<any>> {
@@ -355,7 +361,7 @@ export class GraphqlService {
         loginRequest: {
           idToken
         }
-      }})
+      }});
   }
 
   /**
@@ -429,5 +435,9 @@ export class GraphqlService {
       mutation: this.createAppTypeMutation,
       variables: {typeDefinition}
     });
+  }
+
+  getLogOutConfig(): Observable<ApolloQueryResult<any>> {
+    return this.apollo.query({ query: this.logOutSettingsQuery});
   }
 }
