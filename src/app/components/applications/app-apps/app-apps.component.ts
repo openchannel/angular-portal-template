@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
 
 @Component({
     selector: 'app-apps-list',
@@ -20,12 +19,17 @@ export class AppAppsComponent implements OnInit {
     }];
 
     currentTab = this.tabs[0];
+    updateAppList = false;
 
     ngOnInit(): void {
-        console.log('AppAppsComponent');
     }
 
-    changeTabType() {
+    changeTabType(updateListData: boolean) {
         this.currentTab = this.tabs.filter(tab => tab !== this.currentTab)[0];
+        if (updateListData) {
+            this.updateAppList = this.currentTab.id === 'id_apps_list';
+        } else {
+            this.updateAppList = false;
+        }
     }
 }

@@ -31,6 +31,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     };
 
     subscriptions: Subscription [] = [];
+    lockSubmitButton = false;
 
     @Output()
     createdApp = new EventEmitter<boolean>();
@@ -120,10 +121,13 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }
 
     saveApp(fields: any) {
+        this.lockSubmitButton = true;
         this.subscriptions.push(this.graphqlService.createApp(this.buildDataForSaving(fields))
             .subscribe((response) => {
-               this.createdApp.emit(true);
+                this.lockSubmitButton = false;
+                this.createdApp.emit(true);
             }, () => {
+                this.lockSubmitButton = false;
                 this.currentAppAction = this.appActions[0];
                 console.log('Can\'t save a new app.');
             }));

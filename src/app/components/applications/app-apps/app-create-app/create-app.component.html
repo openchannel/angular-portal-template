@@ -34,7 +34,7 @@
         <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">App details</span></h3>
         <hr class="ml-0 mr-0 mt-1 mb-3">
         <oc-form [formJsonData]="appFields"
-                 [anotherInvalidResult]="appDataFormGroup.invalid"
+                 [anotherInvalidResult]="appDataFormGroup.invalid || lockSubmitButton"
                  (formSubmitted)="saveApp($event)">
         </oc-form>
     </div>

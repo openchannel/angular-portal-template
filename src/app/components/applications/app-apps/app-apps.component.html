@@ -1,7 +1,7 @@
 <div class="container p-3 ">
     <div class="d-flex flex-row justify-content-end">
-        <oc-button type="primary" text="{{currentTab.text}}" (click)="changeTabType()"></oc-button>
+        <oc-button type="primary" text="{{currentTab.text}}" (click)="changeTabType(false)"></oc-button>
     </div>
-    <app-create-app *ngIf="currentTab.id === 'id_create_app'" (createdApp)="changeTabType()"></app-create-app>
-    <app-app-list *ngIf="currentTab.id === 'id_apps_list'"></app-app-list>
+    <app-create-app *ngIf="currentTab.id === 'id_create_app'" (createdApp)="changeTabType(true)"></app-create-app>
+    <app-app-list *ngIf="currentTab.id === 'id_apps_list'" [updateAppList]="updateAppList"></app-app-list>
 </div>

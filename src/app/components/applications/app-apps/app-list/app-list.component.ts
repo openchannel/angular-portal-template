@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {AppItem} from './model/app-item.model';
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -8,14 +9,14 @@ import {AppItem} from './model/app-item.model';
     templateUrl: './app-list.component.html',
     styleUrls: ['./app-list.component.scss']
 })
-export class AppListComponent implements OnInit {
+export class AppListComponent implements OnInit, OnDestroy {
 
     constructor(private graphqlClient: GraphqlService) {
     }
 
     apps: AppItem[];
-    filteredApps: AppItem[];
 
+    filteredApps: AppItem[];
     tabs = [{
         display: 'All',
         id: 'all'
@@ -35,21 +36,35 @@ export class AppListComponent implements OnInit {
         display: 'App Types',
         id: 'appTypes'
     }];
+
     currentTab = this.tabs[0];
 
     searchText = '';
+
+    subscriptions: Subscription [] = [];
+
+    @Input()
+    set updateAppList(update: boolean) {
+        if (update) {
+            this.getAllApps();
+        }
+    }
 
     ngOnInit(): void {
         this.getAllApps();
     }
 
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(s => s.unsubscribe());
+    }
+
     getAllApps(): void {
         this.apps = [];
-        this.graphqlClient.getAllApps().subscribe((response: { data: { allApps: AppItem[] } }) => {
+        this.subscriptions.push(this.graphqlClient.getAllApps().subscribe((response: { data: { allApps: AppItem[] } }) => {
             if (response && response.data && response.data.allApps) {
                 this.apps = response.data.allApps;
             }
-        }, () => console.log('ERROR Get all apps.'));
+        }, () => console.log('ERROR Get all apps.')));
     }
 
     getTotalResultMessage(): string {
@@ -81,6 +96,7 @@ export class AppListComponent implements OnInit {
     }
 
     setNewApp(tabId: string): void {
+        this.getAllApps();
         this.searchText = null;
         this.currentTab = this.tabs.find((e) => e.id === tabId);
     }
