@@ -1,40 +1,61 @@
 import {Injectable} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
-import {Observable} from 'rxjs';
-import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
-import {LoaderService} from 'src/app/shared/services/loader.service';
-import {Router} from '@angular/router';
-import {OcErrorService} from 'oc-ng-common-component';
-import {environment} from '../../../environments/environment';
-import { OAuthService } from 'angular-oauth2-oidc';
+import {Observable, of, throwError} from 'rxjs';
+import {AuthService} from '../services/apps-services/auth.service';
+import {GraphqlService} from '../../graphql-client/graphql-service/graphql.service';
+import {LogOutService} from '../services/apps-services/log-out.service';
+import {catchError, concatMap, take} from 'rxjs/operators';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
-  constructor(private notificationService: NotificationService, private loaderService: LoaderService,
-              private router: Router, private errorService: OcErrorService, private oauthService: OAuthService) {
+
+  constructor(private authService: AuthService, private graph: GraphqlService, private logOutService: LogOutService) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // get current access token value
+    return next.handle(req).pipe(
+        concatMap(event => {
+          let needToAuthenticate = false;
+          if (
+              event.type === HttpEventType.Response &&
+              event.status === 200 &&
+              event.body &&
+              Array.isArray(event.body.errors)
+          ) {
+            const errors = event.body.errors as any[];
+            needToAuthenticate = !!errors.find(e => e.exception && e.exception.message === 'Access token is expired');
+          }
+
+          if (needToAuthenticate) {
+            // update access token by logging in to your auth server using a refresh token
+            if (this.authService.refreshToken) {
+              return this.graph.refreshToken(this.authService.refreshToken).pipe(
+                  take(1),
+                  catchError(err => {
+                      this.logOutService.logOut();
+                      return throwError(err);
+                  }),
+                  concatMap(({data: {refreshToken: {accessToken: newAccessToken}}}) => {
+                    if (newAccessToken) {
+                      this.authService.updateAccessToken(newAccessToken);
+                      return next.handle(req.clone({
+                        setHeaders: {Authorization: `Bearer ${newAccessToken}`}
+                      }));
+                    } else {
+                      this.logOutService.logOut();
+                      // if logging in with refresh token failed to update access token, then can't help it...
+                      // --- apollo-link does not understand return throwError('message') so just throw new error
+                      throw new Error('Error getting access token after logging in with refresh token');
+                    }
+                  })
+              );
+            }
+            this.logOutService.logOut();
+            throw new Error('Error getting access token after logging in with refresh token');
+          }
+          return of(event);
+        }),
+    );
   }
-
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // request = request.clone({ headers: request.headers.set('Authorization', environment.auth) });
-
-    // const header = this.oauthService.authorizationHeader();
-    // if (header) {
-    //   request = request.clone({
-    //     setHeaders: {
-    //       Authorization: header,
-    //     }
-    //   });
-    // }
-
-    return next.handle(request);
-  }
-
-  // handleValidationError(validationErrorList: any[]) {
-  //   if (validationErrorList[0].field) {
-  //     this.errorService.setServerErrorList(validationErrorList);
-  //   } else {
-  //     this.notificationService.showError(validationErrorList);
-  //   }
-  // }
 }

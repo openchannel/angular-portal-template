@@ -34,8 +34,7 @@
                        *ngIf="formsStatus[i].existed" (click)="resetForm(i, appForm)"></oc-button>
           </div>
         </form>
-        <section class="mt-3" *ngIf="appForm.get('fieldDefinitions').value
-                              && appForm.get('fieldDefinitions').value.length > 0">
+        <section class="mt-3" *ngIf="formsStatus[i].existed">
           <h5>Fields</h5>
           <hr class="mt-2 mb-2">
           <div>

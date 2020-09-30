@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Apollo, gql} from 'apollo-angular';
 import {ApolloQueryResult, FetchResult} from '@apollo/client/core';
 import {Observable} from 'rxjs';
-import {AuthService} from "../../core/services/apps-services/auth.service";
 
 
 @Injectable({
@@ -158,9 +157,45 @@ export class GraphqlService {
     }
   }`;
 
+  private logOutSettingsQuery = gql`
+    query authConfig {
+      logOutConfig {
+        endSessionEndpoint
+      }
+    }`;
 
-  private updateAppTypeMutation = gql` mutation updateAppType($appTypeId: String!, $submission: TypeDefinitionRequestInput!) {
-    updateAppType(appTypeId: $appTypeId, submission: $submission) {
+
+  private updateAppTypeMutation = gql` mutation updateAppType($appTypeId: String!, $typeDefinition: TypeDefinitionRequestInput!) {
+    updateAppType(appTypeId: $appTypeId, typeDefinition: $typeDefinition) {
+      id
+      label
+      description
+      fieldDefinitions {
+        id
+        label
+        description
+        defaultValue
+        type
+        attributes
+        deleteable
+        options
+        category
+        subFieldDefinitions {
+          id
+          label
+          description
+          defaultValue
+          type
+          attributes
+          deleteable
+          options
+        }
+      }
+    }
+  }`;
+
+  private createAppTypeMutation = gql` mutation createAppType($typeDefinition: TypeDefinitionRequestInput!) {
+    createAppType(typeDefinition: $typeDefinition) {
       id
       label
       description
@@ -298,11 +333,16 @@ export class GraphqlService {
     }
   }`;
 
-
   private loginOrRegisterUser = gql`mutation login($loginRequest: LoginRequestInput!) {
     loginOrRegisterUser(request: $loginRequest) {
       accessToken
       refreshToken
+    }
+  }`;
+
+  private refreshTokenMutation = gql`mutation refreshToken($refreshToken: String!) {
+    refreshToken(refreshToken: $refreshToken) {
+      accessToken
     }
   }`;
 
@@ -348,7 +388,7 @@ export class GraphqlService {
   }
 
   getAuthConfig(): Observable<ApolloQueryResult<any>> {
-    return this.apollo.query({query: this.authSettingsQuery})
+    return this.apollo.query({query: this.authSettingsQuery});
   }
 
   getAllForms(): Observable<ApolloQueryResult<any>> {
@@ -362,7 +402,7 @@ export class GraphqlService {
         loginRequest: {
           idToken
         }
-      }})
+      }});
   }
 
   /**
@@ -440,10 +480,28 @@ export class GraphqlService {
     });
   }
 
-  updateAppType(appTypeId: string, submission: any) {
+  updateAppType(appTypeId: string, typeDefinition: any) {
     return this.apollo.mutate({
       mutation: this.updateAppTypeMutation,
-      variables: {appTypeId, submission}
+      variables: {appTypeId, typeDefinition}
+    });
+  }
+
+  createAppType(typeDefinition: any) {
+    return this.apollo.mutate({
+      mutation: this.createAppTypeMutation,
+      variables: {typeDefinition}
+    });
+  }
+
+  getLogOutConfig(): Observable<ApolloQueryResult<any>> {
+    return this.apollo.query({ query: this.logOutSettingsQuery});
+  }
+
+  refreshToken(refreshToken: string): Observable<FetchResult<any>> {
+    return this.apollo.mutate({
+      mutation: this.refreshTokenMutation,
+      variables: {refreshToken},
     });
   }
 }

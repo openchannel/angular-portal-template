@@ -54,11 +54,20 @@ export class AppTypesComponent implements OnInit, OnDestroy {
    * Adding Empty form to the App type forms
    */
   addAppType(): void {
+    const fixedField = [{
+      id: 'name',
+      label: 'Name',
+      type: 'text',
+      category:	'FIXED',
+      attributes: {
+        required:	true
+      }
+    }];
     const appForm = this.fb.group({
       label: ['', Validators.required],
       id: ['', Validators.required],
       description: [''],
-      fieldDefinitions: ['']
+      fieldDefinitions: [fixedField]
     });
     const formStatus = {
       editable: true,
@@ -126,13 +135,29 @@ export class AppTypesComponent implements OnInit, OnDestroy {
 
   saveAppTypeData(appTypeForm: any, index?: number) {
     const appData = appTypeForm.getRawValue();
-    this.graphQLService.updateAppType(appData.id, appData).subscribe(
-      result => {
-        if (index) {
-          this.formsStatus[index].editable = false;
-        }
+
+    if (index) {
+      if (this.formsStatus[index].existed) {
+        this.graphQLService.updateAppType(appData.id, appData).subscribe(
+          result => {
+            this.formsStatus[index].editable = false;
+          }
+        );
+      } else {
+        this.graphQLService.createAppType(appData).subscribe(
+          result => {
+            this.appTypesData = [...this.appTypesData, appData];
+            appTypeForm.get('id').disable({onlySelf: true});
+            this.formsStatus[index].existed = true;
+            this.formsStatus[index].editable = false;
+          }
+        );
       }
-    );
+    } else {
+      this.graphQLService.updateAppType(appData.id, appData).subscribe(
+        result => { }
+        );
+    }
   }
 
   catchFieldChanging(fieldsDefinitions, appTypeForm) {

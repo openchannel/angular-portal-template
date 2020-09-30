@@ -4,6 +4,7 @@ import { ConfirmationModalComponent } from '../../../../../../shared/modals/conf
 import { AddFieldModalComponent } from '../../../../../../shared/modals/add-field-modal/add-field-modal.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FieldPreviewModalComponent } from '../../../../../../shared/modals/field-preview-modal/field-preview-modal.component';
+import { FieldDefinition } from '../../../../../../core/services/apps-services/model/apps-model';
 
 @Component({
   selector: 'app-app-type-fields',
@@ -13,11 +14,11 @@ import { FieldPreviewModalComponent } from '../../../../../../shared/modals/fiel
 export class AppTypeFieldsComponent implements OnInit {
 
   /** App fields input data */
-  @Input() fieldDefinitions = [];
+  @Input() fieldDefinitions: FieldDefinition[] = [];
   /** Sending fields data to the parent */
   @Output() fieldsChanging = new EventEmitter<any>();
 
-  public newFieldDefinitions = [];
+  public newFieldDefinitions: FieldDefinition[] = [];
   constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
