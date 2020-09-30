@@ -32,9 +32,6 @@ export class AppListComponent implements OnInit, OnDestroy {
     }, {
         display: 'Suspended',
         id: 'suspended'
-    }, {
-        display: 'App Types',
-        id: 'appTypes'
     }];
 
     currentTab = this.tabs[0];
