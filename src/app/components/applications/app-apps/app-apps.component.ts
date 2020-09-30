@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-apps-list',
@@ -7,29 +8,24 @@ import {Component, OnInit} from '@angular/core';
 })
 export class AppAppsComponent implements OnInit {
 
-    constructor() {
+    constructor(private router: Router) {
     }
 
     tabs = [{
-        text: 'Create app',
-        id: 'id_create_app'
-    }, {
         text: 'Apps list',
-        id: 'id_apps_list'
+        link: 'app-list/create-app'
+    }, {
+        text: 'Create app',
+        link: 'app-list/list'
     }];
 
     currentTab = this.tabs[0];
-    updateAppList = false;
 
     ngOnInit(): void {
     }
 
-    changeTabType(updateListData: boolean) {
+    changeTabType() {
         this.currentTab = this.tabs.filter(tab => tab !== this.currentTab)[0];
-        if (updateListData) {
-            this.updateAppList = this.currentTab.id === 'id_apps_list';
-        } else {
-            this.updateAppList = false;
-        }
+        this.router.navigate([this.currentTab.link]).then();
     }
 }

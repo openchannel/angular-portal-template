@@ -10,6 +10,8 @@ import {MyProfileComponent} from './components/my-profile/my-profile.component';
 import {EditAppComponent} from './components/applications/edit-app/edit-app.component';
 import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from "./_guards/auth.guard";
+import { CreateAppComponent } from './components/applications/app-apps/app-create-app/create-app.component';
+import { AppListComponent } from './components/applications/app-apps/app-list/app-list.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,7 +24,10 @@ const routes: Routes = [
       {path: 'app-store', component: AppStoreComponent, canActivate: [AuthGuard]},
       {path: 'app-detail', component: AppDetailComponent, canActivate: [AuthGuard]},
       {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
-      {path: 'app-list', component: AppAppsComponent, canActivate: [AuthGuard]},
+      {path: 'app-list', component: AppAppsComponent, canActivate: [AuthGuard], children: [
+          {path: 'create-app', component: CreateAppComponent, canActivate: [AuthGuard]},
+          {path: 'list', component: AppListComponent, canActivate: [AuthGuard]}
+        ]},
       {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
       {path: 'edit-app/:appId/version/:versionId', component: EditAppComponent, canActivate: [AuthGuard]},
