@@ -27,9 +27,13 @@ export class LogOutService {
             this.authService.clearTokensInStorage();
             this.oAuthService.logOut();
           } else {
-            this.authService.clearTokensInStorage();
-            this.router.navigateByUrl('/login');
+              this.internalLogout();
           }
-        });
+        }, error => this.internalLogout());
+  }
+
+  private internalLogout(): void {
+      this.authService.clearTokensInStorage();
+      this.router.navigateByUrl('/login');
   }
 }

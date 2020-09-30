@@ -297,11 +297,16 @@ export class GraphqlService {
     }
   }`;
 
-
   private loginOrRegisterUser = gql`mutation login($loginRequest: LoginRequestInput!) {
     loginOrRegisterUser(request: $loginRequest) {
       accessToken
       refreshToken
+    }
+  }`;
+
+  private refreshTokenMutation = gql`mutation refreshToken($refreshToken: String!) {
+    refreshToken(refreshToken: $refreshToken) {
+      accessToken
     }
   }`;
 
@@ -439,5 +444,12 @@ export class GraphqlService {
 
   getLogOutConfig(): Observable<ApolloQueryResult<any>> {
     return this.apollo.query({ query: this.logOutSettingsQuery});
+  }
+
+  refreshToken(refreshToken: string): Observable<FetchResult<any>> {
+    return this.apollo.mutate({
+      mutation: this.refreshTokenMutation,
+      variables: {refreshToken},
+    });
   }
 }
