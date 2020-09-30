@@ -31,9 +31,6 @@ export class AppListComponent implements OnInit {
     }, {
         display: 'Suspended',
         id: 'suspended'
-    }, {
-        display: 'App Types',
-        id: 'appTypes'
     }];
     currentTab = this.tabs[0];
 
