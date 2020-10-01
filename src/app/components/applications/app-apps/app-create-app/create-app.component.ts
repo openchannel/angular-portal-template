@@ -5,6 +5,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppsServiceImpl} from '../../../../core/services/apps-services/model/apps-service-impl';
 import {FieldDefinition} from '../../../../core/services/apps-services/model/apps-model';
 import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-create-app',
@@ -38,13 +39,15 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     constructor(private appsService: AppsServiceImpl,
                 private fb: FormBuilder,
-                private graphqlService: GraphqlService) {
+                private graphqlService: GraphqlService,
+                private router: Router) {
     }
 
     ngOnInit(): void {
         this.initAppDataGroup();
         this.addListenerAppTypeField();
         this.getAllAppTypes();
+        this.getAppData();
     }
 
     initAppDataGroup(): void {
@@ -144,6 +147,13 @@ export class CreateAppComponent implements OnInit, OnDestroy {
                 ...fields
             }
         };
+    }
+
+    getAppData() {
+        const appFullData = this.router.getCurrentNavigation().extras.state;
+        if (appFullData) {
+            // todo Fill form with app data
+        }
     }
 
     ngOnDestroy(): void {
