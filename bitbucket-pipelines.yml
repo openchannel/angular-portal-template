@@ -1,7 +1,7 @@
 
 definitions:
   steps:
-    - step: &build-app-and-deploy
+    - step: &build-app-and-deploy-test
         name: "Build and Deploy"
         image: python:3.7.7-stretch
         script:
@@ -32,6 +32,45 @@ definitions:
           - export TARGET_GROUP_NAME="`./getTargetGroupName.sh`"
           - export tst=`cat ${CONFIG_FILE} | grep TEST_FRONTEND_SITENAME | cut -d'=' -f2`
           - export SITENAME_TEST=${tst:1:-1}
+          # Get certificate arn in us-east-1
+          - export cmd1="aws acm list-certificates --region us-east-1 --query 'CertificateSummaryList[?DomainName==\`"
+          - export cmd2=`echo "*.${HOSTED_ZONE:0:-1}"`
+          - export cmd3="\`].CertificateArn' --output text"
+          - export cmd4="${cmd1}${cmd2}${cmd3}"
+          - export CERTIFICATE_ARN=`echo $cmd4 | bash`
+          - echo $CERTIFICATE_ARN
+          # Build application
+          - ./updateEnvsInApp.sh
+          - ./deployLiveTest.sh
+    - step: &build-app-and-deploy-live
+        name: "Build and Deploy"
+        image: python:3.7.7-stretch
+        script:
+          # Install node
+          - curl -sL https://deb.nodesource.com/setup_12.x | bash -
+          - apt-get install -y nodejs unzip git
+          # Install AWS CLI
+          - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_ECS
+          - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_ECS
+          - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          - unzip awscliv2.zip
+          - ./aws/install
+          # Update repo with scripts and update AWS keys
+          - cp infra/scripts/* .
+          - cp infra/cloudformation/* .
+          - chmod +x *.sh
+          - ./createAwsCredentials.sh "$AWS_ACCESS_KEY_ID_ECS" "$AWS_SECRET_ACCESS_KEY_ECS"
+          # Export envs
+          - export CONFIG_FILE="infra/config-files/cluster-${CONFIG_FILE_SUFFIX}"
+          - export arn=`cat ${CONFIG_FILE} | grep CLUSTER_CERTIFICATE | cut -d'=' -f2`
+          - export CLUSTER_CERTIFICATE=${arn:1:-1}
+          - export hz=`cat ${CONFIG_FILE} | grep HOSTED_ZONE_NAME | cut -d'=' -f2`
+          - export HOSTED_ZONE=${hz:1:-1}
+          - export rg=`cat ${CONFIG_FILE} | grep REGION | cut -d'=' -f2`
+          - export REGION=${rg:1:-1}
+          - export cn=`cat ${CONFIG_FILE} | grep CLUSTER_NAME | cut -d'=' -f2`
+          - export CLUSTER_NAME=${cn:1:-1}
+          - export TARGET_GROUP_NAME="`./getTargetGroupName.sh`"
           - export lv=`cat ${CONFIG_FILE} | grep LIVE_FRONTEND_SITENAME | cut -d'=' -f2`
           - export SITENAME_LIVE=${lv:1:-1}
           # Get certificate arn in us-east-1
@@ -43,28 +82,14 @@ definitions:
           - echo $CERTIFICATE_ARN
           # Build application
           - ./updateEnvsInApp.sh
-          # - npm install
-          # - npm install -g @angular/cli
-          # - ng build --configuration=${CONFIG_FILE_SUFFIX}
-
-          #- sed -i "s|./components/applications|./components/Applications|g" src/app/app-routing.module.ts
-          #- sed -i "s|./components/applications|./components/Applications|g" src/app/app.module.ts
           - ./deployLiveTest.sh
 pipelines:
   custom:
-    Deploy to dev1:
+    Deploy to US1 Test:
       - step:
-          <<: *build-app-and-deploy
-          deployment: dev1
-    Deploy to stage1:
+          <<: *build-app-and-deploy-test
+          deployment: us1-test
+    Deploy to US1 Live:
       - step:
-          <<: *build-app-and-deploy
-          deployment: stage1
-    Deploy to EU:
-      - step:
-          <<: *build-app-and-deploy
-          deployment: eu
-    Deploy to Hosted US1:
-      - step:
-          <<: *build-app-and-deploy
-          deployment: hosted-us1
+          <<: *build-app-and-deploy-live
+          deployment: us1-live
