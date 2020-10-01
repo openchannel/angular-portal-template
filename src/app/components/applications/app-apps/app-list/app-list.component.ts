@@ -2,6 +2,8 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {AppItem} from './model/app-item.model';
 import {Subscription} from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModalComponent } from '../../../../shared/modals/confirmation-modal/confirmation-modal.component';
 
 
 @Component({
@@ -11,7 +13,8 @@ import {Subscription} from 'rxjs';
 })
 export class AppListComponent implements OnInit, OnDestroy {
 
-    constructor(private graphqlClient: GraphqlService) {
+    constructor(private graphqlClient: GraphqlService,
+                private modal: NgbModal) {
     }
 
     apps: AppItem[];
@@ -35,6 +38,7 @@ export class AppListComponent implements OnInit, OnDestroy {
     }];
 
     currentTab = this.tabs[0];
+    displayMenuIndx: string;
 
     searchText = '';
 
@@ -131,5 +135,30 @@ export class AppListComponent implements OnInit, OnDestroy {
         }
         console.error('Incorrect application status!');
         return 'STATUS';
+    }
+
+    showDropdownMenuByIndx(id) {
+        if (this.displayMenuIndx === id) {
+            this.displayMenuIndx = null;
+        } else {
+            this.displayMenuIndx = id;
+        }
+    }
+
+    deleteSelectedApp(appId: string) {
+        const modalRef = this.modal.open(ConfirmationModalComponent);
+
+        modalRef.componentInstance.modalText = 'Are you sure you want to delete this app?';
+        modalRef.componentInstance.action = 'Delete';
+        modalRef.componentInstance.buttonText = 'DELETE';
+
+        modalRef.result.then(res => {
+            if (res && res === 'success') {
+                console.log(res);
+                this.graphqlClient.deleteApp(appId).subscribe(result => {
+                    this.getAllApps();
+                });
+            }
+        });
     }
 }
