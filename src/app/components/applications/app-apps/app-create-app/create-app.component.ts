@@ -52,7 +52,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     initAppDataGroup(): void {
         this.appDataFormGroup = this.fb.group({
-            developerId: ['', Validators.required],
             appType: ['', Validators.required]
         });
     }
@@ -128,7 +127,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.graphqlService.createApp(this.buildDataForSaving(fields))
             .subscribe((response) => {
                 this.lockSubmitButton = false;
-                this.createdApp.emit(true);
+                this.router.navigate(['/app-list/list']).then();
             }, () => {
                 this.lockSubmitButton = false;
                 this.currentAppAction = this.appActions[0];
@@ -139,7 +138,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     buildDataForSaving(fields: any): any {
         const formGroupData = this.appDataFormGroup.value;
         return {
-            developerId: formGroupData?.developerId,
             type: formGroupData?.appType,
             name: fields?.name,
             autoApprove: true,
