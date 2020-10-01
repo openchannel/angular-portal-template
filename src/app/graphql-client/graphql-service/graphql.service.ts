@@ -68,6 +68,58 @@ export class GraphqlService {
     }
   }`;
 
+  private getAppQuery = gql` query oneApp ($appId: String!, $version: Int!) {
+      oneApp(appId: $appId, version: $version) {
+          name
+          appCreatedDate
+          appIcon
+          appId
+          appSubmittedDate
+          childApps{
+              name
+          }
+          created
+          customAppData
+          customFields{
+              label
+              fieldDefinition {
+                  attributes
+                  category
+                  defaultValue
+                  deleteable
+                  description
+                  id
+                  label
+              }
+          }
+          description
+          developer{
+              name
+              username
+          }
+          developerId
+          groupId
+          isLatestVersion
+          isLive
+          isPreviousAvailable
+          lastUpdated
+          lastUpdatedDate
+          pricingModels {
+              license
+          }
+          recordFound
+          safeNames
+          statistics
+          status
+          statusChangeReason
+          submittedDate
+          type {
+              label
+          }
+          version
+      }
+  }`;
+
   private createAppMutation = gql` mutation createApp($appVersion: AppVersionRequestInput!) {
     createAndPublishApp(appVersion: $appVersion) {
       appId
@@ -221,6 +273,12 @@ export class GraphqlService {
         }
       }
     }
+  }`;
+
+  private deleteAppMutation = gql` mutation deleteApp($appId: String!) {
+      deleteApp(appId: $appId) {
+          status
+      }
   }`;
 
   private allFormSubmissionsQuery = gql` query getAllFormSubmissions($formId: String!, $page: Int, $pageSize: Int,
@@ -502,6 +560,23 @@ export class GraphqlService {
     return this.apollo.mutate({
       mutation: this.refreshTokenMutation,
       variables: {refreshToken},
+    });
+  }
+
+  deleteApp(appId: string) {
+    return this.apollo.mutate({
+      mutation: this.deleteAppMutation,
+      variables: {appId}
+    });
+  }
+
+  oneApp(appId: string, version: number) {
+    return this.apollo.query({
+      query: this.getAppQuery,
+      variables: {
+        appId,
+        version
+      }
     });
   }
 }

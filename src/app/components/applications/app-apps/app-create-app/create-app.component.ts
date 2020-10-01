@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppsServiceImpl} from '../../../../core/services/apps-services/model/apps-service-impl';
 import {FieldDefinition} from '../../../../core/services/apps-services/model/apps-model';
 import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-create-app',
@@ -31,8 +31,10 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         fields: FieldDefinition []
     };
 
-    subscriptions: Subscription [] = [];
+    subscriptions: Subscription = new Subscription();
     lockSubmitButton = false;
+
+    pageType: string;
 
     @Output()
     createdApp = new EventEmitter<boolean>();
@@ -40,20 +42,32 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     constructor(private appsService: AppsServiceImpl,
                 private fb: FormBuilder,
                 private graphqlService: GraphqlService,
-                private router: Router) {
+                private router: Router,
+                private activeRoute: ActivatedRoute) {
     }
 
     ngOnInit(): void {
+        this.pageType = this.router.url.split('/')[2];
         this.initAppDataGroup();
-        this.addListenerAppTypeField();
-        this.getAllAppTypes();
-        this.getAppData();
+        if (this.pageType === 'create-app') {
+            this.addListenerAppTypeField();
+            this.getAllAppTypes();
+        } else {
+            this.getAppData();
+        }
     }
 
     initAppDataGroup(): void {
-        this.appDataFormGroup = this.fb.group({
-            appType: ['', Validators.required]
-        });
+        if (this.pageType === 'create-app') {
+            this.appDataFormGroup = this.fb.group({
+                type: ['', Validators.required]
+            });
+        } else {
+            this.appDataFormGroup = this.fb.group({
+                name: ['', Validators.required],
+                safeNames: ['', Validators.required]
+            });
+        }
     }
 
     customSearch = (text$: Observable<string>) =>
@@ -78,14 +92,14 @@ export class CreateAppComponent implements OnInit, OnDestroy {
                 console.error('Can\'t get developers id' + JSON.stringify(error));
                 return [];
             })
-        ));
+        ))
 
     private addListenerAppTypeField(): void {
-        this.subscriptions.push(this.appDataFormGroup.get('appType').valueChanges
+        this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
             .pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(appType => {
-                if (appType) {
-                    this.getFieldsByAppType(appType);
+            .subscribe(type => {
+                if (type) {
+                    this.getFieldsByAppType(type);
                 } else {
                     this.appFields = null;
                 }
@@ -95,7 +109,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     private getAllAppTypes(): void {
         this.currentAppsTypesItems = [];
         this.existsAppsTypes = [];
-        this.subscriptions.push(this.graphqlService.getAppTypes(1, 100, true)
+        this.subscriptions.add(this.graphqlService.getAppTypes(1, 100, true)
             .subscribe((appResponse: any) => {
                 const appTypes = appResponse?.data?.getAppTypes?.list;
                 if (appTypes && appTypes.length > 0) {
@@ -109,7 +123,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     private getFieldsByAppType(appType: string) {
         this.appFields = null;
-        this.subscriptions.push(this.graphqlService.getAppType(appType)
+        this.subscriptions.add(this.graphqlService.getAppType(appType)
             .subscribe((appTypeResponse: any) => {
                 const fieldDefinitions = appTypeResponse?.data?.getAppType?.fieldDefinitions;
                 if (fieldDefinitions && fieldDefinitions.length > 0) {
@@ -124,7 +138,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     saveApp(fields: any) {
         this.lockSubmitButton = true;
-        this.subscriptions.push(this.graphqlService.createApp(this.buildDataForSaving(fields))
+        this.subscriptions.add(this.graphqlService.createApp(this.buildDataForSaving(fields))
             .subscribe((response) => {
                 this.lockSubmitButton = false;
                 this.router.navigate(['/app-list/list']).then();
@@ -138,7 +152,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     buildDataForSaving(fields: any): any {
         const formGroupData = this.appDataFormGroup.value;
         return {
-            type: formGroupData?.appType,
+            type: formGroupData?.type,
             name: fields?.name,
             autoApprove: true,
             customData: {
@@ -148,10 +162,25 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }
 
     getAppData() {
-        // todo Fill form with app data
+        const id = this.activeRoute.snapshot.paramMap.get('appId');
+        const version = this.activeRoute.snapshot.paramMap.get('versionId');
+        this.subscriptions.add(this.graphqlService.oneApp(id, Number(version)).subscribe(
+          result => {
+              const data = result.data.oneApp;
+              this.appDataFormGroup.get('name').setValue(data.name);
+              this.appDataFormGroup.get('safeNames').setValue(data.safeNames);
+              this.appFields = {
+                  fields: data.customFields
+                    .map(field => {
+                        field.fieldDefinition.defaultValue = data.customAppData[field.fieldDefinition.id.replace('customData.', '')];
+                        return field.fieldDefinition;
+                    })
+              };
+          }
+        ));
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.unsubscribe();
     }
 }
