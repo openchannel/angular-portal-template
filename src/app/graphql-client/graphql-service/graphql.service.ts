@@ -127,6 +127,12 @@ export class GraphqlService {
     }
   }`;
 
+  private updateOneAppMutation = gql` mutation updateOneApp($appId: String!, $version: Int!, $appDefinition: AppDefinitionRequestInput!) {
+      updateApp(appId: $appId, version: $version, appDefinition: $appDefinition) {
+      version
+    }
+  }`;
+
   private formQuery = gql` query getForm($formId: String!){
     getForm(formId: $formId){
       name
@@ -577,6 +583,13 @@ export class GraphqlService {
         appId,
         version
       }
+    });
+  }
+
+  updateOneApp(appId: string, version: number, appDefinition) {
+    return this.apollo.mutate({
+      mutation: this.updateOneAppMutation,
+      variables: {appId, version, appDefinition}
     });
   }
 }

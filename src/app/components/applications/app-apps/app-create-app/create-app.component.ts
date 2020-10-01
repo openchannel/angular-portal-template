@@ -35,6 +35,8 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     lockSubmitButton = false;
 
     pageType: string;
+    appId: string;
+    appVersion: number;
 
     @Output()
     createdApp = new EventEmitter<boolean>();
@@ -121,7 +123,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
             }));
     }
 
-    private getFieldsByAppType(appType: string) {
+    private getFieldsByAppType(appType: string): void {
         this.appFields = null;
         this.subscriptions.add(this.graphqlService.getAppType(appType)
             .subscribe((appTypeResponse: any) => {
@@ -136,35 +138,79 @@ export class CreateAppComponent implements OnInit, OnDestroy {
             })));
     }
 
-    saveApp(fields: any) {
+    saveApp(fields: any): void {
         this.lockSubmitButton = true;
-        this.subscriptions.add(this.graphqlService.createApp(this.buildDataForSaving(fields))
-            .subscribe((response) => {
-                this.lockSubmitButton = false;
-                this.router.navigate(['/app-list/list']).then();
-            }, () => {
-                this.lockSubmitButton = false;
-                this.currentAppAction = this.appActions[0];
-                console.log('Can\'t save a new app.');
-            }));
+        if (this.pageType === 'create-app') {
+            this.subscriptions.add(this.graphqlService.createApp(this.buildDataForSaving(fields))
+              .subscribe((response) => {
+                  this.lockSubmitButton = false;
+                  this.router.navigate(['/app-list/list']).then();
+              }, () => {
+                  this.lockSubmitButton = false;
+                  this.currentAppAction = this.appActions[0];
+                  console.log('Can\'t save a new app.');
+              }));
+        } else {
+            this.subscriptions.add(this.graphqlService.updateOneApp(this.appId, this.appVersion, this.buildDataForSaving(fields))
+              .subscribe(
+                response => {
+                    if (response.data) {
+                        this.lockSubmitButton = false;
+                        this.router.navigate(['/app-list/list']).then();
+                    } else {
+                        this.lockSubmitButton = false;
+                        this.currentAppAction = this.appActions[0];
+                        console.log('Can\'t update app.');
+                    }
+                }, () => {
+                    this.lockSubmitButton = false;
+                    this.currentAppAction = this.appActions[0];
+                    console.log('Can\'t update app.');
+                }
+              ));
+        }
     }
 
     buildDataForSaving(fields: any): any {
-        const formGroupData = this.appDataFormGroup.value;
-        return {
-            type: formGroupData?.type,
-            name: fields?.name,
-            autoApprove: true,
-            customData: {
-                ...fields
-            }
-        };
+        if (this.pageType === 'create-app') {
+            const formGroupData = this.appDataFormGroup.value;
+            return {
+                type: formGroupData?.type,
+                name: fields?.name,
+                autoApprove: true,
+                customData: {
+                    ...fields
+                }
+            };
+        } else {
+            const dataToServer = {
+                fields: [
+                    {
+                        id: 'name',
+                        fieldValue: this.appDataFormGroup.get('name').value
+                    },
+                    {
+                        id: 'safeNames',
+                        fieldValue: this.appDataFormGroup.get('safeNames').value
+                    }
+                ]
+            };
+
+            Object.keys(fields).forEach(key => {
+                const oneField = {
+                    id: key,
+                    fieldValue: fields[key]
+                };
+                dataToServer.fields.push(oneField);
+            });
+            return dataToServer;
+        }
     }
 
     getAppData() {
-        const id = this.activeRoute.snapshot.paramMap.get('appId');
-        const version = this.activeRoute.snapshot.paramMap.get('versionId');
-        this.subscriptions.add(this.graphqlService.oneApp(id, Number(version)).subscribe(
+        this.appId = this.activeRoute.snapshot.paramMap.get('appId');
+        this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
+        this.subscriptions.add(this.graphqlService.oneApp(this.appId, this.appVersion).subscribe(
           result => {
               const data = result.data.oneApp;
               this.appDataFormGroup.get('name').setValue(data.name);
