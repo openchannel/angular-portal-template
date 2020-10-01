@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule, NgbDateAdapter } from '@ng-bootstrap/ng-bootstrap';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './shared/template/header/header.component';
@@ -55,10 +55,11 @@ import { SubmissionsTableComponent } from './components/applications/app-store/f
 import { SubmissionsDataViewModalComponent } from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {AuthService} from "./core/services/apps-services/auth.service";
 import {setContext} from "@apollo/client/link/context";
+import {HttpXsrfInterceptor} from "./core/interceptors/httpxsft.interceptor";
 
 export function createApollo(httpLink: HttpLink, authService: AuthService): ApolloClientOptions<any> {
 
-  const httpLinkUri = httpLink.create({uri: environment.graphqlUrl});
+  const httpLinkUri = httpLink.create({uri: environment.graphqlUrl, withCredentials: true});
 
   const defaultOptions: DefaultOptions = {
     watchQuery: {
@@ -141,10 +142,12 @@ export function createApollo(httpLink: HttpLink, authService: AuthService): Apol
     ReactiveFormsModule,
     BrowserAnimationsModule,
     DragDropModule,
-    OAuthModule.forRoot()
+    OAuthModule.forRoot(),
+    HttpClientXsrfModule.withOptions({ cookieName: 'XSRF-TOKEN' })
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
+   { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true },
    { provide: NgbDateAdapter, useClass: CustomAdapter },
    {
      provide: APOLLO_OPTIONS,
