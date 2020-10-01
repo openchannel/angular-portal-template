@@ -10,7 +10,6 @@ export const environment = {
 
   openchannelUrl: 'https://market.openchannel.io',
   graphqlUrl: 'http://localhost:8080/graphql',
-  auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8='
 };
 
 /*

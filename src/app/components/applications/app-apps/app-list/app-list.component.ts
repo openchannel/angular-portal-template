@@ -42,7 +42,7 @@ export class AppListComponent implements OnInit, OnDestroy {
 
     searchText = '';
 
-    subscriptions: Subscription [] = [];
+    subscriptions: Subscription = new Subscription();
 
     @Input()
     set updateAppList(update: boolean) {
@@ -56,12 +56,12 @@ export class AppListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        this.subscriptions.unsubscribe();
     }
 
     getAllApps(): void {
         this.apps = [];
-        this.subscriptions.push(this.graphqlClient.getAllApps().subscribe((response: { data: { allApps: AppItem[] } }) => {
+        this.subscriptions.add(this.graphqlClient.getAllApps().subscribe((response: { data: { allApps: AppItem[] } }) => {
             if (response && response.data && response.data.allApps) {
                 this.apps = response.data.allApps;
             }
