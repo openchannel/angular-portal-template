@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
     selector: 'app-apps-list',
@@ -11,21 +11,39 @@ export class AppAppsComponent implements OnInit {
     constructor(private router: Router) {
     }
 
-    tabs = [{
-        text: 'Apps list',
+    public currentPage: string;
+    public tabs = [{
+        id: 'list',
+        text: 'Create app',
         link: 'app-list/create-app'
     }, {
-        text: 'Create app',
+        id: 'create-app',
+        text: 'Apps list',
+        link: 'app-list/list'
+    }, {
+        id: 'edit-app',
+        text: 'Apps list',
         link: 'app-list/list'
     }];
 
-    currentTab = this.tabs[0];
-
     ngOnInit(): void {
+        this.getActivePage();
     }
 
-    changeTabType() {
-        this.currentTab = this.tabs.filter(tab => tab !== this.currentTab)[0];
-        this.router.navigate([this.currentTab.link]).then();
+    getActivePage() {
+        this.currentPage = this.router.url.split('/')[2];
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.currentPage = this.router.url.split('/')[2];
+            }
+        });
+    }
+
+    changeTabType(): void {
+        this.router.navigate([this.tabs.find(tab => tab.id === this.currentPage).link]).then();
+    }
+
+    buttonText(): string {
+        return this.tabs.find(tab => tab.id === this.currentPage).text;
     }
 }

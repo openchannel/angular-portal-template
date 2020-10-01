@@ -148,10 +148,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }
 
     getAppData() {
-        const appFullData = this.router.getCurrentNavigation().extras.state;
-        if (appFullData) {
-            // todo Fill form with app data
-        }
+        // todo Fill form with app data
     }
 
     ngOnDestroy(): void {
