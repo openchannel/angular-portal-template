@@ -91,6 +91,7 @@ export class GraphqlService {
                   description
                   id
                   label
+                  options
               }
           }
           description
@@ -577,7 +578,7 @@ export class GraphqlService {
     });
   }
 
-  oneApp(appId: string, version: number) {
+  oneApp(appId: string, version: number): Observable<ApolloQueryResult<any>> {
     return this.apollo.query({
       query: this.getAppQuery,
       variables: {
