@@ -211,7 +211,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         this.appId = this.activeRoute.snapshot.paramMap.get('appId');
         this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
         this.subscriptions.add(this.graphqlService.oneApp(this.appId, this.appVersion).subscribe(
-          result => {
+          (result: any) => {
               const data = result.data.oneApp;
               this.appDataFormGroup.get('name').setValue(data.name);
               this.appDataFormGroup.get('safeNames').setValue(data.safeNames);
