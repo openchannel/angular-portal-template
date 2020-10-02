@@ -85,6 +85,7 @@ export class GraphqlService {
               fieldDefinition {
                   attributes
                   category
+                  type
                   defaultValue
                   deleteable
                   description
