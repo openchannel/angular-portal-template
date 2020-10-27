@@ -53,7 +53,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CamelCaseToNormalPipe } from './shared/custom-components/camel-case-to-normal.pipe';
 import { SubmissionsTableComponent } from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import { SubmissionsDataViewModalComponent } from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
-import {AuthService} from "./core/services/apps-services/auth.service";
+import {AuthService} from "./core/services/auth-service/auth.service";
 import {setContext} from "@apollo/client/link/context";
 import {HttpXsrfInterceptor} from "./core/interceptors/httpxsft.interceptor";
 

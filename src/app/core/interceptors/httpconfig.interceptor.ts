@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
 import {Observable, of, throwError} from 'rxjs';
-import {AuthService} from '../services/apps-services/auth.service';
+import {AuthService} from '../services/auth-service/auth.service';
 import {GraphqlService} from '../../graphql-client/graphql-service/graphql.service';
-import {LogOutService} from '../services/apps-services/log-out.service';
+import {LogOutService} from '../services/logout-service/log-out.service';
 import {catchError, concatMap, take} from 'rxjs/operators';
 
 @Injectable()

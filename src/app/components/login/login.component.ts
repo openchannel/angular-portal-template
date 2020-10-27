@@ -5,7 +5,7 @@ import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
 import {AppService} from '../../core/api/app.service';
 import {GraphqlService} from "../../graphql-client/graphql-service/graphql.service";
-import {AuthService} from "../../core/services/apps-services/auth.service";
+import {AuthService} from "../../core/services/auth-service/auth.service";
 
 @Component({
   selector: 'app-login',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import {LogOutService} from '../../../core/services/apps-services/log-out.service';
-import {AuthService} from '../../../core/services/apps-services/auth.service';
+import {LogOutService} from '../../../core/services/logout-service/log-out.service';
+import {AuthService} from '../../../core/services/auth-service/auth.service';
 
 @Component({
   selector: 'app-header',
