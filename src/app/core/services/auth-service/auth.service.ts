@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from 'src/environments/environment';
 import {Observable} from 'rxjs';
-import {AuthConfig, LoginRequest, LoginResponse} from './model/auth-model';
+import {AuthConfig, LoginRequest, LoginResponse, RefreshJwtTokenRequest} from './model/auth-model';
 
 @Injectable({
   providedIn: 'root'
@@ -45,14 +45,18 @@ export class AuthService {
   }
 
   public getAuthConfig(): Observable<AuthConfig> {
-    return this.http.get(`${environment.apiUrl}/v2/auth/config`, { withCredentials: true });
+    return this.http.get(`${environment.apiUrl}v2/auth/config`, { withCredentials: true });
   }
 
   public initCsrf(): Observable<any> {
-    return this.http.get( `${environment.apiUrl}/init/csrf`, {withCredentials: true});
+    return this.http.get( `${environment.apiUrl}init/csrf`, {withCredentials: true});
   }
 
   public loginUser(loginRequest: LoginRequest): Observable<LoginResponse> {
-    return this.http.post(`${environment.apiUrl}/v2/auth/login`, loginRequest, {withCredentials: true});
+    return this.http.post(`${environment.apiUrl}v2/auth/login`, loginRequest, {withCredentials: true});
+  }
+
+  public refreshJwtToken(refreshJwtTokenRequest: RefreshJwtTokenRequest): Observable<LoginResponse> {
+    return this.http.post(`${environment.apiUrl}v2/auth/refresh`, refreshJwtTokenRequest, {withCredentials: true});
   }
 }

@@ -13,6 +13,15 @@ export class HttpConfigInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private graph: GraphqlService, private logOutService: LogOutService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // todo remove this.
+    if (this.authService.accessToken) {
+      return next.handle(req.clone({
+        setHeaders: {Authorization: `Bearer ${this.authService.accessToken}`}
+      }));
+    }
+    return next.handle(req);
+    // ----
+
     // get current access token value
     return next.handle(req).pipe(
         concatMap(event => {

@@ -18,6 +18,10 @@ export interface AuthConfig {
     claimsMappings?: ClaimsMappings;
 }
 
+export interface RefreshJwtTokenRequest {
+    refreshToken: string;
+}
+
 export interface LoginRequest {
     idToken?: string;
     accessToken?: string;
