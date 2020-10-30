@@ -32,7 +32,6 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
   getAllFormsList(): void {
     this.subscriber.add(this.appFormService.getForms(this.pageNumber, this.pageLimit).subscribe(
       (formResponse) => {
-        console.log(formResponse);
         if (formResponse?.list) {
           this.formJSONArray = formResponse.list;
         } else {
