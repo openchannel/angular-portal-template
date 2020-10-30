@@ -22,6 +22,7 @@
         <img class="ml-2 search-icon" src="assets/img/search-icon.svg" alt="search-icon">
         <input class="form-control border-0 pl-1"
                [(ngModel)]="searchText"
+               (ngModelChange)="getAllApps()"
                name="searchText"
                placeholder="Search..."
                type="text"

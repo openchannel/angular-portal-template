@@ -22,7 +22,9 @@ export class AppListComponent implements OnInit, OnDestroy {
   tabs = [{
     display: 'All',
     id: 'all',
-    query: '{\'status.value\':{\'$in\':[\'pending\', \'inReview\', \'approved\',\'suspended\']}}'
+    query: '{\'$or\':[{\'status.value\':{\'$in\':[\'inReview\',\'pending\']}},'
+        + '{\'parent.status.value\':\'approved\', \'isLive\':true},'
+        + '{\'parent.status.value\':\'suspended\',\'isLive\':true}]}'
   }, {
     display: 'Pending',
     id: 'pending',
@@ -34,17 +36,18 @@ export class AppListComponent implements OnInit, OnDestroy {
   }, {
     display: 'Approved',
     id: 'approved',
-    query: '{\'status.value\':\'approved\'}'
+    query: '{\'status.value\':\'approved\',\'isLive\':true}'
   }, {
     display: 'Suspended',
     id: 'suspended',
-    query: '{\'status.value\':\'suspended\'}'
+    query: '{\'status.value\':\'suspended\',\'isLive\':true}'
   }];
 
   currentTab = this.tabs[0];
   displayMenuIndx: string;
 
   searchText = '';
+  searchByFields = ['appId', 'name', 'type'];
 
   subscriptions: Subscription = new Subscription();
 
@@ -68,7 +71,8 @@ export class AppListComponent implements OnInit, OnDestroy {
 
   getAllApps(): void {
     this.currentApps = [];
-    this.subscriptions.add(this.appVersionService.getAppsVersions(this.pageNumber, this.pageSize, null, this.currentTab.query)
+    this.subscriptions.add(this.appVersionService.getAppsVersions(
+        this.pageNumber, this.pageSize, null, this.currentTab.query, this.searchText, this.searchByFields)
     .subscribe((appsResponse) => {
       const apps = appsResponse?.list;
       if (apps) {
