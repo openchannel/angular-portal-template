@@ -59,4 +59,13 @@ export class AuthService {
   public refreshJwtToken(refreshJwtTokenRequest: RefreshJwtTokenRequest): Observable<LoginResponse> {
     return this.http.post(`${environment.apiUrl}v2/auth/refresh`, refreshJwtTokenRequest, {withCredentials: true});
   }
+
+  public testGetAuthJwtToken(): string {
+    return window.localStorage.getItem('TEST_JWT_TOKEN');
+  }
+
+  public testSetAuthJwtToken(jwtToken: string): void {
+    window.localStorage.setItem('TEST_JWT_TOKEN', jwtToken);
+  }
 }
+

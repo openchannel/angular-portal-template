@@ -14,9 +14,9 @@ export class HttpConfigInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // todo remove this.
-    if (this.authService.accessToken) {
+    if (this.authService.testGetAuthJwtToken()) {
       return next.handle(req.clone({
-        setHeaders: {Authorization: `Bearer ${this.authService.accessToken}`}
+        setHeaders: {Authorization: `Bearer ${this.authService.testGetAuthJwtToken()}`}
       }));
     }
     return next.handle(req);

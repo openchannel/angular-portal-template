@@ -54,6 +54,7 @@ export class LoginComponent implements OnInit {
             };
             this.authService.loginUser(loginRequest).subscribe(loginResponse => {
               this.authService.persist(loginResponse.accessToken, loginResponse.refreshToken);
+              this.authService.testSetAuthJwtToken(loginResponse.accessToken);
               this.router.navigate(['/app-store']);
             });
 

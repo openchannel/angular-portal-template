@@ -3,7 +3,7 @@
     <div class="d-flex flex-row flex-wrap justify-content-center">
         <h3 class="ml-3 flex-fill">
             <span class="mr-1 font-med ">{{currentTab?.display}} Apps</span>
-            <span class="font-s color-light-gray text-truncate" *ngIf="this.getAvailableApps().length > 0">{{getTotalResultMessage()}}</span>
+            <span class="font-s color-light-gray text-truncate" *ngIf="this.currentApps?.length > 0">{{getTotalResultMessage()}}</span>
         </h3>
         <div class="d-flex flex-row flex-wrap justify-content-between">
             <div class="m-auto tab " *ngFor="let tab of tabs">
@@ -31,7 +31,7 @@
     </div>
     <hr class="m-0 mb-3">
     <!--    apps list -->
-    <div class="ml-2 mr-2 flex-column" *ngFor="let app of getAvailableApps(); let i = index">
+    <div class="ml-2 mr-2 flex-column" *ngFor="let app of currentApps; let i = index">
         <hr *ngIf="i !== 0">
         <div class="d-flex flex-row justify-content-between">
             <section class="d-flex flex-row flex-wrap align-items-center list-app-title">
