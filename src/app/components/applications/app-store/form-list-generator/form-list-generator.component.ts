@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormModalComponent } from '../../../../shared/modals/form-modal/form-modal.component';
-import { GraphqlService } from '../../../../graphql-client/graphql-service/graphql.service';
-import { Subscription } from 'rxjs';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {FormModalComponent} from '../../../../shared/modals/form-modal/form-modal.component';
+import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
+import {Subscription} from 'rxjs';
+import {AppFormModel, AppFormService} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-form-list-generator',
@@ -16,8 +17,12 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
 
   private subscriber: Subscription = new Subscription();
 
+  private pageNumber = 1;
+  private pageLimit = 100;
+
   constructor(private modalService: NgbModal,
-              private graphQLService: GraphqlService) { }
+              private graphQLService: GraphqlService,
+              private appFormService: AppFormService) { }
 
   ngOnInit(): void {
     this.getAllFormsList();
@@ -25,14 +30,19 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
   }
 
   getAllFormsList(): void {
-    this.subscriber.add(this.graphQLService.getAllForms().subscribe(
-      (result: any) => {
-        this.formJSONArray = result?.data?.getAllForms;
-      }
+    this.subscriber.add(this.appFormService.getForms(this.pageNumber, this.pageLimit).subscribe(
+      (formResponse) => {
+        console.log(formResponse);
+        if (formResponse?.list) {
+          this.formJSONArray = formResponse.list;
+        } else {
+          this.formJSONArray = [];
+        }
+      }, error => console.error('getAllFormsList', this.pageNumber, this.pageLimit)
     ));
   }
 
-  openFormModal(formFieldsData: any): void {
+  openFormModal(formFieldsData: AppFormModel): void {
     const modalRef = this.modalService.open(FormModalComponent, { size: 'lg' });
     modalRef.componentInstance.formData = formFieldsData;
   }

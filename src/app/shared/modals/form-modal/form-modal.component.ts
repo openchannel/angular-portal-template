@@ -1,8 +1,9 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { GraphqlService } from '../../../graphql-client/graphql-service/graphql.service';
-import { Subscription } from 'rxjs';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
+import {Subscription} from 'rxjs';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {AppFormModel} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-form-modal',
@@ -13,7 +14,7 @@ export class FormModalComponent implements OnInit, OnDestroy {
   /**
    * Object with all data for the form generation
    */
-  @Input() formData: any;
+  @Input() formData: AppFormModel;
 
   private subscriber: Subscription = new Subscription();
   public submissionDetailsForm: FormGroup;
