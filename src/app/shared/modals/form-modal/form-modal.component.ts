@@ -3,7 +3,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
 import {Subscription} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {AppFormModel} from 'oc-ng-common-service';
+import {AppFormModel, AppFormService} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-form-modal',
@@ -21,7 +21,9 @@ export class FormModalComponent implements OnInit, OnDestroy {
 
   constructor(private activeModal: NgbActiveModal,
               private graphQLService: GraphqlService,
-              private fb: FormBuilder) { }
+              private appFormService: AppFormService,
+              private fb: FormBuilder) {
+  }
 
   ngOnInit(): void {
     this.initSubmissionDetailsForm();
@@ -38,17 +40,11 @@ export class FormModalComponent implements OnInit, OnDestroy {
 
   sendFormData(formDataForSubmission): void {
     const dataToServer = this.submissionDetailsForm.getRawValue();
-
     if (formDataForSubmission) {
       dataToServer.formData = formDataForSubmission;
-      this.subscriber.add(this.graphQLService.createFormSubmission(this.formData?.formId, dataToServer).subscribe(
-        result => {
-          if (result?.errors.length > 0) {
-            console.log(result?.errors);
-          } else {
+      this.subscriber.add(this.appFormService.createFormSubmission(this.formData?.formId, dataToServer).subscribe(submissionResponse => {
             this.activeModal.close();
-          }
-        }
+          }, error => console.error('createFormSubmission', dataToServer, error)
       ));
     }
   }
