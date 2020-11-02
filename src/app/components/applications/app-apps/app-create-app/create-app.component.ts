@@ -26,7 +26,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
   currentAppAction = this.appActions[0];
   currentAppsTypesItems: string [] = [];
-  existsAppsTypes: string [] = [];
 
   appDataFormGroup: FormGroup;
   appFields: {
@@ -39,6 +38,9 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   pageType: string;
   appId: string;
   appVersion: number;
+
+  private appTypePageNumber = 1;
+  private appTypePageLimit = 100;
 
   @Output()
   createdApp = new EventEmitter<boolean>();
@@ -113,16 +115,17 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   }
 
   private getAllAppTypes(): void {
-    this.currentAppsTypesItems = [];
-    this.existsAppsTypes = [];
-    this.subscriptions.add(this.graphqlService.getAppTypes(1, 100, true)
-    .subscribe((appResponse: any) => {
-      const appTypes = appResponse?.data?.getAppTypes?.list;
-      if (appTypes && appTypes.length > 0) {
-        this.existsAppsTypes = appTypes;
-        this.currentAppsTypesItems = appTypes.map(app => app.id).filter(app => app && app.length > 0);
+    this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
+    .subscribe(appTypesResponse => {
+      if (appTypesResponse?.list) {
+        this.currentAppsTypesItems = appTypesResponse.list
+        .map(app => app.appTypeId)
+        .filter(app => app && app.length > 0);
+      } else {
+        this.currentAppsTypesItems = [];
       }
     }, (error) => {
+      this.currentAppsTypesItems = [];
       console.error('Can\'t get all Apps : ' + JSON.stringify(error));
     }));
   }
