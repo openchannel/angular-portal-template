@@ -7,6 +7,7 @@ import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql
 import {ActivatedRoute, Router} from '@angular/router';
 import {AppTypeModel, AppTypeService, AppVersionService, FullAppData} from 'oc-ng-common-service';
 import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
+import {UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 
 @Component({
   selector: 'app-create-app',
@@ -154,10 +155,10 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         console.log('Can\'t save a new app.');
       }));
     } else {
-      this.subscriptions.add(this.graphqlService.updateOneApp(this.appId, this.appVersion, this.buildDataForSaving(fields))
+      this.subscriptions.add(this.appVersionService.updateAppByVersion(this.appId, this.appVersion, this.buildDataForSaving(fields))
       .subscribe(
           response => {
-            if (response.data) {
+            if (response) {
               this.lockSubmitButton = false;
               this.router.navigate(['/app-list/list']).then();
             } else {
@@ -186,26 +187,11 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         }
       };
     } else {
-      const dataToServer = {
-        fields: [
-          {
-            id: 'name',
-            fieldValue: this.appDataFormGroup.get('name').value
-          },
-          {
-            id: 'safeName',
-            fieldValue: this.appDataFormGroup.get('safeName').value
-          }
-        ]
+      const dataToServer: UpdateAppVersionModel = {
+        name: this.appDataFormGroup.get('name').value,
+        approvalRequired: false,
+        customData: {...fields, safeName: this.appDataFormGroup.get('safeName').value}
       };
-
-      Object.keys(fields).forEach(key => {
-        const oneField = {
-          id: key,
-          fieldValue: fields[key]
-        };
-        dataToServer.fields.push(oneField);
-      });
       return dataToServer;
     }
   }
@@ -216,7 +202,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
         (appVersion) => {
-          // todo clear form.
           if (appVersion) {
             this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
               this.appDataFormGroup.get('name').setValue(appVersion.name);
@@ -224,9 +209,18 @@ export class CreateAppComponent implements OnInit, OnDestroy {
               this.appFields = {
                 fields: this.mapAppTypeFields(appVersion, appType)
               };
-            }, error => console.error('getOneAppType', error)));
+            }, error => {
+              console.error('request getOneAppType', error);
+              this.router.navigate(['/app-list/list']).then();
+            }));
+          } else {
+            console.error('request getAppByVersion : empty response');
+            this.router.navigate(['/app-list/list']).then();
           }
-        }, error => console.error('getAppByVersion', error)
+        }, error => {
+          console.error('request getAppByVersion', error);
+          this.router.navigate(['/app-list/list']).then();
+        }
     ));
   }
 
