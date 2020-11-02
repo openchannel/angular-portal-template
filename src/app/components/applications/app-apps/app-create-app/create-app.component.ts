@@ -147,10 +147,18 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     this.lockSubmitButton = true;
     if (this.pageType === 'create-app') {
       this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(fields))
-      .subscribe((response) => {
-        // todo add publish request
-        this.lockSubmitButton = false;
-        this.router.navigate(['/app-list/list']).then();
+      .subscribe((appResponse) => {
+        if (appResponse) {
+          this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
+            version: appResponse.version,
+            autoApprove: true
+          }).subscribe((emptyResponse) => {
+            this.lockSubmitButton = false;
+            this.router.navigate(['/app-list/list']).then();
+          }, error => console.error('request publishAppByVersion', error)));
+        } else {
+          console.error('Can\'t save a new app. Empty response.');
+        }
       }, () => {
         this.lockSubmitButton = false;
         this.currentAppAction = this.appActions[0];
