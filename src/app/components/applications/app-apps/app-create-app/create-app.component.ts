@@ -2,12 +2,11 @@ import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core'
 import {Observable, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AppsServiceImpl} from '../../../../core/services/apps-services/model/apps-service-impl';
 import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {AppTypeModel, AppTypeService, AppVersionService, FullAppData} from 'oc-ng-common-service';
+import {AppsService, AppTypeModel, AppTypeService, AppVersionService, FullAppData} from 'oc-ng-common-service';
 import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
-import {UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
+import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 
 @Component({
   selector: 'app-create-app',
@@ -45,7 +44,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   @Output()
   createdApp = new EventEmitter<boolean>();
 
-  constructor(private appsService: AppsServiceImpl,
+  constructor(private appsService: AppsService,
               private fb: FormBuilder,
               private graphqlService: GraphqlService,
               private appVersionService: AppVersionService,
@@ -132,12 +131,11 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
   private getFieldsByAppType(appType: string): void {
     this.appFields = null;
-    this.subscriptions.add(this.graphqlService.getAppType(appType)
+    this.subscriptions.add(this.appTypeService.getOneAppType(appType)
     .subscribe((appTypeResponse: any) => {
-      const fieldDefinitions = appTypeResponse?.data?.getAppType?.fieldDefinitions;
-      if (fieldDefinitions && fieldDefinitions.length > 0) {
+      if (appTypeResponse) {
         this.appFields = {
-          fields: fieldDefinitions
+          fields: this.mapAppTypeToFields(appTypeResponse)
         };
       }
     }, (error => {
@@ -148,8 +146,9 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   saveApp(fields: any): void {
     this.lockSubmitButton = true;
     if (this.pageType === 'create-app') {
-      this.subscriptions.add(this.graphqlService.createApp(this.buildDataForSaving(fields))
+      this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(fields))
       .subscribe((response) => {
+        // todo add publish request
         this.lockSubmitButton = false;
         this.router.navigate(['/app-list/list']).then();
       }, () => {
@@ -158,7 +157,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
         console.log('Can\'t save a new app.');
       }));
     } else {
-      this.subscriptions.add(this.appVersionService.updateAppByVersion(this.appId, this.appVersion, this.buildDataForSaving(fields))
+      this.subscriptions.add(this.appVersionService.updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(fields))
       .subscribe(
           response => {
             if (response) {
@@ -178,25 +177,25 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     }
   }
 
-  buildDataForSaving(fields: any): any {
-    if (this.pageType === 'create-app') {
-      const formGroupData = this.appDataFormGroup.value;
-      return {
-        type: formGroupData?.type,
-        name: fields?.name,
-        autoApprove: true,
-        customData: {
-          ...fields
-        }
-      };
-    } else {
-      const dataToServer: UpdateAppVersionModel = {
-        name: this.appDataFormGroup.get('name').value,
-        approvalRequired: false,
-        customData: {...fields, safeName: this.appDataFormGroup.get('safeName').value}
-      };
-      return dataToServer;
-    }
+  buildDataForCreate(fields: any): CreateAppModel {
+
+    const customDataValue = {...fields};
+    delete customDataValue.name;
+    const formGroupData = this.appDataFormGroup.value;
+    return {
+      name: fields?.name ? fields.name : null,
+      type: formGroupData?.type ? formGroupData.type : null,
+      customData: customDataValue
+    };
+  }
+
+  buildDataForUpdate(fields: any) {
+    const dataToServer: UpdateAppVersionModel = {
+      name: this.appDataFormGroup.get('name').value,
+      approvalRequired: false,
+      customData: {...fields}
+    };
+    return dataToServer;
   }
 
   getAppData() {
@@ -230,41 +229,53 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {
     if (appVersionModel && appTypeModel) {
       const defaultValues = new Map(Object.entries(appVersionModel?.customData ? appVersionModel.customData : {}));
-      return this.getRecursiveFields(appTypeModel.fields)
-      .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
-      .map(field => {
-        // set default value
-        if (field?.id) {
-          field.id = field.id.replace('customData.', '');
+      if (appTypeModel?.fields) {
+        return appTypeModel.fields
+        .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
+        .map(field => this.mapRecursiveField(field, defaultValues));
+      }
+    }
+    return [];
+  }
+
+  private mapRecursiveField(field: AppTypeFieldModel, defaultValues?: Map<string, any>): AppTypeFieldModel {
+    if (field) {
+      // map field Id
+      if (field?.id) {
+        field.id = field.id.replace('customData.', '');
+        // set default value if present
+        if (defaultValues) {
           const defaultValue = defaultValues.get(field.id);
           if (defaultValue) {
             field.defaultValue = defaultValue;
           }
         }
-        // map options
-        if (field?.options?.length > 0) {
-          const newOptions = [];
-          field.options.forEach(o => newOptions.push(o?.value ? o.value : o));
-          field.options = newOptions;
-        }
-        return field;
-      });
+      }
+      // map options
+      if (field?.options) {
+        field.options = this.mapOptions(field);
+      }
+      // map other fields
+      if (field?.fields) {
+        field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
+        field.subFieldDefinitions = field.fields;
+        field.fields = null;
+      }
+    }
+    return field;
+  }
+
+  private mapAppTypeToFields(appTypeModel: AppTypeModel): AppTypeFieldModel [] {
+    if (appTypeModel && appTypeModel?.fields) {
+      return appTypeModel.fields.map(field => this.mapRecursiveField(field));
     }
     return [];
   }
 
-  private getRecursiveFields(appTypeField: AppTypeFieldModel[]): AppTypeFieldModel [] {
-    const result = [];
-    if (appTypeField) {
-      appTypeField.filter(f => f).forEach(field => {
-        result.push(field);
-        const childFields = this.getRecursiveFields(field?.fields);
-        if (childFields && childFields.length > 0) {
-          result.push(childFields);
-        }
-      });
-    }
-    return result.filter(r => r);
+  private mapOptions(appTypeFiled: AppTypeFieldModel): string [] {
+    const newOptions = [];
+    appTypeFiled.options.forEach(o => newOptions.push(o?.value ? o.value : o));
+    return newOptions;
   }
 
   ngOnDestroy(): void {
