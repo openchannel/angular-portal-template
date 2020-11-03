@@ -2,8 +2,8 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalComponent} from '../../../../shared/modals/confirmation-modal/confirmation-modal.component';
-import {AppStatus, AppVersionService, FullAppData, Page} from 'oc-ng-common-service';
-import {debounceTime, distinctUntilChanged, filter} from 'rxjs/operators';
+import {AppsService, AppStatus, AppVersionService, FullAppData, Page} from 'oc-ng-common-service';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
 
 
@@ -16,6 +16,7 @@ export class AppListComponent implements OnInit, OnDestroy {
 
   constructor(
       private appVersionService: AppVersionService,
+      private appService: AppsService,
       private modal: NgbModal) {
   }
 
@@ -59,38 +60,39 @@ export class AppListComponent implements OnInit, OnDestroy {
   @Input()
   set updateAppList(update: boolean) {
     if (update) {
-      this.getAllApps();
+      this.getAllAppsBySearchText();
     }
   }
 
   ngOnInit(): void {
-    this.getAllApps();
+    this.getAllAppsBySearchText();
     this.subscriptions.add(this.searchTextControl.valueChanges
-    .pipe(debounceTime(200), filter(text => text && text.length > 0), distinctUntilChanged())
-    .subscribe(searchText => {
-      this.subscriptions.add(this.appVersionService.getAppsVersionsBySearchText(
-          this.pageNumber, this.pageSize, null, this.currentTab.query, searchText, this.searchByFields)
-      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => {
-        console.error('getAppsVersionsBySearchText', error);
-      }));
-    }));
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe(searchText => this.getAllAppsBySearchText(searchText)));
   }
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  getAllApps(): void {
-    this.currentApps = [];
-    this.subscriptions.add(this.appVersionService.getAppsVersions(
-        this.pageNumber, this.pageSize, null, this.currentTab.query).subscribe(appsResponse => {
-      this.updateCurrentApps(appsResponse);
-    }, (err) => console.error('ERROR Get all apps.', err)));
+  getAllAppsBySearchText(searchText?: string): void {
+    if (searchText) {
+      this.subscriptions.add(this.appVersionService.getAppsVersionsBySearchText(this.pageNumber, this.pageSize,
+          null, this.currentTab.query, searchText, this.searchByFields)
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => console.error('getAppsVersionsBySearchText', error)));
+    } else {
+      this.subscriptions.add(this.appVersionService.getAppsVersions(
+          this.pageNumber, this.pageSize, null, this.currentTab.query)
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => console.error('getAllApps', error)));
+    }
   }
 
   private updateCurrentApps(appsResponse: Page<FullAppData>): void {
     if (appsResponse && appsResponse?.list) {
       this.currentApps = appsResponse.list;
+    } else {
+      this.currentApps = [];
     }
   }
 
@@ -107,7 +109,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   setNewApp(tabId: string): void {
     this.searchTextControl.setValue('');
     this.currentTab = this.tabs.find((e) => e.id === tabId);
-    this.getAllApps();
+    this.getAllAppsBySearchText();
   }
 
   getBackgroundColor(appStatus: AppStatus): string {
@@ -161,11 +163,10 @@ export class AppListComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.buttonText = 'DELETE';
 
     modalRef.result.then(res => {
-      console.log('delete app : ' + res);
       if (res && res === 'success') {
-        // this.graphqlClient.deleteApp(appId).subscribe(result => {
-        //     this.getAllApps();
-        // });
+        this.subscriptions.add(this.appService.deleteApp(appId).subscribe(deleteResponse => {
+          this.getAllAppsBySearchText(this.searchTextControl.value ? this.searchTextControl.value : '');
+        }, error => console.error('deleteApp', error)));
       }
     });
   }
