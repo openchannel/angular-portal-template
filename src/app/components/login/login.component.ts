@@ -4,8 +4,9 @@ import {LoaderService} from 'src/app/shared/services/loader.service';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
 import {AppService} from '../../core/api/app.service';
-import {GraphqlService} from "../../graphql-client/graphql-service/graphql.service";
-import {AuthService} from "../../core/services/apps-services/auth.service";
+import {AuthService} from '../../core/services/auth-service/auth.service';
+import {Subscription} from 'rxjs';
+import {AuthConfig, LoginRequest} from '../../core/services/auth-service/model/auth-model';
 
 @Component({
   selector: 'app-login',
@@ -24,22 +25,21 @@ export class LoginComponent implements OnInit {
   tokenInfo: string;
 
   // todo add ts type
-  authConfig: any;
+  authConfig: AuthConfig;
+
+  private formSubscription: Subscription = new Subscription();
 
   constructor(private oauthService: OAuthService, private appService: AppService, private router: Router,
               private authService: AuthService, private loaderService: LoaderService,
-              private route: ActivatedRoute,
-              private graphqlService: GraphqlService
-  ) {
+              private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.isLoading = true;
     this.oauthService.hasValidAccessToken();
+    this.formSubscription.add(this.authService.getAuthConfig().subscribe(authConfig => {
 
-    this.graphqlService.getAuthConfig().subscribe(({data: {authConfig}}) => {
         this.authConfig = authConfig;
-
         this.oauthService.configure({
           ...authConfig,
           redirectUri: authConfig.redirectUri || window.location.origin
@@ -49,8 +49,12 @@ export class LoginComponent implements OnInit {
         this.oauthService.loadDiscoveryDocumentAndTryLogin({
           onTokenReceived: receivedTokens => {
 
-            this.graphqlService.loginUser(receivedTokens.idToken).subscribe(({data: {loginOrRegisterUser: user}}) => {
-              this.authService.persist(user.accessToken, user.refreshToken);
+            const loginRequest: LoginRequest = {
+              idToken: receivedTokens.idToken
+            };
+            this.authService.loginUser(loginRequest).subscribe(loginResponse => {
+              this.authService.persist(loginResponse.accessToken, loginResponse.refreshToken);
+              this.authService.testSetAuthJwtToken(loginResponse.accessToken);
               this.router.navigate(['/app-store']);
             });
 
@@ -58,9 +62,8 @@ export class LoginComponent implements OnInit {
           }
         });
 
-      }, err => console.error("getAuthConfig", err),
-      () => this.isLoading = false);
-
+      }, err => console.error('getAuthConfig', err),
+      () => this.isLoading = false));
   }
 
   login() {

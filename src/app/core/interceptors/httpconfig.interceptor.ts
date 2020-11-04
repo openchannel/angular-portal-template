@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
 import {Observable, of, throwError} from 'rxjs';
-import {AuthService} from '../services/apps-services/auth.service';
+import {AuthService} from '../services/auth-service/auth.service';
 import {GraphqlService} from '../../graphql-client/graphql-service/graphql.service';
-import {LogOutService} from '../services/apps-services/log-out.service';
+import {LogOutService} from '../services/logout-service/log-out.service';
 import {catchError, concatMap, take} from 'rxjs/operators';
 
 @Injectable()
@@ -13,6 +13,15 @@ export class HttpConfigInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private graph: GraphqlService, private logOutService: LogOutService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // todo remove this.
+    if (this.authService.testGetAuthJwtToken()) {
+      return next.handle(req.clone({
+        setHeaders: {Authorization: `Bearer ${this.authService.testGetAuthJwtToken()}`}
+      }));
+    }
+    return next.handle(req);
+    // ----
+
     // get current access token value
     return next.handle(req).pipe(
         concatMap(event => {

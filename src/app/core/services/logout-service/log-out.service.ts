@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {first} from 'rxjs/operators';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
-import {AuthService} from './auth.service';
+import {AuthService} from '../auth-service/auth.service';
 import {Router} from '@angular/router';
 
 @Injectable({
