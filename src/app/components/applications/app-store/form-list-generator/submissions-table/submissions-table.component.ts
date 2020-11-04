@@ -1,17 +1,9 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { GraphqlService } from '../../../../../graphql-client/graphql-service/graphql.service';
-import { Subscription } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SubmissionsDataViewModalComponent } from '../../../../../shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
-
-export interface SubmissionPreview {
-  formSubmissionId: string;
-  formId: string;
-  submittedDateTime: string;
-  submittedDate: number;
-  name: string;
-  email: string;
-}
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {GraphqlService} from '../../../../../graphql-client/graphql-service/graphql.service';
+import {Subscription} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {SubmissionsDataViewModalComponent} from '../../../../../shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
+import {AppFormService, FormSubmissionModel} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-submissions-table',
@@ -22,13 +14,16 @@ export class SubmissionsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() formId: string;
   @Input() expand: boolean = false;
-  public submissionsData: SubmissionPreview[] = [];
-  public pageNum: number = 1;
-  public pageCount: number;
+  public submissionsData: FormSubmissionModel[] = [];
+  public pageNum = 1;
+  public pageCount = 50;
 
   private subscriber: Subscription = new Subscription();
+
   constructor(private graphQLService: GraphqlService,
-              private modalService: NgbModal) { }
+              private appFormService: AppFormService,
+              private modalService: NgbModal) {
+  }
 
   ngOnInit(): void {
   }
@@ -40,13 +35,17 @@ export class SubmissionsTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getSubmissions() {
-    this.subscriber.add(this.graphQLService
-      .getAllFormSubmissions(this.formId, this.pageNum, 50, 'submittedDate', 'DESC')
-      .subscribe(res => {
-          this.submissionsData = res.data.getAllFormSubmissions.list;
-          this.pageCount = res.data.getAllFormSubmissions.pages;
-        }
-      ));
+    this.subscriber.add(this.appFormService.getFormSubmissions(this.formId, this.pageNum, 50)
+    .subscribe(submissionsResponse => {
+          if (submissionsResponse?.list) {
+            this.submissionsData = submissionsResponse.list;
+            this.pageCount = submissionsResponse.pages;
+          } else {
+            this.submissionsData = [];
+            this.pageCount = 1;
+          }
+        }, error => console.error('getSubmissions', error)
+    ));
   }
 
   trackBySubmId(index: number, submission: any): string {
@@ -54,7 +53,7 @@ export class SubmissionsTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   openSubmissionModal(submissionId: string): void {
-    const modalRef = this.modalService.open(SubmissionsDataViewModalComponent, { size: 'lg' });
+    const modalRef = this.modalService.open(SubmissionsDataViewModalComponent, {size: 'lg'});
     modalRef.componentInstance.formId = this.formId;
     modalRef.componentInstance.submissionId = submissionId;
   }

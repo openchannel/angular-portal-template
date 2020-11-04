@@ -1,8 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { GraphqlService } from '../../../graphql-client/graphql-service/graphql.service';
-import { Subscription } from 'rxjs';
+import {Component, Input, OnInit} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {DomSanitizer} from '@angular/platform-browser';
+import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
+import {Subscription} from 'rxjs';
+import {AppFormService, FormSubmissionModel} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-submissions-data-view-modal',
@@ -14,12 +15,13 @@ export class SubmissionsDataViewModalComponent implements OnInit {
   @Input() formId: string;
   @Input() submissionId: string;
 
-  public submissionData: any;
+  public submissionData: FormSubmissionModel;
 
   private subscriber: Subscription = new Subscription();
 
   constructor(private activeModal: NgbActiveModal,
               private graphQLService: GraphqlService,
+              private appFormService: AppFormService,
               public sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
@@ -27,10 +29,11 @@ export class SubmissionsDataViewModalComponent implements OnInit {
   }
 
   getSubmissionDetails() {
-    this.subscriber.add(this.graphQLService.getFormSubmissionData(this.formId, this.submissionId)
-      .subscribe(res => {
-        this.submissionData = res.data.getFormSubmissionData;
+    this.subscriber.add(this.appFormService.getOneFormSubmission(this.formId, this.submissionId)
+      .subscribe(submissionResponse => {
+        this.submissionData = submissionResponse;
       }));
+
   }
 
   checkForSpecialData(value): 'array' | 'html' | 'string' {
