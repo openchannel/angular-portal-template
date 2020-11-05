@@ -46,7 +46,10 @@ export class AppListComponent implements OnInit, OnDestroy {
   }];
 
   currentTab = this.tabs[0];
-  displayMenuIndx: string;
+  displayMenu: {
+    appId: string;
+    version: number;
+  };
 
   searchTextControl = new FormControl('');
   searchByFields = ['appId', 'name', 'type'];
@@ -81,6 +84,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   }
 
   getAllApps(): void {
+    this.displayMenu = null;
     this.currentApps = [];
     this.subscriptions.add(this.appVersionService.getAppsVersions(
         this.pageNumber, this.pageSize, null, this.currentTab.query).subscribe(appsResponse => {
@@ -145,15 +149,18 @@ export class AppListComponent implements OnInit, OnDestroy {
     return 'STATUS';
   }
 
-  showDropdownMenuByIndx(id) {
-    if (this.displayMenuIndx === id) {
-      this.displayMenuIndx = null;
-    } else {
-      this.displayMenuIndx = id;
-    }
+  showDropdownMenuByApp(app: FullAppData): void {
+      if (this.displayMenu && this.displayMenu.appId === app.appId && this.displayMenu.version === app.version) {
+        this.displayMenu = null;
+      } else {
+        this.displayMenu = {
+          appId: app.appId,
+          version: app.version
+        };
+      }
   }
 
-  deleteSelectedApp(appId: string) {
+  deleteSelectedApp(app: FullAppData) {
     const modalRef = this.modal.open(ConfirmationModalComponent);
 
     modalRef.componentInstance.modalText = 'Are you sure you want to delete this app?';
@@ -161,11 +168,10 @@ export class AppListComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.buttonText = 'DELETE';
 
     modalRef.result.then(res => {
-      console.log('delete app : ' + res);
       if (res && res === 'success') {
-        // this.graphqlClient.deleteApp(appId).subscribe(result => {
-        //     this.getAllApps();
-        // });
+        this.subscriptions.add(this.appVersionService.deleteAppVersion(app.appId, app.version).subscribe(result => {
+          this.getAllApps();
+        }, error => console.error('Can\'t remove app', app.appId, app.version, error)));
       }
     });
   }
