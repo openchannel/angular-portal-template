@@ -71,7 +71,6 @@ export class AppListComponent implements OnInit, OnDestroy {
     .subscribe(searchText => this.getAllAppsBySearchText(searchText)));
   }
 
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
