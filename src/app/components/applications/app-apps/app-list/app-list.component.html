@@ -21,9 +21,7 @@
     <div class="d-flex flex-row flex-nowrap align-items-center">
         <img class="ml-2 search-icon" src="assets/img/search-icon.svg" alt="search-icon">
         <input class="form-control border-0 pl-1"
-               [(ngModel)]="searchText"
-               (ngModelChange)="getAllApps()"
-               name="searchText"
+               [formControl]="searchTextControl"
                placeholder="Search..."
                type="text"
                autocomplete="off"

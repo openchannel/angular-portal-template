@@ -2,7 +2,9 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalComponent} from '../../../../shared/modals/confirmation-modal/confirmation-modal.component';
-import {AppStatus, AppVersionService, FullAppData} from 'oc-ng-common-service';
+import {AppStatus, AppVersionService, FullAppData, Page} from 'oc-ng-common-service';
+import {debounceTime, distinctUntilChanged, filter} from 'rxjs/operators';
+import {FormControl} from '@angular/forms';
 
 
 @Component({
@@ -49,7 +51,7 @@ export class AppListComponent implements OnInit, OnDestroy {
     version: number;
   };
 
-  searchText = '';
+  searchTextControl = new FormControl('');
   searchByFields = ['appId', 'name', 'type'];
 
   subscriptions: Subscription = new Subscription();
@@ -66,6 +68,15 @@ export class AppListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getAllApps();
+    this.subscriptions.add(this.searchTextControl.valueChanges
+    .pipe(debounceTime(200), filter(text => text && text.length > 0), distinctUntilChanged())
+    .subscribe(searchText => {
+      this.subscriptions.add(this.appVersionService.getAppsVersionsBySearchText(
+          this.pageNumber, this.pageSize, null, this.currentTab.query, searchText, this.searchByFields)
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => {
+        console.error('getAppsVersionsBySearchText', error);
+      }));
+    }));
   }
 
   ngOnDestroy(): void {
@@ -76,13 +87,15 @@ export class AppListComponent implements OnInit, OnDestroy {
     this.displayMenu = null;
     this.currentApps = [];
     this.subscriptions.add(this.appVersionService.getAppsVersions(
-        this.pageNumber, this.pageSize, null, this.currentTab.query, this.searchText, this.searchByFields)
-    .subscribe((appsResponse) => {
-      const apps = appsResponse?.list;
-      if (apps) {
-        this.currentApps = apps;
-      }
+        this.pageNumber, this.pageSize, null, this.currentTab.query).subscribe(appsResponse => {
+      this.updateCurrentApps(appsResponse);
     }, (err) => console.error('ERROR Get all apps.', err)));
+  }
+
+  private updateCurrentApps(appsResponse: Page<FullAppData>): void {
+    if (appsResponse && appsResponse?.list) {
+      this.currentApps = appsResponse.list;
+    }
   }
 
   getTotalResultMessage(): string {
@@ -96,7 +109,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   }
 
   setNewApp(tabId: string): void {
-    this.searchText = null;
+    this.searchTextControl.setValue('');
     this.currentTab = this.tabs.find((e) => e.id === tabId);
     this.getAllApps();
   }
