@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
-import {Observable, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -34,6 +34,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   subscriptions: Subscription = new Subscription();
   lockSubmitButton = false;
 
+  pageTitle: 'New App' | 'Edit App';
   pageType: string;
   appId: string;
   appVersion: number;
@@ -56,6 +57,7 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.pageType = this.router.url.split('/')[2];
     this.initAppDataGroup();
+    this.pageTitle = this.getPageTitleByPage(this.pageType);
     if (this.pageType === 'create-app') {
       this.addListenerAppTypeField();
       this.getAllAppTypes();
@@ -76,30 +78,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
       });
     }
   }
-
-  customSearch = (text$: Observable<string>) =>
-      text$.pipe(debounceTime(200), distinctUntilChanged(), switchMap(termDeveloperId =>
-          this.graphqlService.getDevelopers(termDeveloperId, 1, 20).toPromise().then((developersResponse: any) => {
-            const developers = developersResponse?.data?.getDevelopers?.list;
-            if (developers?.length === 0) {
-              const normalizedDeveloperId = termDeveloperId.trim();
-              if (normalizedDeveloperId.length > 0) {
-                this.currentAppAction = this.appActions.find((e) => e.type === 'CREATE');
-                return [normalizedDeveloperId];
-              }
-            } else {
-              this.currentAppAction = this.appActions.find((e) => e.type === 'SEARCH');
-              if (developers) {
-                return developers.map(developer => developer.developerId);
-              } else {
-                return [];
-              }
-            }
-          }).catch(error => {
-            console.error('Can\'t get developers id' + JSON.stringify(error));
-            return [];
-          })
-      ));
 
   private addListenerAppTypeField(): void {
     this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
@@ -284,6 +262,13 @@ export class CreateAppComponent implements OnInit, OnDestroy {
     const newOptions = [];
     appTypeFiled.options.forEach(o => newOptions.push(o?.value ? o.value : o));
     return newOptions;
+  }
+
+  private getPageTitleByPage(currentPage: string): 'New App' | 'Edit App' {
+    if ('create-app' === currentPage) {
+      return 'New App';
+    }
+    return 'Edit App';
   }
 
   ngOnDestroy(): void {
