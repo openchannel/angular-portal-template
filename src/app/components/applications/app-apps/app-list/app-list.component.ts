@@ -2,8 +2,8 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalComponent} from '../../../../shared/modals/confirmation-modal/confirmation-modal.component';
-import {AppStatus, AppVersionService, FullAppData, Page} from 'oc-ng-common-service';
-import {debounceTime, distinctUntilChanged, filter} from 'rxjs/operators';
+import {AppsService, AppStatus, AppVersionService, FullAppData, Page} from 'oc-ng-common-service';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
 
 
@@ -16,6 +16,7 @@ export class AppListComponent implements OnInit, OnDestroy {
 
   constructor(
       private appVersionService: AppVersionService,
+      private appService: AppsService,
       private modal: NgbModal) {
   }
 
@@ -46,10 +47,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   }];
 
   currentTab = this.tabs[0];
-  displayMenu: {
-    appId: string;
-    version: number;
-  };
+  displayMenuIndx: string;
 
   searchTextControl = new FormControl('');
   searchByFields = ['appId', 'name', 'type'];
@@ -62,39 +60,38 @@ export class AppListComponent implements OnInit, OnDestroy {
   @Input()
   set updateAppList(update: boolean) {
     if (update) {
-      this.getAllApps();
+      this.getAllAppsBySearchText();
     }
   }
 
   ngOnInit(): void {
-    this.getAllApps();
+    this.getAllAppsBySearchText();
     this.subscriptions.add(this.searchTextControl.valueChanges
-    .pipe(debounceTime(200), filter(text => text && text.length > 0), distinctUntilChanged())
-    .subscribe(searchText => {
-      this.subscriptions.add(this.appVersionService.getAppsVersionsBySearchText(
-          this.pageNumber, this.pageSize, null, this.currentTab.query, searchText, this.searchByFields)
-      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => {
-        console.error('getAppsVersionsBySearchText', error);
-      }));
-    }));
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe(searchText => this.getAllAppsBySearchText(searchText)));
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  getAllApps(): void {
-    this.displayMenu = null;
-    this.currentApps = [];
-    this.subscriptions.add(this.appVersionService.getAppsVersions(
-        this.pageNumber, this.pageSize, null, this.currentTab.query).subscribe(appsResponse => {
-      this.updateCurrentApps(appsResponse);
-    }, (err) => console.error('ERROR Get all apps.', err)));
+  getAllAppsBySearchText(searchText?: string): void {
+    if (searchText) {
+      this.subscriptions.add(this.appVersionService.getAppsVersionsBySearchText(this.pageNumber, this.pageSize,
+          null, this.currentTab.query, searchText, this.searchByFields)
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => console.error('getAppsVersionsBySearchText', error)));
+    } else {
+      this.subscriptions.add(this.appVersionService.getAppsVersions(
+          this.pageNumber, this.pageSize, null, this.currentTab.query)
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => console.error('getAllApps', error)));
+    }
   }
 
   private updateCurrentApps(appsResponse: Page<FullAppData>): void {
     if (appsResponse && appsResponse?.list) {
       this.currentApps = appsResponse.list;
+    } else {
+      this.currentApps = [];
     }
   }
 
@@ -111,7 +108,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   setNewApp(tabId: string): void {
     this.searchTextControl.setValue('');
     this.currentTab = this.tabs.find((e) => e.id === tabId);
-    this.getAllApps();
+    this.getAllAppsBySearchText();
   }
 
   getBackgroundColor(appStatus: AppStatus): string {
@@ -149,18 +146,15 @@ export class AppListComponent implements OnInit, OnDestroy {
     return 'STATUS';
   }
 
-  showDropdownMenuByApp(app: FullAppData): void {
-      if (this.displayMenu && this.displayMenu.appId === app.appId && this.displayMenu.version === app.version) {
-        this.displayMenu = null;
-      } else {
-        this.displayMenu = {
-          appId: app.appId,
-          version: app.version
-        };
-      }
+  showDropdownMenuByIndx(id: string) {
+    if (this.displayMenuIndx === id) {
+      this.displayMenuIndx = null;
+    } else {
+      this.displayMenuIndx = id;
+    }
   }
 
-  deleteSelectedApp(app: FullAppData) {
+  deleteSelectedApp(appId: string) {
     const modalRef = this.modal.open(ConfirmationModalComponent);
 
     modalRef.componentInstance.modalText = 'Are you sure you want to delete this app?';
@@ -169,9 +163,9 @@ export class AppListComponent implements OnInit, OnDestroy {
 
     modalRef.result.then(res => {
       if (res && res === 'success') {
-        this.subscriptions.add(this.appVersionService.deleteAppVersion(app.appId, app.version).subscribe(result => {
-          this.getAllApps();
-        }, error => console.error('Can\'t remove app', app.appId, app.version, error)));
+        this.subscriptions.add(this.appService.deleteApp(appId).subscribe(deleteResponse => {
+          this.getAllAppsBySearchText(this.searchTextControl.value ? this.searchTextControl.value : '');
+        }, error => console.error('deleteApp', error)));
       }
     });
   }
