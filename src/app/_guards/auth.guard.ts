@@ -1,38 +1,26 @@
-import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
+import {AuthService} from "../core/services/auth-service/auth.service";
 
-import { AuthenticationService } from '../shared/services/authentication.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {
-    constructor(
-        private router: Router,
-        private authenticationService: AuthenticationService
-    ) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
+  }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        const userAuthorities = this.authenticationService.getUserAuthorities();
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    // registration page accessible only when not logged in
+    console.log("GUARD", state.url, this.authService.isLoggedInUser());
 
-        // registration page accessible only when not logged in
-        if (!this.authenticationService.isLoggedIn() && state.url === '/account-request') {
-            return true;
-        } else if (this.authenticationService.isLoggedIn() && state.url === '/account-request') {
-            this.router.navigate(['/']);
-            return false;
-        }
-
-        if (userAuthorities) {
-            // check if route is restricted by role
-            if (route.data.roles && route.data.roles.indexOf(userAuthorities) === -1) {
-                this.router.navigate(['/']);
-                return false;
-            }
-            // authorised so return true
-            return true;
-        }
-
-        // not logged in so redirect to login page with the return url
-        this.router.navigate(['/login']);
-        return false;
+    if (this.authService.isLoggedInUser()) {
+      return true;
+    } else {
+      this.router.navigate(['/login']);
+      return false;
     }
+
+  }
 }

@@ -1,0 +1,28 @@
+@import "~oc-ng-common-component/assets/styles/theme.scss";
+
+.dropdown-create-app {
+  background: $gray-200;
+  color: $gray-700;
+}
+
+.dropdown-show-app {
+  .description {
+    color: $gray-500;
+  }
+  .custom-text {
+    color: $gray-900;
+  }
+}
+
+.dropdown-show-app:hover {
+  background: $gray-200;
+}
+
+.human-icon {
+  min-height: 13px;
+  min-width: 13px;
+}
+
+.max-height {
+  max-height: 46px;
+}

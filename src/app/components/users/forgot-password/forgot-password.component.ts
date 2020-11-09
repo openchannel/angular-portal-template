@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from 'src/app/shared/services/authentication.service';
-
-import { NgForm } from '@angular/forms';
-import { UserService } from 'src/app/shared/services/user.service';
 import { Router } from '@angular/router';
+import { SellerService, SellerSignin } from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,27 +9,28 @@ import { Router } from '@angular/router';
 })
 export class ForgotPasswordComponent implements OnInit {
 
-  email: string;
+  signupUrl = "/signup";
+  loginUrl = "/login";
+  companyLogoUrl = "./assets/img/logo-company.png";
+  forgotPasswordDoneIconPath = "./assets/img/forgot-password-complete-icon.svg";
+  forgotPwdPageState: boolean = true;
+  signIn = new SellerSignin();
+  constructor(private sellerService: SellerService,private router: Router) { }
   inProcess = false;
-
-  constructor(private router: Router, private userService: UserService) { }
-
   ngOnInit(): void {
   }
 
-  forgotPassword(forgetPwdForm: NgForm): void {
-    if (!forgetPwdForm.valid) {
-      forgetPwdForm.control.markAllAsTouched();
-      return;
-    }
-    this.inProcess = true;
-    this.userService.forgotPassword(this.email).subscribe((res) => {
-      this.inProcess = false;
-      this.router.navigate(['/confirm-forgot-password']);
-    },
-      (err) => {
-        // error message
+  resetPwd(event) {
+    if (event === true) {
+        this.inProcess = true;
+        this.sellerService.resetForgotPassword(this.signIn.email).subscribe(res => {
+          this.forgotPwdPageState = false;
+          this.inProcess = false;
+      },res => {
         this.inProcess = false;
       });
+    }
   }
+
+
 }
