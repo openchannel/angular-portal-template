@@ -71,7 +71,6 @@ export class AppListComponent implements OnInit, OnDestroy {
     .subscribe(searchText => this.getAllAppsBySearchText(searchText)));
   }
 
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -147,7 +146,7 @@ export class AppListComponent implements OnInit, OnDestroy {
     return 'STATUS';
   }
 
-  showDropdownMenuByIndx(id) {
+  showDropdownMenuByIndx(id: string) {
     if (this.displayMenuIndx === id) {
       this.displayMenuIndx = null;
     } else {
