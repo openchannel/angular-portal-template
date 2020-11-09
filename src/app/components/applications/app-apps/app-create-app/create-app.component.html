@@ -47,14 +47,14 @@
 </div>
 
 <ng-template #developerIdTemplate let-result="result">
-    <div class="dropbox-custom-elements dropdown-create-app mt-1 mb-1 p-1">
+    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-create-app max-height mt-1 mb-1 p-1">
         <img src="./assets/img/human-icon.svg" class="human-icon mr-1" alt="human-icon">
         <div class="description">{{currentAppAction.description}}<strong>{{result}}</strong></div>
     </div>
 </ng-template>
 
 <ng-template #defaultDropElementTemplate let-result="result">
-    <div class="dropbox-custom-elements dropdown-show-app p-2 ">
+    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-show-app max-height p-2 ">
         <div class="custom-text">{{result}}</div>
     </div>
 </ng-template>
