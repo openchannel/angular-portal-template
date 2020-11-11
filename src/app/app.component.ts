@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {first} from 'rxjs/operators';
-import {AuthService} from './core/services/auth-service/auth.service';
+import {AuthenticationService} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-root',
@@ -19,14 +19,14 @@ export class AppComponent implements OnInit {
   isLoadingCsrfToken = false;
 
   constructor(private router: Router,
-              private authService: AuthService) {
+              private authApiService: AuthenticationService) {
 
   }
 
   // temporary clearing sesson storage on application load, we might need to do auto login.
   ngOnInit() {
     this.isLoadingCsrfToken = true;
-    this.authService.initCsrf()
+    this.authApiService.initCsrf()
         .pipe(first())
         .subscribe(() => this.isLoadingCsrfToken = false);
   }

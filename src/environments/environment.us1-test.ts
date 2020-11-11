@@ -4,7 +4,7 @@
 
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:9090/',
+    apiUrl: 'https://us1-client-api-proxy-test.openchannel.io/',
     client_id: '43m9qbjigr8ed6i1het1rdnfso',
     client_secret: 'on5jmqp7uq00vgeg9tnq4pii2f1f3pm84q45uq907e8vhmr24ta',
     openchannelUrl: 'https://market.openchannel.io',
