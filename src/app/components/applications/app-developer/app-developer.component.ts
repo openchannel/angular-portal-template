@@ -40,19 +40,6 @@ export class AppDeveloperComponent implements OnInit {
     hasChild: false
   };
 
-  private statsStartTime = {
-    month: (date: Date): Date => {
-      const dateEnd = new Date(date.getTime());
-      dateEnd.setFullYear(date.getFullYear() - 1);
-      return dateEnd;
-    },
-    day: (date: Date): Date => {
-      const dateEnd = new Date(date.getTime());
-      dateEnd.setMonth(date.getDay() - 31);
-      return dateEnd;
-    }
-  };
-
   constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router,
               private modalService: DialogService, private notificationService: NotificationService,
               private commonservice: CommonService) {
@@ -77,10 +64,6 @@ export class AppDeveloperComponent implements OnInit {
     this.getApps('true');
   }
 
-  getValue(value) {
-    return value;
-  }
-
 
   getChartStatistics() {
 
@@ -93,7 +76,7 @@ export class AppDeveloperComponent implements OnInit {
 
     this.chartService.getTimeSeries(this.period, this.selectedChartField, dateStart.getTime(), dateEnd.getTime())
     .subscribe((chartResponse) => {
-      const normalizeChart = chartResponse = chartResponse?.length ? chartResponse : [];
+      const normalizeChart = chartResponse = chartResponse?.length ? chartResponse : [[]];
       this.labels = normalizeChart.map(chart => new Date(chart[0]).toISOString().substring(0, 10));
       this.dataSets = normalizeChart.map(chart => chart[1]);
       normalizeChart.forEach(chart => this.count += chart[1]);
@@ -148,31 +131,19 @@ export class AppDeveloperComponent implements OnInit {
           'Cancel', 'Delete', deleteMessage, '',
           'This action is terminal and cannot be reverted', (res) => {
             this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(res => {
-              // this.getApps('false', (res) => {
-              //   this.notificationService.showSuccess("Application deleted successfully");
-              //   this.modalService.modalService.dismissAll();
-              // });
             }, (err) => {
               this.modalService.modalService.dismissAll();
             });
 
           });
     } else if (this.menuItems.menu === 'suspend') {
-      // this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-      //   "Cancel", "Suspend", "Are you sure you want to <br> suspend this app?", "",
-      //   "This action is terminal and cannot be reverted", (res) => {
 
       let suspend = [{
         appId: this.menuItems.appId,
         version: this.menuItems.version
       }];
       this.appService.suspendApp(suspend).subscribe(res => {
-        // this.getApps('true', (res) => {
-        //   this.notificationService.showSuccess("Application suspended successfully");
-        //   // this.modalService.modalService.dismissAll();
-        // });
       }, (err) => {
-        // this.modalService.modalService.dismissAll();
       });
       // });
     } else if (this.menuItems.menu === 'submit') {
@@ -185,10 +156,6 @@ export class AppDeveloperComponent implements OnInit {
               version: this.menuItems.version
             };
             this.appService.submitApp(submit).subscribe(res => {
-              // this.getApps('false', (res) => {
-              //   this.notificationService.showSuccess("Application submitted successfully");
-              //   this.modalService.modalService.dismissAll();
-              // });
             }, (err) => {
               this.modalService.modalService.dismissAll();
             });
@@ -204,12 +171,9 @@ export class AppDeveloperComponent implements OnInit {
       this.appService.unsuspendApp(unsuspend).subscribe(res => {
         this.getApps('true', (res) => {
           this.notificationService.showSuccess('Application unsuspended successfully');
-          // this.modalService.modalService.dismissAll();
         });
       }, (err) => {
-        // this.modalService.modalService.dismissAll();
       });
-      // });
     }
   }
 
@@ -225,6 +189,4 @@ export class AppDeveloperComponent implements OnInit {
     }
     return dateStart;
   }
-
-
 }
