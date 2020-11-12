@@ -1,5 +1,4 @@
 @import "~oc-ng-common-component/assets/styles/theme.scss";
-@import "bootstrap";
 .tab {
   color: $gray-700;
 }
@@ -70,9 +69,6 @@
     width: 1.3rem;
   }
   .functional-menu {
-    @extend .d-flex;
-    @extend .flex-column;
-    @extend .card;
     position: absolute;
     padding: 0.30rem;
     top: 0;
@@ -83,9 +79,6 @@
       background-color: transparent;
       color: lighten($body-color, 10%);
       margin: 0;
-      @extend .row;
-      @extend .flex-nowrap;
-      @extend .align-items-center;
       &:hover {
         color: $primary;
       }
