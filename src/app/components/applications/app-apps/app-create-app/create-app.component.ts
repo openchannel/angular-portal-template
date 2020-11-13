@@ -55,221 +55,221 @@ export class CreateAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.pageType = this.router.url.split('/')[2];
-    this.initAppDataGroup();
-    this.pageTitle = this.getPageTitleByPage(this.pageType);
-    if (this.pageType === 'create-app') {
-      this.addListenerAppTypeField();
-      this.getAllAppTypes();
-    } else {
-      this.getAppData();
-    }
+    // this.pageType = this.router.url.split('/')[2];
+    // this.initAppDataGroup();
+    // this.pageTitle = this.getPageTitleByPage(this.pageType);
+    // if (this.pageType === 'app-new') {
+    //   this.addListenerAppTypeField();
+    //   this.getAllAppTypes();
+    // } else {
+    //   this.getAppData();
+    // }
   }
 
-  initAppDataGroup(): void {
-    if (this.pageType === 'create-app') {
-      this.appDataFormGroup = this.fb.group({
-        type: ['', Validators.required]
-      });
-    } else {
-      this.appDataFormGroup = this.fb.group({
-        name: ['', Validators.required],
-        safeName: ['', Validators.required]
-      });
-    }
-  }
+  // initAppDataGroup(): void {
+  //   if (this.pageType === 'app-new') {
+  //     this.appDataFormGroup = this.fb.group({
+  //       type: ['', Validators.required]
+  //     });
+  //   } else {
+  //     this.appDataFormGroup = this.fb.group({
+  //       name: ['', Validators.required],
+  //       safeName: ['', Validators.required]
+  //     });
+  //   }
+  // }
 
-  private addListenerAppTypeField(): void {
-    this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe(type => {
-      if (type) {
-        this.getFieldsByAppType(type);
-      } else {
-        this.appFields = null;
-      }
-    }, () => this.appFields = null));
-  }
+  // private addListenerAppTypeField(): void {
+  //   this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
+  //   .pipe(debounceTime(200), distinctUntilChanged())
+  //   .subscribe(type => {
+  //     if (type) {
+  //       this.getFieldsByAppType(type);
+  //     } else {
+  //       this.appFields = null;
+  //     }
+  //   }, () => this.appFields = null));
+  // }
 
-  private getAllAppTypes(): void {
-    this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
-    .subscribe(appTypesResponse => {
-      if (appTypesResponse?.list) {
-        this.currentAppsTypesItems = appTypesResponse.list
-        .map(app => app.appTypeId)
-        .filter(app => app && app.length > 0);
-      } else {
-        this.currentAppsTypesItems = [];
-      }
-    }, (error) => {
-      this.currentAppsTypesItems = [];
-      console.error('Can\'t get all Apps : ' + JSON.stringify(error));
-    }));
-  }
+  // private getAllAppTypes(): void {
+  //   this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
+  //   .subscribe(appTypesResponse => {
+  //     if (appTypesResponse?.list) {
+  //       this.currentAppsTypesItems = appTypesResponse.list
+  //       .map(app => app.appTypeId)
+  //       .filter(app => app && app.length > 0);
+  //     } else {
+  //       this.currentAppsTypesItems = [];
+  //     }
+  //   }, (error) => {
+  //     this.currentAppsTypesItems = [];
+  //     console.error('Can\'t get all Apps : ' + JSON.stringify(error));
+  //   }));
+  // }
 
-  private getFieldsByAppType(appType: string): void {
-    this.appFields = null;
-    this.subscriptions.add(this.appTypeService.getOneAppType(appType)
-    .subscribe((appTypeResponse: any) => {
-      if (appTypeResponse) {
-        this.appFields = {
-          fields: this.mapAppTypeToFields(appTypeResponse)
-        };
-      }
-    }, (error => {
-      console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
-    })));
-  }
+  // private getFieldsByAppType(appType: string): void {
+  //   this.appFields = null;
+  //   this.subscriptions.add(this.appTypeService.getOneAppType(appType)
+  //   .subscribe((appTypeResponse: any) => {
+  //     if (appTypeResponse) {
+  //       this.appFields = {
+  //         fields: this.mapAppTypeToFields(appTypeResponse)
+  //       };
+  //     }
+  //   }, (error => {
+  //     console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
+  //   })));
+  // }
 
-  saveApp(fields: any): void {
-    this.lockSubmitButton = true;
-    if (this.pageType === 'create-app') {
-      this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(fields))
-      .subscribe((appResponse) => {
-        if (appResponse) {
-          this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
-            version: appResponse.version,
-            autoApprove: true
-          }).subscribe((emptyResponse) => {
-            this.lockSubmitButton = false;
-            this.router.navigate(['/app-list/list']).then();
-          }, error => console.error('request publishAppByVersion', error)));
-        } else {
-          console.error('Can\'t save a new app. Empty response.');
-        }
-      }, () => {
-        this.lockSubmitButton = false;
-        this.currentAppAction = this.appActions[0];
-        console.log('Can\'t save a new app.');
-      }));
-    } else {
-      this.subscriptions.add(this.appVersionService.updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(fields))
-      .subscribe(
-          response => {
-            if (response) {
-              this.lockSubmitButton = false;
-              this.router.navigate(['/app-list/list']).then();
-            } else {
-              this.lockSubmitButton = false;
-              this.currentAppAction = this.appActions[0];
-              console.log('Can\'t update app.');
-            }
-          }, () => {
-            this.lockSubmitButton = false;
-            this.currentAppAction = this.appActions[0];
-            console.log('Can\'t update app.');
-          }
-      ));
-    }
-  }
+  // saveApp(fields: any): void {
+  //   this.lockSubmitButton = true;
+  //   if (this.pageType === 'app-new') {
+  //     this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(fields))
+  //     .subscribe((appResponse) => {
+  //       if (appResponse) {
+  //         this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
+  //           version: appResponse.version,
+  //           autoApprove: true
+  //         }).subscribe((emptyResponse) => {
+  //           this.lockSubmitButton = false;
+  //           this.router.navigate(['/app-list/list']).then();
+  //         }, error => console.error('request publishAppByVersion', error)));
+  //       } else {
+  //         console.error('Can\'t save a new app. Empty response.');
+  //       }
+  //     }, () => {
+  //       this.lockSubmitButton = false;
+  //       this.currentAppAction = this.appActions[0];
+  //       console.log('Can\'t save a new app.');
+  //     }));
+  //   } else {
+  //     this.subscriptions.add(this.appVersionService.updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(fields))
+  //     .subscribe(
+  //         response => {
+  //           if (response) {
+  //             this.lockSubmitButton = false;
+  //             this.router.navigate(['/app-list/list']).then();
+  //           } else {
+  //             this.lockSubmitButton = false;
+  //             this.currentAppAction = this.appActions[0];
+  //             console.log('Can\'t update app.');
+  //           }
+  //         }, () => {
+  //           this.lockSubmitButton = false;
+  //           this.currentAppAction = this.appActions[0];
+  //           console.log('Can\'t update app.');
+  //         }
+  //     ));
+  //   }
+  // }
 
-  buildDataForCreate(fields: any): CreateAppModel {
+  // buildDataForCreate(fields: any): CreateAppModel {
+  //
+  //   const customDataValue = {...fields};
+  //   delete customDataValue.name;
+  //   const formGroupData = this.appDataFormGroup.value;
+  //   return {
+  //     name: fields?.name ? fields.name : null,
+  //     type: formGroupData?.type ? formGroupData.type : null,
+  //     customData: customDataValue
+  //   };
+  // }
 
-    const customDataValue = {...fields};
-    delete customDataValue.name;
-    const formGroupData = this.appDataFormGroup.value;
-    return {
-      name: fields?.name ? fields.name : null,
-      type: formGroupData?.type ? formGroupData.type : null,
-      customData: customDataValue
-    };
-  }
+  // buildDataForUpdate(fields: any) {
+  //   const dataToServer: UpdateAppVersionModel = {
+  //     name: this.appDataFormGroup.get('name').value,
+  //     approvalRequired: false,
+  //     customData: {...fields}
+  //   };
+  //   return dataToServer;
+  // }
 
-  buildDataForUpdate(fields: any) {
-    const dataToServer: UpdateAppVersionModel = {
-      name: this.appDataFormGroup.get('name').value,
-      approvalRequired: false,
-      customData: {...fields}
-    };
-    return dataToServer;
-  }
+  // getAppData() {
+  //   this.appId = this.activeRoute.snapshot.paramMap.get('appId');
+  //   this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
+  //
+  //   this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
+  //       (appVersion) => {
+  //         if (appVersion) {
+  //           this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
+  //             this.appDataFormGroup.get('name').setValue(appVersion.name);
+  //             this.appDataFormGroup.get('safeName').setValue(appVersion.safeName);
+  //             this.appFields = {
+  //               fields: this.mapAppTypeFields(appVersion, appType)
+  //             };
+  //           }, error => {
+  //             console.error('request getOneAppType', error);
+  //             this.router.navigate(['/app-list/list']).then();
+  //           }));
+  //         } else {
+  //           console.error('request getAppByVersion : empty response');
+  //           this.router.navigate(['/app-list/list']).then();
+  //         }
+  //       }, error => {
+  //         console.error('request getAppByVersion', error);
+  //         this.router.navigate(['/app-list/list']).then();
+  //       }
+  //   ));
+  // }
 
-  getAppData() {
-    this.appId = this.activeRoute.snapshot.paramMap.get('appId');
-    this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
+  // private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {
+  //   if (appVersionModel && appTypeModel) {
+  //     const defaultValues = new Map(Object.entries(appVersionModel?.customData ? appVersionModel.customData : {}));
+  //     if (appTypeModel?.fields) {
+  //       return appTypeModel.fields
+  //       .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
+  //       .map(field => this.mapRecursiveField(field, defaultValues));
+  //     }
+  //   }
+  //   return [];
+  // }
 
-    this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
-        (appVersion) => {
-          if (appVersion) {
-            this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
-              this.appDataFormGroup.get('name').setValue(appVersion.name);
-              this.appDataFormGroup.get('safeName').setValue(appVersion.safeName);
-              this.appFields = {
-                fields: this.mapAppTypeFields(appVersion, appType)
-              };
-            }, error => {
-              console.error('request getOneAppType', error);
-              this.router.navigate(['/app-list/list']).then();
-            }));
-          } else {
-            console.error('request getAppByVersion : empty response');
-            this.router.navigate(['/app-list/list']).then();
-          }
-        }, error => {
-          console.error('request getAppByVersion', error);
-          this.router.navigate(['/app-list/list']).then();
-        }
-    ));
-  }
+  // private mapRecursiveField(field: AppTypeFieldModel, defaultValues?: Map<string, any>): AppTypeFieldModel {
+  //   if (field) {
+  //     // map field Id
+  //     if (field?.id) {
+  //       field.id = field.id.replace('customData.', '');
+  //       // set default value if present
+  //       if (defaultValues) {
+  //         const defaultValue = defaultValues.get(field.id);
+  //         if (defaultValue) {
+  //           field.defaultValue = defaultValue;
+  //         }
+  //       }
+  //     }
+  //     // map options
+  //     if (field?.options) {
+  //       field.options = this.mapOptions(field);
+  //     }
+  //     // map other fields
+  //     if (field?.fields) {
+  //       field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
+  //       field.subFieldDefinitions = field.fields;
+  //       field.fields = null;
+  //     }
+  //   }
+  //   return field;
+  // }
 
-  private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {
-    if (appVersionModel && appTypeModel) {
-      const defaultValues = new Map(Object.entries(appVersionModel?.customData ? appVersionModel.customData : {}));
-      if (appTypeModel?.fields) {
-        return appTypeModel.fields
-        .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
-        .map(field => this.mapRecursiveField(field, defaultValues));
-      }
-    }
-    return [];
-  }
+  // private mapAppTypeToFields(appTypeModel: AppTypeModel): AppTypeFieldModel [] {
+  //   if (appTypeModel && appTypeModel?.fields) {
+  //     return appTypeModel.fields.map(field => this.mapRecursiveField(field));
+  //   }
+  //   return [];
+  // }
 
-  private mapRecursiveField(field: AppTypeFieldModel, defaultValues?: Map<string, any>): AppTypeFieldModel {
-    if (field) {
-      // map field Id
-      if (field?.id) {
-        field.id = field.id.replace('customData.', '');
-        // set default value if present
-        if (defaultValues) {
-          const defaultValue = defaultValues.get(field.id);
-          if (defaultValue) {
-            field.defaultValue = defaultValue;
-          }
-        }
-      }
-      // map options
-      if (field?.options) {
-        field.options = this.mapOptions(field);
-      }
-      // map other fields
-      if (field?.fields) {
-        field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
-        field.subFieldDefinitions = field.fields;
-        field.fields = null;
-      }
-    }
-    return field;
-  }
+  // private mapOptions(appTypeFiled: AppTypeFieldModel): string [] {
+  //   const newOptions = [];
+  //   appTypeFiled.options.forEach(o => newOptions.push(o?.value ? o.value : o));
+  //   return newOptions;
+  // }
 
-  private mapAppTypeToFields(appTypeModel: AppTypeModel): AppTypeFieldModel [] {
-    if (appTypeModel && appTypeModel?.fields) {
-      return appTypeModel.fields.map(field => this.mapRecursiveField(field));
-    }
-    return [];
-  }
-
-  private mapOptions(appTypeFiled: AppTypeFieldModel): string [] {
-    const newOptions = [];
-    appTypeFiled.options.forEach(o => newOptions.push(o?.value ? o.value : o));
-    return newOptions;
-  }
-
-  private getPageTitleByPage(currentPage: string): 'New App' | 'Edit App' {
-    if ('create-app' === currentPage) {
-      return 'New App';
-    }
-    return 'Edit App';
-  }
+  // private getPageTitleByPage(currentPage: string): 'New App' | 'Edit App' {
+  //   if ('app-new' === currentPage) {
+  //     return 'New App';
+  //   }
+  //   return 'Edit App';
+  // }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

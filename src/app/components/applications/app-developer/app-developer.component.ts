@@ -15,7 +15,7 @@ export class AppDeveloperComponent implements OnInit {
   dataSets = [];
   count;
   countText;
-  //used to detect ghaph data change.
+  // used to detect ghaph data change.
   random;
   period = 'month';
 
@@ -162,7 +162,7 @@ export class AppDeveloperComponent implements OnInit {
       this.appService.suspendApp(suspend).subscribe(res => {
         this.getApps('true', (res) => {
           this.notificationService.showSuccess("Application suspended successfully");
-          // this.modalService.modalService.dismissAll();  
+          // this.modalService.modalService.dismissAll();
         });
       }, (err) => {
         // this.modalService.modalService.dismissAll();
@@ -197,7 +197,7 @@ export class AppDeveloperComponent implements OnInit {
       this.appService.unsuspendApp(unsuspend).subscribe(res => {
         this.getApps('true', (res) => {
           this.notificationService.showSuccess("Application unsuspended successfully");
-          // this.modalService.modalService.dismissAll();  
+          // this.modalService.modalService.dismissAll();
         });
       }, (err) => {
         // this.modalService.modalService.dismissAll();

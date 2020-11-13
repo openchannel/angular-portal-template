@@ -1,61 +1,61 @@
-<div class="d-flex flex-column justify-content-start p-3">
-    <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">{{pageTitle}}</span></h3>
-    <hr class="ml-0 mr-0 mt-1 mb-3">
-    <form [formGroup]="appDataFormGroup">
-        <div class="d-flex flex-row align-items-start" *ngIf="pageType === 'create-app'">
-            <oc-label text="App type" required="true" class="text-nowrap mr-1 w-25"></oc-label>
-            <div class="d-flex flex-column w-100">
-                <oc-dropbox formControlName="type"
-                            placeHolder="Choice type"
-                            customClassStyle="form-control"
-                            [clearFormAfterSelect]="false"
-                            [dropElementTemplate]="defaultDropElementTemplate"
-                            [items]="currentAppsTypesItems"
-                            class="w-100">
-                </oc-dropbox>
-                <oc-error [control]="appDataFormGroup.get('appType')"></oc-error>
-            </div>
-        </div>
-        <ng-container *ngIf="pageType === 'edit-app'">
-            <div class="d-flex flex-row align-items-start" >
-                <oc-label text="Name" required="true" class="text-nowrap mr-1 w-25"></oc-label>
-                <div class="d-flex flex-column w-100">
-                    <oc-input formControlName="name"
-                              [class]="'form-control'"></oc-input>
-                    <oc-error [control]="appDataFormGroup.get('name')"></oc-error>
-                </div>
-            </div>
-            <div class="d-flex flex-row align-items-start" >
-                <oc-label text="Safe Name" required="true" class="text-nowrap mr-1 w-25"></oc-label>
-                <div class="d-flex flex-column w-100">
-                    <oc-tags formControlName="safeName"
-                             title=" "
-                             minTagsCount="1"></oc-tags>
-                    <oc-error [control]="appDataFormGroup.get('safeNames')"></oc-error>
-                </div>
-            </div>
-        </ng-container>
-    </form>
-    <div *ngIf="appFields?.fields">
-        <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">App details</span></h3>
-        <hr class="ml-0 mr-0 mt-1 mb-3">
-        <oc-form [formJsonData]="appFields"
-                 [anotherInvalidResult]="appDataFormGroup.invalid || lockSubmitButton"
-                 (formSubmitted)="saveApp($event)">
-        </oc-form>
-    </div>
-</div>
+<!--<div class="d-flex flex-column justify-content-start p-3">-->
+<!--    <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">{{pageTitle}}</span></h3>-->
+<!--    <hr class="ml-0 mr-0 mt-1 mb-3">-->
+<!--    <form [formGroup]="appDataFormGroup">-->
+<!--        <div class="d-flex flex-row align-items-start" *ngIf="pageType === 'create-app'">-->
+<!--            <oc-label text="App type" required="true" class="text-nowrap mr-1 w-25"></oc-label>-->
+<!--            <div class="d-flex flex-column w-100">-->
+<!--                <oc-dropbox formControlName="type"-->
+<!--                            placeHolder="Choice type"-->
+<!--                            customClassStyle="form-control"-->
+<!--                            [clearFormAfterSelect]="false"-->
+<!--                            [dropElementTemplate]="defaultDropElementTemplate"-->
+<!--                            [items]="currentAppsTypesItems"-->
+<!--                            class="w-100">-->
+<!--                </oc-dropbox>-->
+<!--                <oc-error [control]="appDataFormGroup.get('appType')"></oc-error>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <ng-container *ngIf="pageType === 'edit-app'">-->
+<!--            <div class="d-flex flex-row align-items-start" >-->
+<!--                <oc-label text="Name" required="true" class="text-nowrap mr-1 w-25"></oc-label>-->
+<!--                <div class="d-flex flex-column w-100">-->
+<!--                    <oc-input formControlName="name"-->
+<!--                              [class]="'form-control'"></oc-input>-->
+<!--                    <oc-error [control]="appDataFormGroup.get('name')"></oc-error>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="d-flex flex-row align-items-start" >-->
+<!--                <oc-label text="Safe Name" required="true" class="text-nowrap mr-1 w-25"></oc-label>-->
+<!--                <div class="d-flex flex-column w-100">-->
+<!--                    <oc-tags formControlName="safeName"-->
+<!--                             title=" "-->
+<!--                             minTagsCount="1"></oc-tags>-->
+<!--                    <oc-error [control]="appDataFormGroup.get('safeNames')"></oc-error>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </ng-container>-->
+<!--    </form>-->
+<!--    <div *ngIf="appFields?.fields">-->
+<!--        <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">App details</span></h3>-->
+<!--        <hr class="ml-0 mr-0 mt-1 mb-3">-->
+<!--        <oc-form [formJsonData]="appFields"-->
+<!--                 [anotherInvalidResult]="appDataFormGroup.invalid || lockSubmitButton"-->
+<!--                 (formSubmitted)="saveApp($event)">-->
+<!--        </oc-form>-->
+<!--    </div>-->
+<!--</div>-->
 
-<ng-template #developerIdTemplate let-result="result">
-    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-create-app max-height mt-1 mb-1 p-1">
-        <img src="./assets/img/human-icon.svg" class="human-icon mr-1" alt="human-icon">
-        <div class="description">{{currentAppAction.description}}<strong>{{result}}</strong></div>
-    </div>
-</ng-template>
+<!--<ng-template #developerIdTemplate let-result="result">-->
+<!--    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-create-app max-height mt-1 mb-1 p-1">-->
+<!--        <img src="./assets/img/human-icon.svg" class="human-icon mr-1" alt="human-icon">-->
+<!--        <div class="description">{{currentAppAction.description}}<strong>{{result}}</strong></div>-->
+<!--    </div>-->
+<!--</ng-template>-->
 
-<ng-template #defaultDropElementTemplate let-result="result">
-    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-show-app max-height p-2 ">
-        <div class="custom-text">{{result}}</div>
-    </div>
-</ng-template>
+<!--<ng-template #defaultDropElementTemplate let-result="result">-->
+<!--    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-show-app max-height p-2 ">-->
+<!--        <div class="custom-text">{{result}}</div>-->
+<!--    </div>-->
+<!--</ng-template>-->
 
