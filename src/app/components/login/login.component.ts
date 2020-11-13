@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { OauthService, SellerSignin, SellerService, AuthenticationService } from 'oc-ng-common-service';
-import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
-import { LoaderService } from 'src/app/shared/services/loader.service';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {OAuthService} from 'angular-oauth2-oidc';
+import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
+import {AppService} from '../../core/api/app.service';
+import {AuthService} from '../../core/services/auth-service/auth.service';
+import {Subscription} from 'rxjs';
+import {AuthConfig} from '../../core/services/auth-service/model/auth-model';
+import {AuthenticationService} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-login',
@@ -11,80 +15,57 @@ import { LoaderService } from 'src/app/shared/services/loader.service';
 })
 export class LoginComponent implements OnInit {
 
-  companyLogoUrl = "./assets/img/logo-company.png";
-  signupUrl = "/signup";
-  forgotPwdUrl = "/forgot-password";
-  successLoginFwdUrl = "/app-developer";
-  signIn = new SellerSignin();
+  companyLogoUrl = './assets/img/logo-company.png';
+  signupUrl = '/signup';
+  forgotPwdUrl = '/forgot-password';
+  successLoginFwdUrl = '/app-developer';
   inProcess = false;
   isLoading = true;
-  constructor(private oauthService : OauthService,private router: Router,private sellerService : SellerService,
-    private authenticationService : AuthenticationService, private loaderService : LoaderService
-  ) { }
+  //todo remove
+  tokenInfo: string;
+
+  // todo add ts type
+  authConfig: AuthConfig;
+
+  private formSubscription: Subscription = new Subscription();
+
+  constructor(private oauthService: OAuthService, private appService: AppService, private router: Router,
+              private authService: AuthService,
+              private authApiService: AuthenticationService) {
+  }
 
   ngOnInit(): void {
-    this.loaderService.showLoader("1");
-      //localStorage.getItem("rememberMe") && localStorage.getItem("rememberMe")=='true' && 
-      if (localStorage.getItem("access_token")) {
-        this.authenticationService.saveUserprofileInformation(res => {
-            this.isLoading = false;
-            this.loaderService.closeLoader("1");
-            this.router.navigateByUrl("/app-developer");
-        },res => {
-          this.isLoading = false;
-          this.loaderService.closeLoader("1");
-        });
-      }else{
-        this.isLoading = false;
-        this.loaderService.closeLoader("1");
-      }
+    this.isLoading = true;
+    this.oauthService.hasValidAccessToken();
+    this.formSubscription.add(this.authApiService.getAuthConfig().subscribe(authConfig => {
+
+          this.authConfig = authConfig;
+          this.oauthService.configure({
+            ...authConfig,
+            redirectUri: authConfig.redirectUri || window.location.origin
+          });
+
+          this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+          this.oauthService.loadDiscoveryDocumentAndTryLogin({
+            onTokenReceived: receivedTokens => {
+              this.authApiService.login({
+                idToken: receivedTokens.idToken,
+                accessToken: receivedTokens.accessToken
+              }).subscribe(loginResponse => {
+                this.authService.persist(loginResponse.accessToken, loginResponse.refreshToken);
+                this.authService.testSetAuthJwtToken(loginResponse.accessToken);
+                this.router.navigate(['/app-store']);
+              });
+
+              this.tokenInfo = JSON.stringify(receivedTokens, null, 4);
+            }
+          });
+        }, err => console.error('getAuthConfig', err),
+        () => this.isLoading = false));
   }
 
-  login(event) {
-    console.log(event);
-    if(event === true){
-      this.signIn.email = this.signIn.email;
-      this.signIn.password = this.signIn.password;
-      this.signIn.grant_type = "password";
-      this.signIn.clientId = environment.client_id;
-      this.signIn.clientSecret = environment.client_secret;
-      this.inProcess = true;
-      this.oauthService.signIn(this.signIn).subscribe(res => {
-      this.authenticationService.saveUserAfterLoginSuccess(res,this.signIn);
-      this.authenticationService.saveUserprofileInformation(res => {
-        this.inProcess = false;
-        this.router.navigateByUrl("/app-developer");
-      });      
-    },res => {
-        this.inProcess = false;
-      });
-    }
+  login() {
+    this.oauthService.initLoginFlow();
   }
 
-  //  /**
-  //   *  Save user details after login successful.
-  //   * @param res 
-  //   */
-  //  saveUserAfterLoginSuccess(res){
-  //   localStorage.setItem("access_token",res.access_token);
-  //   if(this.signIn.isChecked){
-  //     localStorage.setItem("rememberMe","true");
-  //   }else {
-  //     localStorage.setItem("rememberMe","false");
-  //   }
-  //  }
-
-  //  /**
-  //   * This method is responsible for save user profile information. 
-  //   */
-  //  saveUserprofileInformation(){
-  //     this.sellerService.getUserProfileDetails().subscribe(res => {
-  //         if (res) {
-  //           localStorage.setItem("email",res.email);
-  //         }
-  //         this.router.navigateByUrl(this.successLoginFwdUrl);
-  //     },res => {
-  //       this.inProcess = false;
-  //     });
-  //  }
 }

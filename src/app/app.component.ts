@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {first} from 'rxjs/operators';
+import {AuthenticationService} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +13,21 @@ import { Router } from '@angular/router';
   }
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'template3-portal-frontend';
 
-  constructor(private router : Router){}
+  isLoadingCsrfToken = false;
+
+  constructor(private router: Router,
+              private authApiService: AuthenticationService) {
+
+  }
 
   // temporary clearing sesson storage on application load, we might need to do auto login.
   ngOnInit() {
+    this.isLoadingCsrfToken = true;
+    this.authApiService.initCsrf()
+        .pipe(first())
+        .subscribe(() => this.isLoadingCsrfToken = false);
   }
-  
 }

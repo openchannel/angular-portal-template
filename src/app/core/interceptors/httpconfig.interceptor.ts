@@ -1,80 +1,70 @@
-import { Injectable } from '@angular/core';
-import {
-    HttpInterceptor,
-    HttpRequest,
-    HttpResponse,
-    HttpHandler,
-    HttpEvent,
-    HttpErrorResponse
-} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
-import { Observable, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
-import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
-import { LoaderService } from 'src/app/shared/services/loader.service';
-import { Router } from '@angular/router';
-import { OcErrorService } from 'oc-ng-common-component';
+import {Observable, of, throwError} from 'rxjs';
+import {AuthService} from '../services/auth-service/auth.service';
+import {GraphqlService} from '../../graphql-client/graphql-service/graphql.service';
+import {LogOutService} from '../services/logout-service/log-out.service';
+import {catchError, concatMap, take} from 'rxjs/operators';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
-    constructor(private notificationService: NotificationService, private loaderService: LoaderService
-        , private router: Router, private errorService: OcErrorService) { }
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        const token: string = localStorage.getItem('access_token');
 
-        if (token && !request.url.endsWith('oauth/token')) {
-            request = request.clone({ headers: request.headers.set('Authorization', 'Bearer ' + token) });
-        }
-        request = request.clone({ headers: request.headers.set('Accept', 'application/json') });
-        if (request.headers.get('x-loader')) {
-            if (request.headers.get('x-loader') === 'true') {
-                this.loaderService.showLoader(request.url);
-            }
-            request = request.clone({ headers: request.headers.delete('x-loader') });
-        }
+  constructor(private authService: AuthService, private graph: GraphqlService, private logOutService: LogOutService) {}
 
-        return next.handle(request).pipe(
-            map((event: HttpEvent<any>) => {
-                if (event instanceof HttpResponse) {
-                    this.loaderService.closeLoader(event.url);
-                }
-                return event;
-            }),
-            catchError((response: HttpErrorResponse) => {
-                this.loaderService.closeLoader(response.url);
-                    
-                if (response.status==401) {
-                    //this is being invoked only from login page    
-                    if(response.url.endsWith("oauth/token")){
-                        this.errorService.setServerErrorList([{field:'email', 'message': "Wrong email"},
-                        {field:'password', 'message': "Wrong password"}]);   
-                        return throwError(response);
-                        //for all other screens 401 should redirect to login    
-                    }else{
-                        this.router.navigate(['/login']);   
-                        localStorage.clear();        
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // todo remove this.
+    if (this.authService.testGetAuthJwtToken()) {
+      return next.handle(req.clone({
+        setHeaders: {Authorization: `Bearer ${this.authService.testGetAuthJwtToken()}`}
+      }));
+    }
+    return next.handle(req);
+    // ----
+
+    // get current access token value
+    return next.handle(req).pipe(
+        concatMap(event => {
+          let needToAuthenticate = false;
+          if (
+              event.type === HttpEventType.Response &&
+              event.status === 200 &&
+              event.body &&
+              Array.isArray(event.body.errors)
+          ) {
+            const errors = event.body.errors as any[];
+            needToAuthenticate = !!errors.find(e => e.exception && e.exception.message === 'Access token is expired');
+          }
+
+          if (needToAuthenticate) {
+            // update access token by logging in to your auth server using a refresh token
+            if (this.authService.refreshToken) {
+              return this.graph.refreshToken(this.authService.refreshToken).pipe(
+                  take(1),
+                  catchError(err => {
+                      this.logOutService.logOut();
+                      return throwError(err);
+                  }),
+                  concatMap(({data: {refreshToken: {accessToken: newAccessToken}}}) => {
+                    if (newAccessToken) {
+                      this.authService.updateAccessToken(newAccessToken);
+                      return next.handle(req.clone({
+                        setHeaders: {Authorization: `Bearer ${newAccessToken}`}
+                      }));
+                    } else {
+                      this.logOutService.logOut();
+                      // if logging in with refresh token failed to update access token, then can't help it...
+                      // --- apollo-link does not understand return throwError('message') so just throw new error
+                      throw new Error('Error getting access token after logging in with refresh token');
                     }
-                }
-                if (response.status == 403) {
-                    this.notificationService.showError([{ error: '403 Forbidden: Access is denied' }]);
-                } else if (response.error && response.error['validation-errors']) {
-                    this.handleValidationError(response.error['validation-errors'])                    
-                } else if (response.error.error_description) {
-                    this.notificationService.showError([{ error: response.error.error_description }]);
-                } else if (response.error.message) {
-                    this.notificationService.showError([{ error: response.error.message }]);
-                } else {
-                    this.notificationService.showError([{ error: JSON.stringify(response.error) }]);
-                }
-                return throwError(response);
-            }));
-    }
-
-    handleValidationError(validationErrorList : any[]){
-        if(validationErrorList[0].field){
-            this.errorService.setServerErrorList(validationErrorList);
-        }else{
-            this.notificationService.showError(validationErrorList);
-        }        
-    }
+                  })
+              );
+            }
+            this.logOutService.logOut();
+            throw new Error('Error getting access token after logging in with refresh token');
+          }
+          return of(event);
+        }),
+    );
+  }
 }

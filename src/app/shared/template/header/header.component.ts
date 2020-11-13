@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import {LogOutService} from '../../../core/services/logout-service/log-out.service';
+import {AuthService} from '../../../core/services/auth-service/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -8,8 +10,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
-  sellerName : string = null;
-  constructor(public router:Router){
+  sellerName: string = null;
+  constructor(public router: Router,
+              private authService: AuthService,
+              private logOutService: LogOutService) {
  //   console.log("header component loaded.");
      this.displayUserInfo();
 }
@@ -18,15 +22,19 @@ export class HeaderComponent implements OnInit {
   }
 
 
-  displayUserInfo(){
-      if (localStorage.getItem("email")) {
-        this.sellerName = localStorage.getItem("email");
-      }
+  displayUserInfo() {
+      // if (localStorage.getItem('email')) {
+      //   this.sellerName = localStorage.getItem('email');
+      // }
+
+    const claims = this.authService.accessToken;
+    if (claims) {
+      this.sellerName = claims;
+    }
   }
 
-  logout(){
-    localStorage.clear();
-    this.router.navigateByUrl("/login");
+  logout() {
+    this.logOutService.logOut();
   }
 
 }

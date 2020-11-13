@@ -92,4 +92,4 @@ pipelines:
     Deploy to US1 Live:
       - step:
           <<: *build-app-and-deploy-live
-          deployment: us1-live
+          deployment: us1-test

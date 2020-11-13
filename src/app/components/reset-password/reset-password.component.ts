@@ -24,7 +24,7 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   reset(event){
-    if (event===true) {
+    if (event === true) {
        this.inProcess = true;
        this.sellerService.resetNewPassword(this.resetModel).subscribe(res => {
        this.inProcess = false;
@@ -34,14 +34,13 @@ export class ResetPasswordComponent implements OnInit {
         signInModel.password = this.resetModel.newPassword;
         signInModel.grant_type = 'password';
         signInModel.clientId = environment.client_id;
-        signInModel.clientSecret = environment.client_secret;      
+        signInModel.clientSecret = environment.client_secret;
         this.inProcess = true;
-        this.router.navigateByUrl("/login");  
-          
+
        },
         error => {
           this.inProcess = false;
-        } 
+        }
        );
     }
   }
