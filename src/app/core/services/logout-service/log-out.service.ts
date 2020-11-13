@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import {first} from 'rxjs/operators';
 import {OAuthService} from 'angular-oauth2-oidc';
-import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
-import {AuthService} from '../auth-service/auth.service';
 import {Router} from '@angular/router';
+import {AuthenticationService, AuthHolderService} from 'oc-ng-common-service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,17 +10,17 @@ import {Router} from '@angular/router';
 export class LogOutService {
 
   constructor(private oAuthService: OAuthService,
-              private graph: GraphqlService,
-              private authService: AuthService,
+              private authService: AuthHolderService,
+              private authenticationService: AuthenticationService,
               private router: Router) { }
 
   logOut(): void {
-    this.graph.getLogOutConfig()
+    this.authenticationService.getLogOutConfig()
         .pipe(first())
-        .subscribe(({data: {logOutConfig: {endSessionEndpoint: logoutUrl}}}) => {
-          if (logoutUrl && this.oAuthService.getIdToken()) {
+        .subscribe(config => {
+          if (config && config.endSessionEndpoint && this.oAuthService.getIdToken()) {
             this.oAuthService.configure({
-              logoutUrl,
+              logoutUrl: config.endSessionEndpoint,
               postLogoutRedirectUri: window.location.origin,
             });
             this.authService.clearTokensInStorage();

@@ -1,15 +1,12 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {AuthService} from "../core/services/auth-service/auth.service";
+import {AuthHolderService} from 'oc-ng-common-service';
 
 
 @Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {
-  }
+  constructor(private router: Router,
+              private authService: AuthHolderService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     // registration page accessible only when not logged in
