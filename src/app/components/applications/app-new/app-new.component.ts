@@ -49,7 +49,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   };
 
   subscriptions: Subscription = new Subscription();
-  lockSubmitButton = false;
+  lockSubmitButton = true;
 
   pageTitle: 'Submit New App' | 'Edit App';
   pageType: string;
@@ -58,9 +58,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   private appTypePageNumber = 1;
   private appTypePageLimit = 100;
+  // data from the form component
+  private appFormData: any;
 
   ngOnInit(): void {
-    this.pageType = this.router.url.split('/')[2];
+    this.pageType = this.router.url.split('/')[1];
     this.initAppDataGroup();
     this.pageTitle = this.getPageTitleByPage(this.pageType);
     if (this.pageType === 'app-new') {
@@ -87,12 +89,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
       });
     }
   }
-
-
-  saveApp(fields: any): void {
+  // getting app data from the form on form changing
+  getAppFormData(fields: any): void {
+    this.appFormData = fields;
+  }
+  // saving app to the server
+  saveApp(): void {
     this.lockSubmitButton = true;
     if (this.pageType === 'app-new') {
-      this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(fields))
+      this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
         .subscribe((appResponse) => {
           if (appResponse) {
             this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
@@ -100,7 +105,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               autoApprove: true
             }).subscribe((emptyResponse) => {
               this.lockSubmitButton = false;
-              this.router.navigate(['/app-list/list']).then();
+              this.router.navigate(['/app-developer']).then();
             }, error => console.error('request publishAppByVersion', error)));
           } else {
             console.error('Can\'t save a new app. Empty response.');
@@ -111,12 +116,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
           console.log('Can\'t save a new app.');
         }));
     } else {
-      this.subscriptions.add(this.appVersionService.updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(fields))
+      this.subscriptions.add(this.appVersionService
+        .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData))
         .subscribe(
           response => {
             if (response) {
               this.lockSubmitButton = false;
-              this.router.navigate(['/app-list/list']).then();
+              this.router.navigate(['/app-developer']).then();
             } else {
               this.lockSubmitButton = false;
               this.currentAppAction = this.appActions[0];
@@ -167,17 +173,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
             };
           }, error => {
             console.error('request getOneAppType', error);
-            this.router.navigate(['/app-list/list']).then();
+            // this.router.navigate(['/app-developer']).then();
           }));
         } else {
           console.error('request getAppByVersion : empty response');
-          this.router.navigate(['/app-list/list']).then();
+          // this.router.navigate(['/app-developer']).then();
         }
       }, error => {
         console.error('request getAppByVersion', error);
-        this.router.navigate(['/app-list/list']).then();
+        // this.router.navigate(['/app-developer']).then();
       }
     ));
+  }
+
+  getAppFormStatus(status: boolean): void {
+    this.lockSubmitButton = status;
   }
 
   private addListenerAppTypeField(): void {
@@ -279,13 +289,5 @@ export class AppNewComponent implements OnInit, OnDestroy {
       return 'Submit New App';
     }
     return 'Edit App';
-  }
-
-  gotoAppsList() {
-    this.router.navigate(['./app-developer']);
-  }
-
-  cancelNewApp() {
-    this.router.navigate(['./app-developer']);
   }
 }
