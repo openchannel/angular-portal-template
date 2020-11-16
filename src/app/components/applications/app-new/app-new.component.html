@@ -1,14 +1,14 @@
-<div class="bg-container bg-s py-7">
+<div class="bg-container bg-s py-2">
     <div class="container">
         <img src="assets/img/arrow-left.svg" alt="arrow-icon">
         <a routerLink="/app-developer" class="font-m font-med pl-1">Back to Manage Apps</a>
-        <h1 class="mt-3">{{pageTitle}}</h1>
+        <h1 class="navigation-h1 mt-1">{{pageTitle}}</h1>
     </div>
 </div>
-<div class="container container-s">
+<div class="container container-s mt-3">
     <form [formGroup]="appDataFormGroup">
-        <div class="d-flex flex-row align-items-start" *ngIf="pageType === 'create-app'">
-            <oc-label text="App type" required="true" class="text-nowrap mr-1 w-25"></oc-label>
+        <div class="d-flex flex-column flex-md-row align-items-start mb-2" *ngIf="pageType === 'app-new'">
+            <oc-label text="App type" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
             <div class="d-flex flex-column w-100">
                 <oc-dropbox formControlName="type"
                             placeHolder="Choice type"
@@ -42,12 +42,26 @@
         </ng-container>
     </form>
     <div *ngIf="appFields?.fields">
-        <h3 class="ml-3 flex-fill"><span class="mr-1 font-med ">App details</span></h3>
-        <hr class="ml-0 mr-0 mt-1 mb-3">
         <oc-form [formJsonData]="appFields"
-                 [anotherInvalidResult]="appDataFormGroup.invalid || lockSubmitButton"
-                 (formSubmitted)="saveApp($event)">
+                 (formDataUpdated)="getAppFormData($event)"
+                 labelPosition="left"
+                 [showButton]="false"
+                 (isFormInvalid)="getAppFormStatus($event)">
         </oc-form>
+        <div class="d-flex flex-column-reverse flex-md-row justify-content-between mb-5 mt-2">
+            <div class="form-btn">
+                <oc-button type="link" text="Cancel" class="w-100 text-center"
+                           routerLink="/app-developer"></oc-button>
+            </div>
+            <div class="form-btn">
+                <oc-button type="secondary" text="Save and Exit" class="w-100"
+                           [disabled]="appDataFormGroup.invalid || lockSubmitButton"></oc-button>
+            </div>
+            <div class="form-btn">
+                <oc-button type="primary" text="Submit" class="w-100"
+                           [disabled]="appDataFormGroup.invalid || lockSubmitButton" (click)="saveApp()"></oc-button>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -1,5 +1,35 @@
+@import "../../../../assets/styles/mixins";
+
 .video-box {
   width: 167px;
   border-radius: 4px;
   margin-top: 8px;
+}
+
+.bg-s {
+  min-height: auto;
+}
+
+.form-label {
+  width: 20%;
+}
+
+.navigation-h1 {
+  font-size: 1.7rem;
+}
+
+.container-s {
+  max-width: 730px;
+  width: 100%;
+}
+
+.form-btn {
+  width: 23%;
+  @include media-breakpoint-md {
+    width: 100%;
+    margin-bottom: 1rem;
+    .btn-link {
+      text-align: center;
+    }
+  }
 }
