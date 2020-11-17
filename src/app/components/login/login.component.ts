@@ -32,8 +32,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private destroy$: Subject<void> = new Subject();
 
-    constructor(private router: Router,
-                private loaderService: LoaderService,
+    constructor(public loaderService: LoaderService,
+                private router: Router,
                 private awsAuthService: AwsAuthService,
                 private authHolderService: AuthHolderService,
                 private oauthService: OAuthService,
@@ -42,11 +42,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['/app-store']);
+            this.router.navigate(['app-developer']);
         }
 
-        this.isLoading = true;
-        this.oauthService.hasValidAccessToken();
+        this.loaderService.showLoader('getAuthConfig');
 
         this.openIdAuthService.getAuthConfig()
           .pipe(
@@ -63,15 +62,19 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.oauthService.tokenValidationHandler = new JwksValidationHandler();
                 this.oauthService.loadDiscoveryDocumentAndTryLogin({
                     onTokenReceived: receivedTokens => {
+                        this.loaderService.showLoader('internalLogin');
                         this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
                           .pipe(takeUntil(this.destroy$))
                           .subscribe((response: LoginResponse) => {
                               this.processLoginResponse(response);
+                              this.loaderService.closeLoader('internalLogin');
                           });
                     },
+                }).then(() => {
+                    this.loaderService.closeLoader('getAuthConfig');
                 });
             }, err => console.error('getAuthConfig', err),
-            () => this.isLoading = false);
+            () => this.loaderService.closeLoader('getAuthConfig'));
     }
 
     ngOnDestroy(): void {
@@ -84,11 +87,14 @@ export class LoginComponent implements OnInit, OnDestroy {
             if (this.loginType) {
                 this.oauthService.initLoginFlow();
             } else {
+                this.inProcess = true;
                 this.awsAuthService.signIn(this.signIn)
                   .pipe(takeUntil(this.destroy$))
                   .subscribe((response: LoginResponse) => {
                       this.processLoginResponse(response);
-                  });
+                      this.inProcess = false;
+                    },
+                    () => this.inProcess = false);
             }
 
         }
@@ -96,6 +102,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private processLoginResponse(response: LoginResponse) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigate(['/app-store']);
+        this.router.navigate(['app-developer']);
     }
 }

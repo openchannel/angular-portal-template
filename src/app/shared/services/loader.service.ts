@@ -10,41 +10,41 @@ export class LoaderService implements OnDestroy  {
  public inProcess: BehaviorSubject<boolean>;
 
   pendingLoaderRequests = 0;
-  isLeftMenuAvailable : boolean;
+  isLeftMenuAvailable: boolean;
 
   loaderRequestIds = [];
 
   constructor() {
-  this.isLeftMenuAvailable = true;  
-  this.inProcess = new BehaviorSubject<boolean>(false);  
+  this.isLeftMenuAvailable = true;
+  this.inProcess = new BehaviorSubject<boolean>(false);
   }
 
   /**
    * This method is responsible for show the loader.
    */
-  showLoader(requestId:string){
+  showLoader(requestId: string) {
 
-    if(requestId.indexOf("?") != -1){
-      requestId = requestId.substring(0, requestId.indexOf("?"));
+    if (requestId.indexOf('?') !== -1) {
+      requestId = requestId.substring(0, requestId.indexOf('?'));
     }
     this.loaderRequestIds.push(requestId);
-    //this.pendingLoaderRequests++;
+    // this.pendingLoaderRequests++;
     this.inProcess.next(true);
   }
   /**
    * This method is responsible for close the loader.
    */
-  closeLoader(requestId:string){
-    if(requestId.indexOf("?") != -1){
-      requestId = requestId.substring(0, requestId.indexOf("?"));
+  closeLoader(requestId: string) {
+    if (requestId.indexOf('?') !== -1) {
+      requestId = requestId.substring(0, requestId.indexOf('?'));
     }
-    let index = this.loaderRequestIds.indexOf(requestId);
-    if( index != -1){
+    const index = this.loaderRequestIds.indexOf(requestId);
+    if ( index !== -1) {
       this.loaderRequestIds.splice(index, 1);
-      //this.pendingLoaderRequests--;
-      if(this.loaderRequestIds.length == 0){
+      // this.pendingLoaderRequests--;
+      if (this.loaderRequestIds.length === 0) {
         this.inProcess.next(false);
-      }    
+      }
     }
   }
   /**
