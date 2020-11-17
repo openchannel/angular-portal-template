@@ -15,6 +15,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CreateAppModel, UpdateAppVersionModel } from 'oc-ng-common-service/lib/model/app-data-model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModalComponent } from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import { LoaderService } from '../../../shared/services/loader.service';
 
 @Component({
   selector: 'app-app-new',
@@ -31,7 +32,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private appVersionService: AppVersionService,
               private appTypeService: AppTypeService,
               private activeRoute: ActivatedRoute,
-              private modal: NgbModal) { }
+              private modal: NgbModal,
+              private loader: LoaderService) { }
 
   appDetails = new SellerAppDetailsModel();
 
@@ -185,7 +187,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   getAppData() {
     this.appId = this.activeRoute.snapshot.paramMap.get('appId');
     this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
-
+    this.loader.showLoader('2');
     this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
       (appVersion) => {
         if (appVersion) {
@@ -195,17 +197,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.appFields = {
               fields: this.mapAppTypeFields(appVersion, appType)
             };
+            this.loader.closeLoader('2');
           }, error => {
             console.error('request getOneAppType', error);
+            this.loader.closeLoader('2');
             this.router.navigate(['/app-developer']).then();
           }));
         } else {
+          this.loader.closeLoader('2');
           console.error('request getAppByVersion : empty response');
           this.router.navigate(['/app-developer']).then();
         }
       }, error => {
         console.error('request getAppByVersion', error);
-        // this.router.navigate(['/app-developer']).then();
+        this.loader.closeLoader('2');
+        this.router.navigate(['/app-developer']).then();
       }
     ));
   }
@@ -227,17 +233,23 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private getAllAppTypes(): void {
+    this.loader.showLoader('1');
     this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
       .subscribe(appTypesResponse => {
         if (appTypesResponse?.list) {
           this.currentAppsTypesItems = appTypesResponse.list
             .map(app => app.appTypeId)
             .filter(app => app && app.length > 0);
+          this.loader.closeLoader('1');
         } else {
+          this.loader.closeLoader('1');
+          this.router.navigate(['/app-developer']).then();
           this.currentAppsTypesItems = [];
         }
       }, (error) => {
         this.currentAppsTypesItems = [];
+        this.loader.closeLoader('1');
+        this.router.navigate(['/app-developer']).then();
         console.error('Can\'t get all Apps : ' + JSON.stringify(error));
       }));
   }
