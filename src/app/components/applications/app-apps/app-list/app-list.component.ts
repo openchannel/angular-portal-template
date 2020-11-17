@@ -158,7 +158,6 @@ export class AppListComponent implements OnInit, OnDestroy {
     const modalRef = this.modal.open(ConfirmationModalComponent);
 
     modalRef.componentInstance.modalText = 'Are you sure you want to delete this app?';
-    modalRef.componentInstance.action = 'Delete';
     modalRef.componentInstance.buttonText = 'DELETE';
 
     modalRef.result.then(res => {
