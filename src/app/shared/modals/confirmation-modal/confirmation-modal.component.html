@@ -1,21 +1,31 @@
 <div>
-  <div class="modal-header">
-    <h4 class="modal-title">Confirm {{action}}</h4>
+  <div class="modal-header custom-header">
     <button type="button" class="close" aria-label="Close" (click)="closeAction('cancel')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
-    <p class="text-center font-bold">{{modalText}}</p>
-    <div class="row ml-0 mt-3">
+  <div class="modal-body" [ngClass]="type === 'submission' ? 'px-5' : ''">
+    <h4 *ngIf="type === 'simple'" class="text-center">{{modalText}}</h4>
+    <h2 *ngIf="type === 'submission'" class="text-center">{{modalText}}</h2>
+    <div class="d-flex mt-3 mb-5 flex-column align-items-center"
+         [ngClass]="type !== 'submission' ? 'flex-sm-row justify-content-center' : ''">
       <oc-button type="primary"
                  [text]="buttonText"
-                 [class]="'mr-2'"
-                 (click)="closeAction('success')"></oc-button>
+                 [class]="type === 'submission' ? 'mb-4' : 'mr-sm-2 mb-2 mb-sm-0 mr-sm-0'"
+                 (click)="closeAction('success')">
+      </oc-button>
+      <div class="or-section" *ngIf="type === 'submission'">
+        <hr>
+        <span>OR</span>
+      </div>
+      <p class="draft-text" *ngIf="type === 'submission'">
+        You Can Keep This App As a Draft
+      </p>
       <oc-button
               type="secondary"
-              text="CANCEL"
-              (click)="closeAction('cancel')"></oc-button>
+              [text]="type === 'submission' ? 'Save as draft' : 'CANCEL'"
+              (click)="closeAction(type === 'submission' ? 'draft' : 'cancel')">
+      </oc-button>
     </div>
   </div>
 </div>

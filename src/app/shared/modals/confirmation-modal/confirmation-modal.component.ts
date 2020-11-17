@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -6,18 +6,21 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './confirmation-modal.component.html',
   styleUrls: ['./confirmation-modal.component.scss']
 })
-export class ConfirmationModalComponent implements OnInit {
+export class ConfirmationModalComponent  {
 
   /**
    * Main text of the modal. Confirmation text
    */
   @Input() modalText: string = '';
   /**
-   * What action need to confirm
-   * Will appear in modal title
-   * can be, for example: 'Delete', 'Update'
+   * Type of confirmation modal
+   * can be 'submission' or 'simple'
+   * 'submission' type transform modal to the
+   * App Submission modal
+   * And 'simple' will show simple confirmation modal
+   * Default 'simple'
    */
-  @Input() action: string = '';
+  @Input() type: 'submission' | 'simple'  = 'simple';
   /**
    * Text on the Confirm button
    * Default value: OK
@@ -25,10 +28,7 @@ export class ConfirmationModalComponent implements OnInit {
   @Input() buttonText: string = 'OK';
   constructor(private modalService: NgbActiveModal) { }
 
-  ngOnInit(): void {
-  }
-
-  closeAction(action: 'success' | 'cancel') {
+  closeAction(action: 'success' | 'cancel' | 'draft') {
     this.modalService.close(action);
   }
 }

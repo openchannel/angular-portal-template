@@ -1,0 +1,29 @@
+@import "~oc-ng-common-component/assets/styles/theme";
+
+$or-width: 2rem;
+
+.custom-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.or-section {
+  position: relative;
+  width: 100%;
+  span {
+    width: $or-width;
+    font-size: 1rem;
+    position: absolute;
+    background-color: #fff;
+    text-align: center;
+    top: 2px;
+    right: calc(50% - #{$or-width} / 2);
+    color: lighten($body-color, 50%);
+  }
+}
+
+.draft-text {
+  margin: 1rem 0 1.3rem;
+  color: lighten($body-color, 20%);
+  text-align: center;
+}
