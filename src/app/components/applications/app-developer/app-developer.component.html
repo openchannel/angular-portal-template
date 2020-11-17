@@ -10,50 +10,36 @@
             </a>
         </div>
 
-        <div class="row app-manage-card">
-            <div class="col-md-9 pl-0">
-                <div class="time-selection" [ngClass]="{
-                    active: period === 'month'
-                  }">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" id="month" value="month" name="name"
-                            [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
-                        <label class="custom-control-label cursor-pointer" for="month">Month</label>
-                    </div>
+        <div class="stats-settings-container app-manage-card">
+            <div *ngFor="let period of chartPeriodRadio"
+                 [ngClass]="period.ngClassStyle"
+                 (click)="updateCurrentPeriodAndGetChartStatistics(period)"
+                 class="stats-period time-selection">
+                <div class="custom-control custom-radio">
+                    <input type="radio"
+                           [id]="period.id"
+                           [checked]="period.ngClassStyle.active"
+                           class="custom-control-input">
+                    <label [for]="period.id"
+                           class="custom-control-label cursor-pointer">{{period.name}}</label>
                 </div>
-                <div class="time-selection" [ngClass]="{
-                    active: period ==='day'
-                  }">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" class="custom-control-input" id="day" value="day" name="name"
-                            [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
-                        <label class="custom-control-label cursor-pointer" for="day">Day</label>
-                    </div>
-
-                </div>
-
             </div>
-            <div class="col-md-3 oc-dropdown-toggle">
-                <!-- <div class="time-selection active"> -->
+            <div class="stats-type oc-dropdown-toggle">
                 <div ngbDropdown class="d-inline-block">
-                    <button class="btn btn-secondary" id="dropdownBasic1"
-                        ngbDropdownToggle>{{ (selectedChartField == 'downloads' ? 'Downloads' :
-                        selectedChartField == 'views' ? 'Views' :
-                        selectedChartField == 'leads' ? 'Leads' : '')}}
+                    <button class="btn btn-secondary" id="dropdownStatsType"
+                        ngbDropdownToggle>{{selectedChartField.name}}
                     </button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                        <button value="downloads" ngbDropdownItem (click)="changeField('downloads')">Downloads</button>
-                        <button value="views" ngbDropdownItem (click)="changeField('views')">Views</button>
-                        <button value="leads" ngbDropdownItem (click)="changeField('leads')">Leads</button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownStatsType">
+                        <button *ngFor="let statsType of statsTypes"
+                                [value]="statsType"
+                                (click)="changeField(statsType)" ngbDropdownItem>{{statsType.name}}</button>
                     </div>
                 </div>
-
-                <!-- </div> -->
             </div>
         </div>
         <div class="my-3">
             <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count" [countText]="countText"
-                [downloadUrl]="downloadUrl" [name]="period" [random]="random"></oc-chart>
+                [downloadUrl]="downloadUrl" [name]="selectedPeriod.id" [random]="random"></oc-chart>
         </div>
 
         <div class="pb-1">
