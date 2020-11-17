@@ -45,6 +45,10 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['app-developer']);
         }
 
+        if (this.oauthService.hasValidIdToken()) {
+            this.oauthService.logOut();
+        }
+
         this.loaderService.showLoader('getAuthConfig');
 
         this.openIdAuthService.getAuthConfig()
@@ -60,7 +64,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 });
 
                 this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-                this.oauthService.loadDiscoveryDocumentAndTryLogin({
+                this.oauthService.loadDiscoveryDocumentAndLogin({
                     onTokenReceived: receivedTokens => {
                         this.loaderService.showLoader('internalLogin');
                         this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
@@ -84,19 +88,14 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     login(event) {
         if (event === true) {
-            if (this.loginType) {
-                this.oauthService.initLoginFlow();
-            } else {
-                this.inProcess = true;
-                this.awsAuthService.signIn(this.signIn)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe((response: LoginResponse) => {
-                      this.processLoginResponse(response);
-                      this.inProcess = false;
-                    },
-                    () => this.inProcess = false);
-            }
-
+            this.inProcess = true;
+            this.awsAuthService.signIn(this.signIn)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((response: LoginResponse) => {
+                    this.processLoginResponse(response);
+                    this.inProcess = false;
+                },
+                () => this.inProcess = false);
         }
     }
 
