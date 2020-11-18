@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {FormModalComponent} from '../../../../shared/modals/form-modal/form-modal.component';
-import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {Subscription} from 'rxjs';
 import {AppFormModel, AppFormService} from 'oc-ng-common-service';
 
@@ -21,7 +20,6 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
   private pageLimit = 100;
 
   constructor(private modalService: NgbModal,
-              private graphQLService: GraphqlService,
               private appFormService: AppFormService) { }
 
   ngOnInit(): void {
