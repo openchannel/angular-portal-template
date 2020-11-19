@@ -1,53 +1,32 @@
-<div class="bg-container" [style.visibility]="(isAppsLoading || isChartLoading) ? 'hidden': 'visible'">
-    <div class="container">
-        <div class="row py-5">
-            <div class="col-md-9">
-                <h1 class="mb-0">Manage Apps</h1>
-            </div>
-            <a class="col-md" routerLink="/app-new">
-                <oc-button text="Submit New App" type="primary" class="btn-block">
-                </oc-button>
-            </a>
-        </div>
-
-        <div class="stats-settings-container app-manage-card">
-            <div *ngFor="let period of chartPeriodRadio"
-                 [ngClass]="period.ngClassStyle"
-                 (click)="updateCurrentPeriodAndGetChartStatistics(period)"
-                 class="stats-period time-selection">
-                <div class="custom-control custom-radio">
-                    <input type="radio"
-                           [id]="period.id"
-                           [checked]="period.ngClassStyle.active"
-                           class="custom-control-input">
-                    <label [for]="period.id"
-                           class="custom-control-label cursor-pointer">{{period.name}}</label>
-                </div>
-            </div>
-            <div class="stats-type oc-dropdown-toggle">
-                <div ngbDropdown class="d-inline-block">
-                    <button class="btn btn-secondary" id="dropdownStatsType"
-                        ngbDropdownToggle>{{selectedChartField.name}}
-                    </button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownStatsType">
-                        <button *ngFor="let statsType of statsTypes"
-                                [value]="statsType"
-                                (click)="changeField(statsType)" ngbDropdownItem>{{statsType.name}}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="my-3">
-            <oc-chart [labels]="labels" [dataSets]="dataSets" [count]="count" [countText]="countText"
-                [downloadUrl]="downloadUrl" [name]="selectedPeriod.id" [random]="random"></oc-chart>
-        </div>
-
-        <div class="pb-1">
-            <div class="pb-1">
-                <oc-menu-grid (menuClicked)="menuchange($event)" [menuUrl]="menuUrl" [appList]="applications"
-                    [sortIcon]="sortIcon"></oc-menu-grid>
-            </div>
-
-        </div>
+<div class="bg-container">
+  <div class="container">
+    <div class="row py-5">
+      <div class="col-md-9">
+        <h1 class="mb-0">Manage Apps</h1>
+      </div>
+      <a class="col-md" routerLink="/app-new">
+        <oc-button text="Submit New App" type="primary" class="btn-block">
+        </oc-button>
+      </a>
+    </div>
+    <div class="my-3">
+      <oc-chart
+          [chartData]="chartData"
+          [updateChartDataFunc]="updateChartData"
+          minDropdownWidth="9rem"
+          [count]="count"
+          [countText]="countText"
+          [downloadUrl]="downloadUrl"
+          [random]="random">
+      </oc-chart>
+    </div>
+    <div class="pb-1">
+      <div class="pb-1">
+        <oc-menu-grid (menuClicked)="menuchange($event)" [menuUrl]="menuUrl"
+                      [appList]="applications"
+                      [sortIcon]="sortIcon"></oc-menu-grid>
+      </div>
 
     </div>
+  </div>
+</div>

@@ -1,5 +1,15 @@
 import {Component, OnInit} from '@angular/core';
-import {ChartService, CommonService, KeyValuePairMapper, SellerAppService, SellerAppsWrapper} from 'oc-ng-common-service';
+import {
+  ChartLayoutTypeModel,
+  ChartService,
+  ChartStatisticFiledModel,
+  ChartStatisticModel,
+  ChartStatisticPeriodModel,
+  CommonService,
+  KeyValuePairMapper,
+  SellerAppService,
+  SellerAppsWrapper
+} from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {DialogService, OcPopupComponent} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
@@ -11,43 +21,42 @@ import {NotificationService} from 'src/app/shared/custom-components/notification
 })
 export class AppDeveloperComponent implements OnInit {
 
-  labels = [];
-  dataSets = [];
   count;
   countText;
-  //used to detect ghaph data change.
+  // used to detect ghaph data change.
   random;
   chartStaticstics: KeyValuePairMapper[];
 
-  isChartProcessing = false;
   isAppProcessing = false;
   isAppsLoading = true;
-  isChartLoading = true;
   applications = new SellerAppsWrapper();
 
-  statsTypes = [{
-    id: 'downloads',
-    name: 'Downloads'
-  }, {
-    name: 'Reviews',
-    id: 'reviews'
-  }, {
-    name: 'Leads',
-    id: 'leads'
-  }];
-  selectedChartField = this.statsTypes[0];
-
-  chartPeriodRadio = [
-    {
-      id: 'month',
-      name: 'Monthly',
-      ngClassStyle : {active: true}
-    }, {
-    id: 'day',
-    name: 'Daily',
-    ngClassStyle : {active: false}
-  }];
-  selectedPeriod = this.chartPeriodRadio[0];
+  chartData: ChartStatisticModel = {
+    data: null,
+    periods: [
+      {
+        id: 'month',
+        label: 'Monthly',
+        active: true,
+      }, {
+        id: 'day',
+        label: 'Daily'
+      }
+    ],
+    fields: [
+      {
+        id: 'downloads',
+        label: 'Downloads',
+        active: true,
+      }, {
+        id: 'reviews',
+        label: 'Reviews',
+      }, {
+        id: 'leads',
+        label: 'Leads',
+      }],
+    layout: ChartLayoutTypeModel.standard
+  };
 
   downloadUrl = './assets/img/cloud-download.svg';
   menuUrl = './assets/img/dots-hr-icon.svg';
@@ -67,46 +76,39 @@ export class AppDeveloperComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
     this.applications.list = [];
     this.commonservice.scrollToFormInvalidField({form: null, adjustSize: 60});
-    this.getChartStatistics();
     this.getApps('true');
   }
 
-
-  updateCurrentPeriodAndGetChartStatistics(newPeriod: {ngClassStyle: {active: boolean}; name: string; id: string}): void {
-    this.chartPeriodRadio.forEach(period => {
-      if (period.id === newPeriod.id) {
-        this.selectedPeriod = period;
-        this.selectedPeriod.ngClassStyle.active = true;
-      } else {
-        period.ngClassStyle.active = false;
-      }
-    });
-    this.getChartStatistics();
-  }
-
-  getChartStatistics() {
-
-    this.isChartProcessing = true;
-    this.labels = [];
-    this.dataSets = [];
-    this.count = 0;
+  updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
     const dateEnd = new Date();
-    const dateStart = this.getDateStartByCurrentPeriod(dateEnd);
+    const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
 
-    this.chartService.getTimeSeries(this.selectedPeriod.id, this.selectedChartField.id, dateStart.getTime(), dateEnd.getTime())
+    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
     .subscribe((chartResponse) => {
-      const normalizeChart = chartResponse = chartResponse?.length ? chartResponse : [[]];
-      this.labels = normalizeChart.map(chart => new Date(chart[0]).toISOString().substring(0, 10));
-      this.dataSets = normalizeChart.map(chart => chart[1]);
-      normalizeChart.forEach(chart => this.count += chart[1]);
+      this.count = 0;
+      if (chartResponse) {
+        let labelsDataX: string[];
+        if (period.id === 'month') {
+          labelsDataX = chartResponse.map(chart => new Date(chart[0]).toLocaleDateString('default', {month: 'short'}));
+        } else {
+          labelsDataX = chartResponse.map(chart => new Date(chart[0])).map(date => {
+            return `${date.toLocaleDateString('default', {month: 'short'})} ${date.getDate()}`;
+          });
+        }
+        this.chartData.data = {
+          labelsX: labelsDataX,
+          labelsY: chartResponse.map(chart => chart[1])
+        };
+        chartResponse.forEach(chart => this.count += chart[1]);
+      } else {
+        this.chartData.data = null;
+      }
       this.random = Math.random();
-      this.countText = `Total ${this.selectedChartField.name}`;
-      this.isChartProcessing = false;
-      this.isChartLoading = false;
+      this.countText = `Total ${field.label}`;
     }, (error) => {
-      this.isChartLoading = false;
       console.error('Can\'t get Time Series', error);
     });
   }
@@ -135,11 +137,6 @@ export class AppDeveloperComponent implements OnInit {
 
   newApp() {
     this.router.navigateByUrl('app-new');
-  }
-
-  changeField(statsType: {id: string, name: string}) {
-    this.selectedChartField = statsType;
-    this.getChartStatistics();
   }
 
   menuchange(event) {
@@ -198,11 +195,11 @@ export class AppDeveloperComponent implements OnInit {
     }
   }
 
-  private getDateStartByCurrentPeriod(dateEnd: Date): Date {
+  getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
     const dateStart = new Date(dateEnd);
-    if (this.selectedPeriod.id === 'month') {
+    if (period?.id === 'month') {
       dateStart.setFullYear(dateEnd.getFullYear() - 1);
-    } else if (this.selectedPeriod.id === 'day') {
+    } else if (period?.id === 'day') {
       dateStart.setTime(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
     } else {
       dateStart.setMonth(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
