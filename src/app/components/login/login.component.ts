@@ -7,7 +7,7 @@ import {
     LoginResponse,
     SellerSignin, UsersService,
 } from 'oc-ng-common-service';
-import {AlertService} from 'oc-ng-common-component';
+import {ToastService} from 'oc-ng-common-component';
 import {Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 private oauthService: OAuthService,
                 private openIdAuthService: AuthenticationService,
                 private usersService: UsersService,
-                private alertService: AlertService) {
+                private toastService: ToastService) {
     }
 
     ngOnInit(): void {
@@ -106,7 +106,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.usersService.resendActivationMail(email)
           .pipe(takeUntil(this.destroy$))
           .subscribe(value => {
-              this.alertService.showNewAlert('Activation email was sent to your inbox!', 5000);
+              this.toastService.show('Activation email was sent to your inbox!', { type: 'success', delay: 5000 });
           });
     }
 }
