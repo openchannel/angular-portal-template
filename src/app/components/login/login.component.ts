@@ -5,8 +5,9 @@ import {
     AwsAuthService,
     LoginRequest,
     LoginResponse,
-    SellerSignin,
+    SellerSignin, UsersService,
 } from 'oc-ng-common-service';
+import {AlertService} from 'oc-ng-common-component';
 import {Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -37,7 +38,9 @@ export class LoginComponent implements OnInit, OnDestroy {
                 private awsAuthService: AwsAuthService,
                 private authHolderService: AuthHolderService,
                 private oauthService: OAuthService,
-                private openIdAuthService: AuthenticationService) {
+                private openIdAuthService: AuthenticationService,
+                private usersService: UsersService,
+                private alertService: AlertService) {
     }
 
     ngOnInit(): void {
@@ -97,5 +100,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     private processLoginResponse(response: LoginResponse) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
         this.router.navigate(['/app-store']);
+    }
+
+    sendActivationEmail(email: string) {
+        this.usersService.resendActivationMail(email)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(value => {
+              this.alertService.showNewAlert('Activation email was sent to your inbox!', 5000);
+          });
     }
 }
