@@ -1,12 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {
-    AuthenticationService,
-    AuthHolderService,
-    AwsAuthService,
-    LoginRequest,
-    LoginResponse,
-    SellerSignin,
-} from 'oc-ng-common-service';
+import {AuthenticationService, AuthHolderService, AwsAuthService, LoginRequest, LoginResponse, SellerSignin,} from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -42,7 +35,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['/app-store']);
+            this.router.navigate(['/app-developer']);
         }
 
         this.isLoading = true;
@@ -96,6 +89,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private processLoginResponse(response: LoginResponse) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigate(['/app-store']);
+        this.router.navigate(['/app-developer']);
     }
 }
