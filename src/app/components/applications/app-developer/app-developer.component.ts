@@ -1,11 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {
+  AppListing, AppVersionService,
   ChartLayoutTypeModel,
   ChartService,
   ChartStatisticFiledModel,
   ChartStatisticModel,
   ChartStatisticPeriodModel,
-  CommonService,
+  CommonService, FullAppData,
   KeyValuePairMapper,
   SellerAppService,
   SellerAppsWrapper
@@ -13,6 +14,7 @@ import {
 import {Router} from '@angular/router';
 import {DialogService, OcPopupComponent} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-app-developer',
@@ -68,25 +70,43 @@ export class AppDeveloperComponent implements OnInit {
     version: '',
     hasChild: false
   };
+  // Config for the App Version List component
+  appListConfig: AppListing = {
+    layout: 'table',
+    data: {
+      pages: 1,
+      pageNumber: 1,
+      list: [],
+      count: 50
+    },
+    options: ['EDIT', 'PREVIEW', 'PUBLISH', 'SUSPEND', 'DELETE'],
+    previewTemplate: ''
+  };
 
-  constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router,
-              private modalService: DialogService, private notificationService: NotificationService,
-              private commonservice: CommonService) {
+  private requestsSubscriber: Subscription = new Subscription();
+
+  constructor(public chartService: ChartService,
+              public appService: SellerAppService,
+              public appsVersionService: AppVersionService,
+              public router: Router,
+              private modalService: DialogService,
+              private notificationService: NotificationService,
+              private commonService: CommonService) {
 
   }
 
   ngOnInit(): void {
     this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
     this.applications.list = [];
-    this.commonservice.scrollToFormInvalidField({form: null, adjustSize: 60});
-    this.getApps('true');
+    this.commonService.scrollToFormInvalidField({form: null, adjustSize: 60});
+    this.getApps(1);
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
     const dateEnd = new Date();
     const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
 
-    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
+    this.requestsSubscriber.add(this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
     .subscribe((chartResponse) => {
       this.count = 0;
       if (chartResponse) {
@@ -110,90 +130,109 @@ export class AppDeveloperComponent implements OnInit {
       this.countText = `Total ${field.label}`;
     }, (error) => {
       console.error('Can\'t get Time Series', error);
-    });
+    }));
   }
 
-  capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  capitalizeFirstLetter(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  getApps(loader, callback?) {
+  getApps(page: number): void {
     this.isAppProcessing = true;
-    this.appService.getApps(loader).subscribe(res => {
-      this.applications.list = res.list;
-      this.isAppProcessing = false;
-      this.isAppsLoading = false;
-      if (callback) {
-        callback();
-      }
-    }, (res) => {
-      this.isAppProcessing = false;
-      this.isAppsLoading = false;
-      if (callback) {
-        callback();
-      }
-    });
-  }
+    const sort = '{"created":1}';
+    const query = '{"isLatestVersion": true}';
 
-  newApp() {
-    this.router.navigateByUrl('app-new');
-  }
-
-  menuchange(event) {
-
-    this.menuItems = event;
-    if (this.menuItems.menu === 'delete') {
-      let deleteMessage = this.menuItems?.hasChild ? 'Are you sure you want to delete <br> this app and all it\'s versions?' :
-          'Are you sure you want to delete <br> this app version?';
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
-          'Cancel', 'Delete', deleteMessage, '',
-          'This action is terminal and cannot be reverted', (res) => {
-            this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(res => {
-            }, (err) => {
-              this.modalService.modalService.dismissAll();
-            });
-
-          });
-    } else if (this.menuItems.menu === 'suspend') {
-
-      let suspend = [{
-        appId: this.menuItems.appId,
-        version: this.menuItems.version
-      }];
-      this.appService.suspendApp(suspend).subscribe(res => {
-      }, (err) => {
-      });
-      // });
-    } else if (this.menuItems.menu === 'submit') {
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
-          'Cancel', 'Submit', 'Are you sure you want to <br> submit this app?', '',
-          'This action is terminal and cannot be reverted', (res) => {
-
-            let submit = {
-              appId: this.menuItems.appId,
-              version: this.menuItems.version
-            };
-            this.appService.submitApp(submit).subscribe(res => {
-            }, (err) => {
-              this.modalService.modalService.dismissAll();
-            });
-          });
-    } else if (this.menuItems.menu === 'edit') {
-      this.router.navigateByUrl('edit-app/' + this.menuItems.appId + '/version/' + this.menuItems.version);
-    } else if (this.menuItems.menu === 'unsuspend') {
-
-      let unsuspend = [{
-        appId: this.menuItems.appId,
-        version: this.menuItems.version
-      }];
-      this.appService.unsuspendApp(unsuspend).subscribe(res => {
-        this.getApps('true', (res) => {
-          this.notificationService.showSuccess('Application unsuspended successfully');
-        });
-      }, (err) => {
-      });
+    if (this.appListConfig.data && this.appListConfig.data.count !== 0) {
+      this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(page, 10, sort, query)
+        .subscribe(response => {
+          this.appListConfig.data.pageNumber = response.pageNumber;
+          this.appListConfig.data.pages = response.pages;
+          this.appListConfig.data.count = response.count;
+          this.getAppsChildren(response.list, sort);
+          if (page === 1 ) {
+            this.appListConfig.data.list = response.list;
+          } else {
+            this.appListConfig.data.list = [...this.appListConfig.data.list, ...response.list];
+          }
+          this.isAppProcessing = false;
+        }, () => {
+          this.appListConfig.data.list = [];
+          this.isAppProcessing = false;
+        }));
     }
   }
+
+  getAppsChildren(parentList: FullAppData [], sort: string): FullAppData [] {
+    const parentIds: string [] = [];
+    const parents = [...parentList];
+
+    parents.forEach(parent => {
+      parentIds.push(parent.appId);
+    });
+    const query = '{"$and":[{"appId":{"$in":["' + parentIds.join('","') + '"]}' +
+      '},{"status.value":{"$in":["inReview","pending"]},' +
+      ' "parent.status":{"$exists":true}}]}';
+
+    this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(1, 200, sort, query)
+      .subscribe(response => {}));
+    return  [];
+  }
+
+  // menuchange(event) {
+  //
+  //   this.menuItems = event;
+  //   if (this.menuItems.menu === 'delete') {
+  //     const deleteMessage = this.menuItems?.hasChild ? 'Are you sure you want to delete <br> this app and all it\'s versions?' :
+  //         'Are you sure you want to delete <br> this app version?';
+  //     this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
+  //         'Cancel', 'Delete', deleteMessage, '',
+  //         'This action is terminal and cannot be reverted', () => {
+  //           this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(() => {
+  //           }, () => {
+  //             this.modalService.modalService.dismissAll();
+  //           });
+  //
+  //         });
+  //   } else if (this.menuItems.menu === 'suspend') {
+  //
+  //     const suspend = [{
+  //       appId: this.menuItems.appId,
+  //       version: this.menuItems.version
+  //     }];
+  //     this.appService.suspendApp(suspend).subscribe(res => {
+  //     }, (err) => {
+  //     });
+  //     // });
+  //   } else if (this.menuItems.menu === 'submit') {
+  //     this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
+  //         'Cancel', 'Submit', 'Are you sure you want to <br> submit this app?', '',
+  //         'This action is terminal and cannot be reverted', (res) => {
+  //
+  //           const submit = {
+  //             appId: this.menuItems.appId,
+  //             version: this.menuItems.version
+  //           };
+  //           this.appService.submitApp(submit).subscribe(res => {
+  //           }, (err) => {
+  //             this.modalService.modalService.dismissAll();
+  //           });
+  //         });
+  //   } else if (this.menuItems.menu === 'edit') {
+  //     this.router.navigateByUrl('edit-app/' + this.menuItems.appId + '/version/' + this.menuItems.version).then();
+  //   } else if (this.menuItems.menu === 'unsuspend') {
+  //
+  //     const unsuspend = [{
+  //       appId: this.menuItems.appId,
+  //       version: this.menuItems.version
+  //     }];
+  //     this.appService.unsuspendApp(unsuspend).subscribe(res => {
+  //       this.getApps(1, () => {
+  //         this.notificationService.showSuccess('Application unsuspended successfully');
+  //       });
+  //     }, (err) => {
+  //     });
+  //   }
+  // }
 
   getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
     const dateStart = new Date(dateEnd);
