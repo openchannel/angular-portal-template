@@ -1,6 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
 import {Subscription} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {AppFormModel, AppFormService} from 'oc-ng-common-service';
@@ -20,7 +19,6 @@ export class FormModalComponent implements OnInit, OnDestroy {
   public submissionDetailsForm: FormGroup;
 
   constructor(private activeModal: NgbActiveModal,
-              private graphQLService: GraphqlService,
               private appFormService: AppFormService,
               private fb: FormBuilder) {
   }
