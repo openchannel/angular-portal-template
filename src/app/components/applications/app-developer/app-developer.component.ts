@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {
-  AppListing, AppVersionService,
+  AppListing, AppListMenuAction, AppVersionService,
   ChartLayoutTypeModel,
   ChartService,
   ChartStatisticFiledModel,
@@ -15,6 +15,7 @@ import {Router} from '@angular/router';
 import {DialogService, OcPopupComponent} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
 import { Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-app-developer',
@@ -75,7 +76,7 @@ export class AppDeveloperComponent implements OnInit {
     layout: 'table',
     data: {
       pages: 1,
-      pageNumber: 1,
+      pageNumber: 0,
       list: [],
       count: 50
     },
@@ -142,17 +143,17 @@ export class AppDeveloperComponent implements OnInit {
     const sort = '{"created":1}';
     const query = '{"isLatestVersion": true}';
 
-    if (this.appListConfig.data && this.appListConfig.data.count !== 0) {
+    if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < page) {
       this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(page, 10, sort, query)
         .subscribe(response => {
           this.appListConfig.data.pageNumber = response.pageNumber;
           this.appListConfig.data.pages = response.pages;
           this.appListConfig.data.count = response.count;
-          this.getAppsChildren(response.list, sort);
           if (page === 1 ) {
-            this.appListConfig.data.list = response.list;
+            this.appListConfig.data.list = this.getAppsChildren(response.list, sort);
           } else {
-            this.appListConfig.data.list = [...this.appListConfig.data.list, ...response.list];
+            this.appListConfig.data.list = [...this.appListConfig.data.list,
+              ...this.getAppsChildren(response.list, sort)];
           }
           this.isAppProcessing = false;
         }, () => {
@@ -165,6 +166,7 @@ export class AppDeveloperComponent implements OnInit {
   getAppsChildren(parentList: FullAppData [], sort: string): FullAppData [] {
     const parentIds: string [] = [];
     const parents = [...parentList];
+    let allChildren: FullAppData [];
 
     parents.forEach(parent => {
       parentIds.push(parent.appId);
@@ -174,8 +176,26 @@ export class AppDeveloperComponent implements OnInit {
       ' "parent.status":{"$exists":true}}]}';
 
     this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(1, 200, sort, query)
-      .subscribe(response => {}));
-    return  [];
+      .subscribe(response => {
+        allChildren = response.list;
+        parents.forEach(parent => {
+          parent.children = allChildren.filter(child => child.appId === parent.appId);
+        });
+      }));
+
+    return parents;
+  }
+
+  catchMenuAction(menuEvent: AppListMenuAction): void {
+    switch (menuEvent.action) {
+      case 'EDIT':
+        this.router.navigate(['/edit-app', menuEvent.appId, 'version', menuEvent.appVersion]).then();
+        break;
+      case 'DELETE':
+        break;
+      case 'PUBLISH':
+        break;
+    }
   }
 
   // menuchange(event) {

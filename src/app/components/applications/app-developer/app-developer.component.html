@@ -26,7 +26,8 @@
                       [properties]="appListConfig"
                       menuUrl="../../../../assets/img/dots-hr-icon.svg"
                       defaultAppIcon="../../../../assets/img/app-icon1 (2).svg"
-                      sortIcon="../../../../assets/img/dropdown-icon.svg"></oc-menu-grid>
+                      sortIcon="../../../../assets/img/dropdown-icon.svg"
+                      (pageScrolled)="getApps($event)"></oc-menu-grid>
       </div>
     </div>
   </div>
