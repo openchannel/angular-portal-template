@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppTypeFieldModel } from 'oc-ng-common-service/lib/model/app-type-model';
 import { Subscription } from 'rxjs';
-import { GraphqlService } from '../../../graphql-client/graphql-service/graphql.service';
+// import { GraphqlService } from '../../../graphql-client/graphql-service/graphql.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CreateAppModel, UpdateAppVersionModel } from 'oc-ng-common-service/lib/model/app-data-model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -27,7 +27,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   constructor(private router: Router,
               private appsService: AppsService,
               private fb: FormBuilder,
-              private graphqlService: GraphqlService,
+              // private graphqlService: GraphqlService,
               private appVersionService: AppVersionService,
               private appTypeService: AppTypeService,
               private activeRoute: ActivatedRoute,
@@ -100,10 +100,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
   openConfirmationModal(): void {
     const modalRef = this.modal.open(ConfirmationModalComponent);
 
-    modalRef.componentInstance.modalText = 'Submit This App \n' +
-      'To The Marketplace Now?';
+    modalRef.componentInstance.modalTitle = 'Submit app';
+    modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
     modalRef.componentInstance.type = 'submission';
-    modalRef.componentInstance.buttonText = 'Submit';
+    modalRef.componentInstance.buttonText = 'Yes, submit it';
+    modalRef.componentInstance.cancelButtonText = 'Save as draft';
 
     modalRef.result.then(res => {
       if (res && res === 'success') {

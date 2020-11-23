@@ -159,3 +159,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .font-responsive {
   font-size: 1rem;
 }
+
+.background-delete {
+  background-color: $rejected !important;
+  border-color: $rejected !important;
+  color: #fff;
+}
+
+.background-suspend {
+  background-color: $suspended !important;
+  border-color: $suspended !important;
+  color: #fff;
+}
