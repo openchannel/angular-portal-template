@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {DomSanitizer} from '@angular/platform-browser';
-import {GraphqlService} from '../../../graphql-client/graphql-service/graphql.service';
 import {Subscription} from 'rxjs';
 import {AppFormService, FormSubmissionModel} from 'oc-ng-common-service';
 
@@ -20,7 +19,6 @@ export class SubmissionsDataViewModalComponent implements OnInit {
   private subscriber: Subscription = new Subscription();
 
   constructor(private activeModal: NgbActiveModal,
-              private graphQLService: GraphqlService,
               private appFormService: AppFormService,
               public sanitizer: DomSanitizer) { }
 
