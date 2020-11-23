@@ -10,10 +10,19 @@ import {MyProfileComponent} from './components/my-profile/my-profile.component';
 import {EditAppComponent} from './components/applications/edit-app/edit-app.component';
 import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './_guards/auth.guard';
+import { CreateAppComponent } from './components/applications/app-apps/app-create-app/create-app.component';
 import { AppListComponent } from './components/applications/app-apps/app-list/app-list.component';
+import {ActivationComponent} from './components/activation/activation.component';
+import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
+import {SignupComponent} from './components/signup/signup.component';
+import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  {path: 'login', component: LoginComponent},
+  {path: 'signup', component: SignupComponent},
+  {path: 'activate', component: ActivationComponent},
+  {path: 'reset-password', component: ResetPasswordComponent},
+  {path: 'forgot-password', component: ForgotPasswordComponent},
   { path: '', component: LoginComponent },
   {
     path: '',
@@ -35,7 +44,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {useHash: false})],
+  imports: [RouterModule.forRoot(routes, {useHash: true})],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
