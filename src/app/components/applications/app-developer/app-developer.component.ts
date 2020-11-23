@@ -12,10 +12,11 @@ import {
   SellerAppsWrapper
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
-import {DialogService, OcPopupComponent} from 'oc-ng-common-component';
+import {DialogService} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
-import { Subscription } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModalComponent } from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-app-developer',
@@ -92,7 +93,8 @@ export class AppDeveloperComponent implements OnInit {
               public router: Router,
               private modalService: DialogService,
               private notificationService: NotificationService,
-              private commonService: CommonService) {
+              private commonService: CommonService,
+              private modal: NgbModal) {
 
   }
 
@@ -194,6 +196,17 @@ export class AppDeveloperComponent implements OnInit {
       case 'DELETE':
         break;
       case 'PUBLISH':
+        const modalRef = this.modal.open(ConfirmationModalComponent);
+
+        modalRef.componentInstance.type = 'simple';
+        modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
+        modalRef.componentInstance.buttonText = 'Submit';
+        modalRef.result.then(res => {
+        });
+        break;
+      case 'PREVIEW':
+        break;
+      case 'SUSPEND':
         break;
     }
   }
