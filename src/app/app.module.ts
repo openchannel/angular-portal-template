@@ -25,9 +25,6 @@ import {AppDetailComponent} from './components/applications/app-detail/app-detai
 import {AppDeveloperComponent} from './components/applications/app-developer/app-developer.component';
 import {AppNewComponent} from './components/applications/app-new/app-new.component';
 import {environment} from 'src/environments/environment';
-import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
-import 'froala-editor/js/plugins.pkgd.min.js';
-import 'froala-editor/js//plugins/code_view.min.js';
 import {GeneralProfileComponent} from './components/my-profile/general/general-profile.component';
 import {ChangePasswordComponent} from './components/my-profile/change-password/change-password.component';
 import {MyProfileComponent} from './components/my-profile/my-profile.component';
@@ -37,9 +34,6 @@ import {ActivationComponent} from './components/activation/activation.component'
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {FormListGeneratorComponent} from './components/applications/app-store/form-list-generator/form-list-generator.component';
 import {FormModalComponent} from './shared/modals/form-modal/form-modal.component';
-import {APOLLO_OPTIONS} from 'apollo-angular';
-import {HttpLink} from 'apollo-angular/http';
-import {ApolloClientOptions, DefaultOptions, InMemoryCache} from '@apollo/client/core';
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {AppService} from './core/api/app.service';
 import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
@@ -53,44 +47,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
 import {SubmissionsTableComponent} from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
-import {AuthService} from './core/services/auth-service/auth.service';
-import {setContext} from '@apollo/client/link/context';
 import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
 import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
-
-export function createApollo(httpLink: HttpLink, authService: AuthService): ApolloClientOptions<any> {
-
-  const httpLinkUri = httpLink.create({uri: environment.graphqlUrl, withCredentials: true});
-
-  const defaultOptions: DefaultOptions = {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  };
-
-  const authLink = setContext((_, { headers }) => {
-    // get the authentication token from local storage if it exists
-    const token = authService.accessToken;
-    // return the headers to the context so httpLink can read them
-    return {
-      headers: {
-        ...headers,
-        authorization: token ? `Bearer ${token}` : "",
-      }
-    }
-  });
-
-  return {
-    link: authLink.concat(httpLinkUri),
-    cache: new InMemoryCache(),
-    defaultOptions
-  };
-}
 
 @NgModule({
   declarations: [
@@ -135,7 +93,6 @@ export function createApollo(httpLink: HttpLink, authService: AuthService): Apol
     AppRoutingModule,
     HttpClientModule,
     CustomComponentsModule,
-    FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgSelectModule,
     OcCommonServiceModule.forRoot(environment),
     ReactiveFormsModule,
@@ -151,11 +108,6 @@ export function createApollo(httpLink: HttpLink, authService: AuthService): Apol
    { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true },
    { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfExtractor, multi: true },
    { provide: NgbDateAdapter, useClass: CustomAdapter },
-   {
-     provide: APOLLO_OPTIONS,
-     useFactory: createApollo,
-     deps: [HttpLink, AuthService],
-   },
     {provide: AppsServiceImpl, useClass: MockAppsService},
    DatePipe,
    AppService],

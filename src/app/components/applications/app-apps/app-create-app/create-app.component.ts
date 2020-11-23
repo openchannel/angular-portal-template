@@ -2,7 +2,6 @@ import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core'
 import {Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {GraphqlService} from '../../../../graphql-client/graphql-service/graphql.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AppsService, AppTypeModel, AppTypeService, AppVersionService, FullAppData} from 'oc-ng-common-service';
 import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
@@ -47,7 +46,6 @@ export class CreateAppComponent implements OnInit, OnDestroy {
 
   constructor(private appsService: AppsService,
               private fb: FormBuilder,
-              private graphqlService: GraphqlService,
               private appVersionService: AppVersionService,
               private appTypeService: AppTypeService,
               private router: Router,

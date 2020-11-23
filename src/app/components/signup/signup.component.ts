@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SellerSignup} from 'oc-ng-common-service';
-import {Router} from '@angular/router';
+import {SellerSignup, UsersService} from 'oc-ng-common-service';
 
 
 @Component({
@@ -11,36 +10,31 @@ import {Router} from '@angular/router';
 export class SignupComponent implements OnInit {
 
   loginUrl = '/login';
-  activationUrl = '/activate';
   companyLogoUrl = './assets/img/logo-company.png';
   termsAndConditionPageUrl = 'https://my.openchannel.io/terms-of-service';
   dataProcessingPolicyUrl = 'https://my.openchannel.io/data-processing-policy';
   forgotPasswordDoneIconPath = './assets/img/forgot-password-complete-icon.svg';
-  showSignupFeedbackPage: boolean = false;
+  showSignupFeedbackPage = false;
   inProcess = false;
   signupUrl = '/signup';
   signupModel: SellerSignup;
-  requestObj: any = {
-    'developer': {
-      'name': ''
-    },
-    'developerAccount': {
-      'name': '',
-      'email': ''
-    },
-    'extra': {
-      'password': ''
-    }
-  };
 
-  constructor( private router: Router) {
-    this.signupModel = new SellerSignup();
+  constructor(private usersService: UsersService) {
+     this.signupModel = new SellerSignup();
   }
 
   ngOnInit(): void {
-
   }
 
   signup(event) {
+    if (event === true) {
+      this.inProcess = true;
+      this.usersService.signup(this.signupModel).subscribe(res => {
+        this.inProcess = false;
+        this.showSignupFeedbackPage = true;
+      }, res => {
+        this.inProcess = false;
+      });
+    }
   }
 }
