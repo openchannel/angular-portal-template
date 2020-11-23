@@ -26,6 +26,11 @@ export class ConfirmationModalComponent  {
    * Default value: OK
    */
   @Input() buttonText: string = 'OK';
+  /**
+   * Show or hide cancel button
+   * Default: true
+   */
+  @Input() showCancel: boolean = true;
   constructor(private modalService: NgbActiveModal) { }
 
   closeAction(action: 'success' | 'cancel' | 'draft') {

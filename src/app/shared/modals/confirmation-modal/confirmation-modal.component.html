@@ -21,7 +21,7 @@
       <p class="draft-text" *ngIf="type === 'submission'">
         You Can Keep This App As a Draft
       </p>
-      <oc-button
+      <oc-button *ngIf="showCancel"
               type="secondary"
               [text]="type === 'submission' ? 'Save as draft' : 'CANCEL'"
               (click)="closeAction(type === 'submission' ? 'draft' : 'cancel')">
