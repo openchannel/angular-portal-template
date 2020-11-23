@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class LoaderService implements OnDestroy  {
 
- public inProcess: BehaviorSubject<boolean>;
+  public inProcess: BehaviorSubject<boolean>;
 
   pendingLoaderRequests = 0;
   isLeftMenuAvailable: boolean;
@@ -28,7 +28,6 @@ export class LoaderService implements OnDestroy  {
       requestId = requestId.substring(0, requestId.indexOf('?'));
     }
     this.loaderRequestIds.push(requestId);
-    // this.pendingLoaderRequests++;
     this.inProcess.next(true);
   }
   /**
@@ -41,7 +40,6 @@ export class LoaderService implements OnDestroy  {
     const index = this.loaderRequestIds.indexOf(requestId);
     if ( index !== -1) {
       this.loaderRequestIds.splice(index, 1);
-      // this.pendingLoaderRequests--;
       if (this.loaderRequestIds.length === 0) {
         this.inProcess.next(false);
       }
