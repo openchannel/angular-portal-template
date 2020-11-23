@@ -194,78 +194,45 @@ export class AppDeveloperComponent implements OnInit {
         this.router.navigate(['/edit-app', menuEvent.appId, 'version', menuEvent.appVersion]).then();
         break;
       case 'DELETE':
+        const modalDelRef = this.modal.open(ConfirmationModalComponent);
+
+        modalDelRef.componentInstance.type = 'delete';
+        modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
+        modalDelRef.componentInstance.modalTitle = 'Delete app';
+        modalDelRef.componentInstance.buttonText = 'Yes, delete it';
+
+        modalDelRef.result.then(res => {
+          if (res && res === 'success') {}
+        });
         break;
       case 'PUBLISH':
         const modalRef = this.modal.open(ConfirmationModalComponent);
 
         modalRef.componentInstance.type = 'simple';
         modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
-        modalRef.componentInstance.buttonText = 'Submit';
+        modalRef.componentInstance.modalTitle = 'Submit app';
+        modalRef.componentInstance.buttonText = 'Yes, submit it';
+
         modalRef.result.then(res => {
+          if (res && res === 'success') {}
         });
         break;
       case 'PREVIEW':
         break;
       case 'SUSPEND':
+        const modalSuspendRef = this.modal.open(ConfirmationModalComponent);
+
+        modalSuspendRef.componentInstance.type = 'suspend';
+        modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
+        modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
+        modalSuspendRef.componentInstance.buttonText = 'Yes, suspend it';
+
+        modalSuspendRef.result.then(res => {
+          if (res && res === 'success') {}
+        });
         break;
     }
   }
-
-  // menuchange(event) {
-  //
-  //   this.menuItems = event;
-  //   if (this.menuItems.menu === 'delete') {
-  //     const deleteMessage = this.menuItems?.hasChild ? 'Are you sure you want to delete <br> this app and all it\'s versions?' :
-  //         'Are you sure you want to delete <br> this app version?';
-  //     this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
-  //         'Cancel', 'Delete', deleteMessage, '',
-  //         'This action is terminal and cannot be reverted', () => {
-  //           this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(() => {
-  //           }, () => {
-  //             this.modalService.modalService.dismissAll();
-  //           });
-  //
-  //         });
-  //   } else if (this.menuItems.menu === 'suspend') {
-  //
-  //     const suspend = [{
-  //       appId: this.menuItems.appId,
-  //       version: this.menuItems.version
-  //     }];
-  //     this.appService.suspendApp(suspend).subscribe(res => {
-  //     }, (err) => {
-  //     });
-  //     // });
-  //   } else if (this.menuItems.menu === 'submit') {
-  //     this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
-  //         'Cancel', 'Submit', 'Are you sure you want to <br> submit this app?', '',
-  //         'This action is terminal and cannot be reverted', (res) => {
-  //
-  //           const submit = {
-  //             appId: this.menuItems.appId,
-  //             version: this.menuItems.version
-  //           };
-  //           this.appService.submitApp(submit).subscribe(res => {
-  //           }, (err) => {
-  //             this.modalService.modalService.dismissAll();
-  //           });
-  //         });
-  //   } else if (this.menuItems.menu === 'edit') {
-  //     this.router.navigateByUrl('edit-app/' + this.menuItems.appId + '/version/' + this.menuItems.version).then();
-  //   } else if (this.menuItems.menu === 'unsuspend') {
-  //
-  //     const unsuspend = [{
-  //       appId: this.menuItems.appId,
-  //       version: this.menuItems.version
-  //     }];
-  //     this.appService.unsuspendApp(unsuspend).subscribe(res => {
-  //       this.getApps(1, () => {
-  //         this.notificationService.showSuccess('Application unsuspended successfully');
-  //       });
-  //     }, (err) => {
-  //     });
-  //   }
-  // }
 
   getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
     const dateStart = new Date(dateEnd);

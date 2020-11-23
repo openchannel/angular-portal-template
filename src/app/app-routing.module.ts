@@ -7,7 +7,6 @@ import {AppDeveloperComponent} from './components/applications/app-developer/app
 import {AppAppsComponent} from './components/applications/app-apps/app-apps.component';
 import {AppNewComponent} from './components/applications/app-new/app-new.component';
 import {MyProfileComponent} from './components/my-profile/my-profile.component';
-import {EditAppComponent} from './components/applications/edit-app/edit-app.component';
 import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './_guards/auth.guard';
 import { AppListComponent } from './components/applications/app-apps/app-list/app-list.component';
@@ -28,7 +27,7 @@ const routes: Routes = [
         ]},
       {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
-      // {path: 'edit-app/:appId/version/:versionId', component: EditAppComponent, canActivate: [AuthGuard]},
+      {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
   {path: '**', redirectTo: '/not-found'}
