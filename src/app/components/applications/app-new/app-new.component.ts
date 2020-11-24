@@ -8,7 +8,7 @@ import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
-import {ToastService} from 'oc-ng-common-component';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-app-new',
@@ -24,7 +24,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private appVersionService: AppVersionService,
               private appTypeService: AppTypeService,
               private activeRoute: ActivatedRoute,
-              private toastService: ToastService,
+              private toastService: ToastrService,
               private modal: NgbModal) {
   }
 
@@ -121,7 +121,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.publishApp(appResponse.appId, appResponse.version, true);
           } else {
             this.router.navigate(['/app-developer']).then(() => {
-              this.toastService.show(`App has been saved as ${this.statusForUser(appResponse)}`, {delay: 5000, type: 'success'});
+              this.toastService.success('Your app has been created and saved as draft');
             });
           }
         } else {
@@ -143,7 +143,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               } else {
                 this.lockSubmitButton = false;
                 this.router.navigate(['/app-developer']).then(() => {
-                  this.toastService.show(`App has been saved as ${this.statusForUser(appResponse)}`, {delay: 5000, type: 'success'});
+                  this.toastService.success('New app version created and saved as draft');
                 });
               }
             } else {
@@ -161,12 +161,20 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   publishApp(appId: string, appVersion: number, autoApprove: boolean) {
+    let toasterMessage: string;
+
+    if (this.pageType === 'new-app') {
+      toasterMessage = 'Your app has been submitted for approval';
+    } else {
+      toasterMessage = 'New app version has been submitted for approval';
+    }
+
     this.subscriptions.add(this.appsService.publishAppByVersion(appId, {
       version: appVersion,
       autoApprove
-    }).subscribe((emptyResponse) => {
+    }).subscribe(() => {
       this.lockSubmitButton = false;
-      this.router.navigate(['/app-developer']).then();
+      this.router.navigate(['/app-developer']).then(() => this.toastService.success(toasterMessage));
     }, error => {
       this.lockSubmitButton = false;
       console.error('request publishAppByVersion', error);
@@ -209,15 +217,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
               };
             }, error => {
               console.error('request getOneAppType', error);
-              // this.router.navigate(['/app-developer']).then();
+              this.router.navigate(['/app-developer']).then();
             }));
           } else {
             console.error('request getAppByVersion : empty response');
-            // this.router.navigate(['/app-developer']).then();
+            this.router.navigate(['/app-developer']).then();
           }
         }, error => {
           console.error('request getAppByVersion', error);
-          // this.router.navigate(['/app-developer']).then();
+          this.router.navigate(['/app-developer']).then();
         }
     ));
   }
@@ -305,24 +313,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
       }
     }
     return field;
-  }
-
-  private statusForUser(appData: FullAppData): string  {
-    const status = appData?.status?.value;
-    if (status) {
-      switch (status) {
-        case 'approved':
-        case 'pending':
-        case 'suspended':
-        case 'rejected':
-          return status;
-        case 'inReview':
-          return 'in review';
-        case 'inDevelopment':
-          return 'draft';
-      }
-    }
-    return '';
   }
 
   private mapAppTypeToFields(appTypeModel: AppTypeModel): AppTypeFieldModel [] {
