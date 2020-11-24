@@ -96,10 +96,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
   openConfirmationModal(): void {
     const modalRef = this.modal.open(ConfirmationModalComponent);
 
-    modalRef.componentInstance.modalText = 'Submit This App \n' +
-        'To The Marketplace Now?';
+    modalRef.componentInstance.modalTitle = 'Submit app';
+    modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
     modalRef.componentInstance.type = 'submission';
-    modalRef.componentInstance.buttonText = 'Submit';
+    modalRef.componentInstance.buttonText = 'Yes, submit it';
+    modalRef.componentInstance.cancelButtonText = 'Save as draft';
 
     modalRef.result.then(res => {
       if (res && res === 'success') {
