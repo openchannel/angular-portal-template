@@ -12,12 +12,13 @@ Parameters:
     Type: String
   ProjectName:
     Type: String
-  TypeProj:
+  PrefixName:
     Type: String
-    Default: ""
+  AppName:
+    Type: String
 
 Conditions:
-  hasTypeProj: !Not [!Equals [!Ref TypeProj, ""]]
+  OutUs1: !Not [!Equals [!Ref "AWS::Region", "us-east-1"]]  
 
 Resources:
   EncryptedS3Bucket:
@@ -38,6 +39,12 @@ Resources:
         IndexDocument: 'index.html'
       VersioningConfiguration:
         Status: 'Enabled'
+      LoggingConfiguration:
+        !If
+          - OutUs1
+          - DestinationBucketName: !Sub "${PrefixName}-access"
+            LogFilePrefix: !Sub "/${AppName}"
+          - !Ref "AWS::NoValue"
 #==========================================================================================
   cloudfrontoriginaccessidentity:
     DependsOn: EncryptedS3Bucket
@@ -67,7 +74,7 @@ Resources:
         Origins:
           -
             DomainName: !Sub "${CNAME}.s3.amazonaws.com"
-            Id: !Sub "${ProjectName}-bucket-dashboardui"
+            Id: !Sub "${ProjectName}-bucket"
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${cloudfrontoriginaccessidentity}"
         Enabled: 'true'
@@ -76,7 +83,7 @@ Resources:
           MaxTTL: 31536000
           MinTTL: 0
           Compress: false
-          TargetOriginId: !Sub "${ProjectName}-bucket-dashboardui"
+          TargetOriginId: !Sub "${ProjectName}-bucket"
           SmoothStreaming: 'false'
           ForwardedValues:
             QueryString: 'false'
@@ -94,7 +101,7 @@ Resources:
           AcmCertificateArn: !Ref CertificateArn
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.1_2016
-  DNS:
+  SiteDNS:
     DependsOn: CfnDistribution
     Type: AWS::Route53::RecordSetGroup
     Properties:
@@ -105,30 +112,21 @@ Resources:
           TTL: 60
           ResourceRecords:
             - !Sub ${CfnDistribution.DomainName}
-  DashboardUiDNS:
+  DNS:
     Type: 'AWS::SSM::Parameter'
     Properties:
-      Name: !If
-            - hasTypeProj
-            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/BASE_DOMAIN_TEMPLATE3_FRONTEND_${TypeProj}'
-            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/BASE_DOMAIN_TEMPLATE3_FRONTEND'
+      Name: !Sub '/ECS-CLUSTER/${ClusterName}/${AppName}/BASE_DOMAIN'
       Value: !Ref CNAME
       Type: String
-  DashboardDistributionId:
+  DistributionId:
     Type: 'AWS::SSM::Parameter'
     Properties:
-      Name: !If
-            - hasTypeProj
-            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/DISTRIBUTION_ID_TEMPLATE3_FRONTEND_${TypeProj}'
-            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/DISTRIBUTION_ID_TEMPLATE3_FRONTEND'
+      Name: !Sub '/ECS-CLUSTER/${ClusterName}/${AppName}/DISTRIBUTION_ID'
       Value: !Ref CfnDistribution
       Type: String
   S3Name:
     Type: 'AWS::SSM::Parameter'
     Properties:
-      Name: !If
-            - hasTypeProj
-            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/AWS_S3_TEMPLATE3_FRONTEND_${TypeProj}'
-            - !Sub '/ECS-CLUSTER/${ClusterName}/template3-portal-frontend/AWS_S3_TEMPLATE3_FRONTEND'
+      Name: !Sub '/ECS-CLUSTER/${ClusterName}/${AppName}/AWS_S3'
       Value: !Ref EncryptedS3Bucket
       Type: String
