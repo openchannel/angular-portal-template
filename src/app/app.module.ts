@@ -50,6 +50,8 @@ import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-dat
 import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
 import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
 import {CompanyComponent} from './components/my-profile/company/company.component';
+import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
+import {ToastrModule} from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -83,6 +85,7 @@ import {CompanyComponent} from './components/my-profile/company/company.componen
     CreateAppComponent,
     ConfirmationModalComponent,
     CamelCaseToNormalPipe,
+    ResendActivationComponent,
     CompanyComponent,
   ],
   schemas: [
@@ -103,16 +106,17 @@ import {CompanyComponent} from './components/my-profile/company/company.componen
     BrowserAnimationsModule,
     DragDropModule,
     OAuthModule.forRoot(),
-    HttpClientXsrfModule.withOptions({ cookieName: 'XSRF-TOKEN' })
+    ToastrModule.forRoot(),
+    HttpClientXsrfModule.withOptions({cookieName: 'XSRF-TOKEN'})
   ],
   providers: [
-   { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-   { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true },
-   { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfExtractor, multi: true },
-   { provide: NgbDateAdapter, useClass: CustomAdapter },
+    {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpXsrfExtractor, multi: true},
+    {provide: NgbDateAdapter, useClass: CustomAdapter},
     {provide: AppsServiceImpl, useClass: MockAppsService},
-   DatePipe,
-   AppService],
+    DatePipe,
+    AppService],
   bootstrap: [AppComponent],
   entryComponents: [
     SubmissionsDataViewModalComponent,
