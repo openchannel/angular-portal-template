@@ -12,6 +12,8 @@ import { AppTypeFieldModel } from 'oc-ng-common-service/lib/model/app-type-model
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CreateAppModel, UpdateAppVersionModel } from 'oc-ng-common-service/lib/model/app-data-model';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationModalComponent } from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-app-new',
@@ -26,7 +28,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private fb: FormBuilder,
               private appVersionService: AppVersionService,
               private appTypeService: AppTypeService,
-              private activeRoute: ActivatedRoute) { }
+              private activeRoute: ActivatedRoute,
+              private modal: NgbModal) { }
 
   appDetails = new SellerAppDetailsModel();
 
@@ -90,6 +93,22 @@ export class AppNewComponent implements OnInit, OnDestroy {
   // getting app data from the form on form changing
   getAppFormData(fields: any): void {
     this.appFormData = fields;
+  }
+
+  openConfirmationModal(): void {
+    const modalRef = this.modal.open(ConfirmationModalComponent);
+
+    modalRef.componentInstance.modalTitle = 'Submit app';
+    modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
+    modalRef.componentInstance.type = 'submission';
+    modalRef.componentInstance.buttonText = 'Yes, submit it';
+    modalRef.componentInstance.cancelButtonText = 'Save as draft';
+
+    modalRef.result.then(res => {
+      if (res && res === 'success') {
+        this.saveApp();
+      }
+    });
   }
   // saving app to the server
   saveApp(): void {
