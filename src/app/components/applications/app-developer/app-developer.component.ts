@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {
-  AppListing, AppListMenuAction, AppVersionService,
+  AppListing, AppListMenuAction, AppsService, AppVersionService,
   ChartLayoutTypeModel,
   ChartService,
   ChartStatisticFiledModel,
@@ -8,7 +8,6 @@ import {
   ChartStatisticPeriodModel,
   CommonService, FullAppData,
   KeyValuePairMapper,
-  SellerAppService,
   SellerAppsWrapper
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
@@ -64,14 +63,7 @@ export class AppDeveloperComponent implements OnInit {
 
   downloadUrl = './assets/img/cloud-download.svg';
   menuUrl = './assets/img/dots-hr-icon.svg';
-  sortIcon = './assets/img/dropdown-icon.svg';
 
-  menuItems = {
-    menu: '',
-    appId: '',
-    version: '',
-    hasChild: false
-  };
   // Config for the App Version List component
   appListConfig: AppListing = {
     layout: 'table',
@@ -88,7 +80,7 @@ export class AppDeveloperComponent implements OnInit {
   private requestsSubscriber: Subscription = new Subscription();
 
   constructor(public chartService: ChartService,
-              public appService: SellerAppService,
+              public appService: AppsService,
               public appsVersionService: AppVersionService,
               public router: Router,
               private modalService: DialogService,
@@ -202,7 +194,30 @@ export class AppDeveloperComponent implements OnInit {
         modalDelRef.componentInstance.buttonText = 'Yes, delete it';
 
         modalDelRef.result.then(res => {
-          if (res && res === 'success') {}
+          if (res && res === 'success') {
+            if (menuEvent.isChild) {
+              this.requestsSubscriber.add(this.appsVersionService
+                .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
+                .subscribe( resp => {
+                  if (resp.code && resp.code !== 200) {
+                    // todo error toaster with resp.message should be here
+                  } else {
+                    this.appListConfig.data.pageNumber = 0;
+                    this.getApps(1);
+                  }
+                }));
+            } else {
+              this.requestsSubscriber.add(this.appService.deleteApp(menuEvent.appId)
+                .subscribe(resp => {
+                  if (resp.code && resp.code !== 200) {
+                    // todo error toaster with resp.message should be here
+                  } else {
+                    this.appListConfig.data.pageNumber = 0;
+                    this.getApps(1);
+                  }
+                }));
+            }
+          }
         });
         break;
       case 'PUBLISH':
@@ -214,22 +229,47 @@ export class AppDeveloperComponent implements OnInit {
         modalRef.componentInstance.buttonText = 'Yes, submit it';
 
         modalRef.result.then(res => {
-          if (res && res === 'success') {}
+          if (res && res === 'success') {
+            this.requestsSubscriber.add(this.appService.publishAppByVersion(menuEvent.appId, {
+              version: menuEvent.appVersion, autoApprove: true})
+              .subscribe((resp) => {
+                if (resp.code && resp.code !== 200) {
+                  // todo error toaster with resp.message should be here
+                } else {
+                  this.appListConfig.data.pageNumber = 0;
+                  this.getApps(1);
+                }
+              }));
+          }
         });
         break;
       case 'PREVIEW':
         break;
       case 'SUSPEND':
-        const modalSuspendRef = this.modal.open(ConfirmationModalComponent);
+        if (this.appListConfig.data.list
+          .find(app => app.appId === menuEvent.appId).status.value === 'approved') {
+          const modalSuspendRef = this.modal.open(ConfirmationModalComponent);
 
-        modalSuspendRef.componentInstance.type = 'suspend';
-        modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
-        modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
-        modalSuspendRef.componentInstance.buttonText = 'Yes, suspend it';
+          modalSuspendRef.componentInstance.type = 'suspend';
+          modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
+          modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
+          modalSuspendRef.componentInstance.buttonText = 'Yes, suspend it';
 
-        modalSuspendRef.result.then(res => {
-          if (res && res === 'success') {}
-        });
+          modalSuspendRef.result.then(res => {
+            if (res && res === 'success') {
+              this.requestsSubscriber.add(
+                this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
+                .subscribe(resp => {
+                  if (resp.code && resp.code !== 200) {
+                    // todo error toaster with resp.message should be here
+                  } else {
+                    this.appListConfig.data.pageNumber = 0;
+                    this.getApps(1);
+                  }
+                }));
+            }
+          });
+        }
         break;
     }
   }
