@@ -7,13 +7,13 @@ import {
     LoginResponse,
     SellerSignin, UsersService,
 } from 'oc-ng-common-service';
-import {ToastService} from 'oc-ng-common-component';
 import {Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-login',
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 private oauthService: OAuthService,
                 private openIdAuthService: AuthenticationService,
                 private usersService: UsersService,
-                private toastService: ToastService) {
+                private toastService: ToastrService) {
     }
 
     ngOnInit(): void {
@@ -111,7 +111,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.usersService.resendActivationMail(email)
           .pipe(takeUntil(this.destroy$))
           .subscribe(value => {
-              this.toastService.show('Activation email was sent to your inbox!', { type: 'success', delay: 5000 });
+              this.toastService.success('Activation email was sent to your inbox!');
           });
     }
 }
