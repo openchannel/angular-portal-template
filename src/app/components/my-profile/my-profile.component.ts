@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SellerMyProfile} from 'oc-ng-common-service';
+import {DeveloperAccountService, SellerMyProfile} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-my-profile',
@@ -25,7 +25,7 @@ export class MyProfileComponent implements OnInit {
   selectedPage = this.pages[0];
 
   myProfile = new SellerMyProfile();
-  isProcessing = true;
+  isProcessing = false;
 
   constructor() {
   }

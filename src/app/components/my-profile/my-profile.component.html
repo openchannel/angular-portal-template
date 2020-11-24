@@ -1,22 +1,22 @@
-<div class="bg-container bg-s p-2">
+<div class="bg-container height-unset py-2">
     <div class="container">
         <img src="assets/img/arrow-left.svg" alt="arrow-icon">
-        <a (click)="goBack()" class="font-m font-med pl-1 cursor-pointer" style="color: #537cfd ;">Back</a>
-        <h1 class="mt-3">{{selectedPage?.pageTitle}}</h1>
+        <a (click)="goBack()" class="font-m font-med pl-1 cursor-pointer link">Back</a>
+        <h3 class="page-title">{{selectedPage?.pageTitle}</h3>
     </div>
 </div>
 
-<div class="container container-m">
-    <div class="d-flex flex-row">
-        <div class="col-md-3 pt-5 pl-0">
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-md-3">
             <ul class="list-unstyled">
-                <li *ngFor="let page of pages">
-                    <a (click)="gotoPage(page)"
+                <li *ngFor="let page of pages" class="py-1">
+                    <a (click)="gotoPage(page)" class="font-m"
                        [ngClass]="{'active-link' : page.pageId === selectedPage.pageId}">{{page.placeholder}}</a>
                 </li>
             </ul>
         </div>
-        <div [ngSwitch]="selectedPage.pageId" class="col-md-9 mb-8 pt-5 pl-1 pr-0">
+        <div [ngSwitch]="selectedPage.pageId" class="col-md-4 pt-1">
             <app-company *ngSwitchCase="pages[0].pageId"></app-company>
 
             <app-general-profile *ngSwitchCase="pages[1].pageId"
