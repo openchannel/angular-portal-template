@@ -5,7 +5,7 @@ import {
     AwsAuthService,
     LoginRequest,
     LoginResponse,
-    SellerSignin,
+    SellerSignin, UsersService,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
@@ -13,6 +13,7 @@ import {filter, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-login',
@@ -37,7 +38,9 @@ export class LoginComponent implements OnInit, OnDestroy {
                 private awsAuthService: AwsAuthService,
                 private authHolderService: AuthHolderService,
                 private oauthService: OAuthService,
-                private openIdAuthService: AuthenticationService) {
+                private openIdAuthService: AuthenticationService,
+                private usersService: UsersService,
+                private toastService: ToastrService) {
     }
 
     ngOnInit(): void {
@@ -102,5 +105,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     private processLoginResponse(response: LoginResponse) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
         this.router.navigate(['app-developer']);
+    }
+
+    sendActivationEmail(email: string) {
+        this.usersService.resendActivationMail(email)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(value => {
+              this.toastService.success('Activation email was sent to your inbox!');
+          });
     }
 }
