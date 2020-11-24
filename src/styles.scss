@@ -160,6 +160,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-size: 1rem;
 }
 
+/** Toast styles */
+.toast-message {
+  font-size: 12px;
+}
+
+.toast-container div.ngx-toastr {
+  padding: 16px 24px 16px 48px;
+  background-position: 24px center;
+  background-size: 12px;
+}
+
 .background-delete {
   background-color: $rejected !important;
   border-color: $rejected !important;
