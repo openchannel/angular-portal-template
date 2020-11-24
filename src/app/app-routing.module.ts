@@ -7,15 +7,14 @@ import {AppDeveloperComponent} from './components/applications/app-developer/app
 import {AppAppsComponent} from './components/applications/app-apps/app-apps.component';
 import {AppNewComponent} from './components/applications/app-new/app-new.component';
 import {MyProfileComponent} from './components/my-profile/my-profile.component';
-import {EditAppComponent} from './components/applications/edit-app/edit-app.component';
 import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './_guards/auth.guard';
-import { CreateAppComponent } from './components/applications/app-apps/app-create-app/create-app.component';
-import { AppListComponent } from './components/applications/app-apps/app-list/app-list.component';
+import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
 import {ActivationComponent} from './components/activation/activation.component';
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {SignupComponent} from './components/signup/signup.component';
 import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
+import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -23,6 +22,7 @@ const routes: Routes = [
   {path: 'activate', component: ActivationComponent},
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'forgot-password', component: ForgotPasswordComponent},
+  {path: 'resend-activation', component: ResendActivationComponent},
   { path: '', component: LoginComponent },
   {
     path: '',
@@ -44,7 +44,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {useHash: true})],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule {

@@ -18,21 +18,19 @@ export class LogOutService {
     this.authenticationService.getLogOutConfig()
         .pipe(first())
         .subscribe(config => {
-          if (config && config.endSessionEndpoint && this.oAuthService.getIdToken()) {
+          if (config && config.end_session_endpoint) {
             this.oAuthService.configure({
-              logoutUrl: config.endSessionEndpoint,
+              logoutUrl: config.end_session_endpoint,
               postLogoutRedirectUri: window.location.origin,
             });
-            this.authService.clearTokensInStorage();
-            this.oAuthService.logOut();
-          } else {
-              this.internalLogout();
           }
+          this.internalLogout();
         }, error => this.internalLogout());
   }
 
   private internalLogout(): void {
       this.authService.clearTokensInStorage();
+      this.oAuthService.logOut();
       this.router.navigateByUrl('/login');
   }
 }
