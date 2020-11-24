@@ -49,6 +49,7 @@ import {SubmissionsTableComponent} from './components/applications/app-store/for
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
 import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
+import {ToastrModule} from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -101,6 +102,7 @@ import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
     BrowserAnimationsModule,
     DragDropModule,
     OAuthModule.forRoot(),
+    ToastrModule.forRoot(),
     HttpClientXsrfModule.withOptions({ cookieName: 'XSRF-TOKEN' })
   ],
   providers: [
