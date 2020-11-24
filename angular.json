@@ -30,15 +30,16 @@
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.scss",
+              "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": []
           },
           "configurations": {
-            "us1-test": {
+            "dev1": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.us1-test.ts"
+                  "with": "src/environments/environment.dev1.ts"
                 }
               ],
               "optimization": true,
@@ -62,11 +63,11 @@
                 }
               ]
             },
-            "us1-live": {
+            "stage1": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.us1-live.ts"
+                  "with": "src/environments/environment.stage1.ts"
                 }
               ],
               "optimization": true,

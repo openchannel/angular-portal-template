@@ -7,13 +7,13 @@ import {
     LoginResponse,
     SellerSignin, UsersService,
 } from 'oc-ng-common-service';
-import {ToastService} from 'oc-ng-common-component';
 import {Router} from '@angular/router';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
     selector: 'app-login',
@@ -33,23 +33,26 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private destroy$: Subject<void> = new Subject();
 
-    constructor(private router: Router,
-                private loaderService: LoaderService,
+    constructor(public loaderService: LoaderService,
+                private router: Router,
                 private awsAuthService: AwsAuthService,
                 private authHolderService: AuthHolderService,
                 private oauthService: OAuthService,
                 private openIdAuthService: AuthenticationService,
                 private usersService: UsersService,
-                private toastService: ToastService) {
+                private toastService: ToastrService) {
     }
 
     ngOnInit(): void {
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['/app-store']);
+            this.router.navigate(['app-developer']);
         }
 
-        this.isLoading = true;
-        this.oauthService.hasValidAccessToken();
+        if (this.oauthService.hasValidIdToken()) {
+            this.oauthService.logOut();
+        }
+
+        this.loaderService.showLoader('getAuthConfig');
 
         this.openIdAuthService.getAuthConfig()
           .pipe(
@@ -64,17 +67,21 @@ export class LoginComponent implements OnInit, OnDestroy {
                 });
 
                 this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-                this.oauthService.loadDiscoveryDocumentAndTryLogin({
+                this.oauthService.loadDiscoveryDocumentAndLogin({
                     onTokenReceived: receivedTokens => {
+                        this.loaderService.showLoader('internalLogin');
                         this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
                           .pipe(takeUntil(this.destroy$))
                           .subscribe((response: LoginResponse) => {
                               this.processLoginResponse(response);
+                              this.loaderService.closeLoader('internalLogin');
                           });
                     },
+                }).then(() => {
+                    this.loaderService.closeLoader('getAuthConfig');
                 });
             }, err => console.error('getAuthConfig', err),
-            () => this.isLoading = false);
+            () => this.loaderService.closeLoader('getAuthConfig'));
     }
 
     ngOnDestroy(): void {
@@ -84,29 +91,27 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     login(event) {
         if (event === true) {
-            if (this.loginType) {
-                this.oauthService.initLoginFlow();
-            } else {
-                this.awsAuthService.signIn(this.signIn)
-                  .pipe(takeUntil(this.destroy$))
-                  .subscribe((response: LoginResponse) => {
-                      this.processLoginResponse(response);
-                  });
-            }
-
+            this.inProcess = true;
+            this.awsAuthService.signIn(this.signIn)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((response: LoginResponse) => {
+                    this.processLoginResponse(response);
+                    this.inProcess = false;
+                },
+                () => this.inProcess = false);
         }
     }
 
     private processLoginResponse(response: LoginResponse) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigate(['/app-store']);
+        this.router.navigate(['app-developer']);
     }
 
     sendActivationEmail(email: string) {
         this.usersService.resendActivationMail(email)
           .pipe(takeUntil(this.destroy$))
           .subscribe(value => {
-              this.toastService.show('Activation email was sent to your inbox!', { type: 'success', delay: 5000 });
+              this.toastService.success('Activation email was sent to your inbox!');
           });
     }
 }
