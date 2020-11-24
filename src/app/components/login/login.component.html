@@ -1,4 +1,4 @@
-<div class="bg-container pt-5" [hidden]="isLoading">
+<div class="bg-container pt-5" *ngIf="!(loaderService.inProcess | async) && !loginType">
     <oc-login [loginModel]="signIn"
               [forgotPwdUrl]="forgotPwdUrl"
               [signupUrl]="signupUrl"
