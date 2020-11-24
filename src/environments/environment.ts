@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8091/',
+  apiUrl: 'https://4455de02704f.ngrok.io/',
+  // apiUrl: 'http://localhost:8091/',
   client_id: '43m9qbjigr8ed6i1het1rdnfso',
   client_secret: 'on5jmqp7uq00vgeg9tnq4pii2f1f3pm84q45uq907e8vhmr24ta',
   openchannelUrl: 'https://market.openchannel.io',
