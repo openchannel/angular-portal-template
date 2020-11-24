@@ -16,6 +16,7 @@ import {NotificationService} from 'src/app/shared/custom-components/notification
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationModalComponent } from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-app-developer',
@@ -86,7 +87,8 @@ export class AppDeveloperComponent implements OnInit {
               private modalService: DialogService,
               private notificationService: NotificationService,
               private commonService: CommonService,
-              private modal: NgbModal) {
+              private modal: NgbModal,
+              private toaster: ToastrService) {
 
   }
 
@@ -200,9 +202,11 @@ export class AppDeveloperComponent implements OnInit {
                 .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
                 .subscribe( resp => {
                   if (resp.code && resp.code !== 200) {
-                    // todo error toaster with resp.message should be here
+                    this.toaster.error(resp.message);
                   } else {
                     this.appListConfig.data.pageNumber = 0;
+                    console.log('deleted');
+                    this.toaster.success('Your app has been deleted');
                     this.getApps(1);
                   }
                 }));
@@ -210,9 +214,10 @@ export class AppDeveloperComponent implements OnInit {
               this.requestsSubscriber.add(this.appService.deleteApp(menuEvent.appId)
                 .subscribe(resp => {
                   if (resp.code && resp.code !== 200) {
-                    // todo error toaster with resp.message should be here
+                    this.toaster.error(resp.message);
                   } else {
                     this.appListConfig.data.pageNumber = 0;
+                    this.toaster.success('Your app has been deleted');
                     this.getApps(1);
                   }
                 }));
@@ -234,9 +239,10 @@ export class AppDeveloperComponent implements OnInit {
               version: menuEvent.appVersion, autoApprove: true})
               .subscribe((resp) => {
                 if (resp.code && resp.code !== 200) {
-                  // todo error toaster with resp.message should be here
+                  this.toaster.error(resp.message);
                 } else {
                   this.appListConfig.data.pageNumber = 0;
+                  this.toaster.success('Your app has been submitted for approval');
                   this.getApps(1);
                 }
               }));
@@ -261,9 +267,10 @@ export class AppDeveloperComponent implements OnInit {
                 this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
                 .subscribe(resp => {
                   if (resp.code && resp.code !== 200) {
-                    // todo error toaster with resp.message should be here
+                    this.toaster.error(resp.message);
                   } else {
                     this.appListConfig.data.pageNumber = 0;
+                    this.toaster.success('Your app has been suspended');
                     this.getApps(1);
                   }
                 }));

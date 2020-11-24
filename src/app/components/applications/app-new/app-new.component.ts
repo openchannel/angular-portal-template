@@ -10,7 +10,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppTypeFieldModel } from 'oc-ng-common-service/lib/model/app-type-model';
 import { Subscription } from 'rxjs';
-import { GraphqlService } from '../../../graphql-client/graphql-service/graphql.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CreateAppModel, UpdateAppVersionModel } from 'oc-ng-common-service/lib/model/app-data-model';
 
@@ -25,7 +24,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
   constructor(private router: Router,
               private appsService: AppsService,
               private fb: FormBuilder,
-              private graphqlService: GraphqlService,
               private appVersionService: AppVersionService,
               private appTypeService: AppTypeService,
               private activeRoute: ActivatedRoute) { }
