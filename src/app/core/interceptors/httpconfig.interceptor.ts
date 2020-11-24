@@ -1,70 +1,99 @@
 import {Injectable} from '@angular/core';
-import {HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpResponse,
+} from '@angular/common/http';
 
-import {Observable, of, throwError} from 'rxjs';
-import {AuthService} from '../services/auth-service/auth.service';
-import {GraphqlService} from '../../graphql-client/graphql-service/graphql.service';
-import {LogOutService} from '../services/logout-service/log-out.service';
-import {catchError, concatMap, take} from 'rxjs/operators';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
+import {LoaderService} from 'src/app/shared/services/loader.service';
+import {Router} from '@angular/router';
+import {OcErrorService} from 'oc-ng-common-component';
+import {catchError, filter, map, switchMap, take} from 'rxjs/operators';
+import {AuthHolderService, AuthenticationService, LoginResponse} from 'oc-ng-common-service';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
 
-  constructor(private authService: AuthService, private graph: GraphqlService, private logOutService: LogOutService) {}
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // todo remove this.
-    if (this.authService.testGetAuthJwtToken()) {
-      return next.handle(req.clone({
-        setHeaders: {Authorization: `Bearer ${this.authService.testGetAuthJwtToken()}`}
-      }));
+  constructor(private notificationService: NotificationService, private loaderService: LoaderService,
+              private router: Router, private errorService: OcErrorService, private authHolderService: AuthHolderService,
+              private authenticationService: AuthenticationService) {
+  }
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    if (this.authHolderService.accessToken) {
+      request = this.addToken(request, this.authHolderService.accessToken);
     }
-    return next.handle(req);
-    // ----
 
-    // get current access token value
-    return next.handle(req).pipe(
-        concatMap(event => {
-          let needToAuthenticate = false;
-          if (
-              event.type === HttpEventType.Response &&
-              event.status === 200 &&
-              event.body &&
-              Array.isArray(event.body.errors)
-          ) {
-            const errors = event.body.errors as any[];
-            needToAuthenticate = !!errors.find(e => e.exception && e.exception.message === 'Access token is expired');
-          }
+    return next.handle(request).pipe(
+      map((event: HttpEvent<any>) => {
+        if (event instanceof HttpResponse) {
+          this.loaderService.closeLoader(event.url);
+        }
+        return event;
+      }),
+      catchError((response: HttpErrorResponse) => {
+        this.loaderService.closeLoader(response.url);
 
-          if (needToAuthenticate) {
-            // update access token by logging in to your auth server using a refresh token
-            if (this.authService.refreshToken) {
-              return this.graph.refreshToken(this.authService.refreshToken).pipe(
-                  take(1),
-                  catchError(err => {
-                      this.logOutService.logOut();
-                      return throwError(err);
-                  }),
-                  concatMap(({data: {refreshToken: {accessToken: newAccessToken}}}) => {
-                    if (newAccessToken) {
-                      this.authService.updateAccessToken(newAccessToken);
-                      return next.handle(req.clone({
-                        setHeaders: {Authorization: `Bearer ${newAccessToken}`}
-                      }));
-                    } else {
-                      this.logOutService.logOut();
-                      // if logging in with refresh token failed to update access token, then can't help it...
-                      // --- apollo-link does not understand return throwError('message') so just throw new error
-                      throw new Error('Error getting access token after logging in with refresh token');
-                    }
-                  })
-              );
-            }
-            this.logOutService.logOut();
-            throw new Error('Error getting access token after logging in with refresh token');
-          }
-          return of(event);
+        if (response instanceof HttpErrorResponse && response.status === 401) {
+          return this.handle401Error(request, next);
+        } else if (response.error && response.error['validation-errors']) {
+          this.handleValidationError(response.error['validation-errors']);
+        } else if (response.error && response.error.code === 'VALIDATION') {
+          this.handleValidationError(response.error.errors);
+        }
+        return throwError(response);
+      }));
+  }
+
+  private addToken(request: HttpRequest<any>, token: string) {
+    return request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  private handleValidationError(validationErrorList: any[]) {
+    if (validationErrorList[0].field) {
+      this.errorService.setServerErrorList(validationErrorList);
+    } else {
+      this.notificationService.showError(validationErrorList);
+    }
+  }
+
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+    if (!this.isRefreshing) {
+      this.isRefreshing = true;
+      this.refreshTokenSubject.next(null);
+
+      return this.authenticationService.refreshToken({refreshToken: this.authHolderService.refreshToken}).pipe(
+        catchError(response => {
+          this.authHolderService.clearTokensInStorage();
+          this.router.navigate(['/login']);
+          return throwError(response);
         }),
-    );
+        switchMap((response: LoginResponse) => {
+          this.isRefreshing = false;
+          this.authHolderService.persist(response.accessToken, response.refreshToken);
+          this.refreshTokenSubject.next(response.accessToken);
+          return next.handle(this.addToken(request, response.accessToken));
+        }));
+    } else {
+      return this.refreshTokenSubject.pipe(
+        filter(token => token != null),
+        take(1),
+        switchMap(jwt => {
+          return next.handle(this.addToken(request, jwt));
+        }));
+    }
   }
 }

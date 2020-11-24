@@ -1,5 +1,4 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {GraphqlService} from '../../../../../graphql-client/graphql-service/graphql.service';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SubmissionsDataViewModalComponent} from '../../../../../shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
@@ -20,8 +19,7 @@ export class SubmissionsTableComponent implements OnInit, OnChanges, OnDestroy {
 
   private subscriber: Subscription = new Subscription();
 
-  constructor(private graphQLService: GraphqlService,
-              private appFormService: AppFormService,
+  constructor(private appFormService: AppFormService,
               private modalService: NgbModal) {
   }
 
