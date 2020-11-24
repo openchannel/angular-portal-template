@@ -1,5 +1,10 @@
-<div class="bg-container pt-5" [hidden]="isLoading">
-    <oc-login
-            [loginButtonText]="'Log In Through ' + (authConfig?.type || '') "
-            [companyLogoUrl]="companyLogoUrl" (submit)="login()"></oc-login>
+<div class="bg-container pt-5" *ngIf="!(loaderService.inProcess | async) && !loginType">
+    <oc-login [loginModel]="signIn"
+              [forgotPwdUrl]="forgotPwdUrl"
+              [signupUrl]="signupUrl"
+              [companyLogoUrl]="companyLogoUrl"
+              (submit)="login($event)"
+              [loginType]="loginType"
+              (sendActivationLink)="sendActivationEmail($event)"
+              [process]="inProcess"></oc-login>
 </div>

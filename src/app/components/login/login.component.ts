@@ -1,71 +1,117 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+    AuthenticationService,
+    AuthHolderService,
+    AwsAuthService,
+    LoginRequest,
+    LoginResponse,
+    SellerSignin, UsersService,
+} from 'oc-ng-common-service';
 import {Router} from '@angular/router';
+import {LoaderService} from 'src/app/shared/services/loader.service';
+import {filter, takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
-import {AppService} from '../../core/api/app.service';
-import {AuthService} from '../../core/services/auth-service/auth.service';
-import {Subscription} from 'rxjs';
-import {AuthConfig} from '../../core/services/auth-service/model/auth-model';
-import {AuthenticationService} from 'oc-ng-common-service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
-  companyLogoUrl = './assets/img/logo-company.png';
-  signupUrl = '/signup';
-  forgotPwdUrl = '/forgot-password';
-  successLoginFwdUrl = '/app-developer';
-  inProcess = false;
-  isLoading = true;
-  //todo remove
-  tokenInfo: string;
+    companyLogoUrl = './assets/img/logo-company.png';
+    signupUrl = '/signup';
+    forgotPwdUrl = '/forgot-password';
+    signIn = new SellerSignin();
+    inProcess = false;
+    isLoading = false;
 
-  // todo add ts type
-  authConfig: AuthConfig;
+    loginType: string;
 
-  private formSubscription: Subscription = new Subscription();
+    private destroy$: Subject<void> = new Subject();
 
-  constructor(private oauthService: OAuthService, private appService: AppService, private router: Router,
-              private authService: AuthService,
-              private authApiService: AuthenticationService) {
-  }
+    constructor(public loaderService: LoaderService,
+                private router: Router,
+                private awsAuthService: AwsAuthService,
+                private authHolderService: AuthHolderService,
+                private oauthService: OAuthService,
+                private openIdAuthService: AuthenticationService,
+                private usersService: UsersService,
+                private toastService: ToastrService) {
+    }
 
-  ngOnInit(): void {
-    this.isLoading = true;
-    this.oauthService.hasValidAccessToken();
-    this.formSubscription.add(this.authApiService.getAuthConfig().subscribe(authConfig => {
+    ngOnInit(): void {
+        if (this.authHolderService.isLoggedInUser()) {
+            this.router.navigate(['app-developer']);
+        }
 
-          this.authConfig = authConfig;
-          this.oauthService.configure({
-            ...authConfig,
-            redirectUri: authConfig.redirectUri || window.location.origin
+        if (this.oauthService.hasValidIdToken()) {
+            this.oauthService.logOut();
+        }
+
+        this.loaderService.showLoader('getAuthConfig');
+
+        this.openIdAuthService.getAuthConfig()
+          .pipe(
+            takeUntil(this.destroy$),
+            filter(value => value))
+          .subscribe((authConfig) => {
+                this.loginType = authConfig.type;
+
+                this.oauthService.configure({
+                    ...authConfig,
+                    redirectUri: authConfig.redirectUri || window.location.origin,
+                });
+
+                this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+                this.oauthService.loadDiscoveryDocumentAndLogin({
+                    onTokenReceived: receivedTokens => {
+                        this.loaderService.showLoader('internalLogin');
+                        this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
+                          .pipe(takeUntil(this.destroy$))
+                          .subscribe((response: LoginResponse) => {
+                              this.processLoginResponse(response);
+                              this.loaderService.closeLoader('internalLogin');
+                          });
+                    },
+                }).then(() => {
+                    this.loaderService.closeLoader('getAuthConfig');
+                });
+            }, err => console.error('getAuthConfig', err),
+            () => this.loaderService.closeLoader('getAuthConfig'));
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    login(event) {
+        if (event === true) {
+            this.inProcess = true;
+            this.awsAuthService.signIn(this.signIn)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((response: LoginResponse) => {
+                    this.processLoginResponse(response);
+                    this.inProcess = false;
+                },
+                () => this.inProcess = false);
+        }
+    }
+
+    private processLoginResponse(response: LoginResponse) {
+        this.authHolderService.persist(response.accessToken, response.refreshToken);
+        this.router.navigate(['app-developer']);
+    }
+
+    sendActivationEmail(email: string) {
+        this.usersService.resendActivationMail(email)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(value => {
+              this.toastService.success('Activation email was sent to your inbox!');
           });
-
-          this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-          this.oauthService.loadDiscoveryDocumentAndTryLogin({
-            onTokenReceived: receivedTokens => {
-              this.authApiService.login({
-                idToken: receivedTokens.idToken,
-                accessToken: receivedTokens.accessToken
-              }).subscribe(loginResponse => {
-                this.authService.persist(loginResponse.accessToken, loginResponse.refreshToken);
-                this.authService.testSetAuthJwtToken(loginResponse.accessToken);
-                this.router.navigate(['/app-store']);
-              });
-
-              this.tokenInfo = JSON.stringify(receivedTokens, null, 4);
-            }
-          });
-        }, err => console.error('getAuthConfig', err),
-        () => this.isLoading = false));
-  }
-
-  login() {
-    this.oauthService.initLoginFlow();
-  }
-
+    }
 }
