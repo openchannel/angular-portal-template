@@ -1,62 +1,92 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {
-  CommonService,
-  DeveloperDetailsModel,
-  SellerMyProfile,
-  SellerService
-} from 'oc-ng-common-service'
-import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {DeveloperAccountService, DeveloperAccountTypesService, DeveloperDetailsModel} from 'oc-ng-common-service';
+import {LoaderService} from '../../../shared/services/loader.service';
+import {mergeMap, takeUntil, tap} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {ToastrService} from 'ngx-toastr';
+import {OcFormComponent} from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-general-profile',
   templateUrl: './general-profile.component.html',
-  styleUrls: ['./general-profile.component.scss']
+  styleUrls: ['./general-profile.component.scss'],
 })
-export class GeneralProfileComponent implements OnInit {
+export class GeneralProfileComponent implements OnInit, OnDestroy {
 
-  @Input() myProfile: SellerMyProfile = new SellerMyProfile();
-  developerDetails = new DeveloperDetailsModel();
-  @Input() isProcessing = true;
-  isSaveInProcess = false;
+  @ViewChild('form') dynamicForm: OcFormComponent;
 
-  constructor(private sellerService: SellerService,
-              private commonService: CommonService,
-              private notificationService: NotificationService) {
+  myProfile = new DeveloperDetailsModel();
+  formDefinition: any;
+  isProcessing = false;
+
+  defaultFormDefinition = {
+    fields: [{
+      id: 'name',
+      label: 'Name',
+      type: 'text',
+      attributes: {required: true},
+    }, {
+      id: 'email',
+      label: 'Email',
+      type: 'emailAddress',
+      attributes: {required: true},
+    }],
+  };
+
+  private destroy$: Subject<void> = new Subject<void>();
+
+  constructor(private developerService: DeveloperAccountService,
+              private accountTypeService: DeveloperAccountTypesService,
+              private loaderService: LoaderService,
+              private toasterService: ToastrService) {
   }
 
   ngOnInit(): void {
     this.getMyProfileDetails();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   getMyProfileDetails() {
-    this.sellerService.getUserProfileDetails('true').subscribe((res) => {
-      this.myProfile = res;
-      this.developerDetails = this.myProfile?.developerAccount;
-    }, (err) => {
-      this.isProcessing = false;
-    }, () => {
-      this.isProcessing = false;
-    })
+    this.loaderService.showLoader('myProfile');
+
+    this.developerService.getAccount()
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(account => this.myProfile = account),
+        mergeMap(account => this.accountTypeService.getAccountType(account.type)))
+      .subscribe(definition => {
+        this.formDefinition = definition;
+        this.fillFormDefinitionByValue();
+        this.loaderService.closeLoader('myProfile');
+      }, () => {
+        this.formDefinition = this.defaultFormDefinition;
+        this.fillFormDefinitionByValue();
+        this.loaderService.closeLoader('myProfile');
+      });
   }
 
 
-  saveGeneralProfile(myProfileform) {
-    if (!myProfileform.valid) {
-      myProfileform.control.markAllAsTouched();
-      try {
-        this.commonService.scrollToFormInvalidField({form: myProfileform, adjustSize: 60});
-      } catch (error) {
-        this.notificationService.showError([{"message": "Please fill all required fields."}]);
-      }
+  private fillFormDefinitionByValue() {
+    for (const field of this.formDefinition.fields) {
+      field.defaultValue = this.myProfile[field.id];
+    }
+  }
+
+  saveGeneralProfile() {
+    if (!this.dynamicForm.customForm.valid) {
       return;
     }
-    this.isSaveInProcess = true;
-    this.sellerService.updateProfileDetails(this.myProfile).subscribe((res) => {
-      this.notificationService.showSuccess("Profile saved successfully");
-    }, (err) => {
-      this.isSaveInProcess = false;
-    }, () => {
-      this.isSaveInProcess = false;
-    });
+
+    this.isProcessing = true;
+    this.developerService.updateAccountFields(this.dynamicForm.customForm.value)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.toasterService.success('Your profile has been updated');
+        this.isProcessing = false;
+      });
   }
 }

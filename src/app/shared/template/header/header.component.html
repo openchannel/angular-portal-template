@@ -29,34 +29,24 @@
                     <a class="nav-link" href="#">Checkout</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <ul class="navbar-nav">
-                    <li class="">
-                        <a class="nav-link" href="#">
-                            <img src="assets/img/search-icon.svg"
-                                class="pr-1" alt="search-icon"> Search</a>
-                    </li>
-                    <li class="">
-                        <a class="nav-link" href="#"><img src="assets/img/notification-icon.svg" alt="icon"></a>
-                    </li>
-                    <li class="nav-item dropdown" ngbDropdown>
-                        <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
-                            <!-- {{ this.sellerName ? this.sellerName : 'My Profile' }} -->
-                            My Profile
-                        </a>
-                        <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown"
-                            *ngIf="this.sellerName != null">
-                            <!-- <a class="dropdown-item" href="#">Action</a> -->
-                            <a class="dropdown-item" href="/my-profile">Profile</a>
-                            <a class="dropdown-item" [routerLink]="" (click)="logout()">Logout
-                                <img src="assets/img/logout.svg"
-                                    class="pl-5" alt="logout">
-                            </a>
+            <div class="form-inline my-2 my-lg-0">
+                <div class="profile text-primary">{{initials}}</div>
+                <div class="nav-item dropdown" ngbDropdown placement="left">
+                    <a class="dropdown-toggle pr-0 d-flex align-items-center" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
+                        <div class="d-flex flex-column mr-1">
+                            <span class="font-m font-med">{{authService.getUserName()}}</span>
+                            <span class="font-s text-muted">{{authService.userDetails.role}}</span>
                         </div>
-                    </li>
-                </ul>
-            </form>
+                    </a>
+                    <div ngbDropdownMenu aria-labelledby="navbarDropdown" class="mt-1"
+                         *ngIf="authService.isLoggedInUser()">
+                        <!-- <a class="dropdown-item" href="#">Action</a> -->
+                        <a class="dropdown-item" routerLink="/my-profile">My Profile</a>
+                        <a class="dropdown-item" (click)="logout()">Logout</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
