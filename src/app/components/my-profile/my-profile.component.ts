@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { SellerMyProfile } from 'oc-ng-common-service';
+import {Component, OnInit} from '@angular/core';
+import {SellerMyProfile} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-my-profile',
@@ -8,23 +8,36 @@ import { SellerMyProfile } from 'oc-ng-common-service';
 })
 export class MyProfileComponent implements OnInit {
 
-  selectedPage : 'myProfile'|'changePassword'  = 'myProfile';
-  myProfile = new SellerMyProfile();
-  isProcessing=true;
+  pages = [{
+    pageId: 'company',
+    pageTitle: 'My Company',
+    placeholder: 'Company details'
+  }, {
+    pageId: 'changePassword',
+    pageTitle: 'My Profile',
+    placeholder: 'General'
+  }, {
+    pageId: 'myProfile',
+    pageTitle: 'My Profile',
+    placeholder: 'Password'
+  }];
 
-  constructor() { }
+  selectedPage = this.pages[0];
+
+  myProfile = new SellerMyProfile();
+  isProcessing = true;
+
+  constructor() {
+  }
 
   ngOnInit(): void {
-    
   }
 
-  
-
-  gotoPage(pageName){
-    this.selectedPage = pageName;
+  gotoPage(newPage: {pageId: string, pageTitle: string, placeholder: string}) {
+    this.selectedPage = newPage;
   }
 
-  goBack(){
+  goBack() {
     history.back();
   }
 }

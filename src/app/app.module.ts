@@ -49,6 +49,7 @@ import {SubmissionsTableComponent} from './components/applications/app-store/for
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
 import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
+import {CompanyComponent} from './components/my-profile/company/company.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
     CreateAppComponent,
     ConfirmationModalComponent,
     CamelCaseToNormalPipe,
+    CompanyComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
