@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { KeyValuePairMapper, ChartService, SellerAppService, SellerAppsWrapper, CommonService } from 'oc-ng-common-service';
-import { Router } from '@angular/router';
-import { OcPopupComponent, DialogService } from 'oc-ng-common-component';
-import { NotificationService } from 'src/app/shared/custom-components/notification/notification.service';
+import {Component, OnInit} from '@angular/core';
+import {ChartService, CommonService, KeyValuePairMapper, SellerAppService, SellerAppsWrapper} from 'oc-ng-common-service';
+import {Router} from '@angular/router';
+import {DialogService, OcPopupComponent} from 'oc-ng-common-component';
+import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
 
 @Component({
   selector: 'app-app-developer',
@@ -15,7 +15,7 @@ export class AppDeveloperComponent implements OnInit {
   dataSets = [];
   count;
   countText;
-  //used to detect ghaph data change.
+  // used to detect ghaph data change.
   random;
   period = 'month';
 
@@ -27,11 +27,11 @@ export class AppDeveloperComponent implements OnInit {
   applications = new SellerAppsWrapper();
   fields = [];
 
-  selectedChartField = "downloads";
+  selectedChartField = 'downloads';
 
-  downloadUrl = "./assets/img/cloud-download.svg";
-  menuUrl = "./assets/img/dots-hr-icon.svg";
-  sortIcon = "./assets/img/dropdown-icon.svg";
+  downloadUrl = './assets/img/cloud-download.svg';
+  menuUrl = './assets/img/dots-hr-icon.svg';
+  sortIcon = './assets/img/dropdown-icon.svg';
 
   menuItems = {
     menu: '',
@@ -41,31 +41,27 @@ export class AppDeveloperComponent implements OnInit {
   };
 
   constructor(public chartService: ChartService, public appService: SellerAppService, public router: Router,
-    private modalService: DialogService, private notificationService: NotificationService,
-    private commonservice: CommonService) {
+              private modalService: DialogService, private notificationService: NotificationService,
+              private commonservice: CommonService) {
 
     var downloadObj = {
-      key: "Downloads",
-      value: "downloads"
-    }
+      key: 'Downloads',
+      value: 'downloads'
+    };
     this.fields.push(downloadObj);
     var viewObj = {
-      key: "Views",
-      value: "views"
-    }
+      key: 'Views',
+      value: 'views'
+    };
     this.fields.push(viewObj);
 
   }
 
   ngOnInit(): void {
     this.applications.list = [];
-    this.commonservice.scrollToFormInvalidField({ form: null, adjustSize: 60 });
+    this.commonservice.scrollToFormInvalidField({form: null, adjustSize: 60});
     this.getChartStatistics();
     this.getApps('true');
-  }
-
-  getValue(value) {
-    return value;
   }
 
 
@@ -74,29 +70,23 @@ export class AppDeveloperComponent implements OnInit {
     this.isChartProcessing = true;
     this.labels = [];
     this.dataSets = [];
+    this.count = 0;
+    const dateEnd = new Date();
+    const dateStart = this.getDateStartByCurrentPeriod(dateEnd);
 
-    var obj = {
-      period: this.period,
-      field: this.selectedChartField,
-
-    }
-    this.chartService.getStats(obj).subscribe((res) => {
-
-      this.chartStaticstics = res.data;
-      this.chartStaticstics.forEach(c => {
-        this.labels.push(c.key);
-        this.dataSets.push(c.value);
-
-      });
-      this.count = res.count;
+    this.chartService.getTimeSeries(this.period, this.selectedChartField, dateStart.getTime(), dateEnd.getTime())
+    .subscribe((chartResponse) => {
+      const normalizeChart = chartResponse = chartResponse?.length ? chartResponse : [[]];
+      this.labels = normalizeChart.map(chart => new Date(chart[0]).toISOString().substring(0, 10));
+      this.dataSets = normalizeChart.map(chart => chart[1]);
+      normalizeChart.forEach(chart => this.count += chart[1]);
       this.random = Math.random();
-      this.countText = 'Total ' + this.capitalizeFirstLetter(this.selectedChartField);
-
+      this.countText = `Total ${this.capitalizeFirstLetter(this.selectedChartField)}`;
       this.isChartProcessing = false;
       this.isChartLoading = false;
-
-    }, (err) => {
+    }, (error) => {
       this.isChartLoading = false;
+      console.error('Can\'t get Time Series', error);
     });
   }
 
@@ -119,7 +109,7 @@ export class AppDeveloperComponent implements OnInit {
       if (callback) {
         callback();
       }
-    })
+    });
   }
 
   newApp() {
@@ -135,76 +125,68 @@ export class AppDeveloperComponent implements OnInit {
 
     this.menuItems = event;
     if (this.menuItems.menu === 'delete') {
-      let deleteMessage = this.menuItems?.hasChild ? "Are you sure you want to delete <br> this app and all it's versions?" :
-        "Are you sure you want to delete <br> this app version?";
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-        "Cancel", "Delete", deleteMessage, "",
-        "This action is terminal and cannot be reverted", (res) => {
-          this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(res => {
-            this.getApps('false', (res) => {
-              this.notificationService.showSuccess("Application deleted successfully");
+      let deleteMessage = this.menuItems?.hasChild ? 'Are you sure you want to delete <br> this app and all it\'s versions?' :
+          'Are you sure you want to delete <br> this app version?';
+      this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
+          'Cancel', 'Delete', deleteMessage, '',
+          'This action is terminal and cannot be reverted', (res) => {
+            this.appService.deleteApp(this.menuItems.appId, this.menuItems.version).subscribe(res => {
+            }, (err) => {
               this.modalService.modalService.dismissAll();
             });
-          }, (err) => {
-            this.modalService.modalService.dismissAll();
-          });
 
-        });
+          });
     } else if (this.menuItems.menu === 'suspend') {
-      // this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-      //   "Cancel", "Suspend", "Are you sure you want to <br> suspend this app?", "",
-      //   "This action is terminal and cannot be reverted", (res) => {
 
       let suspend = [{
         appId: this.menuItems.appId,
         version: this.menuItems.version
-      }]
+      }];
       this.appService.suspendApp(suspend).subscribe(res => {
-        this.getApps('true', (res) => {
-          this.notificationService.showSuccess("Application suspended successfully");
-          // this.modalService.modalService.dismissAll();  
-        });
       }, (err) => {
-        // this.modalService.modalService.dismissAll();
       });
       // });
     } else if (this.menuItems.menu === 'submit') {
-      this.modalService.showConfirmDialog(OcPopupComponent as Component, "lg", "warning", "confirm",
-        "Cancel", "Submit", "Are you sure you want to <br> submit this app?", "",
-        "This action is terminal and cannot be reverted", (res) => {
+      this.modalService.showConfirmDialog(OcPopupComponent as Component, 'lg', 'warning', 'confirm',
+          'Cancel', 'Submit', 'Are you sure you want to <br> submit this app?', '',
+          'This action is terminal and cannot be reverted', (res) => {
 
-          let submit = {
-            appId: this.menuItems.appId,
-            version: this.menuItems.version
-          }
-          this.appService.submitApp(submit).subscribe(res => {
-            this.getApps('false', (res) => {
-              this.notificationService.showSuccess("Application submitted successfully");
+            let submit = {
+              appId: this.menuItems.appId,
+              version: this.menuItems.version
+            };
+            this.appService.submitApp(submit).subscribe(res => {
+            }, (err) => {
               this.modalService.modalService.dismissAll();
             });
-          }, (err) => {
-            this.modalService.modalService.dismissAll();
           });
-        });
     } else if (this.menuItems.menu === 'edit') {
-      this.router.navigateByUrl('edit-app/' + this.menuItems.appId + "/version/" + this.menuItems.version);
+      this.router.navigateByUrl('edit-app/' + this.menuItems.appId + '/version/' + this.menuItems.version);
     } else if (this.menuItems.menu === 'unsuspend') {
 
       let unsuspend = [{
         appId: this.menuItems.appId,
         version: this.menuItems.version
-      }]
+      }];
       this.appService.unsuspendApp(unsuspend).subscribe(res => {
         this.getApps('true', (res) => {
-          this.notificationService.showSuccess("Application unsuspended successfully");
-          // this.modalService.modalService.dismissAll();  
+          this.notificationService.showSuccess('Application unsuspended successfully');
         });
       }, (err) => {
-        // this.modalService.modalService.dismissAll();
       });
-      // });
     }
   }
 
-
+  private getDateStartByCurrentPeriod(dateEnd: Date): Date {
+    const dateStart = new Date(dateEnd);
+    if (this.period === 'month') {
+      dateStart.setFullYear(dateEnd.getFullYear() - 1);
+    } else if (this.period === 'day') {
+      dateStart.setTime(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
+    } else {
+      dateStart.setMonth(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
+      console.error('Not implement chart period.');
+    }
+    return dateStart;
+  }
 }
