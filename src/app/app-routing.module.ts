@@ -10,6 +10,7 @@ import {ActivationComponent} from './components/activation/activation.component'
 import {ResetPasswordComponent} from './components/reset-password/reset-password.component';
 import {SignupComponent} from './components/signup/signup.component';
 import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
+import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -17,7 +18,8 @@ const routes: Routes = [
   {path: 'activate', component: ActivationComponent},
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'forgot-password', component: ForgotPasswordComponent},
-  {path: '', component: LoginComponent},
+  {path: 'resend-activation', component: ResendActivationComponent},
+  { path: '', component: LoginComponent },
   {
     path: '',
     component: CommonLayoutComponent,
@@ -26,14 +28,14 @@ const routes: Routes = [
       {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
       {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
-      // {path: 'edit-app/:appId/version/:versionId', component: EditAppComponent, canActivate: [AuthGuard]},
+      {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
   {path: '**', redirectTo: '/not-found'}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {useHash: false})],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule {

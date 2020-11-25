@@ -37,7 +37,6 @@ import {FormModalComponent} from './shared/modals/form-modal/form-modal.componen
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {AppService} from './core/api/app.service';
 import {AppListComponent} from './components/applications/app-apps/app-list/app-list.component';
-import {CreateAppComponent} from './components/applications/app-apps/app-create-app/create-app.component';
 import {OcCommonLibModule} from 'oc-ng-common-component';
 import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
@@ -49,6 +48,8 @@ import {SubmissionsTableComponent} from './components/applications/app-store/for
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
 import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
+import { ResendActivationComponent } from './components/resend-activation/resend-activation.component';
+import {ToastrModule} from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -78,10 +79,9 @@ import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
     SubmissionsDataViewModalComponent,
     FormModalComponent,
     AppListComponent,
-    CreateAppComponent,
-    CreateAppComponent,
     ConfirmationModalComponent,
     CamelCaseToNormalPipe,
+    ResendActivationComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -101,6 +101,7 @@ import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
     BrowserAnimationsModule,
     DragDropModule,
     OAuthModule.forRoot(),
+    ToastrModule.forRoot(),
     HttpClientXsrfModule.withOptions({ cookieName: 'XSRF-TOKEN' })
   ],
   providers: [

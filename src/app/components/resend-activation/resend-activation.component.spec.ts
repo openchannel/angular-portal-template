@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreateAppComponent } from './create-app.component';
+import { ResendActivationComponent } from './resend-activation.component';
 
-describe('CreateAppComponent', () => {
-  let component: CreateAppComponent;
-  let fixture: ComponentFixture<CreateAppComponent>;
+describe('ResendActivationComponent', () => {
+  let component: ResendActivationComponent;
+  let fixture: ComponentFixture<ResendActivationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateAppComponent ]
+      declarations: [ ResendActivationComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateAppComponent);
+    fixture = TestBed.createComponent(ResendActivationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -13,7 +13,7 @@ export class ActivationComponent implements OnDestroy {
 
     companyLogoUrl = './assets/img/logo-company.png';
     signupUrl = '/signup';
-    activationUrl = '';
+    resendActivationUrl = '/resend-activation';
     inProcess = false;
 
     activationModel = new SellerActivation();
