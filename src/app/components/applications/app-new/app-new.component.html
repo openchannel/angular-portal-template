@@ -54,9 +54,8 @@
                            routerLink="/app-developer"></oc-button>
             </div>
             <div class="form-btn">
-                <oc-button type="secondary" text="Save and Exit" class="w-100"
-                           [disabled]="appDataFormGroup.invalid || lockSubmitButton"
-                           (click)="saveApp(false, false)"></oc-button>
+                <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"
+                           [disabled]="appDataFormGroup.invalid || lockSubmitButton"></oc-button>
             </div>
             <div class="form-btn">
                 <oc-button type="primary" text="Submit" class="w-100"
