@@ -28,8 +28,8 @@ const routes: Routes = [
       {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
       {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
-      {path: 'my-profile/:pageId', component: MyProfileComponent, canActivate: [AuthGuard]}
-      // {path: 'edit-app/:appId/version/:versionId', component: EditAppComponent, canActivate: [AuthGuard]},
+      {path: 'my-profile/:pageId', component: MyProfileComponent, canActivate: [AuthGuard]},
+      {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
   {path: '**', redirectTo: '/not-found'}
