@@ -22,11 +22,14 @@
     </div>
     <div class="pb-1">
       <div class="pb-1">
-        <oc-menu-grid (menuClicked)="menuchange($event)" [menuUrl]="menuUrl"
-                      [appList]="applications"
-                      [sortIcon]="sortIcon"></oc-menu-grid>
+        <oc-menu-grid noAppMessage="No Apps Found"
+                      [properties]="appListConfig"
+                      menuUrl="../../../../assets/img/dots-hr-icon.svg"
+                      defaultAppIcon="../../../../assets/img/app-icon1 (2).svg"
+                      sortIcon="../../../../assets/img/dropdown-icon.svg"
+                      (pageScrolled)="getApps($event)"
+                      (menuClicked)="catchMenuAction($event)"></oc-menu-grid>
       </div>
-
     </div>
   </div>
 </div>
