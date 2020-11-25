@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DeveloperAccountService, SellerMyProfile} from 'oc-ng-common-service';
+import {SellerMyProfile} from 'oc-ng-common-service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-my-profile',
@@ -13,11 +14,11 @@ export class MyProfileComponent implements OnInit {
     pageTitle: 'My Company',
     placeholder: 'Company details'
   }, {
-    pageId: 'changePassword',
+    pageId: 'profile',
     pageTitle: 'My Profile',
     placeholder: 'General'
   }, {
-    pageId: 'myProfile',
+    pageId: 'password',
     pageTitle: 'My Profile',
     placeholder: 'Password'
   }];
@@ -27,10 +28,12 @@ export class MyProfileComponent implements OnInit {
   myProfile = new SellerMyProfile();
   isProcessing = false;
 
-  constructor() {
+  constructor(private activatedRoute: ActivatedRoute) {
   }
 
+
   ngOnInit(): void {
+    this.initMainPage();
   }
 
   gotoPage(newPage: {pageId: string, pageTitle: string, placeholder: string}) {
@@ -39,5 +42,17 @@ export class MyProfileComponent implements OnInit {
 
   goBack() {
     history.back();
+  }
+
+  private initMainPage() {
+    const pageType  = this.activatedRoute.snapshot.paramMap.get('pageId');
+    if (pageType) {
+      const pageByUrl = this.pages.filter(page => page.pageId === pageType)[0];
+      if (pageByUrl) {
+        this.selectedPage = pageByUrl;
+      }
+    } else {
+      this.selectedPage = this.pages[0];
+    }
   }
 }

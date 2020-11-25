@@ -2,7 +2,7 @@
     <div class="container">
         <img src="assets/img/arrow-left.svg" alt="arrow-icon">
         <a (click)="goBack()" class="font-m font-med pl-1 cursor-pointer link">Back</a>
-        <h3 class="page-title">{{selectedPage?.pageTitle}</h3>
+        <h3 class="page-title">{{selectedPage?.pageTitle}}</h3>
     </div>
 </div>
 
@@ -16,7 +16,7 @@
                 </li>
             </ul>
         </div>
-        <div [ngSwitch]="selectedPage.pageId" class="col-md-4 pt-1">
+        <div [ngSwitch]="selectedPage.pageId" class="col-md-7 pt-1">
             <app-company *ngSwitchCase="pages[0].pageId"></app-company>
 
             <app-general-profile *ngSwitchCase="pages[1].pageId"

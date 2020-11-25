@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DeveloperModel, DeveloperService, DeveloperTypeModel, DeveloperTypeService} from 'oc-ng-common-service';
+import {AuthHolderService, DeveloperModel, DeveloperService, DeveloperTypeFieldModel, DeveloperTypeService} from 'oc-ng-common-service';
 import {Subscription} from 'rxjs';
-import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
+import {ActivatedRoute} from '@angular/router';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-company',
@@ -11,19 +12,29 @@ import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
 export class CompanyComponent implements OnInit, OnDestroy {
 
   typeFields: {
-    fields: AppTypeFieldModel [];
+    fields: DeveloperTypeFieldModel [];
   };
-
-  private developer: any;
-  private newCustomData: any;
 
   isInvalidForm = true;
   savingCompanyData = false;
 
+  private developer: any;
+  private newCustomData: any;
+  private defaultDeveloperTypeFields: DeveloperTypeFieldModel [] = [{
+    id: 'name',
+    label: 'Company Name',
+    type: 'text',
+    attributes: {
+      required: true
+    }
+  }];
   private subscriptions: Subscription = new Subscription();
 
   constructor(private developerService: DeveloperService,
-              private developerTypeService: DeveloperTypeService) {
+              private developerTypeService: DeveloperTypeService,
+              private authHolderService: AuthHolderService,
+              private activatedRoute: ActivatedRoute,
+              private toastService: ToastrService) {
   }
 
   ngOnInit(): void {
@@ -31,9 +42,17 @@ export class CompanyComponent implements OnInit, OnDestroy {
       this.developer = developer;
       this.subscriptions.add(this.developerTypeService.getDeveloperType(developer?.type).subscribe(developerType => {
         this.typeFields = {
-          fields: this.mapTypeFields(developer, developerType)
+          fields: this.mapTypeFields(developer, developerType.fields)
         };
-      }, error => console.error('getDeveloperType', error)));
+      }, error => {
+        if (error.status === 404) {
+          this.typeFields = {
+            fields: this.mapTypeFields(developer, this.defaultDeveloperTypeFields)
+          };
+        } else {
+          console.error('getDeveloperType', error);
+        }
+      }));
     }, error => console.error('getDeveloper', error)));
   }
 
@@ -53,6 +72,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.developerService.updateDeveloper(request)
     .subscribe(developerResponse => {
       this.savingCompanyData = false;
+      this.toastService.success('Your organization details has been updated');
     }, error => {
       this.savingCompanyData = false;
       console.error('updateDeveloper', error);
@@ -85,17 +105,15 @@ export class CompanyComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  private mapTypeFields(developer: DeveloperModel, type: DeveloperTypeModel): AppTypeFieldModel [] {
-    if (type) {
-      if (type?.fields) {
-        const defaultValues = this.getDefaultValues(developer);
-        return type.fields.filter(field => field?.id).map(field => this.mapField(field, defaultValues));
-      }
+  private mapTypeFields(developer: DeveloperModel, fields: DeveloperTypeFieldModel[]): DeveloperTypeFieldModel [] {
+    if (fields) {
+      const defaultValues = this.getDefaultValues(developer);
+      return fields.filter(field => field?.id).map(field => this.mapField(field, defaultValues));
     }
     return [];
   }
 
-  private mapField(field: AppTypeFieldModel, defaultValues: Map<string, any>): AppTypeFieldModel {
+  private mapField(field: DeveloperTypeFieldModel, defaultValues: Map<string, any>): DeveloperTypeFieldModel {
     if (field) {
       // map options
       if (field?.options) {
@@ -122,7 +140,7 @@ export class CompanyComponent implements OnInit, OnDestroy {
     return map;
   }
 
-  private mapOptions(appTypeFiled: AppTypeFieldModel): string [] {
+  private mapOptions(appTypeFiled: DeveloperTypeFieldModel): string [] {
     const newOptions = [];
     appTypeFiled.options.forEach(o => newOptions.push(o?.value ? o.value : o));
     return newOptions;

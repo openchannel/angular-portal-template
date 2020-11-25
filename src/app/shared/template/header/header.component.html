@@ -29,8 +29,11 @@
                     <div ngbDropdownMenu aria-labelledby="navbarDropdown" class="mt-1"
                          *ngIf="authService.isLoggedInUser()">
                         <!-- <a class="dropdown-item" href="#">Action</a> -->
-                        <a class="dropdown-item" routerLink="/my-profile">My Profile</a>
-                        <a class="dropdown-item" routerLink="/my-profile">My Organization</a>
+                        <a class="dropdown-item"
+                           routerLink="/my-profile">My Profile</a>
+                        <a class="dropdown-item"
+                           *ngIf="authService.userDetails.role === 'ADMIN'"
+                           routerLink="/my-profile/company">My Organization</a>
                         <a class="dropdown-item" (click)="logout()">Logout</a>
                     </div>
                 </div>
