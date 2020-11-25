@@ -19,7 +19,7 @@ const routes: Routes = [
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'resend-activation', component: ResendActivationComponent},
-  { path: '', component: LoginComponent },
+  {path: '', component: LoginComponent},
   {
     path: '',
     component: CommonLayoutComponent,

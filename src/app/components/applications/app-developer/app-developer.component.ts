@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AppListing, AppListMenuAction, AppsService, AppVersionService,
   ChartLayoutTypeModel,
@@ -23,7 +23,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './app-developer.component.html',
   styleUrls: ['./app-developer.component.scss']
 })
-export class AppDeveloperComponent implements OnInit {
+export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   count;
   countText;
@@ -97,6 +97,10 @@ export class AppDeveloperComponent implements OnInit {
     this.applications.list = [];
     this.commonService.scrollToFormInvalidField({form: null, adjustSize: 60});
     this.getApps(1);
+  }
+
+  ngOnDestroy() {
+    this.requestsSubscriber.unsubscribe();
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
@@ -205,7 +209,6 @@ export class AppDeveloperComponent implements OnInit {
                     this.toaster.error(resp.message);
                   } else {
                     this.appListConfig.data.pageNumber = 0;
-                    console.log('deleted');
                     this.toaster.success('Your app has been deleted');
                     this.getApps(1);
                   }
