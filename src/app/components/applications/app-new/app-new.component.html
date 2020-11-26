@@ -21,7 +21,7 @@
                 <oc-error [control]="appDataFormGroup.get('appType')"></oc-error>
             </div>
         </div>
-        <ng-container *ngIf="pageType === 'app-edit'">
+        <ng-container *ngIf="pageType === 'edit-app'">
             <div class="d-flex flex-column flex-md-row align-items-start mb-2" >
                 <oc-label text="Name" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
                 <div class="d-flex flex-column w-100">
@@ -46,7 +46,8 @@
                  (formDataUpdated)="getAppFormData($event)"
                  labelPosition="left"
                  [showButton]="false"
-                 (isFormInvalid)="getAppFormStatus($event)">
+                 (isFormInvalid)="getAppFormStatus($event)"
+                 [setFormDirty]="setFormErrors">
         </oc-form>
         <div class="d-flex flex-column-reverse flex-md-row justify-content-between mb-5 mt-2">
             <div class="form-btn">
@@ -54,8 +55,7 @@
                            routerLink="/app-developer"></oc-button>
             </div>
             <div class="form-btn">
-                <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"
-                           [disabled]="appDataFormGroup.invalid || lockSubmitButton"></oc-button>
+                <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"></oc-button>
             </div>
             <div class="form-btn">
                 <oc-button type="primary" text="Submit" class="w-100"
