@@ -53,6 +53,20 @@ Install support elements: <br>
     * start app with the Google SSO <br>
        <font color="green">npm run start-google</font>
 
+## Documentation Compodoc
+Compodoc show project structure. (modules, components, routes and etc.)
+
+* Generate Documentation :<br>
+
+  ``npm run create-compodoc``
+
+* Run Compodoc :<br>
+
+  ``npm run start-compodoc``
+  
+* Documentation [http://localhost:8888](http://localhost:8888)
+
 ## Contact
 
 Project Link: [https://bitbucket.org/openchannel/template3-portal-frontend/branch/master](https://bitbucket.org/openchannel/template3-portal-frontend/branch/master)
+
