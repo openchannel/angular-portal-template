@@ -14,9 +14,8 @@ export class HeaderComponent implements OnInit {
   constructor(public router: Router,
               private authService: AuthHolderService,
               private logOutService: LogOutService) {
- //   console.log("header component loaded.");
      this.displayUserInfo();
-}
+  }
 
   ngOnInit(): void {
   }

@@ -187,3 +187,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border-color: $suspended !important;
   color: #fff;
 }
+
+.text-color-primary {
+  color: $primary !important;
+}

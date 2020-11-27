@@ -1,14 +1,23 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
-    <div class="container">
+    <div class="container my-2">
         <a class="navbar-brand" href="#">
             <img src="assets/img/logo-company.png" alt="brand-logo" class="company-logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" *ngIf="sellerName">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div *ngIf="!sellerName" class="mt-2 mt-md-0">
+            <oc-button type="secondary" text="Log In"
+                       [class]="'mr-2 text-color-primary'"
+                       [style]="'min-width: 87px'"
+                       routerLink="/login"></oc-button>
+            <oc-button type="primary" text="Sign Up"
+                       [style]="'min-width: 87px'"
+                       routerLink="/signup"></oc-button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="sellerName">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item" [ngClass]="{
                     active: router.url.includes('app-developer')
@@ -16,17 +25,14 @@
                     <a class="nav-link" [routerLink]="'/app-developer'">Manage Apps</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
+            <form class="form-inline">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown" ngbDropdown>
                         <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
-                            <!-- {{ this.sellerName ? this.sellerName : 'My Profile' }} -->
                             My Profile
                         </a>
-                        <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown"
-                            *ngIf="this.sellerName != null">
-                            <!-- <a class="dropdown-item" href="#">Action</a> -->
+                        <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="/my-profile">Profile</a>
                             <a class="dropdown-item" [routerLink]="" (click)="logout()">Logout
                                 <img src="assets/img/logout.svg"
