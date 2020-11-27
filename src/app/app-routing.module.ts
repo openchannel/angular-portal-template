@@ -11,6 +11,7 @@ import {ResetPasswordComponent} from './components/reset-password/reset-password
 import {SignupComponent} from './components/signup/signup.component';
 import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
+import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -19,7 +20,7 @@ const routes: Routes = [
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'resend-activation', component: ResendActivationComponent},
-  {path: '', component: LoginComponent},
+  {path: '', component: HomeComponent},
   {
     path: '',
     component: CommonLayoutComponent,
