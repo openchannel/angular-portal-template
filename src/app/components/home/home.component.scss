@@ -1,4 +1,10 @@
+@import "src/assets/styles/mixins";
+@import "~oc-ng-common-component/assets/styles/theme.scss";
 
+.article-image {
+  border-radius: 12px;
+  box-shadow: 0 0 16px 0 rgba(44, 100, 131, 0.08);
+}
 .image-container {
   width: 100%;
   height: auto;
@@ -15,8 +21,53 @@
 .feature-icon {
   width: 60px;
   height: 60px;
+  min-width: 60px;
   img {
     width: 100%;
     height: auto;
   }
+}
+
+.technology-card {
+  background-color: #fff;
+  margin-right: 2rem;
+  margin-bottom: 1rem;
+  width: 30%;
+  @include media-breakpoint-md {
+    width: 100%;
+    margin-right: 0;
+  }
+  &:last-child {
+    margin-right: 0;
+  }
+  .technology-icon {
+    width: 44px;
+    height: 44px;
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+  .technology-description {
+    width: 100%;
+    font-size: 14px;
+    height: 72px;
+    overflow-y: hidden;
+  }
+}
+
+.list-number {
+  background-color: $primary;
+  color: #fff;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.container-padding {
+  padding-top: 104px;
+  padding-bottom: 104px;
 }

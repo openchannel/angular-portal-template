@@ -20,12 +20,12 @@ const routes: Routes = [
   {path: 'reset-password', component: ResetPasswordComponent},
   {path: 'forgot-password', component: ForgotPasswordComponent},
   {path: 'resend-activation', component: ResendActivationComponent},
-  {path: '', component: HomeComponent},
   {
     path: '',
     component: CommonLayoutComponent,
 
     children: [
+      {path: '', component: HomeComponent},
       {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
       {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
