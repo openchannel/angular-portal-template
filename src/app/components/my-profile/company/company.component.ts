@@ -1,5 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AuthHolderService, DeveloperModel, DeveloperService, DeveloperTypeFieldModel, DeveloperTypeService} from 'oc-ng-common-service';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  AuthHolderService,
+  DeveloperDataModel,
+  DeveloperModel,
+  DeveloperService,
+  DeveloperTypeFieldModel,
+  DeveloperTypeService
+} from 'oc-ng-common-service';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
@@ -11,14 +18,17 @@ import {ToastrService} from 'ngx-toastr';
 })
 export class CompanyComponent implements OnInit, OnDestroy {
 
+  @Input()
+  developerData: DeveloperDataModel;
+
   typeFields: {
     fields: DeveloperTypeFieldModel [];
   };
 
   isInvalidForm = true;
   savingCompanyData = false;
+  showSaveButton = false;
 
-  private developer: any;
   private newCustomData: any;
   private defaultDeveloperTypeFields: DeveloperTypeFieldModel [] = [{
     id: 'name',
@@ -38,22 +48,16 @@ export class CompanyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscriptions.add(this.developerService.getDeveloper().subscribe(developer => {
-      this.developer = developer;
-      this.subscriptions.add(this.developerTypeService.getDeveloperType(developer?.type).subscribe(developerType => {
-        this.typeFields = {
-          fields: this.mapTypeFields(developer, developerType.fields)
-        };
-      }, error => {
-        if (error.status === 404) {
-          this.typeFields = {
-            fields: this.mapTypeFields(developer, this.defaultDeveloperTypeFields)
-          };
-        } else {
-          console.error('getDeveloperType', error);
-        }
-      }));
-    }, error => console.error('getDeveloper', error)));
+    this.subscriptions.add(this.developerTypeService.getDeveloperType(this.developerData.developer?.type)
+    .subscribe(developerType => {
+      this.createFormFields(developerType.fields);
+    }, error => {
+      if (error.status === 404) {
+        this.createFormFields(this.defaultDeveloperTypeFields);
+      } else {
+        console.error('getDeveloperType', error);
+      }
+    }));
   }
 
   ngOnDestroy(): void {
@@ -63,14 +67,15 @@ export class CompanyComponent implements OnInit, OnDestroy {
   saveType(): void {
     this.savingCompanyData = true;
     const request = {
-      name: this.getDeveloperName(this.developer, this.newCustomData),
+      name: this.getDeveloperName(this.developerData.developer, this.newCustomData),
       customData: {
-        ...(this.developer?.customData ? this.developer.customData : {}),
+        ...(this.developerData.developer?.customData ? this.developerData.developer.customData : {}),
         ...(this.getCustomDataValues(this.newCustomData))
       }
     };
     this.subscriptions.add(this.developerService.updateDeveloper(request)
     .subscribe(developerResponse => {
+      this.developerData.developer = developerResponse;
       this.savingCompanyData = false;
       this.toastService.success('Your organization details has been updated');
     }, error => {
@@ -79,11 +84,18 @@ export class CompanyComponent implements OnInit, OnDestroy {
     }));
   }
 
-  setCompanyData(newCustomData: any) {
+  private createFormFields(fields: DeveloperTypeFieldModel[]): void {
+    this.typeFields = {
+      fields: this.mapTypeFields(this.developerData.developer, fields)
+    };
+    this.updateSaveButton();
+  }
+
+  setCompanyData(newCustomData: any): void {
     this.newCustomData = newCustomData;
   }
 
-  setIsFormInvalid(isInvalidForm: boolean) {
+  setIsFormInvalid(isInvalidForm: boolean): void {
     this.isInvalidForm = isInvalidForm;
   }
 
@@ -93,6 +105,11 @@ export class CompanyComponent implements OnInit, OnDestroy {
       return newName;
     }
     return developer.name;
+  }
+
+  updateSaveButton(): void {
+    const type = this.developerData.developer?.type;
+    this.showSaveButton =  type === 'admin' || !type;
   }
 
   private getCustomDataValues(customData: any): any {
