@@ -47,7 +47,8 @@
                  labelPosition="left"
                  [showButton]="false"
                  (isFormInvalid)="getAppFormStatus($event)"
-                 [setFormDirty]="setFormErrors">
+                 [setFormDirty]="setFormErrors"
+                 (createdForm)="getCreatedForm($event)">
         </oc-form>
         <div class="d-flex flex-column-reverse flex-md-row justify-content-between mb-5 mt-2">
             <div class="form-btn">
@@ -55,7 +56,8 @@
                            routerLink="/app-developer"></oc-button>
             </div>
             <div class="form-btn">
-                <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"></oc-button>
+                <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"
+                    [disabled]="appDataFormGroup.invalid || generatedForm.get('name').invalid"></oc-button>
             </div>
             <div class="form-btn">
                 <oc-button type="primary" text="Submit" class="w-100"

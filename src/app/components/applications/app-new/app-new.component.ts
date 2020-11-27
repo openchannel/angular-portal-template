@@ -10,15 +10,15 @@ import {
   FullAppData,
   SellerAppDetailsModel
 } from 'oc-ng-common-service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AppTypeFieldModel } from 'oc-ng-common-service/lib/model/app-type-model';
-import { Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { CreateAppModel, UpdateAppVersionModel } from 'oc-ng-common-service/lib/model/app-data-model';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmationModalComponent } from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
-import { LoaderService } from '../../../shared/services/loader.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
+import {Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import {LoaderService} from '../../../shared/services/loader.service';
 
 @Component({
   selector: 'app-app-new',
@@ -35,7 +35,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private appTypeService: AppTypeService,
               private activeRoute: ActivatedRoute,
               private modal: NgbModal,
-              private loader: LoaderService) { }
+              private loader: LoaderService) {
+  }
 
   appDetails = new SellerAppDetailsModel();
 
@@ -54,6 +55,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   appFields: {
     fields: AppTypeFieldModel []
   };
+  generatedForm: FormGroup;
 
   lockSubmitButton = true;
 
@@ -97,6 +99,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   // getting app data from the form on form changing
   getAppFormData(fields: any): void {
     this.appFormData = fields;
@@ -119,36 +122,37 @@ export class AppNewComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   // saving app to the server
   saveApp(saveType: 'submit' | 'draft'): void {
     this.lockSubmitButton = true;
     if (this.pageType === 'app-new') {
       this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
-        .subscribe((appResponse) => {
-          if (appResponse) {
-            if (saveType === 'submit') {
-              this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
-                version: appResponse.version,
-                autoApprove: true
-              }).subscribe(() => {
-                this.lockSubmitButton = false;
-                this.router.navigate(['/app-developer']).then();
-              }, error => console.error('request publishAppByVersion', error)));
-            } else {
+      .subscribe((appResponse) => {
+        if (appResponse) {
+          if (saveType === 'submit') {
+            this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
+              version: appResponse.version,
+              autoApprove: true
+            }).subscribe(() => {
+              this.lockSubmitButton = false;
               this.router.navigate(['/app-developer']).then();
-            }
+            }, error => console.error('request publishAppByVersion', error)));
           } else {
-            console.error('Can\'t save a new app. Empty response.');
+            this.router.navigate(['/app-developer']).then();
           }
-        }, () => {
-          this.lockSubmitButton = false;
-          this.currentAppAction = this.appActions[0];
-          console.log('Can\'t save a new app.');
-        }));
+        } else {
+          console.error('Can\'t save a new app. Empty response.');
+        }
+      }, () => {
+        this.lockSubmitButton = false;
+        this.currentAppAction = this.appActions[0];
+        console.log('Can\'t save a new app.');
+      }));
     } else {
       this.subscriptions.add(this.appVersionService
-        .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData, saveType === 'draft'))
-        .subscribe(
+      .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData, saveType === 'draft'))
+      .subscribe(
           response => {
             if (response) {
               this.lockSubmitButton = false;
@@ -163,7 +167,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.currentAppAction = this.appActions[0];
             console.log('Can\'t update app.');
           }
-        ));
+      ));
     }
   }
 
@@ -193,31 +197,31 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
     this.loader.showLoader('2');
     this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
-      (appVersion) => {
-        if (appVersion) {
-          this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
-            this.appDataFormGroup.get('name').setValue(appVersion.name);
-            this.appDataFormGroup.get('safeName').setValue(appVersion.safeName);
-            this.appFields = {
-              fields: this.mapAppTypeFields(appVersion, appType)
-            };
-            this.checkDataValidityRedirect();
+        (appVersion) => {
+          if (appVersion) {
+            this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
+              this.appDataFormGroup.get('name').setValue(appVersion.name);
+              this.appDataFormGroup.get('safeName').setValue(appVersion.safeName);
+              this.appFields = {
+                fields: this.mapAppTypeFields(appVersion, appType)
+              };
+              this.checkDataValidityRedirect();
+              this.loader.closeLoader('2');
+            }, error => {
+              console.error('request getOneAppType', error);
+              this.loader.closeLoader('2');
+              this.router.navigate(['/app-developer']).then();
+            }));
+          } else {
             this.loader.closeLoader('2');
-          }, error => {
-            console.error('request getOneAppType', error);
-            this.loader.closeLoader('2');
+            console.error('request getAppByVersion : empty response');
             this.router.navigate(['/app-developer']).then();
-          }));
-        } else {
+          }
+        }, error => {
+          console.error('request getAppByVersion', error);
           this.loader.closeLoader('2');
-          console.error('request getAppByVersion : empty response');
           this.router.navigate(['/app-developer']).then();
         }
-      }, error => {
-        console.error('request getAppByVersion', error);
-        this.loader.closeLoader('2');
-        this.router.navigate(['/app-developer']).then();
-      }
     ));
   }
 
@@ -225,52 +229,56 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.lockSubmitButton = status;
   }
 
+  getCreatedForm(form: FormGroup): void {
+    this.generatedForm = form;
+  }
+
   private addListenerAppTypeField(): void {
     this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
-      .pipe(debounceTime(200), distinctUntilChanged())
-      .subscribe(type => {
-        if (type) {
-          this.getFieldsByAppType(type);
-        } else {
-          this.appFields = null;
-        }
-      }, () => this.appFields = null));
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe(type => {
+      if (type) {
+        this.getFieldsByAppType(type);
+      } else {
+        this.appFields = null;
+      }
+    }, () => this.appFields = null));
   }
 
   private getAllAppTypes(): void {
     this.loader.showLoader('1');
     this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
-      .subscribe(appTypesResponse => {
-        if (appTypesResponse?.list) {
-          this.currentAppsTypesItems = appTypesResponse.list
-            .map(app => app.appTypeId)
-            .filter(app => app && app.length > 0);
-          this.loader.closeLoader('1');
-        } else {
-          this.loader.closeLoader('1');
-          this.router.navigate(['/app-developer']).then();
-          this.currentAppsTypesItems = [];
-        }
-      }, (error) => {
-        this.currentAppsTypesItems = [];
+    .subscribe(appTypesResponse => {
+      if (appTypesResponse?.list) {
+        this.currentAppsTypesItems = appTypesResponse.list
+        .map(app => app.appTypeId)
+        .filter(app => app && app.length > 0);
+        this.loader.closeLoader('1');
+      } else {
         this.loader.closeLoader('1');
         this.router.navigate(['/app-developer']).then();
-        console.error('Can\'t get all Apps : ' + JSON.stringify(error));
-      }));
+        this.currentAppsTypesItems = [];
+      }
+    }, (error) => {
+      this.currentAppsTypesItems = [];
+      this.loader.closeLoader('1');
+      this.router.navigate(['/app-developer']).then();
+      console.error('Can\'t get all Apps : ' + JSON.stringify(error));
+    }));
   }
 
   private getFieldsByAppType(appType: string): void {
     this.appFields = null;
     this.subscriptions.add(this.appTypeService.getOneAppType(appType)
-      .subscribe((appTypeResponse: any) => {
-        if (appTypeResponse) {
-          this.appFields = {
-            fields: this.mapAppTypeToFields(appTypeResponse)
-          };
-        }
-      }, (error => {
-        console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
-      })));
+    .subscribe((appTypeResponse: any) => {
+      if (appTypeResponse) {
+        this.appFields = {
+          fields: this.mapAppTypeToFields(appTypeResponse)
+        };
+      }
+    }, (error => {
+      console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
+    })));
   }
 
   private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {
@@ -278,8 +286,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
       const defaultValues = new Map(Object.entries(appVersionModel?.customData ? appVersionModel.customData : {}));
       if (appTypeModel?.fields) {
         return appTypeModel.fields
-          .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
-          .map(field => this.mapRecursiveField(field, defaultValues));
+        .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
+        .map(field => this.mapRecursiveField(field, defaultValues));
       }
     }
     return [];
