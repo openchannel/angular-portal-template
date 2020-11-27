@@ -1,40 +1,74 @@
-<div class="bg-container">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7 py-7 px-4 text-center mx-auto">
-                <h1>Your App Store Platform</h1>
-                <p class="mb-4 text-secondary">A design template for implementing your app store with OpenChannel</p>
-                <oc-text-searh></oc-text-searh>
+<div class="bg-container bg-a py-4">
+    <div class="container d-flex flex-column align-items-center justify-content-center">
+        <h1 class="mt-2 mb-0 text-center">
+            Reach millions of developers through <br> the Marketplace
+        </h1>
+        <p class="my-2 text-secondary text-center">
+            A design template for implementing your app store with OpenChannel
+        </p>
+        <oc-button type="primary" text="Become a Partner" [class]="'mb-5'">
+        </oc-button>
+    </div>
+</div>
+<div class="container d-flex justify-content-between my-5">
+    <section class="col-md-5 w-50">
+        <h4>Why list on the OpenChannel Marketplace?</h4>
+        <p class="text-secondary">
+            Build traction for your open source project or software
+            company by listing your 1-Click Application in the Open Channel Marketplace.
+        </p>
+        <img src="../../../assets/img/temporary_home_pic.png" alt="" class="img-fluid">
+    </section>
+    <div class="col-md-5">
+        <div class="feature-card">
+            <div class="row mx-0 align-items-center">
+                <div class="feature-icon">
+                    <img src="../../../assets/img/app-icon1.svg" alt="">
+                </div>
+                <p class="font-med ml-2 mb-0">Reach more users</p>
             </div>
+            <p class="text-secondary mt-2 mb-0">
+                Open Channel global community of 4 million developers relies heavily on open source
+                and free software when getting started. The Open Channel Marketplace helps them easily
+                find and launch your project or product.
+            </p>
         </div>
-        <oc-featured-apps [data]="featuredApp" [label]="getValue('Featured')"></oc-featured-apps>
+        <div class="feature-card">
+            <div class="row mx-0 align-items-center">
+                <div class="feature-icon">
+                    <img src="../../../assets/img/icon-placeholder.svg" alt="">
+                </div>
+                <p class="font-med ml-2 mb-0">Create new revenue streams</p>
+            </div>
+            <p class="text-secondary mt-2 mb-0">
+                You can sell licenses directly to users now and, we plan to make new billing
+                options available to help you create new and easier revenue streams for your business or projects.
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="row mx-0 align-items-center">
+                <div class="feature-icon">
+                    <img src="../../../assets/img/icon-placeholder2.svg" alt="">
+                </div>
+                <p class="font-med ml-2 mb-0">Find new committers</p>
+            </div>
+            <p class="text-secondary mt-2 mb-0">
+                Putting your 1-Click App in the DigitalOcean Marketplace introduces your
+                project to more developers, which can lead to more people supporting and committing
+                to it down the road.
+            </p>
+        </div>
     </div>
 </div>
-<div class="container">
-    <div class="pt-7 pb-5">
-        <oc-app-galary [appsArr]="recentlyAddedApps" [seeAllUrl]="getValue('https://google.com')"
-        [appGalaryTitle]="getValue('Recently Added')"
-        [appGalaryDescription]="getValue('The latest apps that help you and your team work and build faster')">
-    </oc-app-galary>
+<div class="bg-container bg-a py-4">
+    <div class="container d-flex flex-column align-items-center justify-content-center mt-4">
+        <h4 class="mt-2 mb-0 text-center mb-3">
+            How developers are using the Open Channel <br> Marketplace?
+        </h4>
+        <div class="technology-card"></div>
     </div>
-    
-    <oc-app-categories [data]="categories" [categoryHeaderTitle]="getValue('Categories to Explore')">
-    </oc-app-categories>
-    <div class="pt-8 pb-5">
-        <oc-app-galary [appsArr]="recentlyAddedApps" [seeAllUrl]="getValue('https://google.com')"
-        [appGalaryTitle]="getValue('Most Popular')"
-        [appGalaryDescription]="getValue('The most used apps that help you and your team get more done')">
-    </oc-app-galary>
-    </div>
-    
-    <oc-app-galary [appsArr]="recentlyAddedApps" [seeAllUrl]="getValue('https://google.com')"
-        [appGalaryTitle]="getValue('Apps for Analytics')"
-        [appGalaryDescription]="getValue('Get insights and analytics to make the better decisions')">
-    </oc-app-galary>
 </div>
-<div class="bg-container bg-s mt-5 py-8">
-    <div class="container">
-        <oc-app-get-started></oc-app-get-started>
-    </div>
-    
-</div>
+<oc-app-get-started getStartedDescription="Register as an app developer
+                    and submit your app easily with our App Store Developer Portal"
+                    getStartedButtonText="Get Started as an App Developer">
+</oc-app-get-started>
