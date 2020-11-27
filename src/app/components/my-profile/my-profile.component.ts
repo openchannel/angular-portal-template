@@ -25,13 +25,8 @@ export class MyProfileComponent implements OnInit {
     showByTypes: ['admin', 'general'],
   }, {
     pageId: 'profile',
-    pageTitle: 'My Profile',
-    placeholder: 'General',
-    showByTypes: ['*'],
-  }, {
-    pageId: 'password',
-    pageTitle: 'My Profile',
-    placeholder: 'Password',
+    pageTitle: 'My Company',
+    placeholder: 'User management',
     showByTypes: ['*'],
   }];
 

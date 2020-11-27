@@ -51,6 +51,7 @@ import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
 import {CompanyComponent} from './components/my-profile/company/company.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
+import {ManagementComponent} from './components/my-profile/management/management.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import {ToastrModule} from 'ngx-toastr';
     CamelCaseToNormalPipe,
     ResendActivationComponent,
     CompanyComponent,
+    ManagementComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

@@ -16,14 +16,9 @@
                 </li>
             </ul>
         </div>
-        <div [ngSwitch]="selectedPage?.pageId" class="col-md-7 pt-1">
+        <div [ngSwitch]="selectedPage?.pageId" class="col pt-1">
             <app-company [developerData]="developerData" *ngSwitchCase="pages[0].pageId"></app-company>
-
-            <app-general-profile *ngSwitchCase="pages[1].pageId"
-                                 [(myProfile)]="myProfile" [(isProcessing)]="isProcessing" ></app-general-profile>
-
-            <app-change-password *ngSwitchCase="pages[2].pageId"
-                                 [(myProfile)]="myProfile" [(isProcessing)]="isProcessing"></app-change-password>
+            <app-management *ngSwitchCase="pages[1].pageId"></app-management>
         </div>
     </div>
 </div>
