@@ -44,10 +44,10 @@ export class LoginComponent implements OnInit, OnDestroy {
               private toastService: ToastrService) {
   }
 
-  ngOnInit(): void {
-    if (this.authHolderService.isLoggedInUser()) {
-      this.router.navigate(['app-developer']);
-    }
+    ngOnInit(): void {
+        if (this.authHolderService.isLoggedInUser()) {
+            this.router.navigate(['app-developer']);
+        }
 
     if (this.oauthService.hasValidIdToken()) {
       this.oauthService.logOut();
@@ -103,16 +103,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  private processLoginResponse(response: LoginResponse) {
-    this.authHolderService.persist(response.accessToken, response.refreshToken);
-    this.router.navigate(['app-developer']);
-  }
+    private processLoginResponse(response: LoginResponse) {
+        this.authHolderService.persist(response.accessToken, response.refreshToken);
+        this.router.navigate(['app-developer']);
+    }
 
-  sendActivationEmail(email: string) {
-    this.usersService.resendActivationMail(email)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(value => {
-      this.toastService.success('Activation email was sent to your inbox!');
-    });
-  }
+    sendActivationEmail(email: string) {
+        this.usersService.resendActivationMail(email)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(value => {
+              this.toastService.success('Activation email was sent to your inbox!');
+          });
+    }
 }
