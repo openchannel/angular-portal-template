@@ -1,4 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import {
   AppsService, AppTypeModel,
   AppTypeService,
@@ -51,19 +55,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
   appFields: {
     fields: AppTypeFieldModel []
   };
+  generatedForm: FormGroup;
 
-  subscriptions: Subscription = new Subscription();
   lockSubmitButton = true;
 
   pageTitle: 'Submit New App' | 'Edit App';
   pageType: string;
   appId: string;
   appVersion: number;
+  setFormErrors = false;
 
   private appTypePageNumber = 1;
   private appTypePageLimit = 100;
   // data from the form component
   private appFormData: any;
+  private subscriptions: Subscription = new Subscription();
 
   ngOnInit(): void {
     this.pageType = this.router.url.split('/')[1];
@@ -199,6 +205,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               this.appFields = {
                 fields: this.mapAppTypeFields(appVersion, appType)
               };
+              this.checkDataValidityRedirect();
               this.loader.closeLoader('2');
             }, error => {
               console.error('request getOneAppType', error);
@@ -220,6 +227,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   getAppFormStatus(status: boolean): void {
     this.lockSubmitButton = status;
+  }
+
+  getCreatedForm(form: FormGroup): void {
+    this.generatedForm = form;
   }
 
   private addListenerAppTypeField(): void {
@@ -327,5 +338,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
       return 'Submit New App';
     }
     return 'Edit App';
+  }
+
+  private checkDataValidityRedirect(): void {
+    this.subscriptions.add(this.activeRoute.queryParams.subscribe(param => {
+      if (param.formStatus && param.formStatus === 'invalid') {
+        this.setFormErrors = true;
+      }
+    }));
   }
 }
