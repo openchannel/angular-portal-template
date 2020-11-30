@@ -12,10 +12,10 @@
             <oc-button type="secondary" text="Log In"
                        [class]="'mr-2 text-color-primary'"
                        [style]="'min-width: 87px'"
-                       routerLink="/login"></oc-button>
+                       routerLink="login"></oc-button>
             <oc-button type="primary" text="Sign Up"
                        [style]="'min-width: 87px'"
-                       routerLink="/signup"></oc-button>
+                       routerLink="signup"></oc-button>
         </div>
         <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="sellerName">
             <ul class="navbar-nav mx-auto">
@@ -33,8 +33,8 @@
                             My Profile
                         </a>
                         <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/my-profile">Profile</a>
-                            <a class="dropdown-item" [routerLink]="" (click)="logout()">Logout
+                            <a class="dropdown-item" routerLink="/my-profile">Profile</a>
+                            <a class="dropdown-item" (click)="logout()">Logout
                                 <img src="assets/img/logout.svg"
                                     class="pl-5" alt="logout">
                             </a>

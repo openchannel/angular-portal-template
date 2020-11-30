@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthHolderService } from 'oc-ng-common-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authHolderService: AuthHolderService,
+              private router: Router) { }
 
   ngOnInit() {
-
+    if (this.authHolderService.isLoggedInUser()) {
+      this.router.navigate(['app-developer']).then();
+    }
   }
 }

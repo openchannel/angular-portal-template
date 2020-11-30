@@ -44,44 +44,44 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['app-developer']);
-        }
+      if (this.authHolderService.isLoggedInUser()) {
+        this.router.navigate(['app-developer']);
+      }
 
-        if (this.oauthService.hasValidIdToken()) {
-            this.oauthService.logOut();
-        }
+      if (this.oauthService.hasValidIdToken()) {
+        this.oauthService.logOut();
+      }
 
-        this.loaderService.showLoader('getAuthConfig');
+      this.loaderService.showLoader('getAuthConfig');
 
-        this.openIdAuthService.getAuthConfig()
-          .pipe(
-            takeUntil(this.destroy$),
-            filter(value => value))
-          .subscribe((authConfig) => {
-                this.loginType = authConfig.type;
+      this.openIdAuthService.getAuthConfig()
+        .pipe(
+          takeUntil(this.destroy$),
+          filter(value => value))
+        .subscribe((authConfig) => {
+            this.loginType = authConfig.type;
 
-                this.oauthService.configure({
-                    ...authConfig,
-                    redirectUri: authConfig.redirectUri || window.location.origin,
-                });
+              this.oauthService.configure({
+                  ...authConfig,
+                  redirectUri: authConfig.redirectUri || window.location.href,
+              });
 
-                this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-                this.oauthService.loadDiscoveryDocumentAndLogin({
-                    onTokenReceived: receivedTokens => {
-                        this.loaderService.showLoader('internalLogin');
-                        this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
-                          .pipe(takeUntil(this.destroy$))
-                          .subscribe((response: LoginResponse) => {
-                              this.processLoginResponse(response);
-                              this.loaderService.closeLoader('internalLogin');
-                          });
-                    },
-                }).then(() => {
-                    this.loaderService.closeLoader('getAuthConfig');
-                });
-            }, err => console.error('getAuthConfig', err),
-            () => this.loaderService.closeLoader('getAuthConfig'));
+              this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+              this.oauthService.loadDiscoveryDocumentAndLogin({
+                  onTokenReceived: receivedTokens => {
+                      this.loaderService.showLoader('internalLogin');
+                      this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe((response: LoginResponse) => {
+                            this.processLoginResponse(response);
+                            this.loaderService.closeLoader('internalLogin');
+                        });
+                  },
+              }).then(() => {
+                  this.loaderService.closeLoader('getAuthConfig');
+              });
+          }, err => console.error('getAuthConfig', err),
+          () => this.loaderService.closeLoader('getAuthConfig'));
     }
 
     ngOnDestroy(): void {
