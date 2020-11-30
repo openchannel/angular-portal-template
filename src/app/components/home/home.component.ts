@@ -17,4 +17,8 @@ export class HomeComponent implements OnInit {
       this.router.navigate(['app-developer']).then();
     }
   }
+
+  getStartedRedirect() {
+    this.router.navigate(['signup']).then();
+  }
 }
