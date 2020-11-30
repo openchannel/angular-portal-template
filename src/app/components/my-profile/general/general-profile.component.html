@@ -1,28 +1,3 @@
-<!--<form novalidate #myProfileForm="ngForm" >-->
-<!--    <div class="form-group">-->
-<!--        <oc-label text="Name"></oc-label>-->
-<!--        &lt;!&ndash; <img src="assets/img/info-icon.svg" class="pl-1" alt="info-icon"> &ndash;&gt;-->
-<!--        <oc-input name="sellerName" #sellerName="ngModel"-->
-<!--            [(ngModel)]="myProfile.name" ngDefaultControl-->
-<!--            required="required"></oc-input>-->
-<!--        <oc-error [control]="sellerName"> </oc-error>-->
-<!--    </div>-->
-<!--    <div class="form-group">-->
-<!--        <oc-label text="Email"></oc-label>-->
-<!--        <oc-input name="sellerEmail" #sellerEmail="ngModel"-->
-<!--            [(ngModel)]="myProfile.email"-->
-<!--            ngDefaultControl-->
-<!--            emailValidator-->
-<!--            required="required"></oc-input>-->
-<!--        <oc-error [field]="'email'" [control]="sellerEmail"> </oc-error>-->
-<!--    </div>-->
-<!--    <oc-button type="primary" text="Save" class="btn-block"-->
-<!--               [process]="isProcessing"-->
-<!--               [disabled]="isProcessing"-->
-<!--               (click)="saveGeneralProfile(myProfileForm)">-->
-<!--    </oc-button>-->
-<!--</form>-->
-
 <oc-form *ngIf="formDefinition" #form
          [formJsonData]="formDefinition"
          [showButton]="false"></oc-form>
