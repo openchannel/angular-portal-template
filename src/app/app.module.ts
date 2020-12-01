@@ -52,6 +52,7 @@ import {CompanyComponent} from './components/my-profile/company/company.componen
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
 import {ManagementComponent} from './components/my-profile/management/management.component';
+import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
 
 @NgModule({
   declarations: [
@@ -86,6 +87,7 @@ import {ManagementComponent} from './components/my-profile/management/management
     ResendActivationComponent,
     CompanyComponent,
     ManagementComponent,
+    InviteUserModalComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -122,6 +124,7 @@ import {ManagementComponent} from './components/my-profile/management/management
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
+    InviteUserModalComponent,
   ],
 })
 export class AppModule {
