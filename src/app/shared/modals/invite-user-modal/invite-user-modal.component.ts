@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DeveloperTypeService, InviteUserModel } from 'oc-ng-common-service';
+import { DeveloperTypeService, InviteUserModel, InviteUserService } from 'oc-ng-common-service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -28,7 +28,8 @@ export class InviteUserModalComponent implements OnInit {
   public formData: InviteUserModel;
 
   constructor(private developerTypeService: DeveloperTypeService,
-              private modalService: NgbActiveModal) { }
+              private modalService: NgbActiveModal,
+              private inviteService: InviteUserService) { }
 
   ngOnInit(): void {
     this.makeFormConfig();
@@ -36,7 +37,11 @@ export class InviteUserModalComponent implements OnInit {
   }
 
   closeAction(action: 'success' | 'cancel') {
-    this.modalService.close(action);
+    const modalData = {
+      status: action,
+      userData: action === 'success' ? this.formData : null
+    };
+    this.modalService.close(modalData);
   }
 
   makeFormConfig() {
@@ -122,6 +127,16 @@ export class InviteUserModalComponent implements OnInit {
   }
 
   sendInvite() {
-
+    this.formInvalid = true;
+    if (this.userData) {
+      // todo edit user request
+    } else {
+      const templateId = '5f96dfc95bca4b3e4f64d7f2';
+      this.inviteService.sendDeveloperInvite(this.formData.email, this.formData.name, this.developerId, templateId)
+        .subscribe(response => {
+          this.formInvalid = false;
+          this.closeAction('success');
+        }, () => { this.formInvalid = false; });
+    }
   }
 }

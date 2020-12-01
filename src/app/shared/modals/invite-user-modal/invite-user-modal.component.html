@@ -15,7 +15,8 @@
     </div>
     <div class="button-container mb-2 mb-sm-0">
       <oc-button type="primary" [text]="successButtonText"
-                 class="w-100" [disabled]="formInvalid"></oc-button>
+                 class="w-100" [disabled]="formInvalid"
+                 (click)="sendInvite()"></oc-button>
     </div>
   </div>
 </div>
