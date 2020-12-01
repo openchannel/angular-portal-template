@@ -1,13 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { DeveloperTypeService, InviteUserModel, InviteUserService } from 'oc-ng-common-service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-invite-user-modal',
   templateUrl: './invite-user-modal.component.html',
   styleUrls: ['./invite-user-modal.component.scss']
 })
-export class InviteUserModalComponent implements OnInit {
+export class InviteUserModalComponent implements OnInit, OnDestroy {
 
   /** Title of the modal */
   @Input() modalTitle: string = 'Invite a member';
@@ -27,6 +28,8 @@ export class InviteUserModalComponent implements OnInit {
   // data from custom form
   public formData: InviteUserModel;
 
+  private subscriber: Subscription = new Subscription();
+
   constructor(private developerTypeService: DeveloperTypeService,
               private modalService: NgbActiveModal,
               private inviteService: InviteUserService) { }
@@ -34,6 +37,10 @@ export class InviteUserModalComponent implements OnInit {
   ngOnInit(): void {
     this.makeFormConfig();
     this.getUserType();
+  }
+
+  ngOnDestroy() {
+    this.subscriber.unsubscribe();
   }
 
   closeAction(action: 'success' | 'cancel') {
