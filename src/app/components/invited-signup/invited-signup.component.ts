@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  AuthenticationService,
   DeveloperAccountTypesService,
   InviteDeveloperModel,
   InviteUserService
@@ -18,9 +17,12 @@ export class InvitedSignupComponent implements OnInit {
 
   public developerInviteData: InviteDeveloperModel;
   public isExpired = false;
-  public inviteSignupForm: FormGroup;
+  public inviteFormData: any;
   public formConfig: any;
-  public  isTerms = false;
+  public isTerms = false;
+  public isFormInvalid = true;
+  public inProcess = false;
+
 
   private requestSubscriber: Subscription = new Subscription();
 
@@ -32,7 +34,7 @@ export class InvitedSignupComponent implements OnInit {
   ngOnInit(): void {
     this.getInviteDetails();
   }
-
+  // making form config according to form type
   getFormType(type) {
     if (type) {
       this.requestSubscriber.add(
@@ -62,7 +64,7 @@ export class InvitedSignupComponent implements OnInit {
       };
     }
   }
-
+  // getting invitation details
   getInviteDetails(): void {
     const userToken = this.activeRouter.snapshot.params.token;
     if (userToken) {
@@ -88,13 +90,24 @@ export class InvitedSignupComponent implements OnInit {
       return field;
     });
   }
-
+  // getting generated form group for disabling special fields
   getCreatedForm(form) {
-    this.inviteSignupForm = form;
-    this.inviteSignupForm.get('email').disable();
+    form.get('email').disable();
     const companyKey = Object.keys(form.value).find(key => key.includes('company'));
     if (companyKey) {
-      this.inviteSignupForm.get(companyKey).disable();
+      form.get(companyKey).disable();
     }
+  }
+  // getting last values of form for submission
+  getFormValues(form) {
+    this.inviteFormData = form;
+  }
+  // Active form validation
+  getFormValidity(status) {
+    this.isFormInvalid = status;
+  }
+
+  submitForm() {
+    // todo register user request
   }
 }
