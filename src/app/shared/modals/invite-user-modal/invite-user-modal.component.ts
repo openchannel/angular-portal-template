@@ -138,7 +138,7 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
     if (this.userData) {
       // todo edit user request
     } else {
-      const templateId = '5f96dfc95bca4b3e4f64d7f2';
+      const templateId = '5fc663f2217876017548dc25';
       this.inviteService.sendDeveloperInvite(this.formData.email, this.formData.name, this.developerId, templateId)
         .subscribe(response => {
           this.formInvalid = false;
