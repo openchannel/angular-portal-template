@@ -53,6 +53,7 @@ import {ResendActivationComponent} from './components/resend-activation/resend-a
 import {ToastrModule} from 'ngx-toastr';
 import {ManagementComponent} from './components/my-profile/management/management.component';
 import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
+import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invi
     CompanyComponent,
     ManagementComponent,
     InviteUserModalComponent,
+    InvitedSignupComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
