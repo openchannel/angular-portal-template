@@ -8,7 +8,6 @@ import {
 } from 'oc-ng-common-service';
 import { Subscription } from 'rxjs';
 import { FormGroup } from '@angular/forms';
-import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-invited-signup',
@@ -20,6 +19,8 @@ export class InvitedSignupComponent implements OnInit {
   public developerInviteData: InviteDeveloperModel;
   public isExpired = false;
   public inviteSignupForm: FormGroup;
+  public formConfig: any;
+  public  isTerms = false;
 
   private requestSubscriber: Subscription = new Subscription();
 
@@ -30,6 +31,36 @@ export class InvitedSignupComponent implements OnInit {
 
   ngOnInit(): void {
     this.getInviteDetails();
+  }
+
+  getFormType(type) {
+    if (type) {
+      this.requestSubscriber.add(
+        this.typeService.getAccountType(type).subscribe(
+          resp => {
+            this.formConfig = {
+              fields: this.mapDataToField(resp.fields)
+            };
+          }
+        )
+      );
+    } else {
+      this.formConfig = {
+        fields: [
+          {
+          id:	'name',
+          label:	'Name',
+          type:	'text',
+          attributes: { required: false }
+          },
+          {
+            id: 'email',
+            label:	'Email',
+            type:	'emailAddress',
+            attributes: { required: true },
+          }]
+      };
+    }
   }
 
   getInviteDetails(): void {
@@ -49,11 +80,21 @@ export class InvitedSignupComponent implements OnInit {
     }
   }
 
-  getFormType(type) {
-    this.requestSubscriber.add(
-      this.typeService.getAccountType(type).subscribe(
-        resp => {}
-      )
-    );
+  mapDataToField(fields) {
+    return fields.map(field => {
+      if (!field.id.includes('customData') && this.developerInviteData[field.id]) {
+        field.defaultValue = this.developerInviteData[field.id];
+      }
+      return field;
+    });
+  }
+
+  getCreatedForm(form) {
+    this.inviteSignupForm = form;
+    this.inviteSignupForm.get('email').disable();
+    const companyKey = Object.keys(form.value).find(key => key.includes('company'));
+    if (companyKey) {
+      this.inviteSignupForm.get(companyKey).disable();
+    }
   }
 }
