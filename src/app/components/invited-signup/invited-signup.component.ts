@@ -79,6 +79,8 @@ export class InvitedSignupComponent implements OnInit {
         }, () => {
           this.router.navigate(['']);
         }));
+    } else {
+      this.router.navigate(['']);
     }
   }
 

@@ -59,7 +59,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     .pipe(
         takeUntil(this.destroy$),
         tap(developerResponse => developers = developerResponse.list),
-        mergeMap(() => this.inviteUserService.getDeveloperInvites(1, 100, this.createInviteQuery(developers)))
+        mergeMap(() => this.inviteUserService.getDeveloperInvites(1, 20, this.createInviteQuery(developers)))
     ).subscribe(invites => {
       const invitedDeveloperAccountId = invites.list.map(invite => invite?.developerAccountId).filter(id => id);
       this.userProperties.data.list.push(...developers.map(developer => this.mapToGridUser(developer, invitedDeveloperAccountId)));
@@ -82,7 +82,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   private createInviteQuery(users: DeveloperAccountModel []): string | null {
     if (users?.length > 0) {
-      return `{\'developerAccountId\': {\'$in\':[${users.map(user => user?.developerAccountId).filter(id => id).map(id => `\'${id}\'`).join(',')}]}}`;
+      return `{\'developerAccountId\': {\'$in\':[${users.map(user => user?.developerAccountId)
+        .filter(id => id).map(id => `\'${id}\'`).join(',')}]}}`;
     }
     return null;
   }

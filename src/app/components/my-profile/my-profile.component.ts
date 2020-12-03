@@ -93,7 +93,7 @@ export class MyProfileComponent implements OnInit {
     modalRef.componentInstance.developerId = this.developerData.developer.developerId;
     modalRef.result.then(result => {
       if (result.status === 'success') {
-        this.toaster.success('Invitation sent to ' + result.userData.name);
+        this.toaster.success('Invitation sent to ' + result.userData.email);
       }
     });
   }
