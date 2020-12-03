@@ -57,7 +57,8 @@
             </div>
             <div class="form-btn">
                 <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"
-                    [disabled]="appDataFormGroup.invalid || generatedForm.get('name').invalid"></oc-button>
+                    [disabled]="appDataFormGroup.invalid ||
+                    (pageType === 'app-new' && generatedForm.get('name').invalid)"></oc-button>
             </div>
             <div class="form-btn">
                 <oc-button type="primary" text="Submit" class="w-100"
