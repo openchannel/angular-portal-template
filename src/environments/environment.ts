@@ -9,7 +9,8 @@ export const environment = {
   client_secret: 'on5jmqp7uq00vgeg9tnq4pii2f1f3pm84q45uq907e8vhmr24ta',
   openchannelUrl: 'https://market.openchannel.io',
   graphqlUrl: 'http://6e4d6c7f6f0f.ngrok.io/graphql',
-  auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8='
+  auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8=',
+  marketplaceName: 'Openchannel'
 };
 
 /*
