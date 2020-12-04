@@ -10,7 +10,7 @@ export const environment = {
   openchannelUrl: 'https://market.openchannel.io',
   graphqlUrl: 'http://6e4d6c7f6f0f.ngrok.io/graphql',
   auth: 'Basic NWY1NGE3NjljOTZjZjYxMjNlNzNiMDZmOmVJUG1fQ3F5NXVTVm1vbXdLNlNLakh1cEdQX3drN0hEY29kSS13bkZuUm8=',
-  marketplaceName: 'Openchannel'
+  marketplaceName: 'OpenChannel'
 };
 
 /*
