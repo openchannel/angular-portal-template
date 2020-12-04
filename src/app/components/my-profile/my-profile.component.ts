@@ -91,6 +91,7 @@ export class MyProfileComponent implements OnInit {
     const modalRef = this.modal.open(InviteUserModalComponent);
 
     modalRef.componentInstance.developerId = this.developerData.developer.developerId;
+    modalRef.componentInstance.companyName = this.developerData.developer.name;
     modalRef.result.then(result => {
       if (result.status === 'success') {
         this.toaster.success('Invitation sent to ' + result.userData.email);

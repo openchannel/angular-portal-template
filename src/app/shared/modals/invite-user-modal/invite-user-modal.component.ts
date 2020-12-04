@@ -18,6 +18,8 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
   @Input() successButtonText: string = 'Send Invite';
   /** Id of the inviter */
   @Input() developerId: string;
+  /** Input company name to invite modal */
+  @Input() companyName: string;
 
   // config for custom form generation
   public formConfig: any = {};
@@ -139,7 +141,7 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
       // todo edit user request
     } else {
       const templateId = '5fc663f2217876017548dc25';
-      this.inviteService.sendDeveloperInvite(this.formData.email, this.formData.name, this.developerId, templateId)
+      this.inviteService.sendDeveloperInvite(this.formData, this.developerId, templateId, this.companyName)
         .subscribe(response => {
           this.formInvalid = false;
           this.closeAction('success');
