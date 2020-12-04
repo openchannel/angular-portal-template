@@ -101,6 +101,8 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     const mappedFields = fields.map(field => {
       if (!field.id.includes('customData') && this.developerInviteData[field.id]) {
         field.defaultValue = this.developerInviteData[field.id];
+      } else if (field.id.includes('company')) {
+        field.defaultValue = this.developerInviteData.customData?.company;
       }
       return field;
     });

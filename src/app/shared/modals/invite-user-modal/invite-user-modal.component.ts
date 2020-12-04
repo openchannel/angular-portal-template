@@ -1,5 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { DeveloperTypeService, InviteUserModel, InviteUserService } from 'oc-ng-common-service';
+import {
+  DeveloperAccountTypesService,
+  DeveloperTypeService,
+  InviteUserModel,
+  InviteUserService
+} from 'oc-ng-common-service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
 
@@ -11,11 +16,11 @@ import { Subscription } from 'rxjs';
 export class InviteUserModalComponent implements OnInit, OnDestroy {
 
   /** Title of the modal */
-  @Input() modalTitle: string = 'Invite a member';
+  @Input() modalTitle = 'Invite a member';
   /** If you want to edit user - you should set user data */
   @Input() userData: InviteUserModel;
   /** Text of the success button */
-  @Input() successButtonText: string = 'Send Invite';
+  @Input() successButtonText = 'Send Invite';
   /** Id of the inviter */
   @Input() developerId: string;
   /** Input company name to invite modal */
@@ -26,13 +31,13 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
   // array of developer types id
   public userTypes: string [] = [];
   // custom form validity
-  public formInvalid: boolean = true;
+  public formInvalid = true;
   // data from custom form
   public formData: InviteUserModel;
 
   private subscriber: Subscription = new Subscription();
 
-  constructor(private developerTypeService: DeveloperTypeService,
+  constructor(private developerTypeService: DeveloperAccountTypesService,
               private modalService: NgbActiveModal,
               private inviteService: InviteUserService) { }
 
@@ -107,11 +112,11 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
   }
 
   getUserType() {
-    this.developerTypeService.getAllDeveloperTypes(1, 50).subscribe(
+    this.developerTypeService.getAllDeveloperAccountsType(1, 100).subscribe(
       result => {
         if (result.list && result.list.length > 0) {
           result.list.forEach(type => {
-            this.userTypes.push(type.developerTypeId);
+            this.userTypes.push(type.developerAccountTypeId);
           });
 
           this.formConfig.fields.find(field => field.id === 'type').options = [...this.userTypes];
