@@ -66,7 +66,14 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
             label:	'Email',
             type:	'emailAddress',
             attributes: { required: true },
-          }]
+          },
+          {
+            id: 'password',
+            label:	'Password',
+            type:	'password',
+            attributes: { required: true },
+          }
+        ]
       };
     }
   }
@@ -91,12 +98,20 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
   }
 
   mapDataToField(fields) {
-    return fields.map(field => {
+    const mappedFields = fields.map(field => {
       if (!field.id.includes('customData') && this.developerInviteData[field.id]) {
         field.defaultValue = this.developerInviteData[field.id];
       }
       return field;
     });
+    mappedFields.push({
+      id: 'password',
+      label:	'Password',
+      type:	'password',
+      attributes: { required: true },
+    });
+
+    return mappedFields;
   }
   // getting generated form group for disabling special fields
   getCreatedForm(form) {
