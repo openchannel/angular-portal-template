@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbDateAdapter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HeaderComponent} from './shared/template/header/header.component';
@@ -18,7 +18,7 @@ import {CustomAdapter} from './core/datepicker-adapter';
 import {LoaderComponent} from './shared/custom-components/loader/loader.component';
 import {DatePipe} from '@angular/common';
 import {SignupComponent} from './components/signup/signup.component';
-import {OcCommonServiceModule} from 'oc-ng-common-service';
+import {CustomHttpClientXsrfModule, OcCommonServiceModule} from 'oc-ng-common-service';
 import {AppStoreComponent} from './components/applications/app-store/app-store.component';
 import {AppAppsComponent} from './components/applications/app-apps/app-apps.component';
 import {AppDetailComponent} from './components/applications/app-detail/app-detail.component';
@@ -46,9 +46,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
 import {SubmissionsTableComponent} from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
-import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
-import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
-import { ResendActivationComponent } from './components/resend-activation/resend-activation.component';
+import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
 
 @NgModule({
@@ -102,12 +100,10 @@ import {ToastrModule} from 'ngx-toastr';
     DragDropModule,
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
-    HttpClientXsrfModule.withOptions({ cookieName: 'XSRF-TOKEN' })
+    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN'}),
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-   { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true },
-   { provide: HTTP_INTERCEPTORS, useClass: HttpXsrfExtractor, multi: true },
    { provide: NgbDateAdapter, useClass: CustomAdapter },
     {provide: AppsServiceImpl, useClass: MockAppsService},
    DatePipe,
