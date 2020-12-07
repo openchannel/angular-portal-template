@@ -33,7 +33,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
   };
 
   private subscriptions = new Subscription();
-  private userLimitForOnePage = 50;
+  private sortQuery: '{"name": 1}';
 
   private destroy$: Subject<void> = new Subject();
 
@@ -54,20 +54,41 @@ export class ManagementComponent implements OnInit, OnDestroy {
   }
 
   scroll(pageNumber: number) {
-    let developers: DeveloperAccountModel [];
-    this.subscriptions.add(this.developerAccountService.getDeveloperAccounts(pageNumber, this.userLimitForOnePage)
-    .pipe(
-        takeUntil(this.destroy$),
-        tap(developerResponse => developers = developerResponse.list),
-        mergeMap(() => this.inviteUserService.getDeveloperInvites(1, 20, this.createInviteQuery(developers)))
-    ).subscribe(invites => {
-      const invitedDeveloperAccountId = invites.list.map(invite => invite?.developerAccountId).filter(id => id);
-      this.userProperties.data.list.push(...developers.map(developer => this.mapToGridUser(developer, invitedDeveloperAccountId)));
-    }, error => console.error('getDevelopers', error)));
-
+    this.userProperties.data.pageNumber = pageNumber;
+    this.getAllDevelopers();
   }
 
-  private mapToGridUser(developer: DeveloperAccountModel, invitedDeveloperAccountId: string []): UserAccountGridModel {
+  private getAllDevelopers() {
+    this.subscriptions.add(
+      this.inviteUserService.getDeveloperInvites(this.userProperties.data.pageNumber, 10, this.sortQuery)
+        .subscribe(invites => {
+          const invitesArray = invites.list.map(developer => this.mapToGridUser(developer, 'INVITED'));
+          if (this.userProperties.data.pageNumber === 1 ) {
+            this.userProperties.data.list
+              .push(...invitesArray);
+          } else {
+            const lastInvitedDev = this.userProperties.data.list
+              .filter(developer => developer.inviteStatus === 'INVITED').pop();
+            if (lastInvitedDev) {
+              this.userProperties.data.list
+                .splice(this.userProperties.data.list.lastIndexOf(lastInvitedDev) + 1, 0, ...invitesArray);
+            }
+          }
+          this.getActiveDevelopers();
+        }, () => this.getActiveDevelopers())
+    );
+  }
+
+  private getActiveDevelopers() {
+    this.subscriptions.add(this.developerAccountService.getDeveloperAccounts(this.userProperties.data.pageNumber, 10, this.sortQuery)
+      .subscribe(activeDevelopers => {
+        this.userProperties.data.list
+          .push(...activeDevelopers.list.map(developer => this.mapToGridUser(developer, 'ACTIVE')));
+      })
+    );
+  }
+
+  private mapToGridUser(developer: DeveloperAccountModel, developerStatus: 'INVITED' | 'ACTIVE'): UserAccountGridModel {
     return {
       ...developer,
       name: developer.name,
@@ -76,16 +97,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
       created: developer.created,
       userId: developer.developerId,
       userAccountId: developer.developerAccountId,
-      inviteStatus: invitedDeveloperAccountId.includes(developer.developerAccountId) ? 'INVITED' : 'ACTIVE'
+      inviteStatus: developerStatus
     };
-  }
-
-  private createInviteQuery(users: DeveloperAccountModel []): string | null {
-    if (users?.length > 0) {
-      return `{\'developerAccountId\': {\'$in\':[${users.map(user => user?.developerAccountId)
-        .filter(id => id).map(id => `\'${id}\'`).join(',')}]}}`;
-    }
-    return null;
   }
 
   userAction(userAction: UserGridActionModel) {
