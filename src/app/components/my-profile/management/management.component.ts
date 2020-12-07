@@ -33,7 +33,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
   };
 
   private subscriptions = new Subscription();
-  private sortQuery: '{"name": 1}';
+  private sortQuery: string = '{"name": 1}';
 
   private destroy$: Subject<void> = new Subject();
 
@@ -56,6 +56,27 @@ export class ManagementComponent implements OnInit, OnDestroy {
   scroll(pageNumber: number) {
     this.userProperties.data.pageNumber = pageNumber;
     this.getAllDevelopers();
+  }
+
+  catchSortChanges(sortBy) {
+    switch (sortBy) {
+      case 'name':
+        this.sortQuery = '{"name": 1}';
+        break;
+      case 'email':
+        this.sortQuery = '{"email": 1}';
+        break;
+      case 'date':
+        this.sortQuery = '{"created": 1}';
+        break;
+      case 'role':
+        this.sortQuery = '{"type": 1}';
+        break;
+      default:
+        break;
+    }
+    this.userProperties.data.list = [];
+    this.scroll(1);
   }
 
   private getAllDevelopers() {
