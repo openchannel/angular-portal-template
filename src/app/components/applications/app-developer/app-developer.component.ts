@@ -74,7 +74,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       list: [],
       count: 50
     },
-    options: ['EDIT', 'PREVIEW', 'PUBLISH', 'SUSPEND', 'DELETE'],
+    options: ['EDIT', 'PREVIEW', 'SUBMIT', 'SUSPEND', 'DELETE'],
     previewTemplate: ''
   };
 
@@ -229,7 +229,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           }
         });
         break;
-      case 'PUBLISH':
+      case 'SUBMIT':
         this.requestsSubscriber.add(this.appsVersionService.getAppByVersion(menuEvent.appId, menuEvent.appVersion)
           .subscribe((appData) => {
             if (appData) {
