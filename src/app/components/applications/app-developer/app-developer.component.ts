@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
-  AppListing, AppListMenuAction, AppsService, AppVersionService,
+  AppListing, AppListMenuAction, AppsService, AppTypeModel, AppTypeService, AppVersionService,
   ChartLayoutTypeModel,
   ChartService,
   ChartStatisticFiledModel,
@@ -23,7 +23,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './app-developer.component.html',
   styleUrls: ['./app-developer.component.scss']
 })
-export class AppDeveloperComponent implements OnInit {
+export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   count;
   countText;
@@ -88,7 +88,8 @@ export class AppDeveloperComponent implements OnInit {
               private notificationService: NotificationService,
               private commonService: CommonService,
               private modal: NgbModal,
-              private toaster: ToastrService) {
+              private toaster: ToastrService,
+              private appTypeService: AppTypeService) {
 
   }
 
@@ -97,6 +98,10 @@ export class AppDeveloperComponent implements OnInit {
     this.applications.list = [];
     this.commonService.scrollToFormInvalidField({form: null, adjustSize: 60});
     this.getApps(1);
+  }
+
+  ngOnDestroy() {
+    this.requestsSubscriber.unsubscribe();
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
@@ -205,7 +210,6 @@ export class AppDeveloperComponent implements OnInit {
                     this.toaster.error(resp.message);
                   } else {
                     this.appListConfig.data.pageNumber = 0;
-                    console.log('deleted');
                     this.toaster.success('Your app has been deleted');
                     this.getApps(1);
                   }
@@ -226,28 +230,45 @@ export class AppDeveloperComponent implements OnInit {
         });
         break;
       case 'PUBLISH':
-        const modalRef = this.modal.open(ConfirmationModalComponent);
+        this.requestsSubscriber.add(this.appsVersionService.getAppByVersion(menuEvent.appId, menuEvent.appVersion)
+          .subscribe((appData) => {
+            if (appData) {
+              this.requestsSubscriber.add(this.appTypeService
+                .getOneAppType(appData.type).subscribe(appType => {
 
-        modalRef.componentInstance.type = 'simple';
-        modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
-        modalRef.componentInstance.modalTitle = 'Submit app';
-        modalRef.componentInstance.buttonText = 'Yes, submit it';
+                  if (appData.name && appData.safeName.length > 0 && this.checkRequiredAppFields(appData, appType)) {
+                    const modalRef = this.modal.open(ConfirmationModalComponent);
 
-        modalRef.result.then(res => {
-          if (res && res === 'success') {
-            this.requestsSubscriber.add(this.appService.publishAppByVersion(menuEvent.appId, {
-              version: menuEvent.appVersion, autoApprove: true})
-              .subscribe((resp) => {
-                if (resp.code && resp.code !== 200) {
-                  this.toaster.error(resp.message);
-                } else {
-                  this.appListConfig.data.pageNumber = 0;
-                  this.toaster.success('Your app has been submitted for approval');
-                  this.getApps(1);
-                }
-              }));
-          }
-        });
+                    modalRef.componentInstance.type = 'simple';
+                    modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
+                    modalRef.componentInstance.modalTitle = 'Submit app';
+                    modalRef.componentInstance.buttonText = 'Yes, submit it';
+
+                    modalRef.result.then(res => {
+                      if (res && res === 'success') {
+                        this.requestsSubscriber.add(this.appService.publishAppByVersion(menuEvent.appId, {
+                          version: menuEvent.appVersion, autoApprove: true})
+                          .subscribe((resp) => {
+                            if (resp.code && resp.code !== 200) {
+                              this.toaster.error(resp.message);
+                            } else {
+                              this.appListConfig.data.pageNumber = 0;
+                              this.toaster.success('Your app has been submitted for approval');
+                              this.getApps(1);
+                            }
+                          }));
+                      }
+                    });
+                  } else {
+                    this.router.navigate(['/edit-app', menuEvent.appId, 'version', menuEvent.appVersion],
+                      { queryParams: { formStatus: 'invalid' } })
+                      .then(() => {
+                        this.toaster.info('Fill out all mandatory fields before submitting');
+                      });
+                  }
+                }));
+            }
+          }));
         break;
       case 'PREVIEW':
         break;
@@ -292,5 +313,21 @@ export class AppDeveloperComponent implements OnInit {
       console.error('Not implement chart period.');
     }
     return dateStart;
+  }
+
+// checking if all required fields of the app are filled
+  checkRequiredAppFields(appData: FullAppData, appType: AppTypeModel): boolean {
+    let isValid = true;
+    appType.fields.forEach(field => {
+      if (field.id.includes('customData')) {
+        // check data only in required fields
+        if (field.attributes?.required) {
+          if (!appData.customData[field.id.split('.')[1]]) {
+            isValid = false;
+          }
+        }
+      }
+    });
+    return isValid;
   }
 }
