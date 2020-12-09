@@ -14,21 +14,21 @@ import {ResendActivationComponent} from './components/resend-activation/resend-a
 import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
-  {path: 'login', component: LoginComponent},
-  {path: 'signup', component: SignupComponent},
-  {path: 'activate', component: ActivationComponent},
-  {path: 'reset-password', component: ResetPasswordComponent},
-  {path: 'forgot-password', component: ForgotPasswordComponent},
-  {path: 'resend-activation', component: ResendActivationComponent},
+  {path: 'login', component: LoginComponent, data: {title: 'Login'}},
+  {path: 'signup', component: SignupComponent, data: {title: 'Sign up'}},
+  {path: 'activate', component: ActivationComponent, data: {title: 'Activation'}},
+  {path: 'reset-password', component: ResetPasswordComponent, data: {title: 'Reset password'}},
+  {path: 'forgot-password', component: ForgotPasswordComponent, data: {title: 'Forgot password'}},
+  {path: 'resend-activation', component: ResendActivationComponent, data: {title: 'Resend activation'}},
   {
     path: '',
     component: CommonLayoutComponent,
 
     children: [
-      {path: '', component: HomeComponent},
-      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
-      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
-      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
+      {path: '', component: HomeComponent, data: {title: 'Home'}},
+      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
+      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
+      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data: {title: 'My profile'}},
       {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
