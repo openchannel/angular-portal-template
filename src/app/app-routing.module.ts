@@ -14,22 +14,22 @@ import {ResendActivationComponent} from './components/resend-activation/resend-a
 import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
 
 const routes: Routes = [
-  {path: 'login', component: LoginComponent},
-  {path: 'signup', component: SignupComponent},
-  {path: 'activate', component: ActivationComponent},
-  {path: 'reset-password', component: ResetPasswordComponent},
-  {path: 'forgot-password', component: ForgotPasswordComponent},
-  {path: 'resend-activation', component: ResendActivationComponent},
+  {path: 'login', component: LoginComponent, data: {title: 'Login'}},
+  {path: 'signup', component: SignupComponent, data: {title: 'Sign up'}},
+  {path: 'activate', component: ActivationComponent, data: {title: 'Activation'}},
+  {path: 'reset-password', component: ResetPasswordComponent, data: {title: 'Reset password'}},
+  {path: 'forgot-password', component: ForgotPasswordComponent, data: {title: 'Forgot password'}},
+  {path: 'resend-activation', component: ResendActivationComponent, data: {title: 'Resend activation'}},
   {path: 'invite/:token', component: InvitedSignupComponent},
-  {path: '', component: LoginComponent},
+  {path: '', component: LoginComponent, data: {title: 'Login'}},
   {
     path: '',
     component: CommonLayoutComponent,
 
     children: [
-      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
-      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
-      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard]},
+      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
+      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
+      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data: {title: 'My profile'}},
       {path: 'my-profile/:pageId', component: MyProfileComponent, canActivate: [AuthGuard]},
       {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
