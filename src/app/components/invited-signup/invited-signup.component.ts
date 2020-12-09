@@ -1,12 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  DeveloperAccountTypesService,
-  InviteDeveloperModel,
-  InviteUserService, UsersService
-} from 'oc-ng-common-service';
-import { Subscription } from 'rxjs';
-import { FormGroup } from '@angular/forms';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DeveloperAccountTypesService, InviteDeveloperModel, InviteUserService, UsersService} from 'oc-ng-common-service';
+import {Subscription} from 'rxjs';
+import {FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-invited-signup',
@@ -22,6 +18,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
   public isTerms = false;
   public isFormInvalid = true;
   public inProcess = false;
+  private inviteForm: FormGroup;
 
 
   private requestSubscriber: Subscription = new Subscription();
@@ -122,6 +119,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     if (companyKey) {
       form.get(companyKey).disable();
     }
+    this.inviteForm = form;
   }
   // getting last values of form for submission
   getFormValues(form) {
@@ -136,13 +134,12 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
   submitForm() {
     this.inProcess = true;
     this.inviteFormData.inviteToken = this.developerInviteData.token;
-    this.requestSubscriber.add(this.usersService.signup(this.inviteFormData)
-      .subscribe(resp => {
-        this.requestSubscriber.add(this.inviteUserService
-          .deleteDeveloperInvite(this.developerInviteData.developerInviteId)
-          .subscribe(() => {
-            this.router.navigate(['login']);
-          }, () => { this.inProcess = false; }));
+    this.requestSubscriber.add(this.usersService.signupByInvite({
+      userCustomData: this.inviteFormData,
+      inviteToken: this.developerInviteData.token
+    }).subscribe(resp => {
+        this.inProcess = false;
+        this.router.navigate(['login']);
       }, () => {
         this.inProcess = false;
       }));
