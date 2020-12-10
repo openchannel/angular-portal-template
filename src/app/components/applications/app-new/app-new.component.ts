@@ -17,6 +17,7 @@ import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/mo
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
 import {LoaderService} from '../../../shared/services/loader.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-app-new',
@@ -34,7 +35,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private activeRoute: ActivatedRoute,
               private modal: NgbModal,
               private loader: LoaderService,
-              private titleService: TitleService) {
+              private titleService: TitleService,
+              private toaster: ToastrService) {
   }
 
   appDetails = new SellerAppDetailsModel();
@@ -135,9 +137,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 autoApprove: true,
               }).subscribe(() => {
                 this.lockSubmitButton = false;
+                this.showSuccessToaster(saveType);
                 this.router.navigate(['/app-developer']).then();
               }, error => console.error('request publishAppByVersion', error)));
             } else {
+              this.showSuccessToaster(saveType);
               this.router.navigate(['/app-developer']).then();
             }
           } else {
@@ -155,6 +159,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           response => {
             if (response) {
               this.lockSubmitButton = false;
+              this.showSuccessToaster(saveType);
               this.router.navigate(['/app-developer']).then();
             } else {
               this.lockSubmitButton = false;
@@ -347,5 +352,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.setFormErrors = true;
       }
     }));
+  }
+
+  private showSuccessToaster(saveType: 'submit' | 'draft') {
+    if (saveType === 'draft') {
+      this.toaster.success('App has been saved as draft');
+    }
   }
 }
