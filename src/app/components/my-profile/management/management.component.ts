@@ -1,7 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   DeveloperAccountModel,
   DeveloperAccountService,
+  DeveloperDataModel,
   InviteUserService,
   UserAccountGridModel,
   UserGridActionModel,
@@ -9,10 +10,10 @@ import {
   UsersService
 } from 'oc-ng-common-service';
 import {Subject, Subscription} from 'rxjs';
-import {mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
+import {InviteUserModalComponent} from '../../../shared/modals/invite-user-modal/invite-user-modal.component';
 
 @Component({
   selector: 'app-management',
@@ -20,6 +21,9 @@ import {ToastrService} from 'ngx-toastr';
   styleUrls: ['./management.component.scss']
 })
 export class ManagementComponent implements OnInit, OnDestroy {
+
+  @Input()
+  private developerData: DeveloperDataModel;
 
   userProperties: UsersGridParametersModel = {
     data: {
@@ -128,6 +132,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
         this.deleteUser(userAction);
         break;
       case 'EDIT':
+        this.editUser(userAction);
+        break;
       default:
         console.error('Not implement');
     }
@@ -143,6 +149,46 @@ export class ManagementComponent implements OnInit, OnDestroy {
         .subscribe(() => {
           this.toaster.success('User has been deleted from your organization');
         }, error => console.error('deleteDeveloperAccount', error)));
+      }
+    });
+  }
+
+  editUser(userAction: UserGridActionModel) {
+    console.log('userAction: ', userAction);
+    if (this.userProperties.data.list?.length > 0) {
+      const editUser = this.userProperties.data.list.filter(developer => developer?.userAccountId === userAction.userAccountId)[0];
+      if (editUser) {
+        const developerAccount = this.mapToDeveloperAccount(editUser);
+        if (editUser?.inviteStatus === 'INVITED') {
+          this.editDeveloperInvite(developerAccount);
+        } else if (editUser?.inviteStatus === 'ACTIVE') {
+          this.editDeveloperAccount(developerAccount);
+        } else {
+          console.error('Not implement edit type : ', editUser?.inviteStatus);
+        }
+      }
+    }
+  }
+
+  private mapToDeveloperAccount(userGrid: UserAccountGridModel): DeveloperAccountModel {
+    return {
+      ...userGrid,
+      developerId: userGrid.userId
+    };
+  }
+
+  private editDeveloperInvite(developerAccount: DeveloperAccountModel) {
+    // todo edit invite by token.
+  }
+
+  private editDeveloperAccount(developerAccount: DeveloperAccountModel) {
+    const modalRef = this.modal.open(InviteUserModalComponent);
+    modalRef.componentInstance.modalTitle = 'Update the member';
+    modalRef.componentInstance.successButtonText = 'Update';
+    modalRef.componentInstance.userData = {...developerAccount};
+    modalRef.result.then(result => {
+      if (result.status === 'success') {
+        this.toaster.success('Developer updated ' + result.userData.email);
       }
     });
   }
