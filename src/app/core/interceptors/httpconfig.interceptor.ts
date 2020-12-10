@@ -1,12 +1,5 @@
 import {Injectable} from '@angular/core';
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpResponse,
-} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse,} from '@angular/common/http';
 
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
@@ -14,7 +7,7 @@ import {LoaderService} from 'src/app/shared/services/loader.service';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
 import {catchError, filter, map, switchMap, take} from 'rxjs/operators';
-import {AuthHolderService, AuthenticationService, LoginResponse} from 'oc-ng-common-service';
+import {AuthenticationService, AuthHolderService, LoginResponse} from 'oc-ng-common-service';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
@@ -47,7 +40,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
           return this.handle401Error(request, next);
         } else if (response.error && response.error['validation-errors']) {
           this.handleValidationError(response.error['validation-errors']);
-        } else if (response.error && response.error.code === 'VALIDATION') {
+        } else if (response?.error?.errors[0]?.field) {
           this.handleValidationError(response.error.errors);
         }
         return throwError(response);
