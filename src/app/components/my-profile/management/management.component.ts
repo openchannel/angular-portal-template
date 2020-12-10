@@ -183,12 +183,12 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   private editDeveloperAccount(developerAccount: DeveloperAccountModel) {
     const modalRef = this.modal.open(InviteUserModalComponent);
-    modalRef.componentInstance.modalTitle = 'Update the member';
-    modalRef.componentInstance.successButtonText = 'Update';
+    modalRef.componentInstance.modalTitle = 'Edit user details';
+    modalRef.componentInstance.successButtonText = 'Save';
     modalRef.componentInstance.userData = {...developerAccount};
     modalRef.result.then(result => {
       if (result.status === 'success') {
-        this.toaster.success('Developer updated ' + result.userData.email);
+        this.toaster.success('“User details have been updated');
       }
     });
   }
