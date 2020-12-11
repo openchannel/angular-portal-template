@@ -138,9 +138,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 autoApprove: true,
               }).subscribe(() => {
                 this.lockSubmitButton = false;
+                this.showSuccessToaster(saveType);
                 this.router.navigate(['/app-developer']).then();
               }, error => console.error('request publishAppByVersion', error)));
             } else {
+              this.showSuccessToaster(saveType);
               this.router.navigate(['/app-developer']).then();
             }
           } else {
@@ -155,20 +157,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.subscriptions.add(this.appVersionService
         .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData, saveType === 'draft'))
         .subscribe(
-            response => {
-              if (response) {
-                this.lockSubmitButton = false;
-                this.router.navigate(['/app-developer']).then();
-              } else {
-                this.lockSubmitButton = false;
-                this.currentAppAction = this.appActions[0];
-                console.log('Can\'t update app.');
-              }
-            }, () => {
+          response => {
+            if (response) {
+              this.lockSubmitButton = false;
+              this.showSuccessToaster(saveType);
+              this.router.navigate(['/app-developer']).then();
+            } else {
               this.lockSubmitButton = false;
               this.currentAppAction = this.appActions[0];
               console.log('Can\'t update app.');
-            },
+            }
+          }, () => {
+            this.lockSubmitButton = false;
+            this.currentAppAction = this.appActions[0];
+            console.log('Can\'t update app.');
+          },
         ));
       }
     }
@@ -185,7 +188,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
       customData: customDataValue,
     };
   }
-
 
   buildDataForUpdate(fields: any, asDraft?: boolean) {
     const dataToServer: UpdateAppVersionModel = {
@@ -360,5 +362,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
       name.markAsTouched();
     }
     return name.valid;
+  }
+
+  private showSuccessToaster(saveType: 'submit' | 'draft') {
+    if (saveType === 'draft') {
+      this.toaster.success('App has been saved as draft');
+    }
   }
 }
