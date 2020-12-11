@@ -17,6 +17,7 @@ import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/mo
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
 import {LoaderService} from '../../../shared/services/loader.service';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-app-new',
@@ -34,7 +35,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private activeRoute: ActivatedRoute,
               private modal: NgbModal,
               private loader: LoaderService,
-              private titleService: TitleService) {
+              private titleService: TitleService,
+              private toaster: ToastrService) {
   }
 
   appDetails = new SellerAppDetailsModel();
@@ -124,9 +126,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   // saving app to the server
   saveApp(saveType: 'submit' | 'draft'): void {
-    this.lockSubmitButton = true;
-    if (this.pageType === 'app-new') {
-      this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
+    if (this.isValidAppName()) {
+      this.lockSubmitButton = true;
+      if (this.pageType === 'app-new') {
+        this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
         .subscribe((appResponse) => {
           if (appResponse) {
             if (saveType === 'submit') {
@@ -135,9 +138,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 autoApprove: true,
               }).subscribe(() => {
                 this.lockSubmitButton = false;
+                this.showSuccessToaster(saveType);
                 this.router.navigate(['/app-developer']).then();
               }, error => console.error('request publishAppByVersion', error)));
             } else {
+              this.showSuccessToaster(saveType);
               this.router.navigate(['/app-developer']).then();
             }
           } else {
@@ -148,13 +153,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.currentAppAction = this.appActions[0];
           console.log('Can\'t save a new app.');
         }));
-    } else {
-      this.subscriptions.add(this.appVersionService
+      } else {
+        this.subscriptions.add(this.appVersionService
         .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData, saveType === 'draft'))
         .subscribe(
           response => {
             if (response) {
               this.lockSubmitButton = false;
+              this.showSuccessToaster(saveType);
               this.router.navigate(['/app-developer']).then();
             } else {
               this.lockSubmitButton = false;
@@ -167,6 +173,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             console.log('Can\'t update app.');
           },
         ));
+      }
     }
   }
 
@@ -347,5 +354,19 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.setFormErrors = true;
       }
     }));
+  }
+
+  private isValidAppName() {
+    const name = this.generatedForm.get('name');
+    if (name) {
+      name.markAsTouched();
+    }
+    return name.valid;
+  }
+
+  private showSuccessToaster(saveType: 'submit' | 'draft') {
+    if (saveType === 'draft') {
+      this.toaster.success('App has been saved as draft');
+    }
   }
 }

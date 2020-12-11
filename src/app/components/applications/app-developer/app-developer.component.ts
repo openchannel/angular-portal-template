@@ -1,22 +1,28 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  AppListing, AppListMenuAction, AppsService, AppTypeModel, AppTypeService, AppVersionService,
+  AppListing,
+  AppListMenuAction,
+  AppsService,
+  AppTypeModel,
+  AppTypeService,
+  AppVersionService,
   ChartLayoutTypeModel,
   ChartService,
   ChartStatisticFiledModel,
   ChartStatisticModel,
   ChartStatisticPeriodModel,
-  CommonService, FullAppData,
+  CommonService,
+  FullAppData,
   KeyValuePairMapper,
-  SellerAppsWrapper
+  SellerAppsWrapper,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {DialogService} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmationModalComponent } from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
-import { ToastrService } from 'ngx-toastr';
+import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-app-developer',
@@ -74,7 +80,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       list: [],
       count: 50
     },
-    options: ['EDIT', 'PREVIEW', 'PUBLISH', 'SUSPEND', 'DELETE'],
+    options: ['EDIT', 'PREVIEW', 'SUBMIT', 'SUSPEND', 'DELETE'],
     previewTemplate: ''
   };
 
@@ -142,19 +148,44 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   getApps(page: number): void {
     this.isAppProcessing = true;
     const sort = '{"created":1}';
-    const query = '{"isLatestVersion": true}';
+
+    const query = {
+      $or: [
+        {
+          'status.value': {$in: ['inReview', 'pending', 'inDevelopment', 'rejected']},
+          'parent.status': {
+            $exists: false,
+          },
+        },
+        {
+          'parent.status.value': 'approved',
+          isLive: true,
+        },
+        {
+          'parent.status.value': 'suspended',
+          isLive: true,
+        },
+      ],
+    };
+
 
     if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < page) {
-      this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(page, 10, sort, query)
+      this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(page, 10, sort, JSON.stringify(query))
         .subscribe(response => {
           this.appListConfig.data.pageNumber = response.pageNumber;
           this.appListConfig.data.pages = response.pages;
           this.appListConfig.data.count = response.count;
-          if (page === 1 ) {
-            this.appListConfig.data.list = this.getAppsChildren(response.list, sort);
+
+          const parentList = response.list;
+          parentList.map(value => {
+            value.status = value.parent && value.parent.status ? value.parent.status : value.status;
+          });
+
+          if (page === 1) {
+            this.appListConfig.data.list = this.getAppsChildren(parentList, sort);
           } else {
             this.appListConfig.data.list = [...this.appListConfig.data.list,
-              ...this.getAppsChildren(response.list, sort)];
+              ...this.getAppsChildren(parentList, sort)];
           }
           this.isAppProcessing = false;
         }, () => {
@@ -165,24 +196,31 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   }
 
   getAppsChildren(parentList: FullAppData [], sort: string): FullAppData [] {
-    const parentIds: string [] = [];
     const parents = [...parentList];
     let allChildren: FullAppData [];
 
-    parents.forEach(parent => {
-      parentIds.push(parent.appId);
-    });
-    const query = '{"$and":[{"appId":{"$in":["' + parentIds.join('","') + '"]}' +
-      '},{"status.value":{"$in":["inReview","pending"]},' +
-      ' "parent.status":{"$exists":true}}]}';
+    const parentIds: string[] = parents.map(parent => parent.appId);
+    if (parentIds.length > 0) {
+      const childQuery = {
+        'status.value': {
+          $in: ['inReview', 'pending', 'inDevelopment'],
+        },
+        appId: {
+          $in: parentIds,
+        },
+        'parent.status': {
+          $exists: true,
+        },
+      };
 
-    this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(1, 200, sort, query)
-      .subscribe(response => {
-        allChildren = response.list;
-        parents.forEach(parent => {
-          parent.children = allChildren.filter(child => child.appId === parent.appId);
-        });
-      }));
+      this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(1, 200, sort, JSON.stringify(childQuery))
+        .subscribe(response => {
+          allChildren = response.list;
+          parents.forEach(parent => {
+            parent.children = allChildren.filter(child => child.appId === parent.appId);
+          });
+        }));
+    }
 
     return parents;
   }
@@ -229,7 +267,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           }
         });
         break;
-      case 'PUBLISH':
+      case 'SUBMIT':
         this.requestsSubscriber.add(this.appsVersionService.getAppByVersion(menuEvent.appId, menuEvent.appVersion)
           .subscribe((appData) => {
             if (appData) {
