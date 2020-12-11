@@ -126,9 +126,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   // saving app to the server
   saveApp(saveType: 'submit' | 'draft'): void {
-    this.lockSubmitButton = true;
-    if (this.pageType === 'app-new') {
-      this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
+    if (this.isValidAppName()) {
+      this.lockSubmitButton = true;
+      if (this.pageType === 'app-new') {
+        this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
         .subscribe((appResponse) => {
           if (appResponse) {
             if (saveType === 'submit') {
@@ -152,8 +153,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.currentAppAction = this.appActions[0];
           console.log('Can\'t save a new app.');
         }));
-    } else {
-      this.subscriptions.add(this.appVersionService
+      } else {
+        this.subscriptions.add(this.appVersionService
         .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData, saveType === 'draft'))
         .subscribe(
           response => {
@@ -172,6 +173,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             console.log('Can\'t update app.');
           },
         ));
+      }
     }
   }
 
@@ -352,6 +354,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.setFormErrors = true;
       }
     }));
+  }
+
+  private isValidAppName() {
+    const name = this.generatedForm.get('name');
+    if (name) {
+      name.markAsTouched();
+    }
+    return name.valid;
   }
 
   private showSuccessToaster(saveType: 'submit' | 'draft') {
