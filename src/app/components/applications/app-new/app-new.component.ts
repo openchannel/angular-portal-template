@@ -135,7 +135,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (saveType === 'submit') {
               this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
                 version: appResponse.version,
-                autoApprove: true,
+                autoApprove: false,
               }).subscribe(() => {
                 this.lockSubmitButton = false;
                 this.showSuccessToaster(saveType);
