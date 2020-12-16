@@ -228,7 +228,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   catchMenuAction(menuEvent: AppListMenuAction): void {
     switch (menuEvent.action) {
       case 'EDIT':
-        this.router.navigate(['/edit-app', menuEvent.appId, 'version', menuEvent.appVersion]).then();
+        this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion]).then();
         break;
       case 'DELETE':
         const modalDelRef = this.modal.open(ConfirmationModalComponent);
@@ -298,7 +298,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                       }
                     });
                   } else {
-                    this.router.navigate(['/edit-app', menuEvent.appId, 'version', menuEvent.appVersion],
+                    this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion],
                       { queryParams: { formStatus: 'invalid' } })
                       .then(() => {
                         this.toaster.info('Fill out all mandatory fields before submitting');
