@@ -26,9 +26,9 @@ const routes: Routes = [
     component: CommonLayoutComponent,
 
     children: [
-      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
+      {path: 'manage', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
       {
-        path: 'app-new',
+        path: 'create',
         component: AppNewComponent,
         canActivate: [AuthGuard],
         canDeactivate: [AppDataChangesGuard],
@@ -36,7 +36,7 @@ const routes: Routes = [
       },
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data: {title: 'My profile'}},
       {
-        path: 'edit-app/:appId/version/:versionId',
+        path: 'update/:appId/:versionId',
         component: AppNewComponent,
         canActivate: [AuthGuard],
         canDeactivate: [AppDataChangesGuard]
