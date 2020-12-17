@@ -11,6 +11,7 @@ import {ResetPasswordComponent} from './components/reset-password/reset-password
 import {SignupComponent} from './components/signup/signup.component';
 import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
+import {AppDataChangesGuard} from './components/applications/app-new/deactivation-guard';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent, data: {title: 'Login'}},
@@ -26,9 +27,20 @@ const routes: Routes = [
 
     children: [
       {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
-      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
+      {
+        path: 'app-new',
+        component: AppNewComponent,
+        canActivate: [AuthGuard],
+        canDeactivate: [AppDataChangesGuard],
+        data: {title: 'New app'}
+      },
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data: {title: 'My profile'}},
-      {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
+      {
+        path: 'edit-app/:appId/version/:versionId',
+        component: AppNewComponent,
+        canActivate: [AuthGuard],
+        canDeactivate: [AppDataChangesGuard]
+      },
     ]
   },
   {path: '**', redirectTo: '/not-found'}

@@ -40,7 +40,7 @@ import {AppListComponent} from './components/applications/app-apps/app-list/app-
 import {OcCommonLibModule} from 'oc-ng-common-component';
 import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
-import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/confirmation-modal.component';
+import {AppConfirmationModalComponent} from './shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
@@ -48,6 +48,8 @@ import {SubmissionsTableComponent} from './components/applications/app-store/for
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
+import {AppDataChangesGuard} from './components/applications/app-new/deactivation-guard';
+import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/confirmation-modal.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,7 @@ import {ToastrModule} from 'ngx-toastr';
     FormModalComponent,
     AppListComponent,
     ConfirmationModalComponent,
+    AppConfirmationModalComponent,
     CamelCaseToNormalPipe,
     ResendActivationComponent,
   ],
@@ -106,6 +109,7 @@ import {ToastrModule} from 'ngx-toastr';
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
    { provide: NgbDateAdapter, useClass: CustomAdapter },
     {provide: AppsServiceImpl, useClass: MockAppsService},
+    AppDataChangesGuard,
    DatePipe,
    AppService],
   bootstrap: [AppComponent],
@@ -114,6 +118,7 @@ import {ToastrModule} from 'ngx-toastr';
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
+    AppConfirmationModalComponent,
   ],
 })
 export class AppModule {

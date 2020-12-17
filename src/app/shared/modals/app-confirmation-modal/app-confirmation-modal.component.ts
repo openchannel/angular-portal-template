@@ -3,10 +3,10 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-confirmation-modal',
-  templateUrl: './confirmation-modal.component.html',
-  styleUrls: ['./confirmation-modal.component.scss']
+  templateUrl: './app-confirmation-modal.component.html',
+  styleUrls: ['./app-confirmation-modal.component.scss']
 })
-export class ConfirmationModalComponent {
+export class AppConfirmationModalComponent {
 
   /** Title at the top of the modal */
   @Input() modalTitle: string = '';
@@ -14,6 +14,15 @@ export class ConfirmationModalComponent {
    * Main text of the modal. Confirmation text
    */
   @Input() modalText: string = '';
+  /**
+   * Type of confirmation modal
+   * can be 'submission', 'suspend', 'delete' or 'simple'.
+   * Design of the modal will be changed according to type.
+   * When a 'submission' type set - modal Cancel button will return 'draft' value.
+   * And 'simple' will show simple confirmation modal
+   * Default 'simple'
+   */
+  @Input() type: 'submission' | 'simple' | 'suspend' | 'delete'  = 'simple';
   /**
    * Text on the Confirm button
    * Default value: OK
@@ -31,7 +40,7 @@ export class ConfirmationModalComponent {
 
   constructor(private modalService: NgbActiveModal) { }
 
-  closeAction(result: boolean) {
-    this.modalService.close(result);
+  closeAction(action: 'success' | 'cancel' | 'draft') {
+    this.modalService.close(action);
   }
 }

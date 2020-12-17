@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {
   AppsService,
   AppTypeModel,
@@ -15,7 +15,7 @@ import {Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {LoaderService} from '../../../shared/services/loader.service';
 import {ToastrService} from 'ngx-toastr';
 
@@ -65,6 +65,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   appId: string;
   appVersion: number;
   setFormErrors = false;
+  disableOutgo = false;
 
   private appTypePageNumber = 1;
   private appTypePageLimit = 100;
@@ -107,7 +108,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   openConfirmationModal(): void {
-    const modalRef = this.modal.open(ConfirmationModalComponent);
+    const modalRef = this.modal.open(AppConfirmationModalComponent);
 
     modalRef.componentInstance.modalTitle = 'Submit app';
     modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
@@ -127,6 +128,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   // saving app to the server
   saveApp(saveType: 'submit' | 'draft'): void {
     if (this.isValidAppName()) {
+      this.disableOutgo = true;
       this.lockSubmitButton = true;
       if (this.pageType === 'app-new') {
         this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
@@ -368,5 +370,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (saveType === 'draft') {
       this.toaster.success('App has been saved as draft');
     }
+  }
+
+  isOutgoAllowed() {
+    if (this.disableOutgo) {
+      return true;
+    }
+    return !(this.generatedForm && this.generatedForm.dirty || this.appDataFormGroup.dirty);
   }
 }
