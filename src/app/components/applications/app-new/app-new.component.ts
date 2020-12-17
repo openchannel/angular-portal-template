@@ -60,7 +60,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   lockSubmitButton = true;
 
-  pageTitle: 'Submit New App' | 'Edit App';
+  pageTitle: 'Create app' | 'Edit app';
   pageType: string;
   appId: string;
   appVersion: number;
@@ -341,11 +341,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
     return newOptions;
   }
 
-  private getPageTitleByPage(currentPage: string): 'Submit New App' | 'Edit App' {
+  private getPageTitleByPage(currentPage: string): 'Create app' | 'Edit app' {
     if ('create' === currentPage) {
-      return 'Submit New App';
+      return 'Create app';
     }
-    return 'Edit App';
+    return 'Edit app';
   }
 
   private checkDataValidityRedirect(): void {
