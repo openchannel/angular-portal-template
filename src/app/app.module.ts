@@ -52,6 +52,7 @@ import {ToastrModule} from 'ngx-toastr';
 import {ManagementComponent} from './components/my-profile/management/management.component';
 import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
 import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
+import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,7 @@ import { InvitedSignupComponent } from './components/invited-signup/invited-sign
     InvitedSignupComponent,
   ],
   schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
+    CUSTOM_ELEMENTS_SCHEMA,
   ],
   imports: [
     FormsModule,
@@ -108,12 +109,13 @@ import { InvitedSignupComponent } from './components/invited-signup/invited-sign
     DragDropModule,
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
-    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN'}),
+    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
   ],
   providers: [
-   { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-   { provide: NgbDateAdapter, useClass: CustomAdapter },
+    {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
+    {provide: NgbDateAdapter, useClass: CustomAdapter},
     {provide: AppsServiceImpl, useClass: MockAppsService},
+    {provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js'},
     DatePipe,
     AppService],
   bootstrap: [AppComponent],

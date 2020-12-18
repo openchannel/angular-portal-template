@@ -56,6 +56,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
   appFields: {
     fields: AppTypeFieldModel []
   };
+  savedFields: {
+    fields: AppTypeFieldModel []
+  };
   generatedForm: FormGroup;
 
   lockSubmitButton = true;
@@ -135,7 +138,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (saveType === 'submit') {
               this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
                 version: appResponse.version,
-                autoApprove: true,
+                autoApprove: false,
               }).subscribe(() => {
                 this.lockSubmitButton = false;
                 this.showSuccessToaster(saveType);
@@ -245,10 +248,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe(type => {
+        if (this.appFields) {
+          this.savedFields = this.appFields;
+          this.appFields = null;
+        }
         if (type) {
           this.getFieldsByAppType(type);
-        } else {
-          this.appFields = null;
         }
       }, () => this.appFields = null));
   }
@@ -276,17 +281,38 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private getFieldsByAppType(appType: string): void {
-    this.appFields = null;
     this.subscriptions.add(this.appTypeService.getOneAppType(appType)
       .subscribe((appTypeResponse: any) => {
         if (appTypeResponse) {
-          this.appFields = {
-            fields: this.mapAppTypeToFields(appTypeResponse),
-          };
+          this.mergeWithSaveData(this.appFormData, this.mapAppTypeToFields(appTypeResponse));
         }
       }, (error => {
         console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
       })));
+  }
+
+  private mergeWithSaveData(savedData: any, newFields: AppTypeFieldModel[]) {
+    if (savedData && this.savedFields) {
+      this.mergeField(this.savedFields.fields, newFields, savedData);
+    }
+    this.appFields = {
+      fields: newFields,
+    };
+  }
+
+  private mergeField(originalFields: AppTypeFieldModel[], newFields: AppTypeFieldModel[], savedData: any) {
+    if (savedData) {
+      originalFields.forEach(originalField => {
+        const newField = newFields.find(value => value.id === originalField.id && value.type === originalField.type);
+        if (newField && savedData[newField.id]) {
+          if (newField.fields && newField.fields.length > 0) {
+            this.mergeField(originalField.fields, newField.fields, savedData[newField.id]);
+          } else {
+            newField.defaultValue = savedData[newField.id];
+          }
+        }
+      });
+    }
   }
 
   private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {
