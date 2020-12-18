@@ -100,7 +100,7 @@ import {ToastrModule} from 'ngx-toastr';
     DragDropModule,
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
-    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN'}),
+    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
   ],
   providers: [
    { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
