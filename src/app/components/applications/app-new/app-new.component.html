@@ -1,13 +1,13 @@
 <div class="bg-container bg-s py-2">
     <div class="container">
         <img src="assets/img/arrow-left.svg" alt="arrow-icon">
-        <a routerLink="/app-developer" class="font-m font-med pl-1">Back to Manage Apps</a>
+        <a routerLink="/manage" class="font-m font-med pl-1">Back to Manage Apps</a>
         <h1 class="navigation-h1 mt-1">{{pageTitle}}</h1>
     </div>
 </div>
 <div class="container container-s mt-3">
     <form [formGroup]="appDataFormGroup">
-        <div class="d-flex flex-column flex-md-row align-items-start mb-2" *ngIf="pageType === 'app-new'">
+        <div class="d-flex flex-column flex-md-row align-items-start mb-2" *ngIf="pageType === 'create'">
             <oc-label text="App type" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
             <div class="d-flex flex-column w-100">
                 <oc-dropbox formControlName="type"
@@ -21,7 +21,7 @@
                 <oc-error [control]="appDataFormGroup.get('appType')"></oc-error>
             </div>
         </div>
-        <ng-container *ngIf="pageType === 'edit-app'">
+        <ng-container *ngIf="pageType === 'update'">
             <div class="d-flex flex-column flex-md-row align-items-start mb-2" >
                 <oc-label text="Name" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
                 <div class="d-flex flex-column w-100">
@@ -53,7 +53,7 @@
         <div class="d-flex flex-column-reverse flex-md-row justify-content-between mb-5 mt-2">
             <div class="form-btn">
                 <oc-button type="link" text="Cancel" class="w-100 text-center"
-                           routerLink="/app-developer"></oc-button>
+                           routerLink="/manage"></oc-button>
             </div>
             <div class="form-btn">
                 <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"
