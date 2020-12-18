@@ -8,24 +8,15 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div *ngIf="!sellerName" class="mt-2 mt-md-0">
-            <oc-button type="secondary" text="Log In"
-                       [class]="'mr-2 text-color-primary'"
-                       [style]="'min-width: 87px'"
-                       routerLink="login"></oc-button>
-            <oc-button type="primary" text="Sign Up"
-                       [style]="'min-width: 87px'"
-                       routerLink="signup"></oc-button>
-        </div>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="sellerName">
-            <ul class="navbar-nav mx-auto">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav justify-content-end w-100">
                 <li class="nav-item" [ngClass]="{
-                    active: router.url.includes('app-developer')
+                    active: router.url.includes('manage')
                   }">
-                    <a class="nav-link" [routerLink]="'/app-developer'">Manage Apps</a>
+                    <a class="nav-link" [routerLink]="'/manage'">Manage Apps</a>
                 </li>
             </ul>
-            <form class="form-inline">
+            <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown" ngbDropdown>
                         <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
