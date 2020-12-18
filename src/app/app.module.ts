@@ -48,6 +48,7 @@ import {SubmissionsTableComponent} from './components/applications/app-store/for
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
+import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,7 @@ import {ToastrModule} from 'ngx-toastr';
     ResendActivationComponent,
   ],
   schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
+    CUSTOM_ELEMENTS_SCHEMA,
   ],
   imports: [
     FormsModule,
@@ -100,14 +101,15 @@ import {ToastrModule} from 'ngx-toastr';
     DragDropModule,
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
-    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN'}),
+    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
   ],
   providers: [
-   { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-   { provide: NgbDateAdapter, useClass: CustomAdapter },
+    {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
+    {provide: NgbDateAdapter, useClass: CustomAdapter},
     {provide: AppsServiceImpl, useClass: MockAppsService},
-   DatePipe,
-   AppService],
+    {provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js'},
+    DatePipe,
+    AppService],
   bootstrap: [AppComponent],
   entryComponents: [
     SubmissionsDataViewModalComponent,
