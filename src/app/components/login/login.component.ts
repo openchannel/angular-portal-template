@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['app-developer']);
+            this.router.navigate(['manage']);
         }
 
     if (this.oauthService.hasValidIdToken()) {
@@ -105,7 +105,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private processLoginResponse(response: LoginResponse) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigate(['app-developer']);
+        this.router.navigate(['manage']);
     }
 
     sendActivationEmail(email: string) {

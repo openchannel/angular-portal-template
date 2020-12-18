@@ -25,14 +25,17 @@
             "aot": true,
             "assets": [
               "src/assets",
-              "src/robots.txt"
+              "src/robots.txt",
+              { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" }
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.scss",
               "node_modules/ngx-toastr/toastr.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/tinymce/tinymce.min.js"
+            ]
           },
           "configurations": {
             "dev1": {
