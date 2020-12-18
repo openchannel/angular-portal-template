@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {first} from 'rxjs/operators';
-import {AuthenticationService} from 'oc-ng-common-service';
+import {AuthenticationService, TitleService} from 'oc-ng-common-service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +19,8 @@ export class AppComponent implements OnInit {
   isLoadingCsrfToken = false;
 
   constructor(private router: Router,
-              private authApiService: AuthenticationService) {
+              private authApiService: AuthenticationService,
+              private titleService: TitleService) {
 
   }
 

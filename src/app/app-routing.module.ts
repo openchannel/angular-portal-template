@@ -14,22 +14,22 @@ import {ResendActivationComponent} from './components/resend-activation/resend-a
 import {NativeLoginGuard} from './_guards/native-login.guard';
 
 const routes: Routes = [
-  {path: 'login', component: LoginComponent},
-  {path: 'signup', component: SignupComponent},
-  {path: 'activate', component: ActivationComponent},
-  {path: 'reset-password', component: ResetPasswordComponent},
-  {path: 'forgot-password', component: ForgotPasswordComponent},
-  {path: 'resend-activation', component: ResendActivationComponent},
-  {path: '', component: LoginComponent},
+  {path: 'login', component: LoginComponent, data: {title: 'Login'}},
+  {path: 'signup', component: SignupComponent, data: {title: 'Sign up'}},
+  {path: 'activate', component: ActivationComponent, data: {title: 'Activation'}},
+  {path: 'reset-password', component: ResetPasswordComponent, data: {title: 'Reset password'}},
+  {path: 'forgot-password', component: ForgotPasswordComponent, data: {title: 'Forgot password'}},
+  {path: 'resend-activation', component: ResendActivationComponent, data: {title: 'Resend activation'}},
+  {path: '', component: LoginComponent, data: {title: 'Login'}},
   {
     path: '',
     component: CommonLayoutComponent,
 
     children: [
-      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard]},
-      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard]},
-      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard]},
-      {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
+      {path: 'manage', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
+      {path: 'create', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
+      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard], data: {title: 'My profile'}},
+      {path: 'update/:appId/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
   {path: '**', redirectTo: '/not-found'}

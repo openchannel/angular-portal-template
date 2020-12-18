@@ -21,7 +21,7 @@ export class AppAppsComponent implements OnInit {
         text: 'Apps list',
         link: 'app-list/list'
     }, {
-        id: 'edit-app',
+        id: 'update',
         text: 'Apps list',
         link: 'app-list/list'
     }];

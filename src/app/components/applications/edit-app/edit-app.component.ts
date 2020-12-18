@@ -103,11 +103,11 @@ export class EditAppComponent implements OnInit {
   }
 
   gotoAppsList() {
-    this.router.navigate(['./app-developer']);
+    this.router.navigate(['./manage']);
   }
 
   cancelNewApp() {
-    this.router.navigate(['./app-developer']);
+    this.router.navigate(['./manage']);
   }
 
   getAppById() {

@@ -9,11 +9,11 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav justify-content-end w-100">
                 <li class="nav-item" [ngClass]="{
-                    active: router.url.includes('app-developer')
+                    active: router.url.includes('manage')
                   }">
-                    <a class="nav-link" [routerLink]="'/app-developer'">Manage Apps</a>
+                    <a class="nav-link" [routerLink]="'/manage'">Manage Apps</a>
                 </li>
             </ul>
             <div class="form-inline my-2 my-lg-0">
