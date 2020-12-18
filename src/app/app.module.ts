@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbDateAdapter, NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HeaderComponent} from './shared/template/header/header.component';
@@ -18,7 +18,7 @@ import {CustomAdapter} from './core/datepicker-adapter';
 import {LoaderComponent} from './shared/custom-components/loader/loader.component';
 import {DatePipe} from '@angular/common';
 import {SignupComponent} from './components/signup/signup.component';
-import {OcCommonServiceModule} from 'oc-ng-common-service';
+import {CustomHttpClientXsrfModule, OcCommonServiceModule} from 'oc-ng-common-service';
 import {AppStoreComponent} from './components/applications/app-store/app-store.component';
 import {AppAppsComponent} from './components/applications/app-apps/app-apps.component';
 import {AppDetailComponent} from './components/applications/app-detail/app-detail.component';
@@ -46,11 +46,10 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
 import {SubmissionsTableComponent} from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
-import {HttpXsrfInterceptor} from './core/interceptors/httpxsft.interceptor';
-import {HttpXsrfExtractor} from './core/interceptors/httpxsft.extractor';
 import {CompanyComponent} from './components/my-profile/company/company.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
+import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 import {ManagementComponent} from './components/my-profile/management/management.component';
 import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
 import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
@@ -92,7 +91,7 @@ import { InvitedSignupComponent } from './components/invited-signup/invited-sign
     InvitedSignupComponent,
   ],
   schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
+    CUSTOM_ELEMENTS_SCHEMA,
   ],
   imports: [
     FormsModule,
@@ -110,14 +109,13 @@ import { InvitedSignupComponent } from './components/invited-signup/invited-sign
     DragDropModule,
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
-    HttpClientXsrfModule.withOptions({cookieName: 'XSRF-TOKEN'})
+    CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: HttpXsrfInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: HttpXsrfExtractor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomAdapter},
     {provide: AppsServiceImpl, useClass: MockAppsService},
+    {provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js'},
     DatePipe,
     AppService],
   bootstrap: [AppComponent],

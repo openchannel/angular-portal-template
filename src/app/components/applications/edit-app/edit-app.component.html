@@ -1,7 +1,7 @@
 <div class="bg-container bg-s py-7" [style.visibility]="isAppProcessing ? 'hidden':'visible'">
     <div class="container">
         <img src="assets/img/arrow-left.svg" alt="arrow-icon">
-        <a href="/app-developer" class="font-m font-med pl-1">Back to Manage Apps</a>
+        <a href="/manage" class="font-m font-med pl-1">Back to Manage Apps</a>
         <h1 class="mt-3">{{appDetails.name}}</h1>
     </div>
 </div>
@@ -27,9 +27,9 @@
                                 [(ngModel)]="period" (ngModelChange)="getChartStatistics()">
                             <label class="custom-control-label cursor-pointer" for="day">Day</label>
                         </div>
-    
+
                     </div>
-    
+
                 </div>
                 <div class="col-md-3 oc-dropdown-toggle">
                     <!-- <div class="time-selection active"> -->
@@ -45,7 +45,7 @@
                             <button value="leads" ngbDropdownItem (click)="changeField('leads')">Leads</button>
                         </div>
                     </div>
-    
+
                     <!-- </div> -->
                 </div>
             </div>
