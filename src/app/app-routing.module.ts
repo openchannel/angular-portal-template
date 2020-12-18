@@ -27,11 +27,11 @@ const routes: Routes = [
     component: CommonLayoutComponent,
 
     children: [
-      {path: 'app-developer', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
-      {path: 'app-new', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
+      {path: 'manage', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
+      {path: 'create', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data: {title: 'My profile'}},
       {path: 'my-profile/:pageId', component: MyProfileComponent, canActivate: [AuthGuard]},
-      {path: 'edit-app/:appId/version/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
+      {path: 'update/:appId/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
   {path: '**', redirectTo: '/not-found'}

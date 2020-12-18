@@ -76,7 +76,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.pageType = this.router.url.split('/')[1];
     this.initAppDataGroup();
     this.pageTitle = this.getPageTitleByPage(this.pageType);
-    if (this.pageType === 'app-new') {
+    if (this.pageType === 'create') {
       this.addListenerAppTypeField();
       this.getAllAppTypes();
     } else {
@@ -89,7 +89,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   initAppDataGroup(): void {
-    if (this.pageType === 'app-new') {
+    if (this.pageType === 'create') {
       this.appDataFormGroup = this.fb.group({
         type: ['', Validators.required],
       });
@@ -128,7 +128,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   saveApp(saveType: 'submit' | 'draft'): void {
     if (this.isValidAppName()) {
       this.lockSubmitButton = true;
-      if (this.pageType === 'app-new') {
+      if (this.pageType === 'create') {
         this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
         .subscribe((appResponse) => {
           if (appResponse) {
@@ -139,11 +139,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
               }).subscribe(() => {
                 this.lockSubmitButton = false;
                 this.showSuccessToaster(saveType);
-                this.router.navigate(['/app-developer']).then();
+                this.router.navigate(['/manage']).then();
               }, error => console.error('request publishAppByVersion', error)));
             } else {
               this.showSuccessToaster(saveType);
-              this.router.navigate(['/app-developer']).then();
+              this.router.navigate(['/manage']).then();
             }
           } else {
             console.error('Can\'t save a new app. Empty response.');
@@ -161,7 +161,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (response) {
               this.lockSubmitButton = false;
               this.showSuccessToaster(saveType);
-              this.router.navigate(['/app-developer']).then();
+              this.router.navigate(['/manage']).then();
             } else {
               this.lockSubmitButton = false;
               this.currentAppAction = this.appActions[0];
@@ -218,17 +218,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
           }, error => {
             console.error('request getOneAppType', error);
             this.loader.closeLoader('2');
-            this.router.navigate(['/app-developer']).then();
+            this.router.navigate(['/manage']).then();
           }));
         } else {
           this.loader.closeLoader('2');
           console.error('request getAppByVersion : empty response');
-          this.router.navigate(['/app-developer']).then();
+          this.router.navigate(['/manage']).then();
         }
       }, error => {
         console.error('request getAppByVersion', error);
         this.loader.closeLoader('2');
-        this.router.navigate(['/app-developer']).then();
+        this.router.navigate(['/manage']).then();
       },
     ));
   }
@@ -264,13 +264,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.loader.closeLoader('1');
         } else {
           this.loader.closeLoader('1');
-          this.router.navigate(['/app-developer']).then();
+          this.router.navigate(['/manage']).then();
           this.currentAppsTypesItems = [];
         }
       }, (error) => {
         this.currentAppsTypesItems = [];
         this.loader.closeLoader('1');
-        this.router.navigate(['/app-developer']).then();
+        this.router.navigate(['/manage']).then();
         console.error('Can\'t get all Apps : ' + JSON.stringify(error));
       }));
   }
@@ -342,7 +342,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private getPageTitleByPage(currentPage: string): 'Submit New App' | 'Edit App' {
-    if ('app-new' === currentPage) {
+    if ('create' === currentPage) {
       return 'Submit New App';
     }
     return 'Edit App';
