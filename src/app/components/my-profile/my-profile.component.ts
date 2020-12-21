@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {AuthHolderService, DeveloperDataModel, DeveloperService, SellerMyProfile} from 'oc-ng-common-service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { InviteUserModalComponent } from '../../shared/modals/invite-user-modal/invite-user-modal.component';
+import { ToastrService } from 'ngx-toastr';
 
 export interface Page {
   pageId: string;
@@ -25,13 +28,8 @@ export class MyProfileComponent implements OnInit {
     showByTypes: ['ADMIN', 'GENERAL'],
   }, {
     pageId: 'profile',
-    pageTitle: 'My Profile',
-    placeholder: 'General',
-    showByTypes: ['*'],
-  }, {
-    pageId: 'password',
-    pageTitle: 'My Profile',
-    placeholder: 'Password',
+    pageTitle: 'My Company',
+    placeholder: 'User management',
     showByTypes: ['*'],
   }];
 
@@ -48,6 +46,8 @@ export class MyProfileComponent implements OnInit {
   constructor(
       private activatedRoute: ActivatedRoute,
       private developerService: DeveloperService,
+      private modal: NgbModal,
+      private toaster: ToastrService,
       private authHolderService: AuthHolderService) {
   }
 
@@ -86,5 +86,17 @@ export class MyProfileComponent implements OnInit {
   private filterPagesByDeveloperType(developerType: string): Page [] {
     return this.currentPages = this.pages.filter(page =>
         page.showByTypes.filter(pattern => pattern === '*' || pattern === developerType || !developerType).length > 0);
+  }
+
+  openInviteModal() {
+    const modalRef = this.modal.open(InviteUserModalComponent);
+
+    modalRef.componentInstance.developerId = this.developerData.developer.developerId;
+    modalRef.componentInstance.companyName = this.developerData.developer.name;
+    modalRef.result.then(result => {
+      if (result.status === 'success') {
+        this.toaster.success('Invitation sent to ' + result.userData.email);
+      }
+    });
   }
 }

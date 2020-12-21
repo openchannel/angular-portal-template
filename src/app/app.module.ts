@@ -50,6 +50,9 @@ import {CompanyComponent} from './components/my-profile/company/company.componen
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
 import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
+import {ManagementComponent} from './components/my-profile/management/management.component';
+import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
+import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
 
 @NgModule({
   declarations: [
@@ -83,6 +86,9 @@ import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
     CamelCaseToNormalPipe,
     ResendActivationComponent,
     CompanyComponent,
+    ManagementComponent,
+    InviteUserModalComponent,
+    InvitedSignupComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
@@ -118,6 +124,7 @@ import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
+    InviteUserModalComponent,
   ],
 })
 export class AppModule {

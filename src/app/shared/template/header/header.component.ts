@@ -9,6 +9,7 @@ import {LogOutService} from '../../../core/services/logout-service/log-out.servi
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  isSSO: any;
 
   constructor(public router: Router,
               public authService: AuthHolderService,
@@ -16,6 +17,7 @@ export class HeaderComponent implements OnInit {
 }
 
   ngOnInit(): void {
+    this.isSSO = this.authService.userDetails.isSSO;
   }
 
   logout() {
