@@ -46,13 +46,14 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
 import {SubmissionsTableComponent} from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
-import {CompanyComponent} from './components/my-profile/company/company.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
 import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
-import {ManagementComponent} from './components/my-profile/management/management.component';
 import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
 import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
+import {CompanyComponent} from './components/my-company/company.component';
+import { CompanyProfileComponent } from './components/my-company/company-profile/company-profile.component';
+import {ManagementComponent} from './components/my-company/management/management.component';
 
 @NgModule({
   declarations: [
@@ -85,10 +86,11 @@ import { InvitedSignupComponent } from './components/invited-signup/invited-sign
     ConfirmationModalComponent,
     CamelCaseToNormalPipe,
     ResendActivationComponent,
-    CompanyComponent,
+    CompanyProfileComponent,
     ManagementComponent,
     InviteUserModalComponent,
     InvitedSignupComponent,
+    CompanyComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
