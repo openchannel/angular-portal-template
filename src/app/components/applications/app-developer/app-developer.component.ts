@@ -285,16 +285,13 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     modalRef.result.then(res => {
                       if (res && res === 'success') {
                         this.requestsSubscriber.add(this.appService.publishAppByVersion(menuEvent.appId, {
-                          version: menuEvent.appVersion, autoApprove: true})
+                          version: menuEvent.appVersion, autoApprove: false})
                           .subscribe((resp) => {
-                            if (resp.code && resp.code !== 200) {
-                              this.toaster.error(resp.message);
-                            } else {
                               this.appListConfig.data.pageNumber = 0;
                               this.toaster.success('Your app has been submitted for approval');
                               this.getApps(1);
-                            }
-                          }));
+                          },
+                            err => this.toaster.error(err.message)));
                       }
                     });
                   } else {
