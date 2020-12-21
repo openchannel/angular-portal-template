@@ -11,6 +11,11 @@
 .bg-container.height-unset {
   min-height: unset;
 }
+
+.bg-a {
+  min-height: auto;
+}
+
 .container.container-s {
   width: 730px;
   margin: 0 auto;
@@ -186,4 +191,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background-color: $suspended !important;
   border-color: $suspended !important;
   color: #fff;
+}
+
+.text-color-primary {
+  color: $primary !important;
 }
