@@ -383,13 +383,18 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private isValidAppName() {
-    const name = this.generatedForm.get('name');
-    if (name) {
-      name.markAsTouched();
-    }
-    return name.valid;
+    return this.isValidAndTouch(this.appDataFormGroup, 'name')
+        || this.isValidAndTouch(this.generatedForm, 'name');
   }
 
+  private isValidAndTouch(form: FormGroup, key: string): boolean {
+    const controlName = form?.get(key);
+    if (controlName) {
+      controlName.markAsTouched();
+      return controlName.valid;
+    }
+    return false;
+  }
   private showSuccessToaster(saveType: 'submit' | 'draft') {
     if (saveType === 'draft') {
       this.toaster.success('App has been saved as draft');

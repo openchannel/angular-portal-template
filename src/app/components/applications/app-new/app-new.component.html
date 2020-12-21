@@ -53,18 +53,20 @@
                  [setFormDirty]="setFormErrors"
                  (createdForm)="getCreatedForm($event)">
         </oc-form>
-        <div class="d-flex flex-column-reverse flex-md-row justify-content-between mb-5 mt-2">
-            <div class="form-btn">
-                <oc-button type="link" text="Cancel" class="w-100 text-center"
-                           routerLink="/manage"></oc-button>
-            </div>
-            <div class="form-btn">
-                <oc-button type="secondary" text="Save and Exit" class="w-100" (click)="saveApp('draft')"
-                    [disabled]="appDataFormGroup.invalid"></oc-button>
-            </div>
-            <div class="form-btn">
-                <oc-button type="primary" text="Submit" class="w-100"
-                           [disabled]="appDataFormGroup.invalid || lockSubmitButton" (click)="openConfirmationModal()"></oc-button>
+        <div class="mt-2 mb-2 d-flex flex-column flex-md-row align-items-md-center">
+            <div class="col-md-3 mr-2 pl-0 mb-md-0"></div>
+            <div class="d-flex flex-row justify-content-between w-100">
+                <div class="form-btn">
+                    <oc-button type="secondary" text="Cancel" class="w-100" routerLink="/manage"></oc-button>
+                </div>
+                <div class="form-btn">
+                    <oc-button type="secondary" text="Save" class="w-100" (click)="saveApp('draft')"
+                               [disabled]="appDataFormGroup.invalid"></oc-button>
+                </div>
+                <div class="form-btn">
+                    <oc-button type="primary" text="Submit" class="w-100"
+                               [disabled]="appDataFormGroup.invalid || lockSubmitButton" (click)="openConfirmationModal()"></oc-button>
+                </div>
             </div>
         </div>
     </div>
