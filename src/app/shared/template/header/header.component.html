@@ -1,38 +1,42 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
-    <div class="container" [class.my-2]="!sellerName">
+    <div class="container" [class.my-2]="!authService.isLoggedInUser()">
         <a class="navbar-brand" href="#">
             <img src="assets/img/logo-company.png" alt="brand-logo" class="company-logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" *ngIf="sellerName">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" *ngIf="authService.isLoggedInUser()">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav justify-content-end w-100">
+            <ul class="navbar-nav justify-content-end col-md">
                 <li class="nav-item" [ngClass]="{
                     active: router.url.includes('manage')
                   }">
                     <a class="nav-link" [routerLink]="'/manage'">Manage Apps</a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0 ml-0 ml-lg-4">
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown" ngbDropdown>
-                        <a class="nav-link dropdown-toggle pr-0" id="navbarDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
-                            My Profile
-                        </a>
-                        <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" routerLink="/my-profile">Profile</a>
-                            <a class="dropdown-item" (click)="logout()">Logout
-                                <img src="assets/img/logout.svg"
-                                    class="pl-5" alt="logout">
-                            </a>
+            <div class="form-inline my-2 my-lg-0">
+                <div class="profile text-primary">{{initials}}</div>
+                <div class="nav-item dropdown" ngbDropdown placement="left">
+                    <a class="dropdown-toggle pr-0 d-flex align-items-center" id="navbarDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
+                        <div class="d-flex flex-column mr-1">
+                            <span class="font-m font-med text-dark">{{authService.getUserName()}}</span>
+                            <span class="font-s text-muted">{{authService.userDetails.roleLabel}}</span>
                         </div>
-                    </li>
-                </ul>
-            </form>
+                    </a>
+                    <div ngbDropdownMenu aria-labelledby="navbarDropdown" class="mt-1"
+                         *ngIf="authService.isLoggedInUser()">
+                        <a class="dropdown-item"
+                           routerLink="/my-profile" *ngIf="!isSSO">My Profile</a>
+                        <a class="dropdown-item"
+                           *ngIf="authService.userDetails.role === 'ADMIN'"
+                           routerLink="/company">My Organization</a>
+                        <a class="dropdown-item cursor-pointer" (click)="logout()">Logout</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </nav>

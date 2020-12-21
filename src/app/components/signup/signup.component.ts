@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {SellerSignup, UsersService} from 'oc-ng-common-service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({

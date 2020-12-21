@@ -51,6 +51,11 @@ import {ToastrModule} from 'ngx-toastr';
 import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 import {AppDataChangesGuard} from './components/applications/app-new/deactivation-guard';
 import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/confirmation-modal.component';
+import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
+import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
+import {CompanyComponent} from './components/my-company/company.component';
+import { CompanyProfileComponent } from './components/my-company/company-profile/company-profile.component';
+import {ManagementComponent} from './components/my-company/management/management.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +89,11 @@ import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/con
     AppConfirmationModalComponent,
     CamelCaseToNormalPipe,
     ResendActivationComponent,
+    CompanyProfileComponent,
+    ManagementComponent,
+    InviteUserModalComponent,
+    InvitedSignupComponent,
+    CompanyComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
@@ -120,6 +130,7 @@ import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/con
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
+    InviteUserModalComponent,
     AppConfirmationModalComponent,
   ],
 })

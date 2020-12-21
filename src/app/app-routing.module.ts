@@ -12,7 +12,10 @@ import {SignupComponent} from './components/signup/signup.component';
 import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {AppDataChangesGuard} from './components/applications/app-new/deactivation-guard';
+import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
+import {NativeLoginGuard} from './_guards/native-login.guard';
 import { HomeComponent } from './components/home/home.component';
+import {CompanyComponent} from './components/my-company/company.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent, data: {title: 'Login'}},
@@ -21,6 +24,8 @@ const routes: Routes = [
   {path: 'reset-password', component: ResetPasswordComponent, data: {title: 'Reset password'}},
   {path: 'forgot-password', component: ForgotPasswordComponent, data: {title: 'Forgot password'}},
   {path: 'resend-activation', component: ResendActivationComponent, data: {title: 'Resend activation'}},
+  {path: 'invite/:token', component: InvitedSignupComponent},
+  {path: '', component: LoginComponent, data: {title: 'Login'}},
   {
     path: '',
     component: CommonLayoutComponent,
@@ -35,7 +40,8 @@ const routes: Routes = [
         canDeactivate: [AppDataChangesGuard],
         data: {title: 'New app'}
       },
-      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data: {title: 'My profile'}},
+      {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard], data: {title: 'My profile'}},
+      {path: 'company', component: CompanyComponent, canActivate: [AuthGuard], data: {title: 'My company'}},
       {
         path: 'update/:appId/:versionId',
         component: AppNewComponent,

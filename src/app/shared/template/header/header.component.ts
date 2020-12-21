@@ -9,27 +9,23 @@ import {LogOutService} from '../../../core/services/logout-service/log-out.servi
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  isSSO: any;
 
-  sellerName: string = null;
   constructor(public router: Router,
-              private authService: AuthHolderService,
+              public authService: AuthHolderService,
               private logOutService: LogOutService) {
-     this.displayUserInfo();
-  }
+}
 
   ngOnInit(): void {
-  }
-
-
-  displayUserInfo() {
-    const claims = this.authService.accessToken;
-    if (claims) {
-      this.sellerName = claims;
-    }
+    this.isSSO = this.authService.userDetails.isSSO;
   }
 
   logout() {
     this.logOutService.logOut();
+  }
+
+  get initials(): string {
+    return this.authService.userDetails ? this.authService.getUserName().split(' ').map(value => value.substring(0, 1)).join('') : '';
   }
 
 }
