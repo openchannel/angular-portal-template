@@ -1,10 +1,16 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {DeveloperAccountService, DeveloperAccountTypesService, DeveloperDetailsModel} from 'oc-ng-common-service';
+import {
+  AuthenticationService,
+  DeveloperAccountService,
+  DeveloperAccountTypesService,
+  DeveloperDetailsModel,
+} from 'oc-ng-common-service';
 import {LoaderService} from '../../../shared/services/loader.service';
-import {mergeMap, takeUntil, tap} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {catchError, mergeMap, takeUntil, tap} from 'rxjs/operators';
+import {Subject, throwError} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {OcFormComponent} from 'oc-ng-common-component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-general-profile',
@@ -38,7 +44,9 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
   constructor(private developerService: DeveloperAccountService,
               private accountTypeService: DeveloperAccountTypesService,
               private loaderService: LoaderService,
-              private toasterService: ToastrService) {
+              private toasterService: ToastrService,
+              private authService: AuthenticationService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -83,9 +91,16 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
 
     this.isProcessing = true;
     this.developerService.updateAccountFields(this.dynamicForm.customForm.value)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$),
+        mergeMap(value => this.authService.refreshTokenSilent().pipe(
+          catchError(err => {
+            this.router.navigate(['login']);
+            return throwError(err);
+          }))))
       .subscribe(value => {
         this.toasterService.success('Your profile has been updated');
+        this.isProcessing = false;
+      }, () => {
         this.isProcessing = false;
       });
   }
