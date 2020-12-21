@@ -227,6 +227,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   catchMenuAction(menuEvent: AppListMenuAction): void {
     switch (menuEvent.action) {
+      case 'PREVIEW':
       case 'EDIT':
         this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion]).then();
         break;
@@ -304,8 +305,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                 }));
             }
           }));
-        break;
-      case 'PREVIEW':
         break;
       case 'SUSPEND':
         if (this.appListConfig.data.list
