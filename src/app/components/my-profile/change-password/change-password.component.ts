@@ -13,7 +13,7 @@ import {ToastrService} from 'ngx-toastr';
 export class ChangePasswordComponent implements OnInit {
 
   isSaveInProcess = false;
-  changePassModel: ChangePasswordRequest;
+  changePassModel: ChangePasswordRequest = {password: '', newPassword: ''};
 
   private destroy$: Subject<void> = new Subject<void>();
 
