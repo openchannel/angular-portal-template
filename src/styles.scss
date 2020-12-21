@@ -3,12 +3,13 @@
 .bg-container {
   width: 100%;
   min-height: 100vh;
-  background: url(assets/img/container-bg.svg) center center no-repeat;
-  background-size: cover;
-  //border-top: 1px solid rgb(201 213 234 / 0.5);
+  background-color: #f4f7fc;
 }
 .bg-container.bg-s {
   min-height: 100%;
+}
+.bg-container.height-unset {
+  min-height: unset;
 }
 
 .bg-a {
@@ -72,7 +73,6 @@
 
 // Dropdown menu style
 .dropdown-menu {
-  top: 48px;
   padding: 0;
   min-width: 136px;
   border: 1px solid #c9d5ea;
@@ -165,6 +165,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-size: 1rem;
 }
 
+.active-link {
+  color: $primary !important;
+  font-family: "Rubik-Medium";
+}
+
 /** Toast styles */
 .toast-message {
   font-size: 12px;
@@ -186,6 +191,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background-color: $suspended !important;
   border-color: $suspended !important;
   color: #fff;
+}
+
+@media (min-width: 730px) {
+  .modal-dialog {
+    max-width: 750px;
+  }
 }
 
 .text-color-primary {

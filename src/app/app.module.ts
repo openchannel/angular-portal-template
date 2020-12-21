@@ -40,7 +40,7 @@ import {AppListComponent} from './components/applications/app-apps/app-list/app-
 import {OcCommonLibModule} from 'oc-ng-common-component';
 import {AppsServiceImpl} from './core/services/apps-services/model/apps-service-impl';
 import {MockAppsService} from './core/services/apps-services/mock-apps-service/mock-apps-service.service';
-import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/confirmation-modal.component';
+import {AppConfirmationModalComponent} from './shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
@@ -49,6 +49,13 @@ import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-dat
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
 import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
+import {AppDataChangesGuard} from './components/applications/app-new/deactivation-guard';
+import {ConfirmationModalComponent} from './shared/modals/confirmation-modal/confirmation-modal.component';
+import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
+import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
+import {CompanyComponent} from './components/my-company/company.component';
+import { CompanyProfileComponent } from './components/my-company/company-profile/company-profile.component';
+import {ManagementComponent} from './components/my-company/management/management.component';
 
 @NgModule({
   declarations: [
@@ -79,8 +86,14 @@ import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
     FormModalComponent,
     AppListComponent,
     ConfirmationModalComponent,
+    AppConfirmationModalComponent,
     CamelCaseToNormalPipe,
     ResendActivationComponent,
+    CompanyProfileComponent,
+    ManagementComponent,
+    InviteUserModalComponent,
+    InvitedSignupComponent,
+    CompanyComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
@@ -108,6 +121,7 @@ import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
     {provide: NgbDateAdapter, useClass: CustomAdapter},
     {provide: AppsServiceImpl, useClass: MockAppsService},
     {provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js'},
+    AppDataChangesGuard,
     DatePipe,
     AppService],
   bootstrap: [AppComponent],
@@ -116,6 +130,8 @@ import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
     LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
+    InviteUserModalComponent,
+    AppConfirmationModalComponent,
   ],
 })
 export class AppModule {

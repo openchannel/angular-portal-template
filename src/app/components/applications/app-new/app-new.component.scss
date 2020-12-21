@@ -10,21 +10,16 @@
   min-height: auto;
 }
 
-.form-label {
-  width: 20%;
-}
-
 .navigation-h1 {
   font-size: 1.7rem;
 }
 
-.container-s {
-  max-width: 730px;
+.container-m {
+  max-width: 920px;
   width: 100%;
 }
 
 .form-btn {
-  width: 23%;
   @include media-breakpoint-md {
     width: 100%;
     margin-bottom: 1rem;
