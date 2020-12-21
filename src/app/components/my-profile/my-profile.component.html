@@ -1,16 +1,8 @@
 <div class="bg-container height-unset py-2">
-    <div class="container d-flex flex-column flex-md-row justify-content-between">
-        <div>
-            <img src="assets/img/arrow-left.svg" alt="arrow-icon">
-            <a (click)="goBack()" class="font-m font-med pl-1 cursor-pointer link">Back</a>
-            <h3 class="page-title">{{selectedPage?.pageTitle}}</h3>
-        </div>
-        <div class="button-container">
-            <oc-button *ngIf="selectedPage?.pageId === pages[1].pageId"
-                       text="Invite a member" type="primary"
-                       (click)="openInviteModal()"
-                       [style]="'min-width: 100%'"></oc-button>
-        </div>
+    <div class="container">
+        <img src="assets/img/arrow-left.svg" alt="arrow-icon">
+        <a (click)="goBack()" class="font-m font-med pl-1 cursor-pointer link">Back</a>
+        <h3 class="page-title">My Profile</h3>
     </div>
 </div>
 
@@ -18,15 +10,20 @@
     <div class="row pt-5">
         <div class="col-md-3">
             <ul class="list-unstyled">
-                <li *ngFor="let page of currentPages" class="py-1">
-                    <a (click)="gotoPage(page)" class="font-m"
-                       [ngClass]="{'active-link' : page.pageId === selectedPage.pageId}">{{page.placeholder}}</a>
+                <li class="py-1">
+                    <a (click)="gotoPage('myProfile')" class="font-m"
+                       [ngClass]="{'active-link' : selectedPage === 'myProfile' }">Profile details</a>
+                </li>
+                <li class="py-1">
+                    <a (click)="gotoPage('changePassword')" class="font-m"
+                       [ngClass]="{'active-link' : selectedPage === 'changePassword'}">Password</a>
                 </li>
             </ul>
         </div>
-        <div [ngSwitch]="selectedPage?.pageId" class="col pt-1">
-            <app-company *ngSwitchCase="pages[0].pageId" [developerData]="developerData"></app-company>
-            <app-management *ngSwitchCase="pages[1].pageId" [developerData]="developerData"></app-management>
+        <div class="col-md-4 pt-1">
+            <app-general-profile *ngIf='selectedPage === "myProfile"'></app-general-profile>
+            <app-change-password *ngIf='selectedPage === "changePassword"'>
+            </app-change-password>
         </div>
     </div>
 </div>

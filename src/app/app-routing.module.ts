@@ -14,6 +14,7 @@ import {ResendActivationComponent} from './components/resend-activation/resend-a
 import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
 import {NativeLoginGuard} from './_guards/native-login.guard';
 import { HomeComponent } from './components/home/home.component';
+import {CompanyComponent} from './components/my-company/company.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent, data: {title: 'Login'}},
@@ -33,7 +34,7 @@ const routes: Routes = [
       {path: 'manage', component: AppDeveloperComponent, canActivate: [AuthGuard], data: {title: 'Developer portal'}},
       {path: 'create', component: AppNewComponent, canActivate: [AuthGuard], data: {title: 'New app'}},
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard], data: {title: 'My profile'}},
-      {path: 'my-profile/:pageId', component: MyProfileComponent, canActivate: [AuthGuard]},
+      {path: 'company', component: CompanyComponent, canActivate: [AuthGuard], data: {title: 'My company'}},
       {path: 'update/:appId/:versionId', component: AppNewComponent, canActivate: [AuthGuard]},
     ]
   },
