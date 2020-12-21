@@ -5,10 +5,11 @@
         <h1 class="navigation-h1 mt-1">{{pageTitle}}</h1>
     </div>
 </div>
-<div class="container container-s mt-3">
+<div class="container container-m mt-3 px-md-5">
     <form [formGroup]="appDataFormGroup">
         <div class="d-flex flex-column flex-md-row align-items-start mb-2" *ngIf="pageType === 'create'">
-            <oc-label text="App type" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
+            <oc-label text="App type" required="true"
+                      class="text-nowrap col-md-3 mr-2 mb-1 mb-md-0 pl-0"></oc-label>
             <div class="d-flex flex-column w-100">
                 <oc-dropbox formControlName="type"
                             placeHolder="Choice type"
@@ -22,8 +23,9 @@
             </div>
         </div>
         <ng-container *ngIf="pageType === 'update'">
-            <div class="d-flex flex-column flex-md-row align-items-start mb-2" >
-                <oc-label text="Name" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
+            <div class="d-flex flex-column flex-md-row align-items-start mb-2">
+                <oc-label text="Name" required="true"
+                          class="text-nowrap col-md-3 mr-2 mb-1 mb-md-0 pl-0"></oc-label>
                 <div class="d-flex flex-column w-100">
                     <oc-input formControlName="name"
                               [class]="'form-control'"></oc-input>
@@ -31,7 +33,8 @@
                 </div>
             </div>
             <div class="d-flex flex-column flex-md-row align-items-start mb-2" >
-                <oc-label text="Safe Name" required="true" class="text-nowrap form-label mr-2 mb-1 mb-md-0"></oc-label>
+                <oc-label text="Safe Name" required="true"
+                          class="text-nowrap col-md-3 mr-2 mb-1 mb-md-0 pl-0"></oc-label>
                 <div class="d-flex flex-column w-100">
                     <oc-tags formControlName="safeName"
                              title=" "
