@@ -13,10 +13,10 @@ import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-company',
-  templateUrl: './company.component.html',
-  styleUrls: ['./company.component.scss']
+  templateUrl: './company-profile.component.html',
+  styleUrls: ['./company-profile.component.scss']
 })
-export class CompanyComponent implements OnInit, OnDestroy {
+export class CompanyProfileComponent implements OnInit, OnDestroy {
 
   @Input()
   developerData: DeveloperDataModel;

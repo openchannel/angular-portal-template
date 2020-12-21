@@ -9,7 +9,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav justify-content-end w-100">
+            <ul class="navbar-nav justify-content-end col-md">
                 <li class="nav-item" [ngClass]="{
                     active: router.url.includes('manage')
                   }">
@@ -22,19 +22,18 @@
                     <a class="dropdown-toggle pr-0 d-flex align-items-center" id="navbarDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
                         <div class="d-flex flex-column mr-1">
-                            <span class="font-m font-med">{{authService.getUserName()}}</span>
-                            <span class="font-s text-muted">{{authService.userDetails.role}}</span>
+                            <span class="font-m font-med text-dark">{{authService.getUserName()}}</span>
+                            <span class="font-s text-muted">{{authService.userDetails.roleLabel}}</span>
                         </div>
                     </a>
                     <div ngbDropdownMenu aria-labelledby="navbarDropdown" class="mt-1"
                          *ngIf="authService.isLoggedInUser()">
-                        <!-- <a class="dropdown-item" href="#">Action</a> -->
                         <a class="dropdown-item"
                            routerLink="/my-profile" *ngIf="!isSSO">My Profile</a>
                         <a class="dropdown-item"
                            *ngIf="authService.userDetails.role === 'ADMIN'"
-                           routerLink="/my-profile/company">My Organization</a>
-                        <a class="dropdown-item" (click)="logout()">Logout</a>
+                           routerLink="/company">My Organization</a>
+                        <a class="dropdown-item cursor-pointer" (click)="logout()">Logout</a>
                     </div>
                 </div>
             </div>
