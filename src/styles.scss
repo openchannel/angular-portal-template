@@ -193,6 +193,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
 }
 
+@media (min-width: 730px) {
+  .modal-dialog {
+    max-width: 750px;
+  }
+}
+
 .text-color-primary {
   color: $primary !important;
 }

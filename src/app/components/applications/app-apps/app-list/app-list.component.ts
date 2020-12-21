@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ConfirmationModalComponent} from '../../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import {AppConfirmationModalComponent} from '../../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {AppsService, AppStatus, AppVersionService, FullAppData, Page} from 'oc-ng-common-service';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import {FormControl} from '@angular/forms';
@@ -155,7 +155,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedApp(appId: string) {
-    const modalRef = this.modal.open(ConfirmationModalComponent);
+    const modalRef = this.modal.open(AppConfirmationModalComponent);
 
     modalRef.componentInstance.modalText = 'Are you sure you want to delete this app?';
     modalRef.componentInstance.buttonText = 'DELETE';
