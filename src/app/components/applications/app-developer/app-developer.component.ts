@@ -21,7 +21,7 @@ import {DialogService} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
 import {Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-modal/confirmation-modal.component';
+import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
 
 @Component({
@@ -231,7 +231,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion]).then();
         break;
       case 'DELETE':
-        const modalDelRef = this.modal.open(ConfirmationModalComponent);
+        const modalDelRef = this.modal.open(AppConfirmationModalComponent);
 
         modalDelRef.componentInstance.type = 'delete';
         modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
@@ -275,7 +275,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                 .getOneAppType(appData.type).subscribe(appType => {
 
                   if (appData.name && appData.safeName.length > 0 && this.checkRequiredAppFields(appData, appType)) {
-                    const modalRef = this.modal.open(ConfirmationModalComponent);
+                    const modalRef = this.modal.open(AppConfirmationModalComponent);
 
                     modalRef.componentInstance.type = 'simple';
                     modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
@@ -310,7 +310,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       case 'SUSPEND':
         if (this.appListConfig.data.list
           .find(app => app.appId === menuEvent.appId).status.value === 'approved') {
-          const modalSuspendRef = this.modal.open(ConfirmationModalComponent);
+          const modalSuspendRef = this.modal.open(AppConfirmationModalComponent);
 
           modalSuspendRef.componentInstance.type = 'suspend';
           modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
