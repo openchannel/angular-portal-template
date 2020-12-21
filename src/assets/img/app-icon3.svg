@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="44" height="44" viewBox="0 0 44 44">
+    <defs>
+        <linearGradient id="rfnd86exbb" x1="50%" x2="50%" y1="100%" y2="0%">
+            <stop offset="0%" stop-color="#F8FAFF"/>
+            <stop offset="100%" stop-color="#EEF2FF"/>
+        </linearGradient>
+        <rect id="dy834kr9fa" width="44" height="44" x="0" y="0" rx="4"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <g>
+                <g>
+                    <g transform="translate(-1181 -1409) translate(0 1182) translate(1165 211) translate(16 16)">
+                        <mask id="teketqd0mc" fill="#fff">
+                            <use xlink:href="#dy834kr9fa"/>
+                        </mask>
+                        <use fill="url(#rfnd86exbb)" fill-rule="nonzero" xlink:href="#dy834kr9fa"/>
+                        <path fill="#537CFD" fill-rule="nonzero" d="M19 23c1.105 0 2 .895 2 2v6c0 1.105-.895 2-2 2h-6c-1.105 0-2-.895-2-2v-6c0-1.105.895-2 2-2zm12 0c1.105 0 2 .895 2 2v6c0 1.105-.895 2-2 2h-6c-1.105 0-2-.895-2-2v-6c0-1.105.895-2 2-2zM19 11c1.105 0 2 .895 2 2v6c0 1.105-.895 2-2 2h-6c-1.105 0-2-.895-2-2v-6c0-1.105.895-2 2-2zm12 0c1.105 0 2 .895 2 2v6c0 1.105-.895 2-2 2h-6c-1.105 0-2-.895-2-2v-6c0-1.105.895-2 2-2z" mask="url(#teketqd0mc)"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

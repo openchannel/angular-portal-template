@@ -49,10 +49,10 @@ import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-dat
 import {CompanyComponent} from './components/my-profile/company/company.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {ToastrModule} from 'ngx-toastr';
+import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 import {ManagementComponent} from './components/my-profile/management/management.component';
 import { InviteUserModalComponent } from './shared/modals/invite-user-modal/invite-user-modal.component';
 import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
-import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 
 @NgModule({
   declarations: [
