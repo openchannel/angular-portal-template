@@ -1,12 +1,7 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import {
-  DeveloperAccountTypesService,
-  DeveloperTypeService,
-  InviteUserModel,
-  InviteUserService
-} from 'oc-ng-common-service';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subscription } from 'rxjs';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {DeveloperAccountService, DeveloperAccountTypesService, InviteUserModel, InviteUserService} from 'oc-ng-common-service';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-invite-user-modal',
@@ -39,7 +34,8 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
 
   constructor(private developerTypeService: DeveloperAccountTypesService,
               private modalService: NgbActiveModal,
-              private inviteService: InviteUserService) { }
+              private inviteService: InviteUserService,
+              private developerAccountService: DeveloperAccountService) { }
 
   ngOnInit(): void {
     this.makeFormConfig();
@@ -132,6 +128,7 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
     );
   }
 
+
   getFormStatus(status) {
     this.formInvalid = status;
   }
@@ -143,7 +140,13 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
   sendInvite() {
     this.formInvalid = true;
     if (this.userData) {
-      // todo edit user request
+      this.developerAccountService.updateAccountFieldsForAnotherUser(this.userData.userAccountId, {
+        ...this.formData,
+        developerId: this.userData.userId,
+      }).subscribe(response => {
+        this.formInvalid = false;
+        this.closeAction('success');
+      });
     } else {
       const templateId = '5fc663f2217876017548dc25';
       this.inviteService.sendDeveloperInvite(this.formData, this.developerId, templateId, this.companyName)
