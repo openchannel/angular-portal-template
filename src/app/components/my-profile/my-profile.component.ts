@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DeveloperDataModel, DeveloperService, SellerMyProfile} from 'oc-ng-common-service';
+import {AuthHolderService, DeveloperDataModel, DeveloperService, SellerMyProfile} from 'oc-ng-common-service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -25,7 +25,7 @@ export class MyProfileComponent implements OnInit {
     pageId: 'company',
     pageTitle: 'My Company',
     placeholder: 'Company details',
-    showByTypes: ['admin', 'general'],
+    showByTypes: ['ADMIN', 'GENERAL'],
   }, {
     pageId: 'profile',
     pageTitle: 'My Company',
@@ -47,7 +47,8 @@ export class MyProfileComponent implements OnInit {
       private activatedRoute: ActivatedRoute,
       private developerService: DeveloperService,
       private modal: NgbModal,
-      private toaster: ToastrService) {
+      private toaster: ToastrService,
+      private authHolderService: AuthHolderService) {
   }
 
   ngOnInit(): void {
@@ -65,7 +66,7 @@ export class MyProfileComponent implements OnInit {
   private initProfile() {
     this.subscriptions.add(this.developerService.getDeveloper().subscribe(developer => {
       this.developerData.developer = developer;
-      this.currentPages = this.filterPagesByDeveloperType(developer.type);
+      this.currentPages = this.filterPagesByDeveloperType(this.authHolderService.userDetails.role);
       this.initMainPage();
     }));
   }

@@ -65,23 +65,25 @@ export class CompanyComponent implements OnInit, OnDestroy {
   }
 
   saveType(): void {
-    this.savingCompanyData = true;
-    const request = {
-      name: this.getDeveloperName(this.developerData.developer, this.newCustomData),
-      customData: {
-        ...(this.developerData.developer?.customData ? this.developerData.developer.customData : {}),
-        ...(this.getCustomDataValues(this.newCustomData))
-      }
-    };
-    this.subscriptions.add(this.developerService.updateDeveloper(request)
-    .subscribe(developerResponse => {
-      this.developerData.developer = developerResponse;
-      this.savingCompanyData = false;
-      this.toastService.success('Your organization details has been updated');
-    }, error => {
-      this.savingCompanyData = false;
-      console.error('updateDeveloper', error);
-    }));
+    if (this.showSaveButton) {
+      this.savingCompanyData = true;
+      const request = {
+        name: this.getDeveloperName(this.developerData.developer, this.newCustomData),
+        customData: {
+          ...(this.developerData.developer?.customData ? this.developerData.developer.customData : {}),
+          ...(this.getCustomDataValues(this.newCustomData))
+        }
+      };
+      this.subscriptions.add(this.developerService.updateDeveloper(request)
+      .subscribe(developerResponse => {
+        this.developerData.developer = developerResponse;
+        this.savingCompanyData = false;
+        this.toastService.success('Your organization details has been updated');
+      }, error => {
+        this.savingCompanyData = false;
+        console.error('updateDeveloper', error);
+      }));
+    }
   }
 
   private createFormFields(fields: DeveloperTypeFieldModel[]): void {
@@ -108,8 +110,8 @@ export class CompanyComponent implements OnInit, OnDestroy {
   }
 
   updateSaveButton(): void {
-    const type = this.developerData.developer?.type;
-    this.showSaveButton =  type === 'admin' || !type;
+    const type = this.authHolderService.userDetails.role;
+    this.showSaveButton = type === 'ADMIN' || !type;
   }
 
   private getCustomDataValues(customData: any): any {
