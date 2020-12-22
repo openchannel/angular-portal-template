@@ -268,6 +268,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.currentAppsTypesItems = appTypesResponse.list
             .map(app => app.appTypeId)
             .filter(app => app && app.length > 0);
+          if (this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
+            this.appDataFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+          }
           this.loader.closeLoader('1');
         } else {
           this.loader.closeLoader('1');

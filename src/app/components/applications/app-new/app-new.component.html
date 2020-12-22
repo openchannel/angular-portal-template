@@ -10,14 +10,10 @@
         <div class="d-flex flex-column flex-md-row align-items-md-center mb-2" *ngIf="pageType === 'create'">
             <oc-label text="App type" required="true" class="text-nowrap col-md-3 mr-2 mb-1 mb-md-0 pl-0"></oc-label>
             <div class="d-flex flex-column w-100">
-                <oc-dropbox formControlName="type"
-                            placeHolder="Choice type"
-                            customClassStyle="form-control"
-                            [clearFormAfterSelect]="false"
-                            [dropElementTemplate]="defaultDropElementTemplate"
-                            [items]="currentAppsTypesItems"
+                <oc-select formControlName="type"
+                           [selectValArr]="currentAppsTypesItems"
                             class="w-100">
-                </oc-dropbox>
+                </oc-select>
                 <oc-error [control]="appDataFormGroup.get('appType')"></oc-error>
             </div>
         </div>
@@ -70,9 +66,3 @@
 </div>
 
 <div class="divider"></div>
-
-<ng-template #defaultDropElementTemplate let-result="result">
-    <div class="d-flex flex-row flex-nowrap align-items-center dropdown-show-app max-height p-2 ">
-        <div class="custom-text">{{result}}</div>
-    </div>
-</ng-template>
