@@ -229,7 +229,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     switch (menuEvent.action) {
       case 'PREVIEW':
       case 'EDIT':
-        this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion]).then();
+        this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
         break;
       case 'DELETE':
         const modalDelRef = this.modal.open(AppConfirmationModalComponent);
