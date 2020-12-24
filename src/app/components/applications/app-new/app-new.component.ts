@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   AppsService,
   AppTypeModel,
@@ -138,14 +138,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         .subscribe((appResponse) => {
           if (appResponse) {
             if (saveType === 'submit') {
-              this.subscriptions.add(this.appsService.publishAppByVersion(appResponse.appId, {
-                version: appResponse.version,
-                autoApprove: false,
-              }).subscribe(() => {
-                this.lockSubmitButton = false;
-                this.showSuccessToaster(saveType);
-                this.router.navigate(['/manage']).then();
-              }, error => console.error('request publishAppByVersion', error)));
+              this.publishApp(saveType, appResponse.appId, appResponse.version);
             } else {
               this.showSuccessToaster(saveType);
               this.router.navigate(['/manage']).then();
@@ -160,13 +153,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }));
       } else {
         this.subscriptions.add(this.appVersionService
-        .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData, saveType === 'draft'))
+        .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData))
         .subscribe(
           response => {
             if (response) {
-              this.lockSubmitButton = false;
-              this.showSuccessToaster(saveType);
-              this.router.navigate(['/manage']).then();
+              this.publishApp(saveType, response.appId, response.version);
             } else {
               this.lockSubmitButton = false;
               this.currentAppAction = this.appActions[0];
@@ -182,6 +173,20 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  publishApp(saveType: 'submit' | 'draft', appId: string, appVersion: number) {
+    this.subscriptions.add(this.appsService.publishAppByVersion(appId, {
+      version: appVersion,
+      autoApprove: false,
+    }).subscribe(() => {
+      this.lockSubmitButton = false;
+      this.showSuccessToaster(saveType);
+      this.router.navigate(['/manage']).then();
+    }, error => {
+      console.error('request publishAppByVersion', error);
+      this.lockSubmitButton = false;
+    }));
+  }
+
   buildDataForCreate(fields: any): CreateAppModel {
 
     const customDataValue = {...fields};
@@ -194,10 +199,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
     };
   }
 
-  buildDataForUpdate(fields: any, asDraft?: boolean) {
+  buildDataForUpdate(fields: any) {
     const dataToServer: UpdateAppVersionModel = {
       name: this.appDataFormGroup.get('name').value,
-      approvalRequired: asDraft ? asDraft : false,
+      approvalRequired: true,
       customData: {...fields},
     };
     return dataToServer;
