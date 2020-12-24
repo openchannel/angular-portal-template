@@ -50,7 +50,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }];
 
   currentAppAction = this.appActions[0];
-  currentAppsTypesItems: string [] = [];
+  currentAppsTypesItems: AppTypeModel [] = [];
 
   appDataFormGroup: FormGroup;
   appFields: {
@@ -254,13 +254,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
   private addListenerAppTypeField(): void {
     this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
-      .subscribe(type => {
+      .subscribe((type: AppTypeModel) => {
         if (this.appFields) {
           this.savedFields = this.appFields;
           this.appFields = null;
         }
         if (type) {
-          this.getFieldsByAppType(type);
+          this.getFieldsByAppType(type.appTypeId);
         }
       }, () => this.appFields = null));
   }
@@ -270,9 +270,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
       .subscribe(appTypesResponse => {
         if (appTypesResponse?.list) {
-          this.currentAppsTypesItems = appTypesResponse.list
-            .map(app => app.appTypeId)
-            .filter(app => app && app.length > 0);
+          this.currentAppsTypesItems = appTypesResponse.list;
           if (this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
             this.appDataFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
           }
