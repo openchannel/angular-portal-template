@@ -249,6 +249,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   getCreatedForm(form: FormGroup): void {
     this.generatedForm = form;
+    if (this.setFormErrors) {
+      if (this.generatedForm.controls) {
+        (Object as any).values(this.generatedForm.controls).forEach(control => control.enable());
+      }
+      this.lockSubmitButton = this.generatedForm.invalid;
+    }
   }
 
   private addListenerAppTypeField(): void {
