@@ -12,9 +12,9 @@ import {SignupComponent} from './components/signup/signup.component';
 import {ForgotPasswordComponent} from './components/users/forgot-password/forgot-password.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
 import {AppDataChangesGuard} from './components/applications/app-new/deactivation-guard';
-import { InvitedSignupComponent } from './components/invited-signup/invited-signup.component';
+import {InvitedSignupComponent} from './components/invited-signup/invited-signup.component';
 import {NativeLoginGuard} from './_guards/native-login.guard';
-import { HomeComponent } from './components/home/home.component';
+import {HomeComponent} from './components/home/home.component';
 import {CompanyComponent} from './components/my-company/company.component';
 
 const routes: Routes = [
@@ -39,6 +39,13 @@ const routes: Routes = [
         canActivate: [AuthGuard],
         canDeactivate: [AppDataChangesGuard],
         data: {title: 'New app'}
+      },
+      {
+        path: 'preview',
+        component: AppNewComponent,
+        canActivate: [AuthGuard],
+        canDeactivate: [AppDataChangesGuard],
+        data: {title: 'Preview app'}
       },
       {path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard], data: {title: 'My profile'}},
       {path: 'company', component: CompanyComponent, canActivate: [AuthGuard], data: {title: 'My company'}},

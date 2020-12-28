@@ -14,15 +14,18 @@ import {
   CommonService,
   FullAppData,
   KeyValuePairMapper,
+  MarketService,
   SellerAppsWrapper,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {DialogService} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
-import {Subscription} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
+import {flatMap} from 'rxjs/operators';
+import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
 
 @Component({
   selector: 'app-app-developer',
@@ -95,7 +98,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               private commonService: CommonService,
               private modal: NgbModal,
               private toaster: ToastrService,
-              private appTypeService: AppTypeService) {
+              private appTypeService: AppTypeService,
+              private marketService: MarketService) {
 
   }
 
@@ -168,6 +172,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       ],
     };
 
+    this.requestsSubscriber.add(this.getPreviewAppUrl().subscribe(url => url));
 
     if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < page) {
       this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(page, 10, sort, JSON.stringify(query))
@@ -228,6 +233,16 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   catchMenuAction(menuEvent: AppListMenuAction): void {
     switch (menuEvent.action) {
       case 'PREVIEW':
+        this.requestsSubscriber.add(this.getPreviewAppUrl().subscribe(previewUrl => {
+          if (previewUrl) {
+            window.open(previewUrl
+            .replace('{appId}', menuEvent.appId)
+            .replace('{version}', `${menuEvent.appVersion}`));
+          } else {
+            this.toaster.warning('Please Please set the preview App URL.');
+          }
+        }, () => this.toaster.warning('Please Please set the preview App URL.')));
+        break;
       case 'EDIT':
         this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
         break;
@@ -363,5 +378,17 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       }
     });
     return isValid;
+  }
+
+  private getPreviewAppUrl(): Observable<string> {
+    if (!this.appListConfig?.previewTemplate) {
+      return this.marketService.getCurrentMarket()
+      .pipe(flatMap((marketSettings: MarketModel) => {
+            this.appListConfig.previewTemplate = marketSettings.previewAppUrl;
+            return marketSettings.previewAppUrl;
+          }));
+    } else {
+      return of(this.appListConfig.previewTemplate);
+    }
   }
 }
