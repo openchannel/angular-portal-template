@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   AppsService,
+  AppStatusValue,
   AppTypeModel,
   AppTypeService,
   AppVersionService,
@@ -67,6 +68,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   pageType: string;
   appId: string;
   appVersion: number;
+  parentApp: FullAppData;
   setFormErrors = false;
   disableOutgo = false;
 
@@ -167,7 +169,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
         .subscribe(
           response => {
             if (response) {
-              this.publishApp(saveType, response.appId, response.version);
+              if (saveType === 'submit') {
+                this.publishApp(saveType, response.appId, response.version);
+              } else {
+                this.showSuccessToaster(saveType);
+                this.router.navigate(['/manage']).then();
+              }
             } else {
               this.lockSubmitButton = false;
               this.currentAppAction = this.appActions[0];
@@ -225,6 +232,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
       (appVersion) => {
         if (appVersion) {
+          this.parentApp = appVersion;
           this.titleService.setSubtitle(appVersion.name);
 
           this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
@@ -438,9 +446,29 @@ export class AppNewComponent implements OnInit, OnDestroy {
     return false;
   }
   private showSuccessToaster(saveType: 'submit' | 'draft') {
-    if (saveType === 'draft') {
-      this.toaster.success('App has been saved as draft');
+    switch (saveType ? saveType : '') {
+      case 'draft': {
+        if (this.hasPageAndAppStatus('update', 'approved')) {
+          this.toaster.success('New app version created and saved as draft');
+        } else {
+          this.toaster.success('App has been saved as draft');
+        }
+        break;
+      }
+      case 'submit':
+        if (this.hasPageAndAppStatus('update', 'approved')) {
+          this.toaster.success('New app version has been submitted for approval');
+        } else {
+          this.toaster.success('App has been submitted for approval');
+        }
+        break;
+      default:
+        console.error('Incorrect save type : ', saveType);
     }
+  }
+
+  hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue) {
+    return this.pageType === pageType && this.parentApp && this.parentApp?.status?.value === appStatus;
   }
 
   isOutgoAllowed() {
