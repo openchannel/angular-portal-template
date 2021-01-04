@@ -204,7 +204,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     const formGroupData = this.appDataFormGroup.value;
     return {
       name: fields?.name ? fields.name : null,
-      type: formGroupData?.type ? formGroupData.type : null,
+      type: formGroupData?.type ? formGroupData.type?.appTypeId : null,
       customData: customDataValue,
     };
   }
