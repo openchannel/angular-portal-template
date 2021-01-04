@@ -24,6 +24,7 @@ import {Observable, of, Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
+import { LoaderService } from '../../../shared/services/loader.service';
 import {flatMap} from 'rxjs/operators';
 import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
 
@@ -87,6 +88,10 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     previewTemplate: ''
   };
 
+  appSorting: any = {
+    created: 1
+  };
+
   private requestsSubscriber: Subscription = new Subscription();
 
   constructor(public chartService: ChartService,
@@ -99,7 +104,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               private modal: NgbModal,
               private toaster: ToastrService,
               private appTypeService: AppTypeService,
-              private marketService: MarketService) {
+              private marketService: MarketService,
+              private loader: LoaderService) {
 
   }
 
@@ -150,8 +156,9 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   }
 
   getApps(page: number): void {
+    this.loader.showLoader('loadApps');
     this.isAppProcessing = true;
-    const sort = '{"created":1}';
+    const sort = JSON.stringify(this.appSorting);
 
     const query = {
       $or: [
@@ -193,9 +200,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               ...this.getAppsChildren(parentList, sort)];
           }
           this.isAppProcessing = false;
+          this.loader.closeLoader('loadApps');
         }, () => {
           this.appListConfig.data.list = [];
           this.isAppProcessing = false;
+          this.loader.closeLoader('loadApps');
         }));
     }
   }
@@ -224,6 +233,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           parents.forEach(parent => {
             parent.children = allChildren.filter(child => child.appId === parent.appId);
           });
+          this.loader.closeLoader('loadApps');
         }));
     }
 
@@ -380,13 +390,28 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     return isValid;
   }
 
+  changeSorting(sortSettings) {
+    if (sortSettings.by === 'status') {
+      this.appSorting = {
+        'status.value': sortSettings.ascending ? 1 : -1
+      };
+    } else {
+      this.appSorting = {
+        [sortSettings.by]: sortSettings.ascending ? 1 : -1
+      };
+    }
+    this.appListConfig.data.count = 50;
+    this.appListConfig.data.pageNumber = 0;
+    this.getApps(1);
+  }
+
   private getPreviewAppUrl(): Observable<string> {
     if (!this.appListConfig?.previewTemplate) {
       return this.marketService.getCurrentMarket()
       .pipe(flatMap((marketSettings: MarketModel) => {
-            this.appListConfig.previewTemplate = marketSettings.previewAppUrl;
-            return marketSettings.previewAppUrl;
-          }));
+        this.appListConfig.previewTemplate = marketSettings.previewAppUrl;
+        return marketSettings.previewAppUrl;
+      }));
     } else {
       return of(this.appListConfig.previewTemplate);
     }

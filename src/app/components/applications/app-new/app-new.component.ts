@@ -50,7 +50,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }];
 
   currentAppAction = this.appActions[0];
-  currentAppsTypesItems: string [] = [];
+  currentAppsTypesItems: AppTypeModel [] = [];
 
   appDataFormGroup: FormGroup;
   appFields: {
@@ -76,13 +76,22 @@ export class AppNewComponent implements OnInit, OnDestroy {
   private appFormData: any;
   private subscriptions: Subscription = new Subscription();
 
+  private readonly compatibleTypesCollections = [
+    ['richText', 'longText', 'text', 'email', 'url'],
+    ['emailAddress', 'websiteUrl'],
+    ['singleImage', 'singleFile'],
+    ['multiImage', 'multiFile']
+  ];
+
   ngOnInit(): void {
     this.pageType = this.router.url.split('/')[1];
-    this.initAppDataGroup();
     this.pageTitle = this.getPageTitleByPage(this.pageType);
+
+    this.initAppDataGroup();
+    this.getAllAppTypes();
+
     if (this.pageType === 'create') {
       this.addListenerAppTypeField();
-      this.getAllAppTypes();
     } else {
       this.getAppData();
     }
@@ -99,6 +108,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       });
     } else {
       this.appDataFormGroup = this.fb.group({
+        type: ['', Validators.required],
         name: ['', Validators.required],
         safeName: ['', Validators.required],
       });
@@ -149,7 +159,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }, () => {
           this.lockSubmitButton = false;
           this.currentAppAction = this.appActions[0];
-          console.log('Can\'t save a new app.');
+          console.error('Can\'t save a new app.');
         }));
       } else {
         this.subscriptions.add(this.appVersionService
@@ -194,7 +204,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     const formGroupData = this.appDataFormGroup.value;
     return {
       name: fields?.name ? fields.name : null,
-      type: formGroupData?.type ? formGroupData.type : null,
+      type: formGroupData?.type ? formGroupData.type?.appTypeId : null,
       customData: customDataValue,
     };
   }
@@ -218,6 +228,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.titleService.setSubtitle(appVersion.name);
 
           this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
+
+            this.appDataFormGroup.get('type').setValue(appType);
+            this.addListenerAppTypeField();
+
             this.appDataFormGroup.get('name').setValue(appVersion.name);
             this.appDataFormGroup.get('safeName').setValue(appVersion.safeName);
             this.appFields = {
@@ -254,13 +268,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
   private addListenerAppTypeField(): void {
     this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
-      .subscribe(type => {
+      .subscribe((type: AppTypeModel) => {
         if (this.appFields) {
           this.savedFields = this.appFields;
           this.appFields = null;
         }
         if (type) {
-          this.getFieldsByAppType(type);
+          this.getFieldsByAppType(type.appTypeId);
         }
       }, () => this.appFields = null));
   }
@@ -270,10 +284,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
       .subscribe(appTypesResponse => {
         if (appTypesResponse?.list) {
-          this.currentAppsTypesItems = appTypesResponse.list
-            .map(app => app.appTypeId)
-            .filter(app => app && app.length > 0);
-          if (this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
+          this.currentAppsTypesItems = appTypesResponse.list;
+          if (this.pageType === 'create' && this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
             this.appDataFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
           }
           this.loader.closeLoader('1');
@@ -313,7 +325,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   private mergeField(originalFields: AppTypeFieldModel[], newFields: AppTypeFieldModel[], savedData: any) {
     if (savedData) {
       originalFields.forEach(originalField => {
-        const newField = newFields.find(value => value.id === originalField.id && value.type === originalField.type);
+        const newField = newFields.find(value => value.id === originalField.id && this.testCompatible(value.type, originalField.type));
         if (newField && savedData[newField.id]) {
           if (newField.fields && newField.fields.length > 0) {
             this.mergeField(originalField.fields, newField.fields, savedData[newField.id]);
@@ -323,6 +335,20 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  private testCompatible(oldType: string, newType: string): boolean {
+    if (oldType === newType) {
+      return true;
+    }
+
+    for(const compatibleTypes of this.compatibleTypesCollections) {
+      if (compatibleTypes.filter(type => type === oldType || type === newType).length === 2) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {

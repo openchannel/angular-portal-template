@@ -21,15 +21,14 @@
       </oc-chart>
     </div>
     <div class="pb-2">
-      <div class="grid-container">
-        <oc-menu-grid noAppMessage="No Apps Found"
-                      [properties]="appListConfig"
-                      menuUrl="../../../../assets/img/dots-hr-icon.svg"
-                      defaultAppIcon="../../../../assets/img/app-icon1.svg"
-                      sortIcon="../../../../assets/img/dropdown-icon.svg"
-                      (pageScrolled)="getApps($event)"
-                      (menuClicked)="catchMenuAction($event)"></oc-menu-grid>
-      </div>
+      <oc-app-table noAppMessage="No Apps Found"
+                  [properties]="appListConfig"
+                  menuUrl="../../../../assets/img/dots-hr-icon.svg"
+                  defaultAppIcon="../../../../assets/img/app-icon1.svg"
+                    descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
+                  (pageScrolled)="getApps($event)"
+                    (menuClicked)="catchMenuAction($event)"
+                    (sortChosen)="changeSorting($event)"></oc-app-table>
     </div>
   </div>
 </div>
