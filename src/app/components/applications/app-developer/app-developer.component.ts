@@ -118,6 +118,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.requestsSubscriber.unsubscribe();
+    this.loader.closeLoader('loadApps');
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
@@ -206,6 +207,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           this.isAppProcessing = false;
           this.loader.closeLoader('loadApps');
         }));
+    } else {
+      this.loader.closeLoader('loadApps');
     }
   }
 
