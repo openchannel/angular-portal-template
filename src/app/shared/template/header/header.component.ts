@@ -25,7 +25,12 @@ export class HeaderComponent implements OnInit {
   }
 
   get initials(): string {
-    return this.authService.userDetails ? this.authService.getUserName().split(' ').map(value => value.substring(0, 1)).join('') : '';
+    if (this.authService.userDetails) {
+      const splitName = this.authService.getUserName().split(' ');
+      return splitName[0].substring(0, 1) + splitName[splitName.length - 1].substring(0, 1);
+    } else {
+      return '';
+    }
   }
 
 }
