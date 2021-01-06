@@ -37,12 +37,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   count;
   countText;
-  // used to detect ghaph data change.
-  random;
-  chartStaticstics: KeyValuePairMapper[];
 
   isAppProcessing = false;
-  isAppsLoading = true;
   applications = new SellerAppsWrapper();
 
   chartData: ChartStatisticModel = {
@@ -126,26 +122,13 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
 
     this.requestsSubscriber.add(this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
-    .subscribe((chartResponse) => {
+    .subscribe((chartData) => {
       this.count = 0;
-      if (chartResponse) {
-        let labelsDataX: string[];
-        if (period.id === 'month') {
-          labelsDataX = chartResponse.map(chart => new Date(chart[0]).toLocaleDateString('default', {month: 'short'}));
-        } else {
-          labelsDataX = chartResponse.map(chart => new Date(chart[0])).map(date => {
-            return `${date.toLocaleDateString('default', {month: 'short'})} ${date.getDate()}`;
-          });
-        }
-        this.chartData.data = {
-          labelsX: labelsDataX,
-          labelsY: chartResponse.map(chart => chart[1])
-        };
-        chartResponse.forEach(chart => this.count += chart[1]);
-      } else {
-        this.chartData.data = null;
-      }
-      this.random = Math.random();
+      this.chartData = {
+        ...this.chartData,
+        data: chartData
+      };
+      this.count += chartData.labelsY.reduce((a, b) => a + b);
       this.countText = `Total ${field.label}`;
     }, (error) => {
       console.error('Can\'t get Time Series', error);
@@ -315,7 +298,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                       if (res && res === 'success') {
                         this.requestsSubscriber.add(this.appService.publishAppByVersion(menuEvent.appId, {
                           version: menuEvent.appVersion, autoApprove: false})
-                          .subscribe((resp) => {
+                          .subscribe(() => {
                               this.appListConfig.data.pageNumber = 0;
                               this.toaster.success('Your app has been submitted for approval');
                               this.getApps(1);
