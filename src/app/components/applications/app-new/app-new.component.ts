@@ -5,6 +5,11 @@ import {
   AppTypeModel,
   AppTypeService,
   AppVersionService,
+  ChartLayoutTypeModel,
+  ChartService,
+  ChartStatisticFiledModel,
+  ChartStatisticModel,
+  ChartStatisticPeriodModel,
   FullAppData,
   SellerAppDetailsModel,
   TitleService,
@@ -12,8 +17,8 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
-import {Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
@@ -28,18 +33,6 @@ import {ToastrService} from 'ngx-toastr';
 })
 export class AppNewComponent implements OnInit, OnDestroy {
 
-  constructor(private router: Router,
-              private appsService: AppsService,
-              private fb: FormBuilder,
-              private appVersionService: AppVersionService,
-              private appTypeService: AppTypeService,
-              private activeRoute: ActivatedRoute,
-              private modal: NgbModal,
-              private loader: LoaderService,
-              private titleService: TitleService,
-              private toaster: ToastrService) {
-  }
-
   appDetails = new SellerAppDetailsModel();
 
   appActions = [{
@@ -49,6 +42,32 @@ export class AppNewComponent implements OnInit, OnDestroy {
     type: 'CREATE',
     description: 'Create new Developer with ID : ',
   }];
+  chartData: ChartStatisticModel = {
+    data: null,
+    periods: [
+      {
+        id: 'month',
+        label: 'Monthly',
+        active: true,
+      }, {
+        id: 'day',
+        label: 'Daily'
+      }
+    ],
+    fields: [
+      {
+        id: 'downloads',
+        label: 'Downloads',
+        active: true,
+      }, {
+        id: 'reviews',
+        label: 'Reviews',
+      }, {
+        id: 'leads',
+        label: 'Leads',
+      }],
+    layout: ChartLayoutTypeModel.standard
+  };
 
   currentAppAction = this.appActions[0];
   currentAppsTypesItems: AppTypeModel [] = [];
@@ -71,12 +90,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
   parentApp: FullAppData;
   setFormErrors = false;
   disableOutgo = false;
+// chart variables
+  count;
+  countText;
+  downloadUrl = './assets/img/cloud-download.svg';
 
   private appTypePageNumber = 1;
   private appTypePageLimit = 100;
   // data from the form component
   private appFormData: any;
   private subscriptions: Subscription = new Subscription();
+  private destroy$: Subject<void> = new Subject();
 
   private readonly compatibleTypesCollections = [
     ['richText', 'longText', 'text', 'email', 'url'],
@@ -84,6 +108,19 @@ export class AppNewComponent implements OnInit, OnDestroy {
     ['singleImage', 'singleFile'],
     ['multiImage', 'multiFile']
   ];
+
+  constructor(private router: Router,
+              private appsService: AppsService,
+              private fb: FormBuilder,
+              private appVersionService: AppVersionService,
+              private appTypeService: AppTypeService,
+              private activeRoute: ActivatedRoute,
+              private modal: NgbModal,
+              private loader: LoaderService,
+              private titleService: TitleService,
+              private toaster: ToastrService,
+              public chartService: ChartService) {
+  }
 
   ngOnInit(): void {
     this.pageType = this.router.url.split('/')[1];
@@ -95,11 +132,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (this.pageType === 'create') {
       this.addListenerAppTypeField();
     } else {
+      this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
       this.getAppData();
     }
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.subscriptions.unsubscribe();
   }
 
@@ -269,7 +309,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.lockSubmitButton = status;
   }
 
-  getCreatedForm(form: FormGroup): void {
+  getCreatedForm(form): void {
     this.generatedForm = form;
     if (this.setFormErrors) {
       if (this.generatedForm.controls) {
@@ -277,6 +317,25 @@ export class AppNewComponent implements OnInit, OnDestroy {
       }
       this.lockSubmitButton = this.generatedForm.invalid;
     }
+  }
+
+  updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
+    const dateEnd = new Date();
+    const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, period);
+
+    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((chartData) => {
+        this.count = 0;
+        this.chartData = {
+          ...this.chartData,
+          data: chartData
+        };
+        this.count += chartData.labelsY.reduce((a, b) => a + b);
+        this.countText = `Total ${field.label}`;
+      }, (error) => {
+        console.error('Can\'t get Time Series', error);
+      });
   }
 
   private addListenerAppTypeField(): void {
@@ -356,7 +415,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    for(const compatibleTypes of this.compatibleTypesCollections) {
+    for (const compatibleTypes of this.compatibleTypesCollections) {
       if (compatibleTypes.filter(type => type === oldType || type === newType).length === 2) {
         return true;
       }
