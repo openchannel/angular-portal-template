@@ -140,6 +140,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.loader.closeLoader('chartLoader');
+    this.loader.closeLoader('1');
+    this.loader.closeLoader('2');
     this.subscriptions.unsubscribe();
   }
 
@@ -323,6 +326,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     const dateEnd = new Date();
     const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, period);
 
+    this.loader.showLoader('chartLoader');
     this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((chartData) => {
@@ -333,8 +337,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
         };
         this.count += chartData.labelsY.reduce((a, b) => a + b);
         this.countText = `Total ${field.label}`;
+        this.loader.closeLoader('chartLoader');
       }, (error) => {
         console.error('Can\'t get Time Series', error);
+        this.loader.closeLoader('chartLoader');
       });
   }
 
@@ -349,7 +355,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (type) {
           this.getFieldsByAppType(type.appTypeId);
         }
-      }, () => this.appFields = null));
+      }, () => {
+        this.appFields = null;
+      }));
   }
 
   private getAllAppTypes(): void {

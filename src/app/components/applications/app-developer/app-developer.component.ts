@@ -116,12 +116,13 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.loader.closeLoader('loadApps');
+    this.loader.closeLoader('chartLoader');
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
     const dateEnd = new Date();
     const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
-
+    this.loader.showLoader('chartLoader');
     this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
       .pipe(takeUntil(this.destroy$))
       .subscribe((chartData) => {
@@ -132,8 +133,10 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         };
         this.count += chartData.labelsY.reduce((a, b) => a + b);
         this.countText = `Total ${field.label}`;
+        this.loader.closeLoader('chartLoader');
       }, (error) => {
         console.error('Can\'t get Time Series', error);
+        this.loader.closeLoader('chartLoader');
       });
   }
 
