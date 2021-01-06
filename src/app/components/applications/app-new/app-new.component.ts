@@ -99,7 +99,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
   private appTypePageLimit = 100;
   // data from the form component
   private appFormData: any;
-  private subscriptions: Subscription = new Subscription();
   private destroy$: Subject<void> = new Subject();
 
   private readonly compatibleTypesCollections = [
@@ -143,7 +142,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.loader.closeLoader('chartLoader');
     this.loader.closeLoader('1');
     this.loader.closeLoader('2');
-    this.subscriptions.unsubscribe();
   }
 
   initAppDataGroup(): void {
@@ -189,8 +187,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
       this.disableOutgo = true;
       this.lockSubmitButton = true;
       if (this.pageType === 'create') {
-        this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
-        .subscribe((appResponse) => {
+        this.appsService.createApp(this.buildDataForCreate(this.appFormData))
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((appResponse) => {
           if (appResponse) {
             if (saveType === 'submit') {
               this.publishApp(saveType, appResponse.appId, appResponse.version);
@@ -205,11 +204,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.lockSubmitButton = false;
           this.currentAppAction = this.appActions[0];
           console.error('Can\'t save a new app.');
-        }));
+        });
       } else {
-        this.subscriptions.add(this.appVersionService
+        this.appVersionService
         .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData))
-        .subscribe(
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(
           response => {
             if (response) {
               if (saveType === 'submit') {
@@ -228,23 +228,24 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.currentAppAction = this.appActions[0];
             console.log('Can\'t update app.');
           },
-        ));
+        );
       }
     }
   }
 
   publishApp(saveType: 'submit' | 'draft', appId: string, appVersion: number) {
-    this.subscriptions.add(this.appsService.publishAppByVersion(appId, {
+    this.appsService.publishAppByVersion(appId, {
       version: appVersion,
       autoApprove: false,
-    }).subscribe(() => {
+    }).pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
       this.lockSubmitButton = false;
       this.showSuccessToaster(saveType);
       this.router.navigate(['/manage']).then();
     }, error => {
       console.error('request publishAppByVersion', error);
       this.lockSubmitButton = false;
-    }));
+    });
   }
 
   buildDataForCreate(fields: any): CreateAppModel {
@@ -272,13 +273,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.appId = this.activeRoute.snapshot.paramMap.get('appId');
     this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
     this.loader.showLoader('2');
-    this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
+    this.appVersionService.getAppByVersion(this.appId, this.appVersion).pipe(takeUntil(this.destroy$))
+      .subscribe(
       (appVersion) => {
         if (appVersion) {
           this.parentApp = appVersion;
           this.titleService.setSubtitle(appVersion.name);
 
-          this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
+          this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
+           .subscribe((appType) => {
 
             this.appDataFormGroup.get('type').setValue(appType);
             this.addListenerAppTypeField();
@@ -294,7 +297,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             console.error('request getOneAppType', error);
             this.loader.closeLoader('2');
             this.router.navigate(['/manage']).then();
-          }));
+          });
         } else {
           this.loader.closeLoader('2');
           console.error('request getAppByVersion : empty response');
@@ -305,7 +308,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.loader.closeLoader('2');
         this.router.navigate(['/manage']).then();
       },
-    ));
+    );
   }
 
   getAppFormStatus(status: boolean): void {
@@ -345,7 +348,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private addListenerAppTypeField(): void {
-    this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
+    this.appDataFormGroup.get('type').valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe((type: AppTypeModel) => {
         if (this.appFields) {
@@ -357,12 +360,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }
       }, () => {
         this.appFields = null;
-      }));
+      });
   }
 
   private getAllAppTypes(): void {
     this.loader.showLoader('1');
-    this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
+    this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(appTypesResponse => {
         if (appTypesResponse?.list) {
           this.currentAppsTypesItems = appTypesResponse.list;
@@ -380,18 +384,19 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.loader.closeLoader('1');
         this.router.navigate(['/manage']).then();
         console.error('Can\'t get all Apps : ' + JSON.stringify(error));
-      }));
+      });
   }
 
   private getFieldsByAppType(appType: string): void {
-    this.subscriptions.add(this.appTypeService.getOneAppType(appType)
+    this.appTypeService.getOneAppType(appType)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((appTypeResponse: any) => {
         if (appTypeResponse) {
           this.mergeWithSaveData(this.appFormData, this.mapAppTypeToFields(appTypeResponse));
         }
       }, (error => {
         console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
-      })));
+      }));
   }
 
   private mergeWithSaveData(savedData: any, newFields: AppTypeFieldModel[]) {
@@ -492,11 +497,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private checkDataValidityRedirect(): void {
-    this.subscriptions.add(this.activeRoute.queryParams.subscribe(param => {
+    this.activeRoute.queryParams.pipe(takeUntil(this.destroy$))
+      .subscribe(param => {
       if (param.formStatus && param.formStatus === 'invalid') {
         this.setFormErrors = true;
       }
-    }));
+    });
   }
 
   private isValidAppName() {
