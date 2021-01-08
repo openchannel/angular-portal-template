@@ -240,8 +240,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.appDataFormGroup.get('type').setValue(appType);
             this.addListenerAppTypeField();
 
-            this.appDataFormGroup.get('name').setValue(appVersion.name);
-            this.appDataFormGroup.get('safeName').setValue(appVersion.safeName);
             this.appFields = {
               fields: this.mapAppTypeFields(appVersion, appType),
             };
@@ -270,6 +268,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   getCreatedForm(form: FormGroup): void {
+    console.log(form);
     this.generatedForm = form;
     if (this.setFormErrors) {
       if (this.generatedForm.controls) {
@@ -356,7 +355,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       return true;
     }
 
-    for(const compatibleTypes of this.compatibleTypesCollections) {
+    for (const compatibleTypes of this.compatibleTypesCollections) {
       if (compatibleTypes.filter(type => type === oldType || type === newType).length === 2) {
         return true;
       }
@@ -367,10 +366,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel [] {
     if (appVersionModel && appTypeModel) {
-      const defaultValues = new Map(Object.entries(appVersionModel?.customData ? appVersionModel.customData : {}));
+      const defaultValues = new Map(Object.entries({...appVersionModel, ...appVersionModel.customData}));
       if (appTypeModel?.fields) {
         return appTypeModel.fields
-          .filter(field => field?.id).filter(filed => filed.id.includes('customData.'))
+          .filter(field => field?.id)
           .map(field => this.mapRecursiveField(field, defaultValues));
       }
     }
@@ -433,8 +432,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private isValidAppName() {
-    return this.isValidAndTouch(this.appDataFormGroup, 'name')
-        || this.isValidAndTouch(this.generatedForm, 'name');
+    return this.isValidAndTouch(this.generatedForm, 'name');
   }
 
   private isValidAndTouch(form: FormGroup, key: string): boolean {
@@ -475,6 +473,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (this.disableOutgo) {
       return true;
     }
-    return !(this.generatedForm && this.generatedForm.dirty || this.appDataFormGroup.dirty);
+    console.log(this.generatedForm);
+    return !(this.generatedForm && this.generatedForm.dirty);
   }
 }

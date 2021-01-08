@@ -18,25 +18,6 @@
                 <oc-error [control]="appDataFormGroup.get('appType')"></oc-error>
             </div>
         </div>
-        <ng-container *ngIf="pageType === 'update'">
-            <div class="d-flex flex-column flex-md-row  align-items-md-center mb-2" >
-                <oc-label text="Name" required="true" class="text-nowrap col-md-3 mr-2 mb-1 mb-md-0 pl-0"></oc-label>
-                <div class="d-flex flex-column w-100">
-                    <oc-input formControlName="name"
-                              [class]="'form-control'"></oc-input>
-                    <oc-error field="name" [control]="appDataFormGroup.get('name')"></oc-error>
-                </div>
-            </div>
-            <div class="d-flex flex-column flex-md-row align-items-md-center mb-2" >
-                <oc-label text="Safe Name" required="true" class="text-nowrap col-md-3 mr-2 mb-1 mb-md-0 pl-0"></oc-label>
-                <div class="d-flex flex-column w-100">
-                    <oc-tags formControlName="safeName"
-                             title=" "
-                             minTagsCount="1"></oc-tags>
-                    <oc-error [control]="appDataFormGroup.get('safeNames')"></oc-error>
-                </div>
-            </div>
-        </ng-container>
     </form>
     <div *ngIf="appFields?.fields">
         <oc-form [formJsonData]="appFields"
