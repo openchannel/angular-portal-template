@@ -13,14 +13,13 @@ import {
   ChartStatisticPeriodModel,
   CommonService,
   FullAppData,
-  KeyValuePairMapper,
   MarketService,
   SellerAppsWrapper,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {DialogService} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
-import { Observable, of, Subject, Subscription } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
