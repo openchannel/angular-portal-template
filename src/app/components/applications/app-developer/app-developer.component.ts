@@ -23,8 +23,9 @@ import { Observable, of, Subject } from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
-import { LoaderService } from '../../../shared/services/loader.service';
-import { flatMap, takeUntil } from 'rxjs/operators';
+import {LoaderService} from '../../../shared/services/loader.service';
+import {map} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
 
 @Component({
@@ -406,7 +407,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   private getPreviewAppUrl(): Observable<string> {
     if (!this.appListConfig?.previewTemplate) {
       return this.marketService.getCurrentMarket()
-      .pipe(flatMap((marketSettings: MarketModel) => {
+      .pipe(map((marketSettings: MarketModel) => {
         this.appListConfig.previewTemplate = marketSettings.previewAppUrl;
         return marketSettings.previewAppUrl;
       }));
