@@ -5,6 +5,11 @@ import {
   AppTypeModel,
   AppTypeService,
   AppVersionService,
+  ChartLayoutTypeModel,
+  ChartService,
+  ChartStatisticFiledModel,
+  ChartStatisticModel,
+  ChartStatisticPeriodModel,
   FullAppData,
   SellerAppDetailsModel,
   TitleService,
@@ -12,8 +17,8 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
-import {Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
@@ -28,18 +33,6 @@ import {ToastrService} from 'ngx-toastr';
 })
 export class AppNewComponent implements OnInit, OnDestroy {
 
-  constructor(private router: Router,
-              private appsService: AppsService,
-              private fb: FormBuilder,
-              private appVersionService: AppVersionService,
-              private appTypeService: AppTypeService,
-              private activeRoute: ActivatedRoute,
-              private modal: NgbModal,
-              private loader: LoaderService,
-              private titleService: TitleService,
-              private toaster: ToastrService) {
-  }
-
   appDetails = new SellerAppDetailsModel();
 
   appActions = [{
@@ -49,6 +42,32 @@ export class AppNewComponent implements OnInit, OnDestroy {
     type: 'CREATE',
     description: 'Create new Developer with ID : ',
   }];
+  chartData: ChartStatisticModel = {
+    data: null,
+    periods: [
+      {
+        id: 'month',
+        label: 'Monthly',
+        active: true,
+      }, {
+        id: 'day',
+        label: 'Daily'
+      }
+    ],
+    fields: [
+      {
+        id: 'downloads',
+        label: 'Downloads',
+        active: true,
+      }, {
+        id: 'reviews',
+        label: 'Reviews',
+      }, {
+        id: 'leads',
+        label: 'Leads',
+      }],
+    layout: ChartLayoutTypeModel.standard
+  };
 
   currentAppAction = this.appActions[0];
   currentAppsTypesItems: AppTypeModel [] = [];
@@ -71,12 +90,16 @@ export class AppNewComponent implements OnInit, OnDestroy {
   parentApp: FullAppData;
   setFormErrors = false;
   disableOutgo = false;
+// chart variables
+  count;
+  countText;
+  downloadUrl = './assets/img/cloud-download.svg';
 
   private appTypePageNumber = 1;
   private appTypePageLimit = 100;
   // data from the form component
   private appFormData: any;
-  private subscriptions: Subscription = new Subscription();
+  private destroy$: Subject<void> = new Subject();
 
   private readonly compatibleTypesCollections = [
     ['richText', 'longText', 'text', 'email', 'url'],
@@ -84,6 +107,19 @@ export class AppNewComponent implements OnInit, OnDestroy {
     ['singleImage', 'singleFile'],
     ['multiImage', 'multiFile']
   ];
+
+  constructor(private router: Router,
+              private appsService: AppsService,
+              private fb: FormBuilder,
+              private appVersionService: AppVersionService,
+              private appTypeService: AppTypeService,
+              private activeRoute: ActivatedRoute,
+              private modal: NgbModal,
+              private loader: LoaderService,
+              private titleService: TitleService,
+              private toaster: ToastrService,
+              public chartService: ChartService) {
+  }
 
   ngOnInit(): void {
     this.pageType = this.router.url.split('/')[1];
@@ -95,12 +131,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (this.pageType === 'create') {
       this.addListenerAppTypeField();
     } else {
+      this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
       this.getAppData();
     }
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.loader.closeLoader('chartLoader');
+    this.loader.closeLoader('1');
+    this.loader.closeLoader('2');
   }
 
   initAppDataGroup(): void {
@@ -146,8 +187,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
       this.disableOutgo = true;
       this.lockSubmitButton = true;
       if (this.pageType === 'create') {
-        this.subscriptions.add(this.appsService.createApp(this.buildDataForCreate(this.appFormData))
-        .subscribe((appResponse) => {
+        this.appsService.createApp(this.buildDataForCreate(this.appFormData))
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((appResponse) => {
           if (appResponse) {
             if (saveType === 'submit') {
               this.publishApp(saveType, appResponse.appId, appResponse.version);
@@ -162,11 +204,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.lockSubmitButton = false;
           this.currentAppAction = this.appActions[0];
           console.error('Can\'t save a new app.');
-        }));
+        });
       } else {
-        this.subscriptions.add(this.appVersionService
+        this.appVersionService
         .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData))
-        .subscribe(
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(
           response => {
             if (response) {
               if (saveType === 'submit') {
@@ -185,23 +228,24 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.currentAppAction = this.appActions[0];
             console.log('Can\'t update app.');
           },
-        ));
+        );
       }
     }
   }
 
   publishApp(saveType: 'submit' | 'draft', appId: string, appVersion: number) {
-    this.subscriptions.add(this.appsService.publishAppByVersion(appId, {
+    this.appsService.publishAppByVersion(appId, {
       version: appVersion,
       autoApprove: false,
-    }).subscribe(() => {
+    }).pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
       this.lockSubmitButton = false;
       this.showSuccessToaster(saveType);
       this.router.navigate(['/manage']).then();
     }, error => {
       console.error('request publishAppByVersion', error);
       this.lockSubmitButton = false;
-    }));
+    });
   }
 
   buildDataForCreate(fields: any): CreateAppModel {
@@ -229,13 +273,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
     this.appId = this.activeRoute.snapshot.paramMap.get('appId');
     this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
     this.loader.showLoader('2');
-    this.subscriptions.add(this.appVersionService.getAppByVersion(this.appId, this.appVersion).subscribe(
+    this.appVersionService.getAppByVersion(this.appId, this.appVersion).pipe(takeUntil(this.destroy$))
+      .subscribe(
       (appVersion) => {
         if (appVersion) {
           this.parentApp = appVersion;
           this.titleService.setSubtitle(appVersion.name);
 
-          this.subscriptions.add(this.appTypeService.getOneAppType(appVersion.type).subscribe((appType) => {
+          this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
+           .subscribe((appType) => {
 
             this.appDataFormGroup.get('type').setValue(appType);
             this.addListenerAppTypeField();
@@ -249,7 +295,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             console.error('request getOneAppType', error);
             this.loader.closeLoader('2');
             this.router.navigate(['/manage']).then();
-          }));
+          });
         } else {
           this.loader.closeLoader('2');
           console.error('request getAppByVersion : empty response');
@@ -260,7 +306,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.loader.closeLoader('2');
         this.router.navigate(['/manage']).then();
       },
-    ));
+    );
   }
 
   getAppFormStatus(status: boolean): void {
@@ -268,7 +314,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   getCreatedForm(form: FormGroup): void {
-    console.log(form);
     this.generatedForm = form;
     if (this.setFormErrors) {
       if (this.generatedForm.controls) {
@@ -278,8 +323,30 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
+    const dateEnd = new Date();
+    const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, period);
+
+    this.loader.showLoader('chartLoader');
+    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((chartData) => {
+        this.count = 0;
+        this.chartData = {
+          ...this.chartData,
+          data: chartData
+        };
+        this.count += chartData.labelsY.reduce((a, b) => a + b);
+        this.countText = `Total ${field.label}`;
+        this.loader.closeLoader('chartLoader');
+      }, (error) => {
+        console.error('Can\'t get Time Series', error);
+        this.loader.closeLoader('chartLoader');
+      });
+  }
+
   private addListenerAppTypeField(): void {
-    this.subscriptions.add(this.appDataFormGroup.get('type').valueChanges
+    this.appDataFormGroup.get('type').valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe((type: AppTypeModel) => {
         if (this.appFields) {
@@ -289,12 +356,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (type) {
           this.getFieldsByAppType(type.appTypeId);
         }
-      }, () => this.appFields = null));
+      }, () => {
+        this.appFields = null;
+      });
   }
 
   private getAllAppTypes(): void {
     this.loader.showLoader('1');
-    this.subscriptions.add(this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
+    this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(appTypesResponse => {
         if (appTypesResponse?.list) {
           this.currentAppsTypesItems = appTypesResponse.list;
@@ -312,18 +382,19 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.loader.closeLoader('1');
         this.router.navigate(['/manage']).then();
         console.error('Can\'t get all Apps : ' + JSON.stringify(error));
-      }));
+      });
   }
 
   private getFieldsByAppType(appType: string): void {
-    this.subscriptions.add(this.appTypeService.getOneAppType(appType)
+    this.appTypeService.getOneAppType(appType)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((appTypeResponse: any) => {
         if (appTypeResponse) {
           this.mergeWithSaveData(this.appFormData, this.mapAppTypeToFields(appTypeResponse));
         }
       }, (error => {
         console.error('ERROR getFieldsByAppType : ' + JSON.stringify(error));
-      })));
+      }));
   }
 
   private mergeWithSaveData(savedData: any, newFields: AppTypeFieldModel[]) {
@@ -424,11 +495,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private checkDataValidityRedirect(): void {
-    this.subscriptions.add(this.activeRoute.queryParams.subscribe(param => {
+    this.activeRoute.queryParams.pipe(takeUntil(this.destroy$))
+      .subscribe(param => {
       if (param.formStatus && param.formStatus === 'invalid') {
         this.setFormErrors = true;
       }
-    }));
+    });
   }
 
   private isValidAppName() {

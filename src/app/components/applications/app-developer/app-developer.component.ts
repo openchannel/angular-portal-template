@@ -13,19 +13,19 @@ import {
   ChartStatisticPeriodModel,
   CommonService,
   FullAppData,
-  KeyValuePairMapper,
   MarketService,
   SellerAppsWrapper,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {DialogService} from 'oc-ng-common-component';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
-import {Observable, of, Subscription} from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
 import {LoaderService} from '../../../shared/services/loader.service';
 import {map} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
 
 @Component({
@@ -37,12 +37,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   count;
   countText;
-  // used to detect ghaph data change.
-  random;
-  chartStaticstics: KeyValuePairMapper[];
 
   isAppProcessing = false;
-  isAppsLoading = true;
   applications = new SellerAppsWrapper();
 
   chartData: ChartStatisticModel = {
@@ -92,7 +88,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     created: 1
   };
 
-  private requestsSubscriber: Subscription = new Subscription();
+  private destroy$: Subject<void> = new Subject();
 
   constructor(public chartService: ChartService,
               public appService: AppsService,
@@ -117,38 +113,31 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.requestsSubscriber.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.loader.closeLoader('loadApps');
+    this.loader.closeLoader('chartLoader');
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
     const dateEnd = new Date();
     const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
-
-    this.requestsSubscriber.add(this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
-    .subscribe((chartResponse) => {
-      this.count = 0;
-      if (chartResponse) {
-        let labelsDataX: string[];
-        if (period.id === 'month') {
-          labelsDataX = chartResponse.map(chart => new Date(chart[0]).toLocaleDateString('default', {month: 'short'}));
-        } else {
-          labelsDataX = chartResponse.map(chart => new Date(chart[0])).map(date => {
-            return `${date.toLocaleDateString('default', {month: 'short'})} ${date.getDate()}`;
-          });
-        }
-        this.chartData.data = {
-          labelsX: labelsDataX,
-          labelsY: chartResponse.map(chart => chart[1])
+    this.loader.showLoader('chartLoader');
+    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((chartData) => {
+        this.count = 0;
+        this.chartData = {
+          ...this.chartData,
+          data: chartData
         };
-        chartResponse.forEach(chart => this.count += chart[1]);
-      } else {
-        this.chartData.data = null;
-      }
-      this.random = Math.random();
-      this.countText = `Total ${field.label}`;
-    }, (error) => {
-      console.error('Can\'t get Time Series', error);
-    }));
+        this.count += chartData.labelsY.reduce((a, b) => a + b);
+        this.countText = `Total ${field.label}`;
+        this.loader.closeLoader('chartLoader');
+      }, (error) => {
+        console.error('Can\'t get Time Series', error);
+        this.loader.closeLoader('chartLoader');
+      });
   }
 
   capitalizeFirstLetter(str: string): string {
@@ -179,11 +168,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       ],
     };
 
-    this.requestsSubscriber.add(this.getPreviewAppUrl().subscribe(url => url));
+    this.getPreviewAppUrl().pipe(takeUntil(this.destroy$)).subscribe(url => url);
 
     if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < page) {
-      this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(page, 10, sort, JSON.stringify(query))
-        .subscribe(response => {
+     this.appsVersionService.getAppsVersions(page, 10, sort, JSON.stringify(query))
+       .pipe(takeUntil(this.destroy$))
+       .subscribe(response => {
           this.appListConfig.data.pageNumber = response.pageNumber;
           this.appListConfig.data.pages = response.pages;
           this.appListConfig.data.count = response.count;
@@ -205,7 +195,9 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           this.appListConfig.data.list = [];
           this.isAppProcessing = false;
           this.loader.closeLoader('loadApps');
-        }));
+        });
+    } else {
+      this.loader.closeLoader('loadApps');
     }
   }
 
@@ -227,14 +219,15 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         },
       };
 
-      this.requestsSubscriber.add(this.appsVersionService.getAppsVersions(1, 200, sort, JSON.stringify(childQuery))
+      this.appsVersionService.getAppsVersions(1, 200, sort, JSON.stringify(childQuery))
+        .pipe(takeUntil(this.destroy$))
         .subscribe(response => {
           allChildren = response.list;
           parents.forEach(parent => {
             parent.children = allChildren.filter(child => child.appId === parent.appId);
           });
           this.loader.closeLoader('loadApps');
-        }));
+        });
     }
 
     return parents;
@@ -243,7 +236,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   catchMenuAction(menuEvent: AppListMenuAction): void {
     switch (menuEvent.action) {
       case 'PREVIEW':
-        this.requestsSubscriber.add(this.getPreviewAppUrl().subscribe(previewUrl => {
+        this.getPreviewAppUrl().pipe(takeUntil(this.destroy$))
+          .subscribe(previewUrl => {
           if (previewUrl) {
             window.open(previewUrl
             .replace('{appId}', menuEvent.appId)
@@ -251,7 +245,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           } else {
             this.toaster.warning('Please Please set the preview App URL.');
           }
-        }, () => this.toaster.warning('Please Please set the preview App URL.')));
+        }, () => this.toaster.warning('Please Please set the preview App URL.'));
         break;
       case 'EDIT':
         this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
@@ -267,8 +261,9 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         modalDelRef.result.then(res => {
           if (res && res === 'success') {
             if (menuEvent.isChild) {
-              this.requestsSubscriber.add(this.appsVersionService
+              this.appsVersionService
                 .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe( resp => {
                   if (resp.code && resp.code !== 200) {
                     this.toaster.error(resp.message);
@@ -277,9 +272,10 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     this.toaster.success('Your app has been deleted');
                     this.getApps(1);
                   }
-                }));
+                });
             } else {
-              this.requestsSubscriber.add(this.appService.deleteApp(menuEvent.appId)
+              this.appService.deleteApp(menuEvent.appId)
+                .pipe(takeUntil(this.destroy$))
                 .subscribe(resp => {
                   if (resp.code && resp.code !== 200) {
                     this.toaster.error(resp.message);
@@ -288,17 +284,19 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     this.toaster.success('Your app has been deleted');
                     this.getApps(1);
                   }
-                }));
+                });
             }
           }
         });
         break;
       case 'SUBMIT':
-        this.requestsSubscriber.add(this.appsVersionService.getAppByVersion(menuEvent.appId, menuEvent.appVersion)
+        this.appsVersionService.getAppByVersion(menuEvent.appId, menuEvent.appVersion)
+          .pipe(takeUntil(this.destroy$))
           .subscribe((appData) => {
             if (appData) {
-              this.requestsSubscriber.add(this.appTypeService
-                .getOneAppType(appData.type).subscribe(appType => {
+              this.appTypeService.getOneAppType(appData.type)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(appType => {
 
                   if (appData.name && appData.safeName.length > 0 && this.checkRequiredAppFields(appData, appType)) {
                     const modalRef = this.modal.open(AppConfirmationModalComponent);
@@ -310,14 +308,15 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
                     modalRef.result.then(res => {
                       if (res && res === 'success') {
-                        this.requestsSubscriber.add(this.appService.publishAppByVersion(menuEvent.appId, {
+                        this.appService.publishAppByVersion(menuEvent.appId, {
                           version: menuEvent.appVersion, autoApprove: false})
-                          .subscribe((resp) => {
+                          .pipe(takeUntil(this.destroy$))
+                          .subscribe(() => {
                               this.appListConfig.data.pageNumber = 0;
                               this.toaster.success('Your app has been submitted for approval');
                               this.getApps(1);
                           },
-                            err => this.toaster.error(err.message)));
+                            err => this.toaster.error(err.message));
                       }
                     });
                   } else {
@@ -327,9 +326,9 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                         this.toaster.info('Fill out all mandatory fields before submitting');
                       });
                   }
-                }));
+                });
             }
-          }));
+          });
         break;
       case 'SUSPEND':
         if (this.appListConfig.data.list
@@ -343,17 +342,17 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
           modalSuspendRef.result.then(res => {
             if (res && res === 'success') {
-              this.requestsSubscriber.add(
-                this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
-                .subscribe(resp => {
-                  if (resp.code && resp.code !== 200) {
-                    this.toaster.error(resp.message);
-                  } else {
-                    this.appListConfig.data.pageNumber = 0;
-                    this.toaster.success('Your app has been suspended');
-                    this.getApps(1);
-                  }
-                }));
+              this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(resp => {
+                if (resp.code && resp.code !== 200) {
+                  this.toaster.error(resp.message);
+                } else {
+                  this.appListConfig.data.pageNumber = 0;
+                  this.toaster.success('Your app has been suspended');
+                  this.getApps(1);
+                }
+              });
             }
           });
         }
