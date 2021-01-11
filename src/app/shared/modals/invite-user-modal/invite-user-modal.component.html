@@ -5,7 +5,8 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <oc-form [formJsonData]="formConfig" [showButton]="false"
+  <oc-form #customForm [formJsonData]="formConfig"
+           [showButton]="false"
            (isFormInvalid)="getFormStatus($event)"
            (formDataUpdated)="getDataFromForm($event)"></oc-form>
   <div class="d-flex justify-content-between flex-column-reverse flex-sm-row mt-4">
@@ -14,8 +15,10 @@
                  (click)="closeAction('cancel')"></oc-button>
     </div>
     <div class="button-container mb-2 mb-sm-0">
-      <oc-button type="primary" [text]="successButtonText"
-                 class="w-100" [disabled]="formInvalid"
+      <oc-button type="primary"
+                 [text]="successButtonText"
+                 class="w-100"
+                 [process]="inviteInProcess"
                  (click)="sendInvite()"></oc-button>
     </div>
   </div>
