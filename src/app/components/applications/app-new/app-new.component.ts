@@ -166,7 +166,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   openConfirmationModal(): void {
-    if (!this.lockSubmitButton) {
+    if (!this.lockSubmitButton && !this.draftSaveInProcess) {
       this.submitInProcess = true;
       const modalRef = this.modal.open(AppConfirmationModalComponent);
 
@@ -243,6 +243,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             }
           }, () => {
             this.lockSubmitButton = false;
+            this.draftSaveInProcess = false;
             this.currentAppAction = this.appActions[0];
             console.log('Can\'t update app.');
           },
@@ -565,7 +566,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (this.disableOutgo) {
       return true;
     }
-    console.log(this.generatedForm);
     return !(this.generatedForm && this.generatedForm.dirty);
   }
 }
