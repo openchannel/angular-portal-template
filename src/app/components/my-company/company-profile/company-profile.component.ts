@@ -65,7 +65,7 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
   }
 
   saveType(): void {
-    if (this.showSaveButton) {
+    if (this.showSaveButton && !this.savingCompanyData && !this.isInvalidForm) {
       this.savingCompanyData = true;
       const request = {
         name: this.getDeveloperName(this.developerData.developer, this.newCustomData),
