@@ -167,6 +167,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   openConfirmationModal(): void {
     if (!this.lockSubmitButton) {
+      this.submitInProcess = true;
       const modalRef = this.modal.open(AppConfirmationModalComponent);
 
       modalRef.componentInstance.modalTitle = 'Submit app';
@@ -179,6 +180,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (res && res === 'success') {
           this.saveApp('submit');
         } else if (res && res === 'draft') {
+          this.submitInProcess = false;
           this.saveApp('draft');
         }
       });
@@ -228,11 +230,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
               if (saveType === 'submit') {
                 this.publishApp(saveType, response.appId, response.version);
               } else {
+                this.lockSubmitButton = false;
+                this.draftSaveInProcess = false;
                 this.showSuccessToaster(saveType);
                 this.router.navigate(['/manage']).then();
               }
             } else {
               this.lockSubmitButton = false;
+              this.draftSaveInProcess = false;
               this.currentAppAction = this.appActions[0];
               console.log('Can\'t update app.');
             }
@@ -253,10 +258,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }).pipe(takeUntil(this.destroy$))
       .subscribe(() => {
       this.lockSubmitButton = false;
+      this.submitInProcess = false;
       this.showSuccessToaster(saveType);
       this.router.navigate(['/manage']).then();
     }, error => {
       console.error('request publishAppByVersion', error);
+      this.lockSubmitButton = false;
       this.lockSubmitButton = false;
     });
   }
