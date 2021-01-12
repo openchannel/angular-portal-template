@@ -45,12 +45,12 @@
                     <oc-button type="secondary" text="Cancel" class="w-100" routerLink="/manage"></oc-button>
                 </div>
                 <div class="form-btn">
-                    <oc-button type="secondary" text="Save" class="w-100" (click)="saveApp('draft')"
-                               [disabled]="appDataFormGroup.invalid"></oc-button>
+                    <oc-button type="secondary" text="Save" class="w-100" (click)="saveApp('draft')">
+                    </oc-button>
                 </div>
                 <div class="form-btn">
                     <oc-button type="primary" text="Submit" class="w-100"
-                               [disabled]="appDataFormGroup.invalid || lockSubmitButton" (click)="openConfirmationModal()"></oc-button>
+                               (click)="openConfirmationModal()"></oc-button>
                 </div>
             </div>
         </div>
