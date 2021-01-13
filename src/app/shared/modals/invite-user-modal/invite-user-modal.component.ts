@@ -1,7 +1,8 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {DeveloperAccountService, DeveloperAccountTypesService, InviteUserModel, InviteUserService} from 'oc-ng-common-service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {Subscription} from 'rxjs';
+import { OcFormComponent } from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-invite-user-modal',
@@ -10,6 +11,7 @@ import {Subscription} from 'rxjs';
 })
 export class InviteUserModalComponent implements OnInit, OnDestroy {
 
+  @ViewChild('customForm') generatedForm: OcFormComponent;
   /** Title of the modal */
   @Input() modalTitle = 'Invite a member';
   /** If you want to edit user - you should set user data */
@@ -29,6 +31,8 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
   public formInvalid = true;
   // data from custom form
   public formData: InviteUserModel;
+  // show spinner while inviting requests
+  public inviteInProcess = false;
 
   private subscriber: Subscription = new Subscription();
 
@@ -138,22 +142,35 @@ export class InviteUserModalComponent implements OnInit, OnDestroy {
   }
 
   sendInvite() {
-    this.formInvalid = true;
-    if (this.userData) {
-      this.developerAccountService.updateAccountFieldsForAnotherUser(this.userData.userAccountId, {
-        ...this.formData,
-        developerId: this.userData.userId,
-      }).subscribe(response => {
-        this.formInvalid = false;
-        this.closeAction('success');
-      });
-    } else {
-      const templateId = '5fc663f2217876017548dc25';
-      this.inviteService.sendDeveloperInvite(this.formData, this.developerId, templateId, this.companyName)
-        .subscribe(response => {
+    if (!this.formInvalid) {
+      this.inviteInProcess = true;
+      this.formInvalid = true;
+      if (this.userData) {
+        this.developerAccountService.updateAccountFieldsForAnotherUser(this.userData.userAccountId, {
+          ...this.formData,
+          developerId: this.userData.userId,
+        }).subscribe(response => {
           this.formInvalid = false;
+          this.inviteInProcess = false;
           this.closeAction('success');
-        }, () => { this.formInvalid = false; });
+        }, () => {
+          this.formInvalid = false;
+          this.inviteInProcess = false;
+        });
+      } else {
+        const templateId = '5fc663f2217876017548dc25';
+        this.inviteService.sendDeveloperInvite(this.formData, this.developerId, templateId, this.companyName)
+          .subscribe(response => {
+            this.formInvalid = false;
+            this.inviteInProcess = false;
+            this.closeAction('success');
+          }, () => {
+            this.formInvalid = false;
+            this.inviteInProcess = false;
+          });
+      }
+    } else {
+      this.generatedForm.customForm.markAllAsTouched();
     }
   }
 }
