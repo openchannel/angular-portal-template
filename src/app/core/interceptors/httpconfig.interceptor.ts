@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse,} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
@@ -40,7 +40,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
           return this.handle401Error(request, next);
         } else if (response.error && response.error['validation-errors']) {
           this.handleValidationError(response.error['validation-errors']);
-        } else if (response?.error?.errors[0]?.field) {
+        } else if (response?.error?.errors?.size >= 1 && response?.error?.errors[0]?.field) {
           this.handleValidationError(response.error.errors);
         }
         return throwError(response);
