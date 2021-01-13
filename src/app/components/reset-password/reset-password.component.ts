@@ -32,7 +32,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     }
 
     reset(event) {
-        if (event === true) {
+        if (event) {
             this.inProcess = true;
             this.usersService.recoverPassword(this.resetModel)
                 .pipe(takeUntil(this.destroy$))
