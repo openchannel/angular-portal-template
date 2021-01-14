@@ -290,45 +290,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         });
         break;
       case 'SUBMIT':
-        this.appsVersionService.getAppByVersion(menuEvent.appId, menuEvent.appVersion)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((appData) => {
-            if (appData) {
-              this.appTypeService.getOneAppType(appData.type)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(appType => {
-
-                  if (appData.name && appData.safeName.length > 0 && this.checkRequiredAppFields(appData, appType)) {
-                    const modalRef = this.modal.open(AppConfirmationModalComponent);
-
-                    modalRef.componentInstance.type = 'simple';
-                    modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
-                    modalRef.componentInstance.modalTitle = 'Submit app';
-                    modalRef.componentInstance.buttonText = 'Yes, submit it';
-
-                    modalRef.result.then(res => {
-                      if (res && res === 'success') {
-                        this.appService.publishAppByVersion(menuEvent.appId, {
-                          version: menuEvent.appVersion, autoApprove: false})
-                          .pipe(takeUntil(this.destroy$))
-                          .subscribe(() => {
-                              this.appListConfig.data.pageNumber = 0;
-                              this.toaster.success('Your app has been submitted for approval');
-                              this.getApps(1);
-                          },
-                            err => this.toaster.error(err.message));
-                      }
-                    });
-                  } else {
-                    this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion],
-                      { queryParams: { formStatus: 'invalid' } })
-                      .then(() => {
-                        this.toaster.info('Fill out all mandatory fields before submitting');
-                      });
-                  }
-                });
-            }
-          });
+        this.submitApp(menuEvent);
         break;
       case 'SUSPEND':
         if (this.appListConfig.data.list
@@ -360,6 +322,46 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
   }
 
+  private submitApp(menuEvent: AppListMenuAction) {
+    const modalRef = this.modal.open(AppConfirmationModalComponent);
+
+    modalRef.componentInstance.type = 'simple';
+    modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
+    modalRef.componentInstance.modalTitle = 'Submit app';
+    modalRef.componentInstance.buttonText = 'Yes, submit it';
+
+    modalRef.result.then(res => {
+      if (res && res === 'success') {
+        this.loader.showLoader('submitApp');
+
+        this.appService.publishAppByVersion(menuEvent.appId, {
+          version: menuEvent.appVersion, autoApprove: false,
+        })
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+              this.loader.closeLoader('submitApp');
+
+              this.appListConfig.data.pageNumber = 0;
+              this.toaster.success('Your app has been submitted for approval');
+              this.getApps(1);
+            },
+            err => {
+              this.loader.closeLoader('submitApp');
+
+              if (err.status === 400) {
+                this.router.navigate(['/update', menuEvent.appId, menuEvent.appVersion],
+                  {queryParams: {formStatus: 'invalid'}})
+                  .then(() => {
+                    this.toaster.info('Fill out all mandatory fields before submitting');
+                  });
+              } else {
+                this.toaster.error(err.message);
+              }
+            });
+      }
+    });
+  }
+
   getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
     const dateStart = new Date(dateEnd);
     if (period?.id === 'month') {
@@ -371,22 +373,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       console.error('Not implement chart period.');
     }
     return dateStart;
-  }
-
-// checking if all required fields of the app are filled
-  checkRequiredAppFields(appData: FullAppData, appType: AppTypeModel): boolean {
-    let isValid = true;
-    appType.fields.forEach(field => {
-      if (field.id.includes('customData')) {
-        // check data only in required fields
-        if (field.attributes?.required) {
-          if (!appData.customData[field.id.split('.')[1]]) {
-            isValid = false;
-          }
-        }
-      }
-    });
-    return isValid;
   }
 
   changeSorting(sortSettings) {
