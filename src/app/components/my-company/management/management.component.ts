@@ -15,6 +15,7 @@ import {ConfirmationModalComponent} from '../../../shared/modals/confirmation-mo
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
 import {InviteUserModalComponent} from '../../../shared/modals/invite-user-modal/invite-user-modal.component';
+import {LoaderService} from '../../../shared/services/loader.service';
 
 @Component({
   selector: 'app-management',
@@ -38,11 +39,15 @@ export class ManagementComponent implements OnInit, OnDestroy {
   };
 
   private subscriptions = new Subscription();
-  private sortQuery: string = '{"name": 1}';
+  private sortQuery = '{"name": 1}';
 
   private destroy$: Subject<void> = new Subject();
 
-  constructor(private userService: UsersService,
+  private readonly loaderInvites = 'loaderInvites';
+  private readonly loaderDevelopers = 'loaderDevelopers';
+
+  constructor(public loaderService: LoaderService,
+              private userService: UsersService,
               private inviteUserService: InviteUserService,
               private developerAccountService: DeveloperAccountService,
               private toaster: ToastrService,
@@ -60,7 +65,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   scroll(pageNumber: number) {
     this.userProperties.data.pageNumber = pageNumber;
-    this.getAllDevelopers();
+    this.getAllDevelopers(() => {
+    });
   }
 
   catchSortChanges(sortBy) {
@@ -80,36 +86,49 @@ export class ManagementComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    this.userProperties.data.list = [];
-    this.scroll(1);
+    this.userProperties.data.pageNumber = 1;
+    this.getAllDevelopers(() => this.userProperties.data.list = []);
   }
 
-  private getAllDevelopers() {
+  private getAllDevelopers(responseCallBack: () => void) {
+    this.loaderService.showLoader(this.loaderInvites);
     this.subscriptions.add(
         this.inviteUserService.getDeveloperInvites(this.userProperties.data.pageNumber, 10, this.sortQuery)
         .subscribe(invites => {
-          const invitesArray = invites.list.map(developerInvite => this.mapToGridUserFromInvite(developerInvite));
+          this.loaderService.closeLoader(this.loaderInvites);
+          this.getActiveDevelopers(invites.list.map(developerInvite => this.mapToGridUserFromInvite(developerInvite)), responseCallBack);
+        }, () => {
+          this.loaderService.closeLoader(this.loaderInvites);
+          this.getActiveDevelopers([], responseCallBack);
+        })
+    );
+  }
+
+  private getActiveDevelopers(invites: UserAccountGridModel[], responseCallBack: () => void) {
+    this.loaderService.showLoader(this.loaderDevelopers);
+    this.subscriptions.add(this.developerAccountService.getDeveloperAccounts(this.userProperties.data.pageNumber, 10, this.sortQuery)
+        .subscribe(activeDevelopers => {
+          responseCallBack();
+
+          // push new invites
           if (this.userProperties.data.pageNumber === 1) {
             this.userProperties.data.list
-            .push(...invitesArray);
+            .push(...invites);
           } else {
             const lastInvitedDev = this.userProperties.data.list
             .filter(developer => developer.inviteStatus === 'INVITED').pop();
             if (lastInvitedDev) {
               this.userProperties.data.list
-              .splice(this.userProperties.data.list.lastIndexOf(lastInvitedDev) + 1, 0, ...invitesArray);
+              .splice(this.userProperties.data.list.lastIndexOf(lastInvitedDev) + 1, 0, ...invites);
             }
           }
-          this.getActiveDevelopers();
-        }, () => this.getActiveDevelopers())
-    );
-  }
 
-  private getActiveDevelopers() {
-    this.subscriptions.add(this.developerAccountService.getDeveloperAccounts(this.userProperties.data.pageNumber, 10, this.sortQuery)
-        .subscribe(activeDevelopers => {
-          this.userProperties.data.list
-          .push(...activeDevelopers.list.map(developer => this.mapToGridUserFromDeveloper(developer)));
+          // push new developers
+          this.userProperties.data.list.push(...activeDevelopers.list.map(developer => this.mapToGridUserFromDeveloper(developer)));
+          this.loaderService.closeLoader(this.loaderDevelopers);
+        }, (error) => {
+          responseCallBack();
+          this.loaderService.closeLoader(this.loaderDevelopers);
         })
     );
   }

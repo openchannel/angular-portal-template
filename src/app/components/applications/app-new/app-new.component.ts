@@ -81,7 +81,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
   };
   generatedForm: FormGroup;
 
-  lockSubmitButton = true;
+  lockSubmitButton = false;
+  draftSaveInProcess = false;
+  submitInProcess = false;
 
   pageTitle: 'Create app' | 'Edit app';
   pageType: string;
@@ -164,28 +166,35 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   openConfirmationModal(): void {
-    const modalRef = this.modal.open(AppConfirmationModalComponent);
+    if (!this.lockSubmitButton && !this.draftSaveInProcess) {
+      this.submitInProcess = true;
+      const modalRef = this.modal.open(AppConfirmationModalComponent);
 
-    modalRef.componentInstance.modalTitle = 'Submit app';
-    modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
-    modalRef.componentInstance.type = 'submission';
-    modalRef.componentInstance.buttonText = 'Yes, submit it';
-    modalRef.componentInstance.cancelButtonText = 'Save as draft';
+      modalRef.componentInstance.modalTitle = 'Submit app';
+      modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
+      modalRef.componentInstance.type = 'submission';
+      modalRef.componentInstance.buttonText = 'Yes, submit it';
+      modalRef.componentInstance.cancelButtonText = 'Save as draft';
 
-    modalRef.result.then(res => {
-      if (res && res === 'success') {
-        this.saveApp('submit');
-      } else if (res && res === 'draft') {
-        this.saveApp('draft');
-      }
-    });
+      modalRef.result.then(res => {
+        if (res && res === 'success') {
+          this.saveApp('submit');
+        } else if (res && res === 'draft') {
+          this.submitInProcess = false;
+          this.saveApp('draft');
+        }
+      });
+    }
   }
 
   // saving app to the server
   saveApp(saveType: 'submit' | 'draft'): void {
-    if (this.isValidAppName()) {
+    if ((saveType === 'draft' && this.isValidAppName() && !this.draftSaveInProcess)
+      || (saveType === 'submit' && !this.lockSubmitButton)) {
       this.disableOutgo = true;
+      this.draftSaveInProcess = saveType === 'draft';
       this.lockSubmitButton = true;
+
       if (this.pageType === 'create') {
         this.appsService.createApp(this.buildDataForCreate(this.appFormData))
           .pipe(takeUntil(this.destroy$))
@@ -194,14 +203,20 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (saveType === 'submit') {
               this.publishApp(saveType, appResponse.appId, appResponse.version);
             } else {
-              this.showSuccessToaster(saveType);
-              this.router.navigate(['/manage']).then();
+              this.lockSubmitButton = false;
+              this.draftSaveInProcess = false;
+              this.router.navigate(['/manage']).then(() => {
+                this.showSuccessToaster(saveType);
+              });
             }
           } else {
+            this.lockSubmitButton = false;
+            this.draftSaveInProcess = false;
             console.error('Can\'t save a new app. Empty response.');
           }
         }, () => {
           this.lockSubmitButton = false;
+          this.draftSaveInProcess = false;
           this.currentAppAction = this.appActions[0];
           console.error('Can\'t save a new app.');
         });
@@ -215,16 +230,20 @@ export class AppNewComponent implements OnInit, OnDestroy {
               if (saveType === 'submit') {
                 this.publishApp(saveType, response.appId, response.version);
               } else {
+                this.lockSubmitButton = false;
+                this.draftSaveInProcess = false;
                 this.showSuccessToaster(saveType);
                 this.router.navigate(['/manage']).then();
               }
             } else {
               this.lockSubmitButton = false;
+              this.draftSaveInProcess = false;
               this.currentAppAction = this.appActions[0];
               console.log('Can\'t update app.');
             }
           }, () => {
             this.lockSubmitButton = false;
+            this.draftSaveInProcess = false;
             this.currentAppAction = this.appActions[0];
             console.log('Can\'t update app.');
           },
@@ -240,10 +259,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }).pipe(takeUntil(this.destroy$))
       .subscribe(() => {
       this.lockSubmitButton = false;
+      this.submitInProcess = false;
       this.showSuccessToaster(saveType);
       this.router.navigate(['/manage']).then();
     }, error => {
       console.error('request publishAppByVersion', error);
+      this.lockSubmitButton = false;
       this.lockSubmitButton = false;
     });
   }
@@ -545,7 +566,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (this.disableOutgo) {
       return true;
     }
-    console.log(this.generatedForm);
     return !(this.generatedForm && this.generatedForm.dirty);
   }
 }
