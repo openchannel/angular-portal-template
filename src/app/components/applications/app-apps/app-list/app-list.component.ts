@@ -79,11 +79,11 @@ export class AppListComponent implements OnInit, OnDestroy {
     if (searchText) {
       this.subscriptions.add(this.appVersionService.getAppsVersionsBySearchText(this.pageNumber, this.pageSize,
           null, this.currentTab.query, searchText, this.searchByFields)
-      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => console.error('getAppsVersionsBySearchText', error)));
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse)));
     } else {
       this.subscriptions.add(this.appVersionService.getAppsVersions(
           this.pageNumber, this.pageSize, null, this.currentTab.query)
-      .subscribe(appsResponse => this.updateCurrentApps(appsResponse), error => console.error('getAllApps', error)));
+      .subscribe(appsResponse => this.updateCurrentApps(appsResponse)));
     }
   }
 
@@ -164,7 +164,7 @@ export class AppListComponent implements OnInit, OnDestroy {
       if (res && res === 'success') {
         this.subscriptions.add(this.appService.deleteApp(appId).subscribe(deleteResponse => {
           this.getAllAppsBySearchText(this.searchTextControl.value ? this.searchTextControl.value : '');
-        }, error => console.error('deleteApp', error)));
+        }));
       }
     });
   }

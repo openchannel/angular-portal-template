@@ -44,6 +44,7 @@ import {AppConfirmationModalComponent} from './shared/modals/app-confirmation-mo
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {CamelCaseToNormalPipe} from './shared/custom-components/camel-case-to-normal.pipe';
+// tslint:disable-next-line:max-line-length
 import {SubmissionsTableComponent} from './components/applications/app-store/form-list-generator/submissions-table/submissions-table.component';
 import {SubmissionsDataViewModalComponent} from './shared/modals/submissions-data-view-modal/submissions-data-view-modal.component';
 import {ResendActivationComponent} from './components/resend-activation/resend-activation.component';
@@ -56,6 +57,7 @@ import { InvitedSignupComponent } from './components/invited-signup/invited-sign
 import {CompanyComponent} from './components/my-company/company.component';
 import { CompanyProfileComponent } from './components/my-company/company-profile/company-profile.component';
 import {ManagementComponent} from './components/my-company/management/management.component';
+import {HttpErrorInterceptor} from './core/interceptors/httperror.interceptor';
 
 @NgModule({
   declarations: [
@@ -118,6 +120,7 @@ import {ManagementComponent} from './components/my-company/management/management
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true},
     {provide: NgbDateAdapter, useClass: CustomAdapter},
     {provide: AppsServiceImpl, useClass: MockAppsService},
     {provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js'},

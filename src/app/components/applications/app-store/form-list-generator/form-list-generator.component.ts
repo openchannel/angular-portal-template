@@ -35,8 +35,7 @@ export class FormListGeneratorComponent implements OnInit, OnDestroy {
         } else {
           this.formJSONArray = [];
         }
-      }, error => console.error('getAllFormsList', this.pageNumber, this.pageLimit)
-    ));
+      }));
   }
 
   openFormModal(formFieldsData: AppFormModel): void {
