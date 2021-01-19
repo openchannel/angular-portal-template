@@ -64,6 +64,9 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       }, {
         id: 'leads',
         label: 'Leads',
+      }, {
+        id: 'views',
+        label: 'Views'
       }],
     layout: ChartLayoutTypeModel.standard
   };
