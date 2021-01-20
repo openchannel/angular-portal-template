@@ -14,7 +14,7 @@ import {HttpConfigInterceptor} from './httpconfig.interceptor';
 export class HttpErrorInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private refreshTokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   constructor(private loaderService: LoaderService,
               private router: Router,
