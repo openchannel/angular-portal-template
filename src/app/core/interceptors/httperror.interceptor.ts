@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
-import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
 import {LoaderService} from 'src/app/shared/services/loader.service';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
@@ -17,8 +16,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  constructor(private notificationService: NotificationService,
-              private loaderService: LoaderService,
+  constructor(private loaderService: LoaderService,
               private router: Router,
               private errorService: OcErrorService,
               private authHolderService: AuthHolderService,
@@ -37,16 +35,16 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           this.handleValidationError(response.error['validation-errors']);
         } else if (response?.error?.errors?.size >= 1 && response?.error?.errors[0]?.field) {
           this.handleValidationError(response.error.errors);
+        } else {
+          this.handleError(response);
         }
-        return this.handleError(response);
+        return throwError(response);
       }));
   }
 
   private handleValidationError(validationErrorList: any[]) {
     if (validationErrorList[0].field) {
       this.errorService.setServerErrorList(validationErrorList);
-    } else {
-      this.notificationService.showError(validationErrorList);
     }
   }
 
@@ -77,7 +75,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     }
   }
 
-  handleError(error) {
+  private handleError(error) {
     let errorMessage: string;
     if (error.error instanceof ErrorEvent) {
       // client-side error
@@ -90,6 +88,5 @@ export class HttpErrorInterceptor implements HttpInterceptor {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
     this.toasterService.error(errorMessage);
-    return throwError(errorMessage);
   }
 }
