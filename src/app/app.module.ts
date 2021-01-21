@@ -15,7 +15,6 @@ import {ForgotPasswordComponent} from './components/users/forgot-password/forgot
 import {CustomComponentsModule} from './shared/custom-components/custom-components.module';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {CustomAdapter} from './core/datepicker-adapter';
-import {LoaderComponent} from './shared/custom-components/loader/loader.component';
 import {DatePipe} from '@angular/common';
 import {SignupComponent} from './components/signup/signup.component';
 import {CustomHttpClientXsrfModule, OcCommonServiceModule} from 'oc-ng-common-service';
@@ -132,7 +131,6 @@ import { LoadingBarModule } from '@ngx-loading-bar/core';
   bootstrap: [AppComponent],
   entryComponents: [
     SubmissionsDataViewModalComponent,
-    LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
     InviteUserModalComponent,
