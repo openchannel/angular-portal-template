@@ -58,6 +58,7 @@ import {CompanyComponent} from './components/my-company/company.component';
 import { CompanyProfileComponent } from './components/my-company/company-profile/company-profile.component';
 import {ManagementComponent} from './components/my-company/management/management.component';
 import {HttpErrorInterceptor} from './core/interceptors/httperror.interceptor';
+import { LoadingBarModule } from '@ngx-loading-bar/core';
 
 @NgModule({
   declarations: [
@@ -117,6 +118,7 @@ import {HttpErrorInterceptor} from './core/interceptors/httperror.interceptor';
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
     CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
+    LoadingBarModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
