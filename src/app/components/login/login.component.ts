@@ -62,13 +62,13 @@ export class LoginComponent implements OnInit, OnDestroy {
         .subscribe((authConfig) => {
             this.loginType = authConfig.type;
 
-              this.oauthService.configure({
+            this.oauthService.configure({
                   ...authConfig,
                   redirectUri: authConfig.redirectUri || window.location.href,
               });
 
-              this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-              this.oauthService.loadDiscoveryDocumentAndLogin({
+            this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+            this.oauthService.loadDiscoveryDocumentAndLogin({
                   onTokenReceived: receivedTokens => {
                       this.loaderService.showLoader('internalLogin');
                       this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
@@ -81,7 +81,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               }).then(() => {
                   this.loaderService.closeLoader('getAuthConfig');
               });
-          }, err => console.error('getAuthConfig', err),
+          }, err => {},
           () => this.loaderService.closeLoader('getAuthConfig'));
     }
 

@@ -42,8 +42,7 @@ export class SubmissionsTableComponent implements OnInit, OnChanges, OnDestroy {
             this.submissionsData = [];
             this.pageCount = 1;
           }
-        }, error => console.error('getSubmissions', error)
-    ));
+        }));
   }
 
   trackBySubmId(index: number, submission: any): string {

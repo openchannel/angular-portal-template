@@ -138,7 +138,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         this.countText = `Total ${field.label}`;
         this.loader.closeLoader('chartLoader');
       }, (error) => {
-        console.error('Can\'t get Time Series', error);
         this.loader.closeLoader('chartLoader');
       });
   }
@@ -373,7 +372,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       dateStart.setTime(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
     } else {
       dateStart.setMonth(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
-      console.error('Not implement chart period.');
     }
     return dateStart;
   }

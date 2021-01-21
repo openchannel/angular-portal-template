@@ -195,7 +195,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
         .subscribe(() => {
           this.deleteUserFromResultArray(user);
           this.toaster.success('User has been deleted from your organization');
-        }, error => console.error('deleteDeveloperAccount', error))
+        })
     );
   }
 
@@ -204,7 +204,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
         this.inviteUserService.deleteDeveloperInvite(user?.inviteId).subscribe(() => {
           this.deleteUserFromResultArray(user);
           this.toaster.success('Invite has been deleted');
-        }, error => console.error('deleteDeveloperInvite', error)));
+        }));
   }
 
   deleteUserFromResultArray(user: UserAccountGridModel) {

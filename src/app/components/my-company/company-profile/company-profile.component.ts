@@ -54,8 +54,6 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
     }, error => {
       if (error.status === 404) {
         this.createFormFields(this.defaultDeveloperTypeFields);
-      } else {
-        console.error('getDeveloperType', error);
       }
     }));
   }
@@ -81,7 +79,6 @@ export class CompanyProfileComponent implements OnInit, OnDestroy {
         this.toastService.success('Your organization details has been updated');
       }, error => {
         this.savingCompanyData = false;
-        console.error('updateDeveloper', error);
       }));
     }
   }
