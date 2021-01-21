@@ -2,18 +2,16 @@ import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
-import {NotificationService} from 'src/app/shared/custom-components/notification/notification.service';
-import {LoaderService} from 'src/app/shared/services/loader.service';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
 import {map} from 'rxjs/operators';
 import {AuthHolderService} from 'oc-ng-common-service';
+import {LoaderService} from '@shared/services/loader.service';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
 
-  constructor(private notificationService: NotificationService,
-              private loaderService: LoaderService,
+  constructor(private loaderService: LoaderService,
               private router: Router,
               private errorService: OcErrorService,
               private authHolderService: AuthHolderService) {

@@ -2,13 +2,13 @@ import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
-import {LoaderService} from 'src/app/shared/services/loader.service';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
 import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {AuthenticationService, AuthHolderService, LoginResponse} from 'oc-ng-common-service';
 import {ToastrService} from 'ngx-toastr';
 import {HttpConfigInterceptor} from './httpconfig.interceptor';
+import {LoaderService} from '@shared/services/loader.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
