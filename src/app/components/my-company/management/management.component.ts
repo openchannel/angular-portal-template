@@ -248,7 +248,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
     const modalData = new ModalUpdateUserModel();
     modalData.userData = developerAccount;
-    modalData.modalTitle = 'Edit user details';
+    modalData.modalTitle = 'Edit member';
     modalData.successButtonText = 'Save';
     modalData.requestFindUserTypes =
         () => this.developerAccountTypesService.getAllDeveloperAccountsType(1, 100);
@@ -257,7 +257,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.modalData = modalData;
 
     modalRef.result.then(result => {
-      if (result.status === 'success') {
+      if (result) {
         this.toaster.success('User details have been updated');
       }
     });
