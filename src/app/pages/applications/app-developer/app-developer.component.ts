@@ -21,7 +21,6 @@ import {Observable, of, Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
-import {LoaderService} from '@shared/services/loader.service';
 import {map, takeUntil} from 'rxjs/operators';
 import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';

@@ -8,7 +8,6 @@ import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {AuthenticationService, AuthHolderService, LoginResponse} from 'oc-ng-common-service';
 import {ToastrService} from 'ngx-toastr';
 import {HttpConfigInterceptor} from './httpconfig.interceptor';
-import {LoaderService} from '@shared/services/loader.service';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {

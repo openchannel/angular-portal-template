@@ -13,10 +13,10 @@ import {
 import {Subject, Subscription} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
-import {InviteUserModalComponent} from '../../../shared/modals/invite-user-modal/invite-user-modal.component';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import {ConfirmationModalComponent} from '@shared/modals/confirmation-modal/confirmation-modal.component';
+import {InviteUserModalComponent} from '@shared/modals/invite-user-modal/invite-user-modal.component';
 
 @Component({
   selector: 'app-management',

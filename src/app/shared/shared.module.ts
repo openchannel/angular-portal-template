@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {OcCommonLibModule} from 'oc-ng-common-component';
-import {LoaderComponent} from './components/loader/loader.component';
 import {FormModalComponent} from './modals/form-modal/form-modal.component';
 import {ConfirmationModalComponent} from './modals/confirmation-modal/confirmation-modal.component';
 import {CamelCaseToNormalPipe} from './pipes/camel-case-to-normal.pipe';
@@ -12,7 +11,6 @@ import {InviteUserModalComponent} from './modals/invite-user-modal/invite-user-m
 
 @NgModule({
   declarations: [
-    LoaderComponent,
     FormModalComponent,
     ConfirmationModalComponent,
     AppConfirmationModalComponent,
@@ -30,7 +28,6 @@ import {InviteUserModalComponent} from './modals/invite-user-modal/invite-user-m
   ],
   exports: [
     OcCommonLibModule,
-    LoaderComponent,
     CamelCaseToNormalPipe,
     FormsModule,
     ReactiveFormsModule

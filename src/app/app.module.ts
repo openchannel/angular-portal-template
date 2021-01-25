@@ -4,7 +4,6 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HttpConfigInterceptor} from '@core/interceptors/httpconfig.interceptor';
-import {LoaderComponent} from '@shared/components/loader/loader.component';
 import {CustomHttpClientXsrfModule, OcCommonServiceModule} from 'oc-ng-common-service';
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';

@@ -3,7 +3,6 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '
 import {AuthenticationService} from 'oc-ng-common-service';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {LoaderService} from '@shared/services/loader.service';
 
 
 @Injectable({providedIn: 'root'})
