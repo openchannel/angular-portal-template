@@ -216,3 +216,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     background-color: $primary !important;
   }
 }
+
+.header-login-btn {
+  border: 1px solid $info;
+  color: $primary;
+  &:hover {
+    box-shadow: 1px 5px 30px 0 rgba(201, 213, 234, 0.5);
+  }
+}
