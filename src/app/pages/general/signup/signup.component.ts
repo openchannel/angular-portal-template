@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {SellerSignup, UsersService} from 'oc-ng-common-service';
+import {NativeLoginService, SellerSignup} from 'oc-ng-common-service';
 
 
 @Component({
@@ -20,7 +20,7 @@ export class SignupComponent implements OnInit {
   signupUrl = '/signup';
   signupModel: SellerSignup;
 
-  constructor(private usersService: UsersService) {
+  constructor(private nativeLoginService: NativeLoginService) {
      this.signupModel = new SellerSignup();
   }
 
@@ -30,7 +30,7 @@ export class SignupComponent implements OnInit {
   signup(event) {
     if (event === true) {
       this.inProcess = true;
-      this.usersService.signup(this.signupModel).subscribe(res => {
+      this.nativeLoginService.signup(this.signupModel).subscribe(res => {
         this.inProcess = false;
         this.showSignupFeedbackPage = true;
       }, res => {
