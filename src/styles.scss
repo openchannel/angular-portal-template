@@ -193,11 +193,29 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
 }
 
+// modals - start
 @media (min-width: 730px) {
   .modal-dialog {
     max-width: 750px;
   }
 }
+
+.modal-sm {
+  max-width: 410px;
+  margin-top: 145px;
+  @include media-breakpoint-sm() {
+    max-width: 100%;
+  }
+}
+.modal-backdrop {
+  background-color: #717486;
+}
+
+.modal-content {
+  border: none;
+}
+
+// modals - end
 
 .text-color-primary {
   color: $primary !important;
