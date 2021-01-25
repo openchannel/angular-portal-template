@@ -9,15 +9,12 @@ import {LoaderService} from '@shared/services/loader.service';
 @Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {
   constructor(private router: Router,
-              private authService: AuthenticationService,
-              private loader: LoaderService) {
+              private authService: AuthenticationService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    this.loader.showLoader('isLogged');
     return this.authService.isLoggedUserByAccessOrRefreshToken()
     .pipe(tap(isLogged => {
-      this.loader.closeLoader('isLogged');
       if (!isLogged) {
         this.router.navigate(['/login']);
       }

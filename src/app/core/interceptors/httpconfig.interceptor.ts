@@ -6,13 +6,11 @@ import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
 import {map} from 'rxjs/operators';
 import {AuthHolderService} from 'oc-ng-common-service';
-import {LoaderService} from '@shared/services/loader.service';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
 
-  constructor(private loaderService: LoaderService,
-              private router: Router,
+  constructor(private router: Router,
               private errorService: OcErrorService,
               private authHolderService: AuthHolderService) {
   }
@@ -31,12 +29,6 @@ export class HttpConfigInterceptor implements HttpInterceptor {
       request = HttpConfigInterceptor.addToken(request, this.authHolderService.accessToken);
     }
 
-    return next.handle(request).pipe(
-      map((event: HttpEvent<any>) => {
-        if (event instanceof HttpResponse) {
-          this.loaderService.closeLoader(event.url);
-        }
-        return event;
-      }));
+    return next.handle(request);
   }
 }

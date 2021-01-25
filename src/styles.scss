@@ -211,6 +211,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding: 20px 0 16px;
 }
 
+.custom-loader {
+  .ngx-bar {
+    background-color: $primary !important;
+  }
+}
+
 .header-login-btn {
   border: 1px solid $info;
   color: $primary;

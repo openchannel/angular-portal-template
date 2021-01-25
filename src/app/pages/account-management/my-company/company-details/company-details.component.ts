@@ -10,6 +10,8 @@ import {
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-company',
@@ -39,15 +41,19 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
     }
   }];
   private subscriptions: Subscription = new Subscription();
+  private loader: LoadingBarState;
 
   constructor(private developerService: DeveloperService,
               private developerTypeService: DeveloperTypeService,
               private authHolderService: AuthHolderService,
               private activatedRoute: ActivatedRoute,
-              private toastService: ToastrService) {
+              private toastService: ToastrService,
+              public loadingBar: LoadingBarService) {
   }
 
   ngOnInit(): void {
+    this.loader = this.loadingBar.useRef();
+    this.loader.start();
     this.subscriptions.add(this.developerTypeService.getDeveloperType(this.developerData.developer?.type)
     .subscribe(developerType => {
       this.createFormFields(developerType.fields);
@@ -55,6 +61,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
       if (error.status === 404) {
         this.createFormFields(this.defaultDeveloperTypeFields);
       }
+      this.loader.complete();
     }));
   }
 
@@ -88,6 +95,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
       fields: this.mapTypeFields(this.developerData.developer, fields)
     };
     this.updateSaveButton();
+    this.loader.complete();
   }
 
   setCompanyData(newCustomData: any): void {

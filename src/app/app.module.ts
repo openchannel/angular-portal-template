@@ -16,6 +16,7 @@ import {HttpErrorInterceptor} from '@core/interceptors/httperror.interceptor';
 import {SharedModule} from '@shared/shared.module';
 import {HomeComponent} from './pages/home/home.component';
 import {environment} from '@env';
+import { LoadingBarModule } from '@ngx-loading-bar/core';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import {environment} from '@env';
     OAuthModule.forRoot(),
     ToastrModule.forRoot(),
     CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
-    SharedModule
+    SharedModule,
+    LoadingBarModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
@@ -43,9 +45,7 @@ import {environment} from '@env';
     {provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js'},
   ],
   bootstrap: [AppComponent],
-  entryComponents: [
-    LoaderComponent,
-  ],
+  entryComponents: [],
 })
 export class AppModule {
 

@@ -24,6 +24,8 @@ import {ToastrService} from 'ngx-toastr';
 import {LoaderService} from '@shared/services/loader.service';
 import {map, takeUntil} from 'rxjs/operators';
 import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-app-developer',
@@ -89,6 +91,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   };
 
   private destroy$: Subject<void> = new Subject();
+  private loader: LoadingBarState;
 
   constructor(public chartService: ChartService,
               public appService: AppsService,
@@ -100,11 +103,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               private toaster: ToastrService,
               private appTypeService: AppTypeService,
               private marketService: MarketService,
-              private loader: LoaderService) {
+              private loadingBar: LoadingBarService) {
 
   }
 
   ngOnInit(): void {
+    this.loader = this.loadingBar.useRef();
     this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
     this.applications.list = [];
     this.commonService.scrollToFormInvalidField({form: null, adjustSize: 60});
@@ -114,14 +118,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    this.loader.closeLoader('loadApps');
-    this.loader.closeLoader('chartLoader');
   }
 
   updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
     const dateEnd = new Date();
     const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
-    this.loader.showLoader('chartLoader');
+    this.loader.start();
     this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
       .pipe(takeUntil(this.destroy$))
       .subscribe((chartData) => {
@@ -132,9 +134,9 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         };
         this.count += chartData.labelsY.reduce((a, b) => a + b);
         this.countText = `Total ${field.label}`;
-        this.loader.closeLoader('chartLoader');
+        this.loader.complete();
       }, (error) => {
-        this.loader.closeLoader('chartLoader');
+        this.loader.complete();
       });
   }
 
@@ -143,7 +145,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   }
 
   getApps(page: number): void {
-    this.loader.showLoader('loadApps');
+    this.loader.start();
     this.isAppProcessing = true;
     const sort = JSON.stringify(this.appSorting);
 
@@ -188,14 +190,14 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               ...this.getAppsChildren(parentList, sort)];
           }
           this.isAppProcessing = false;
-          this.loader.closeLoader('loadApps');
+          this.loader.complete();
         }, () => {
           this.appListConfig.data.list = [];
           this.isAppProcessing = false;
-          this.loader.closeLoader('loadApps');
+          this.loader.complete();
         });
     } else {
-      this.loader.closeLoader('loadApps');
+      this.loader.complete();
     }
   }
 
@@ -224,7 +226,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           parents.forEach(parent => {
             parent.children = allChildren.filter(child => child.appId === parent.appId);
           });
-          this.loader.closeLoader('loadApps');
+          this.loader.complete();
         });
     }
 
@@ -330,21 +332,21 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     modalRef.result.then(res => {
       if (res && res === 'success') {
-        this.loader.showLoader('submitApp');
+        this.loader.complete();
 
         this.appService.publishAppByVersion(menuEvent.appId, {
           version: menuEvent.appVersion, autoApprove: false,
         })
           .pipe(takeUntil(this.destroy$))
           .subscribe(() => {
-              this.loader.closeLoader('submitApp');
+              this.loader.complete();
 
               this.appListConfig.data.pageNumber = 0;
               this.toaster.success('Your app has been submitted for approval');
               this.getApps(1);
             },
             err => {
-              this.loader.closeLoader('submitApp');
+              this.loader.complete();
 
               if (err.status === 400) {
                 this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion],
