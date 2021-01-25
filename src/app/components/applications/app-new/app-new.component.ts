@@ -22,8 +22,9 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '../../../shared/modals/app-confirmation-modal/app-confirmation-modal.component';
-import {LoaderService} from '../../../shared/services/loader.service';
 import {ToastrService} from 'ngx-toastr';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-app-new',
@@ -105,6 +106,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   // data from the form component
   private appFormData: any;
   private destroy$: Subject<void> = new Subject();
+  private loader: LoadingBarState;
 
   private readonly compatibleTypesCollections = [
     ['richText', 'longText', 'text', 'email', 'url'],
@@ -120,13 +122,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private appTypeService: AppTypeService,
               private activeRoute: ActivatedRoute,
               private modal: NgbModal,
-              private loader: LoaderService,
+              private loadingBar: LoadingBarService,
               private titleService: TitleService,
               private toaster: ToastrService,
               public chartService: ChartService) {
   }
 
   ngOnInit(): void {
+    this.loader = this.loadingBar.useRef();
     this.pageType = this.router.url.split('/')[1];
     this.pageTitle = this.getPageTitleByPage(this.pageType);
 
@@ -144,9 +147,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.loader.closeLoader('chartLoader');
-    this.loader.closeLoader('1');
-    this.loader.closeLoader('2');
   }
 
   initAppDataGroup(): void {
@@ -293,7 +293,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
   getAppData() {
     this.appId = this.activeRoute.snapshot.paramMap.get('appId');
     this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
-    this.loader.showLoader('2');
+
+    this.loader.start();
+
     this.appVersionService.getAppByVersion(this.appId, this.appVersion).pipe(takeUntil(this.destroy$))
       .subscribe(
       (appVersion) => {
@@ -311,17 +313,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
               fields: this.mapAppTypeFields(appVersion, appType),
             };
             this.checkDataValidityRedirect();
-            this.loader.closeLoader('2');
+            this.loader.complete();
           }, error => {
-            this.loader.closeLoader('2');
+            this.loader.complete();
             this.router.navigate(['/manage']).then();
           });
         } else {
-          this.loader.closeLoader('2');
+          this.loader.complete();
           this.router.navigate(['/manage']).then();
         }
       }, error => {
-        this.loader.closeLoader('2');
+        this.loader.complete();
         this.router.navigate(['/manage']).then();
       },
     );
@@ -345,7 +347,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     const dateEnd = new Date();
     const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, period);
 
-    this.loader.showLoader('chartLoader');
+    this.loader.start();
     this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((chartData) => {
@@ -356,9 +358,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
         };
         this.count += chartData.labelsY.reduce((a, b) => a + b);
         this.countText = `Total ${field.label}`;
-        this.loader.closeLoader('chartLoader');
+        this.loader.complete();
       }, (error) => {
-        this.loader.closeLoader('chartLoader');
+        this.loader.complete();
       });
   }
 
@@ -379,7 +381,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private getAllAppTypes(): void {
-    this.loader.showLoader('1');
+    this.loader.start();
     this.appTypeService.getAppTypes(this.appTypePageNumber, this.appTypePageLimit)
       .pipe(takeUntil(this.destroy$))
       .subscribe(appTypesResponse => {
@@ -388,15 +390,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
           if (this.pageType === 'create' && this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
             this.appDataFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
           }
-          this.loader.closeLoader('1');
+          this.loader.complete();
         } else {
-          this.loader.closeLoader('1');
+          this.loader.complete();
           this.router.navigate(['/manage']).then();
           this.currentAppsTypesItems = [];
         }
       }, (error) => {
         this.currentAppsTypesItems = [];
-        this.loader.closeLoader('1');
+        this.loader.complete();
         this.router.navigate(['/manage']).then();
       });
   }

@@ -5,7 +5,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FileSizePipe } from './file-size.pipe';
 import { FormsModule } from '@angular/forms';
 import { ImageFileValidatorDirective } from './image-file-validator.directive';
-import { LoaderComponent } from './loader/loader.component';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { OcCommonLibModule } from 'oc-ng-common-component';
 
@@ -14,7 +13,6 @@ import { OcCommonLibModule } from 'oc-ng-common-component';
       NotificationComponent,
       ImageFileValidatorDirective,
       FileSizePipe,
-      LoaderComponent
    ],
    imports: [
       CommonModule,
@@ -24,7 +22,6 @@ import { OcCommonLibModule } from 'oc-ng-common-component';
       OcCommonLibModule
    ],
    exports: [
-      LoaderComponent,
       NotificationComponent,
       ImageFileValidatorDirective,
       FileSizePipe

@@ -5,12 +5,13 @@ import {
   DeveloperAccountTypesService,
   DeveloperDetailsModel,
 } from 'oc-ng-common-service';
-import {LoaderService} from '../../../shared/services/loader.service';
 import {catchError, mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject, throwError} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {OcFormComponent} from 'oc-ng-common-component';
 import {Router} from '@angular/router';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-general-profile',
@@ -40,16 +41,18 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
   };
 
   private destroy$: Subject<void> = new Subject<void>();
+  private loader: LoadingBarState;
 
   constructor(private developerService: DeveloperAccountService,
               private accountTypeService: DeveloperAccountTypesService,
-              private loaderService: LoaderService,
+              public loadingBar: LoadingBarService,
               private toasterService: ToastrService,
               private authService: AuthenticationService,
               private router: Router) {
   }
 
   ngOnInit(): void {
+    this.loader = this.loadingBar.useRef();
     this.getMyProfileDetails();
   }
 
@@ -59,7 +62,7 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
   }
 
   getMyProfileDetails() {
-    this.loaderService.showLoader('myProfile');
+    this.loader.start();
 
     this.developerService.getAccount()
       .pipe(
@@ -69,11 +72,11 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
       .subscribe(definition => {
         this.formDefinition = definition;
         this.fillFormDefinitionByValue();
-        this.loaderService.closeLoader('myProfile');
+        this.loader.complete();
       }, () => {
         this.formDefinition = this.defaultFormDefinition;
         this.fillFormDefinitionByValue();
-        this.loaderService.closeLoader('myProfile');
+        this.loader.complete();
       });
   }
 
