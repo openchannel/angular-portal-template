@@ -42,8 +42,7 @@ export class FormModalComponent implements OnInit, OnDestroy {
       dataToServer.formData = formDataForSubmission;
       this.subscriber.add(this.appFormService.createFormSubmission(this.formData?.formId, dataToServer).subscribe(submissionResponse => {
             this.activeModal.close();
-          }, error => console.error('createFormSubmission', dataToServer, error)
-      ));
+          }));
     }
   }
 

@@ -1,0 +1,21 @@
+.active-link {
+  color: #537cfd !important;
+  font-family: "Rubik-Medium";
+}
+
+ul.list-unstyled {
+  li {
+    a {
+      color: inherit;
+      cursor: pointer;
+    }
+  }
+}
+
+.page-title {
+  line-height: 46px;
+}
+
+.button-container {
+  width: 255px;
+}
