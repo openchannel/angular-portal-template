@@ -2,9 +2,11 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   DeveloperAccountModel,
   DeveloperAccountService,
+  DeveloperAccountTypesService,
   DeveloperDataModel,
   InviteDeveloperModel,
   InviteUserService,
+  ModalUpdateUserModel,
   UserAccountGridModel,
   UserGridActionModel,
   UsersGridParametersModel,
@@ -16,7 +18,7 @@ import {ToastrService} from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import {ConfirmationModalComponent} from '@shared/modals/confirmation-modal/confirmation-modal.component';
-import {InviteUserModalComponent} from '@shared/modals/invite-user-modal/invite-user-modal.component';
+import {OcInviteModalComponent} from 'oc-ng-common-component';
 
 @Component({
   selector: 'app-management',
@@ -50,6 +52,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
               private userService: UsersService,
               private inviteUserService: InviteUserService,
               private developerAccountService: DeveloperAccountService,
+              private developerAccountTypesService: DeveloperAccountTypesService,
               private toaster: ToastrService,
               private modal: NgbModal) {
   }
@@ -240,12 +243,22 @@ export class ManagementComponent implements OnInit, OnDestroy {
   }
 
   private editDeveloperAccount(developerAccount: DeveloperAccountModel) {
-    const modalRef = this.modal.open(InviteUserModalComponent);
-    modalRef.componentInstance.modalTitle = 'Edit user details';
-    modalRef.componentInstance.successButtonText = 'Save';
-    modalRef.componentInstance.userData = {...developerAccount};
+
+    const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
+    modalRef.componentInstance.ngbModalRef = modalRef;
+
+    const modalData = new ModalUpdateUserModel();
+    modalData.userData = developerAccount;
+    modalData.modalTitle = 'Edit member';
+    modalData.successButtonText = 'Save';
+    modalData.requestFindUserTypes =
+        () => this.developerAccountTypesService.getAllDeveloperAccountsType(1, 100);
+    modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
+        this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
+    modalRef.componentInstance.modalData = modalData;
+
     modalRef.result.then(result => {
-      if (result.status === 'success') {
+      if (result) {
         this.toaster.success('User details have been updated');
       }
     });

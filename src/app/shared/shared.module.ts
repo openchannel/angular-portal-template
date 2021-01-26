@@ -7,7 +7,6 @@ import {CamelCaseToNormalPipe} from './pipes/camel-case-to-normal.pipe';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from './modals/app-confirmation-modal/app-confirmation-modal.component';
-import {InviteUserModalComponent} from './modals/invite-user-modal/invite-user-modal.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +15,6 @@ import {InviteUserModalComponent} from './modals/invite-user-modal/invite-user-m
     AppConfirmationModalComponent,
     ConfirmationModalComponent,
     FormModalComponent,
-    InviteUserModalComponent,
     CamelCaseToNormalPipe,
   ],
   imports: [
