@@ -2,11 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   AuthenticationService,
   AuthHolderService,
-  AwsAuthService,
   LoginRequest,
   LoginResponse,
+  NativeLoginService,
   SellerSignin,
-  UsersService,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
 import {filter, takeUntil} from 'rxjs/operators';
@@ -14,8 +13,8 @@ import {Subject} from 'rxjs';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {JwksValidationHandler} from 'angular-oauth2-oidc-jwks';
 import {ToastrService} from 'ngx-toastr';
-import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { LoadingBarService } from '@ngx-loading-bar/core';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-login',
@@ -38,11 +37,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(public loadingBar: LoadingBarService,
               private router: Router,
-              private awsAuthService: AwsAuthService,
               private authHolderService: AuthHolderService,
               private oauthService: OAuthService,
               private openIdAuthService: AuthenticationService,
-              private usersService: UsersService,
+              private nativeLoginService: NativeLoginService,
               private toastService: ToastrService) {
   }
 
@@ -96,7 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   login(event) {
     if (event === true) {
       this.inProcess = true;
-      this.awsAuthService.signIn(this.signIn)
+      this.nativeLoginService.signIn(this.signIn)
       .pipe(takeUntil(this.destroy$))
       .subscribe((response: LoginResponse) => {
             this.processLoginResponse(response);
@@ -112,7 +110,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     sendActivationEmail(email: string) {
-        this.usersService.resendActivationMail(email)
+        this.nativeLoginService.sendActivationCode(email)
           .pipe(takeUntil(this.destroy$))
           .subscribe(value => {
               this.toastService.success('Activation email was sent to your inbox!');

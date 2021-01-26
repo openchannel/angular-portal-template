@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ChangePasswordRequest, UsersService} from 'oc-ng-common-service';
+import {ChangePasswordRequest, NativeLoginService} from 'oc-ng-common-service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {NgForm} from '@angular/forms';
@@ -18,7 +18,7 @@ export class ChangePasswordComponent implements OnInit {
   private destroy$: Subject<void> = new Subject<void>();
 
   constructor(private toasterService: ToastrService,
-              private usersService: UsersService) {
+              private nativeLoginService: NativeLoginService) {
   }
 
   ngOnInit(): void {
@@ -29,7 +29,7 @@ export class ChangePasswordComponent implements OnInit {
       return;
     }
     this.isSaveInProcess = true;
-    this.usersService.changePassword(form.value)
+    this.nativeLoginService.changePassword(form.value)
       .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         for (const controlKey of Object.keys(form.form.controls)) {
