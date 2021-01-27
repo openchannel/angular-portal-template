@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import {Router, RouterStateSnapshot} from '@angular/router';
 import {AuthHolderService} from 'oc-ng-common-service';
 import {LogOutService} from '@core/services/logout-service/log-out.service';
 
@@ -22,6 +22,10 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.logOutService.logOut();
+  }
+
+  login() {
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.routerState.snapshot.url }});
   }
 
   get initials(): string {
