@@ -24,7 +24,8 @@
                   [properties]="appListConfig"
                   menuUrl="../../../../assets/img/dots-hr-icon.svg"
                   defaultAppIcon="../../../../assets/img/app-icon1.svg"
-                    descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
+                  descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
+                  ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
                   (pageScrolled)="getApps($event)"
                     (menuClicked)="catchMenuAction($event)"
                     (sortChosen)="changeSorting($event)"></oc-app-table>
