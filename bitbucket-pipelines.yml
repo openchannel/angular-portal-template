@@ -1,4 +1,7 @@
 definitions:
+  services:
+    docker:
+      memory: 2048
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
   steps:
@@ -52,7 +55,7 @@ definitions:
           - npm run build
           - pipe: sonarsource/sonarcloud-scan:0.1.5
             variables:
-              SONAR_SCANNER_OPTS: -Xmx1024m
+              SONAR_SCANNER_OPTS: -Xmx2048m
               SONAR_TOKEN: ${SONAR_TOKEN}
               EXTRA_ARGS: '-Dsonar.sources=src/app
               -Dsonar.tests=src
