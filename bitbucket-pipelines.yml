@@ -52,7 +52,7 @@ definitions:
           - npm run build
           - pipe: sonarsource/sonarcloud-scan:0.1.5
             variables:
-              SONAR_SCANNER_OPTS: -Xmx512m
+              SONAR_SCANNER_OPTS: -Xmx1024m
               SONAR_TOKEN: ${SONAR_TOKEN}
               EXTRA_ARGS: '-Dsonar.sources=src/app
               -Dsonar.tests=src
