@@ -23,8 +23,8 @@ import {AppConfirmationModalComponent} from '@shared/modals/app-confirmation-mod
 import {ToastrService} from 'ngx-toastr';
 import {map, takeUntil} from 'rxjs/operators';
 import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
-import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { LoadingBarService } from '@ngx-loading-bar/core';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-app-developer',
@@ -348,8 +348,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               this.loader.complete();
 
               if (err.status === 400) {
-                this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion],
-                  {queryParams: {formStatus: 'invalid'}})
+                this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion])
                   .then(() => {
                     this.toaster.info('Fill out all mandatory fields before submitting');
                   });
