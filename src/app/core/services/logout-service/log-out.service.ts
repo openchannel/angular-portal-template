@@ -15,14 +15,18 @@ export class LogOutService {
               private router: Router) { }
 
   logOut(): void {
-    this.authenticationService.getLogOutConfig()
+    this.authenticationService.getAuthConfig()
         .pipe(first())
         .subscribe(config => {
-          if (config && config.end_session_endpoint) {
-            this.oAuthService.configure({
-              logoutUrl: config.end_session_endpoint,
-              postLogoutRedirectUri: window.location.origin,
-            });
+          if (config) {
+              this.oAuthService.configure({
+                  ...config,
+                  postLogoutRedirectUri: window.location.origin,
+              });
+              this.oAuthService.loadDiscoveryDocument().then(value => {
+                  this.authService.clearTokensInStorage();
+                  this.oAuthService.logOut();
+              });
           }
           this.internalLogout();
         }, error => this.internalLogout());
@@ -30,7 +34,6 @@ export class LogOutService {
 
   private internalLogout(): void {
       this.authService.clearTokensInStorage();
-      this.oAuthService.logOut();
       this.router.navigateByUrl('/');
   }
 }
