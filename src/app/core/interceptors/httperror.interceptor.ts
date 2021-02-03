@@ -32,6 +32,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           this.handleValidationError(response.error['validation-errors']);
         } else if (response?.error?.errors?.length >= 1 && response?.error?.errors[0]?.field) {
           this.handleValidationError(response.error.errors);
+        } else if (this.isCsrfError(response)) {
+          return throwError(response);
         } else {
           this.handleError(response);
         }
@@ -73,6 +75,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   }
 
   private handleError(error) {
+
     let errorMessage: string;
     if (error.error instanceof ErrorEvent) {
       // client-side error
@@ -85,5 +88,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
     }
     this.toasterService.error(errorMessage);
+  }
+
+  private isCsrfError(error: HttpErrorResponse): boolean {
+    return error?.status === 403 && error?.error?.toLowerCase()?.includes('csrf');
   }
 }

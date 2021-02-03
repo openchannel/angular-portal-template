@@ -1,34 +1,40 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {first} from 'rxjs/operators';
+import {first, takeUntil} from 'rxjs/operators';
 import {AuthenticationService, TitleService} from 'oc-ng-common-service';
+import {Subject} from 'rxjs';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  host: {
-  '[class.not-found]' : 'this.router.url.split("?")[0] == "/not-found"',
-  '[class.my-applications]' : 'this.router.url.split("?")[0] == "/my-applications"'
-  }
+  styleUrls: ['./app.component.scss']
 })
-
 export class AppComponent implements OnInit {
-  title = 'template3-portal-frontend';
 
-  isLoadingCsrfToken = false;
+  private destroy$: Subject<void> = new Subject();
+  private loader: LoadingBarState;
 
   constructor(private router: Router,
               private authApiService: AuthenticationService,
-              private titleService: TitleService) {
+              private titleService: TitleService,
+              public loadingBar: LoadingBarService) {
 
+    this.loader = this.loadingBar.useRef();
   }
 
-  // temporary clearing sesson storage on application load, we might need to do auto login.
   ngOnInit() {
-    this.isLoadingCsrfToken = true;
+    // refresh JWT token if exists
+    this.loader.start();
+    this.authApiService.tryLoginByRefreshToken()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(() => this.loader.stop(), () => this.loader.stop());
+
+    // init csrf
     this.authApiService.initCsrf()
-        .pipe(first())
-        .subscribe(() => this.isLoadingCsrfToken = false);
+    .pipe(takeUntil(this.destroy$), first())
+    .subscribe(() => {
+    });
   }
 }
