@@ -134,7 +134,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         this.count += chartData.labelsY.reduce((a, b) => a + b);
         this.countText = `Total ${field.label}`;
         this.loader.complete();
-      }, (error) => {
+      }, () => {
         this.loader.complete();
       });
   }
@@ -348,7 +348,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               this.loader.complete();
 
               if (err.status === 400) {
-                this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion])
+                this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion],
+                    {queryParams: {formStatus: 'invalid'}})
                   .then(() => {
                     this.toaster.info('Fill out all mandatory fields before submitting');
                   });
