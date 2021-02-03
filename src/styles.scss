@@ -207,7 +207,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     max-width: 100%;
   }
 }
+
+.modal-md {
+  max-width: 700px;
+  margin-top: 145px;
+  @include media-breakpoint-sm() {
+    max-width: 100%;
+  }
+}
+
+.modal.fade .modal-dialog {
+  background-color: unset;
+  transition: none;
+}
+
 .modal-backdrop {
+  transition: background-color 0.3s;
   background-color: #717486;
 }
 

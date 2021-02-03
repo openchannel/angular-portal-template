@@ -17,14 +17,14 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged, takeUntil} from 'rxjs/operators';
 import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
-import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { LoadingBarService } from '@ngx-loading-bar/core';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-app-new',
@@ -36,13 +36,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   appDetails = new SellerAppDetailsModel();
 
-  appActions = [{
-    type: 'SEARCH',
-    description: 'Developer ID : ',
-  }, {
-    type: 'CREATE',
-    description: 'Create new Developer with ID : ',
-  }];
   chartData: ChartStatisticModel = {
     data: null,
     periods: [
@@ -73,10 +66,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
     layout: ChartLayoutTypeModel.standard
   };
 
-  currentAppAction = this.appActions[0];
   currentAppsTypesItems: AppTypeModel [] = [];
 
-  appDataFormGroup: FormGroup;
+  appTypeFormGroup: FormGroup;
   appFields: {
     fields: AppTypeFieldModel []
   };
@@ -150,17 +142,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   initAppDataGroup(): void {
-    if (this.pageType === 'create') {
-      this.appDataFormGroup = this.fb.group({
-        type: ['', Validators.required],
-      });
-    } else {
-      this.appDataFormGroup = this.fb.group({
-        type: ['', Validators.required],
-        name: ['', Validators.required],
-        safeName: ['', Validators.required],
-      });
-    }
+    this.appTypeFormGroup = this.fb.group({
+      type: ['', Validators.required],
+    });
   }
 
   // getting app data from the form on form changing
@@ -185,8 +169,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
         } else if (res && res === 'draft') {
           this.submitInProcess = false;
           this.saveApp('draft');
+        } else {
+          this.submitInProcess = false;
         }
       });
+    } else if (this.generatedForm) {
+        this.generatedForm.markAllAsTouched();
     }
   }
 
@@ -204,7 +192,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           .subscribe((appResponse) => {
           if (appResponse) {
             if (saveType === 'submit') {
-              this.publishApp(saveType, appResponse.appId, appResponse.version);
+              this.publishApp(appResponse.appId, appResponse.version);
             } else {
               this.lockSubmitButton = false;
               this.draftSaveInProcess = false;
@@ -219,7 +207,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }, () => {
           this.lockSubmitButton = false;
           this.draftSaveInProcess = false;
-          this.currentAppAction = this.appActions[0];
         });
       } else {
         this.appVersionService
@@ -229,7 +216,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           response => {
             if (response) {
               if (saveType === 'submit') {
-                this.publishApp(saveType, response.appId, response.version);
+                this.publishApp(response.appId, response.version);
               } else {
                 this.lockSubmitButton = false;
                 this.draftSaveInProcess = false;
@@ -239,21 +226,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
             } else {
               this.lockSubmitButton = false;
               this.draftSaveInProcess = false;
-              this.currentAppAction = this.appActions[0];
-              console.log('Can\'t update app.');
             }
           }, () => {
             this.lockSubmitButton = false;
             this.draftSaveInProcess = false;
-            this.currentAppAction = this.appActions[0];
-            console.log('Can\'t update app.');
           },
         );
       }
     }
   }
 
-  publishApp(saveType: 'submit' | 'draft', appId: string, appVersion: number) {
+  publishApp(appId: string, appVersion: number) {
     this.appsService.publishAppByVersion(appId, {
       version: appVersion,
       autoApprove: false,
@@ -261,33 +244,34 @@ export class AppNewComponent implements OnInit, OnDestroy {
       .subscribe(() => {
       this.lockSubmitButton = false;
       this.submitInProcess = false;
-      this.showSuccessToaster(saveType);
+      this.showSuccessToaster('submit');
       this.router.navigate(['/app/manage']).then();
     }, error => {
       this.lockSubmitButton = false;
-      this.lockSubmitButton = false;
+      this.submitInProcess = false;
     });
   }
 
   buildDataForCreate(fields: any): CreateAppModel {
 
     const customDataValue = {...fields};
+    const name = customDataValue?.name ? customDataValue?.name : null;
     delete customDataValue.name;
-    const formGroupData = this.appDataFormGroup.value;
+    const appTypeId = this.appTypeFormGroup.value?.type?.appTypeId;
     return {
-      name: fields?.name ? fields.name : null,
-      type: formGroupData?.type ? formGroupData.type?.appTypeId : null,
+      name,
+      type: appTypeId ? appTypeId : null,
       customData: customDataValue,
     };
   }
 
-  buildDataForUpdate(fields: any) {
-    const dataToServer: UpdateAppVersionModel = {
-      name: this.appDataFormGroup.get('name').value,
+  buildDataForUpdate(fields: any): UpdateAppVersionModel {
+    const appData = this.buildDataForCreate(fields);
+    return {
+      ...appData,
+      customData: appData.customData,
       approvalRequired: true,
-      customData: {...fields},
     };
-    return dataToServer;
   }
 
   getAppData() {
@@ -306,7 +290,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
            .subscribe((appType) => {
 
-            this.appDataFormGroup.get('type').setValue(appType);
+            this.appTypeFormGroup.get('type').setValue(appType);
             this.addListenerAppTypeField();
 
             this.appFields = {
@@ -365,7 +349,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   private addListenerAppTypeField(): void {
-    this.appDataFormGroup.get('type').valueChanges
+    this.appTypeFormGroup.get('type').valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe((type: AppTypeModel) => {
         if (this.appFields) {
@@ -388,7 +372,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (appTypesResponse?.list) {
           this.currentAppsTypesItems = appTypesResponse.list;
           if (this.pageType === 'create' && this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
-            this.appDataFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+            this.appTypeFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
           }
           this.loader.complete();
         } else {
@@ -410,8 +394,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (appTypeResponse) {
           this.mergeWithSaveData(this.appFormData, this.mapAppTypeToFields(appTypeResponse));
         }
-      }, (error => {
-      }));
+      });
   }
 
   private mergeWithSaveData(savedData: any, newFields: AppTypeFieldModel[]) {
@@ -520,18 +503,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private isValidAppName() {
-    return this.isValidAndTouch(this.generatedForm, 'name');
-  }
-
-  private isValidAndTouch(form: FormGroup, key: string): boolean {
-    const controlName = form?.get(key);
+  private isValidAppName(): boolean {
+    const controlName = this.generatedForm?.get('name');
     if (controlName) {
       controlName.markAsTouched();
       return controlName.valid;
     }
     return false;
   }
+
   private showSuccessToaster(saveType: 'submit' | 'draft') {
     switch (saveType ? saveType : '') {
       case 'draft': {
