@@ -32,8 +32,7 @@
     <div *ngIf="appFields?.fields">
         <oc-form [formJsonData]="appFields"
                  (formDataUpdated)="getAppFormData($event)"
-                 (isFormInvalid)="getAppFormStatus($event)"
-                 (createdForm)="getCreatedForm($event)"
+                 (createdForm)="setGeneratedForm($event)"
                  labelPosition="left"
                  [showButton]="false">
         </oc-form>
