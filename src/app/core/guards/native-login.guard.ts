@@ -10,10 +10,12 @@ export class NativeLoginGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.authService.userDetails && !this.authService.userDetails.isSSO) {
+    if (!this.authService.userDetails?.isSSO) {
       return true;
     } else {
-      this.router.navigate(['/app/manage']);
+      if (this.authService.isLoggedInUser()) {
+        this.router.navigate(['/app/manage']);
+      }
       return false;
     }
 

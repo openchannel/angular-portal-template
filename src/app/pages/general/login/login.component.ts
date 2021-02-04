@@ -120,6 +120,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private processLoginResponse(response: LoginResponse, redirectUrl: string) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigate([redirectUrl || 'app/manage']);
+        this.router.navigateByUrl(redirectUrl || 'app/manage');
     }
 }
