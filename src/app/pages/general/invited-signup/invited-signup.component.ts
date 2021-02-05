@@ -1,14 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {
-  DeveloperAccountTypesService,
-  InviteDeveloperModel,
-  InviteUserService,
-  NativeLoginService,
-  UsersService,
-} from 'oc-ng-common-service';
-import {Subscription} from 'rxjs';
-import {FormGroup} from '@angular/forms';
+import {DeveloperAccountTypesService, InviteDeveloperModel, InviteUserService, NativeLoginService} from 'oc-ng-common-service';
+import {Subject} from 'rxjs';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {takeUntil} from 'rxjs/operators';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-invited-signup',
@@ -19,84 +16,93 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
 
   public developerInviteData: InviteDeveloperModel;
   public isExpired = false;
-  public inviteFormData: any;
   public formConfig: any;
-  public isTerms = false;
-  public isFormInvalid = true;
   public inProcess = false;
-  private inviteForm: FormGroup;
+  private signUpGroup: FormGroup;
 
+  private destroy$: Subject<void> = new Subject<void>();
 
-  private requestSubscriber: Subscription = new Subscription();
+  public termsControl = new FormControl(false, Validators.requiredTrue);
+
+  private loader: LoadingBarState;
 
   constructor(private activeRouter: ActivatedRoute,
               private router: Router,
               private inviteUserService: InviteUserService,
               private typeService: DeveloperAccountTypesService,
-              private nativeLoginService: NativeLoginService) { }
+              private nativeLoginService: NativeLoginService,
+              private loadingBar: LoadingBarService) {
+  }
 
   ngOnInit(): void {
+    this.loader = this.loadingBar.useRef();
+    this.loader.start();
     this.getInviteDetails();
   }
 
-  ngOnDestroy() {
-    this.requestSubscriber.unsubscribe();
+  ngOnDestroy(): void {
+    if (this.loader) {
+      this.loader.stop();
+    }
   }
 
   // making form config according to form type
   getFormType(type) {
     if (type) {
-      this.requestSubscriber.add(
-        this.typeService.getAccountType(type).subscribe(
+      this.typeService.getAccountType(type)
+      .pipe(takeUntil(this.destroy$)).subscribe(
           resp => {
             this.formConfig = {
               fields: this.mapDataToField(resp.fields)
             };
-          }
-        )
-      );
+            this.loader.stop();
+          }, () => this.loader.stop());
     } else {
       this.formConfig = {
         fields: [
           {
-          id:	'name',
-          label:	'Name',
-          type:	'text',
-          attributes: { required: false }
+            id: 'uname',
+            label: 'Name',
+            type: 'text',
+            attributes: {required: false}
           },
           {
             id: 'email',
-            label:	'Email',
-            type:	'emailAddress',
-            attributes: { required: true },
+            label: 'Email',
+            type: 'emailAddress',
+            attributes: {required: true},
           },
           {
             id: 'password',
-            label:	'Password',
-            type:	'password',
-            attributes: { required: true },
+            label: 'Password',
+            type: 'password',
+            attributes: {},
           }
         ]
       };
+      this.loader.stop();
     }
   }
+
   // getting invitation details
   getInviteDetails(): void {
     const userToken = this.activeRouter.snapshot.params.token;
     if (userToken) {
-      this.requestSubscriber.add(this.inviteUserService.getDeveloperInviteInfoByToken(userToken)
-        .subscribe(response => {
-          this.developerInviteData = response;
-          if (new Date(this.developerInviteData.expireDate) < new Date()) {
-            this.isExpired = true;
-          } else {
-            this.getFormType(this.developerInviteData.type);
-          }
-        }, () => {
-          this.router.navigate(['']);
-        }));
+      this.inviteUserService.getDeveloperInviteInfoByToken(userToken)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(response => {
+        this.developerInviteData = response;
+        if (new Date(this.developerInviteData.expireDate) < new Date()) {
+          this.isExpired = true;
+          this.loader.stop();
+        } else {
+          this.getFormType(this.developerInviteData.type);
+        }
+      }, () => {
+        this.router.navigate(['']).then();
+      });
     } else {
-      this.router.navigate(['']);
+      this.router.navigate(['']).then();
     }
   }
 
@@ -107,17 +113,21 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
       } else if (field.id.includes('company')) {
         field.defaultValue = this.developerInviteData.customData?.company;
       }
+      if (field.id === 'name') {
+        field.id = 'uname';
+      }
       return field;
     });
     mappedFields.push({
       id: 'password',
-      label:	'Password',
-      type:	'password',
-      attributes: { required: true },
+      label: 'Password',
+      type: 'password',
+      attributes: {},
     });
 
     return mappedFields;
   }
+
   // getting generated form group for disabling special fields
   getCreatedForm(form) {
     form.get('email').disable();
@@ -125,29 +135,29 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     if (companyKey) {
       form.get(companyKey).disable();
     }
-    this.inviteForm = form;
-  }
-  // getting last values of form for submission
-  getFormValues(form) {
-    this.inviteFormData = form;
-  }
-  // Active form validation
-  getFormValidity(status) {
-    this.isFormInvalid = status;
+    this.signUpGroup = form;
+    // add terms control into signup form
+    this.signUpGroup.addControl('terms', this.termsControl);
   }
 
   // register invited user and deleting invite on success
   submitForm() {
-    this.inProcess = true;
-    this.inviteFormData.inviteToken = this.developerInviteData.token;
-    this.requestSubscriber.add(this.nativeLoginService.signupByInvite({
-      userCustomData: this.inviteFormData,
-      inviteToken: this.developerInviteData.token
-    }).subscribe(resp => {
+    this.signUpGroup.markAllAsTouched();
+    if (this.signUpGroup.valid && !this.inProcess) {
+      this.inProcess = true;
+
+      const request = this.signUpGroup.getRawValue();
+      delete request.terms;
+
+      this.nativeLoginService.signupByInvite({
+        userCustomData: request,
+        inviteToken: this.developerInviteData.token
+      }).pipe(takeUntil(this.destroy$)).subscribe(() => {
         this.inProcess = false;
         this.router.navigate(['login']);
       }, () => {
         this.inProcess = false;
-      }));
+      });
+    }
   }
 }
