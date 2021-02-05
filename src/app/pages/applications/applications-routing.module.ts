@@ -10,7 +10,7 @@ const routes: Routes = [
     path: 'manage',
     component: AppDeveloperComponent,
     canActivate: [AuthGuard],
-    data: {title: 'Developer portal'}},
+    data: {title: 'Manage apps'}},
   {
     path: 'create',
     component: AppNewComponent,
