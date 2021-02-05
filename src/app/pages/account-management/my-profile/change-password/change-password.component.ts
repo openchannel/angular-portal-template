@@ -44,7 +44,7 @@ export class ChangePasswordComponent implements OnInit {
     if (this.passwordFormGroup) {
       this.passwordFormGroup.markAllAsTouched();
     }
-    if (this.passwordFormGroup?.invalid) {
+    if (this.passwordFormGroup?.invalid || this.isSaveInProcess) {
       return;
     }
     this.isSaveInProcess = true;
