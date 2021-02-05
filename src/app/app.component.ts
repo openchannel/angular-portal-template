@@ -5,6 +5,7 @@ import {AuthenticationService, TitleService} from 'oc-ng-common-service';
 import {Subject} from 'rxjs';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
+import { siteConfig } from '../assets/data/siteConfig';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.siteConfig = siteConfig;
     // refresh JWT token if exists
     this.loader.start();
     this.authApiService.tryLoginByRefreshToken()
