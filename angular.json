@@ -28,6 +28,8 @@
               "src/assets",
               "src/robots.txt",
               "src/_redirects",
+              {"glob": "**/*", "input": "node_modules/oc-ng-common-component/assets/img",
+                "output": "/assets/oc-ng-common-component"},
               { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" }
             ],
             "styles": [
