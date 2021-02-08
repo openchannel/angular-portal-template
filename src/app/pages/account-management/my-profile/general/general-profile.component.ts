@@ -1,9 +1,8 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
-  AuthenticationService,
+  AuthenticationService, DeveloperAccount,
   DeveloperAccountService,
   DeveloperAccountTypesService,
-  DeveloperDetailsModel,
 } from 'oc-ng-common-service';
 import {catchError, mergeMap, takeUntil, tap} from 'rxjs/operators';
 import {Subject, throwError} from 'rxjs';
@@ -22,7 +21,7 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
 
   @ViewChild('form') dynamicForm: OcFormComponent;
 
-  myProfile = new DeveloperDetailsModel();
+  myProfile: DeveloperAccount;
   formDefinition: any;
   isProcessing = false;
 

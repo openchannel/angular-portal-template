@@ -6,7 +6,6 @@ import {
   DeveloperService,
   InviteUserService,
   ModalInviteUserModel,
-  SellerMyProfile
 } from 'oc-ng-common-service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
@@ -44,7 +43,6 @@ export class MyCompanyComponent implements OnInit {
   currentPages: Page[] = [];
   selectedPage: Page;
 
-  myProfile = new SellerMyProfile();
   isProcessing = false;
 
   developerData: DeveloperDataModel = {};
