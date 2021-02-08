@@ -9,8 +9,8 @@ import {
 } from 'oc-ng-common-service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastrService } from 'ngx-toastr';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {ToastrService} from 'ngx-toastr';
 import {OcInviteModalComponent} from 'oc-ng-common-component';
 
 export interface Page {
@@ -104,7 +104,7 @@ export class MyCompanyComponent implements OnInit {
 
     const modalData = new ModalInviteUserModel();
     modalData.modalTitle = 'Invite a member';
-    modalData.successButtonText = 'Save';
+    modalData.successButtonText = 'Send Invite';
     modalData.requestFindUserTypes =
         () => this.developerAccountTypesService.getAllDeveloperAccountsType(1, 100);
     modalData.requestSendInvite = (accountData: any) => {
