@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {NativeLoginService, SellerSignup} from 'oc-ng-common-service';
+import {NativeLoginService, UserRegistrationModel} from 'oc-ng-common-service';
 
 
 @Component({
@@ -18,10 +18,9 @@ export class SignupComponent implements OnInit {
   showSignupFeedbackPage = false;
   inProcess = false;
   signupUrl = '/signup';
-  signupModel: SellerSignup;
+  signupModel: UserRegistrationModel = new UserRegistrationModel();
 
   constructor(private nativeLoginService: NativeLoginService) {
-     this.signupModel = new SellerSignup();
   }
 
   ngOnInit(): void {

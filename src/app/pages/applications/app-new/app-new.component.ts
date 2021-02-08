@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   AppsService,
   AppStatusValue,
+  AppTypeFieldModel,
   AppTypeModel,
   AppTypeService,
   AppVersionService,
@@ -10,16 +11,15 @@ import {
   ChartStatisticFiledModel,
   ChartStatisticModel,
   ChartStatisticPeriodModel,
+  CreateAppModel,
   FullAppData,
-  SellerAppDetailsModel,
   TitleService,
+  UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
 import {Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, takeUntil} from 'rxjs/operators';
-import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
@@ -33,8 +33,6 @@ import {LoadingBarService} from '@ngx-loading-bar/core';
     './app-new.component.scss'],
 })
 export class AppNewComponent implements OnInit, OnDestroy {
-
-  appDetails = new SellerAppDetailsModel();
 
   chartData: ChartStatisticModel = {
     data: null,
