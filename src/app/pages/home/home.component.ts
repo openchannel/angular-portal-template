@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthHolderService } from 'oc-ng-common-service';
+import { AuthHolderService, TitleService } from 'oc-ng-common-service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,9 +10,11 @@ import { Router } from '@angular/router';
 export class HomeComponent implements OnInit {
 
   constructor(private authHolderService: AuthHolderService,
-              private router: Router) { }
+              private router: Router,
+              private titleService: TitleService) { }
 
   ngOnInit() {
+    this.titleService.setPostfix(this.titleService.siteConfig.tagline);
     if (this.authHolderService.isLoggedInUser()) {
       this.router.navigate(['/app/manage']).then();
     }

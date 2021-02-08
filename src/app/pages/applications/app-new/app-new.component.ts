@@ -278,7 +278,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       (appVersion) => {
         if (appVersion) {
           this.parentApp = appVersion;
-          this.titleService.setSubtitle(appVersion.name);
+          this.titleService.setPrefix(appVersion.name);
 
           this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
            .subscribe((appType) => {
