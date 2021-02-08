@@ -26,7 +26,7 @@ export class SignupComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  signup(event) {
+  onSignup(event) {
     if (event === true) {
       this.inProcess = true;
       this.nativeLoginService.signup(this.signupModel).subscribe(res => {
