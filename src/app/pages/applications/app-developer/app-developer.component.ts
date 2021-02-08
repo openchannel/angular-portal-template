@@ -10,19 +10,16 @@ import {
   ChartStatisticFiledModel,
   ChartStatisticModel,
   ChartStatisticPeriodModel,
-  CommonService,
   FullAppData,
+  MarketModel,
   MarketService,
-  SellerAppsWrapper,
 } from 'oc-ng-common-service';
 import {Router} from '@angular/router';
-import {DialogService} from 'oc-ng-common-component';
 import {Observable, of, Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
 import {map, takeUntil} from 'rxjs/operators';
-import {MarketModel} from 'oc-ng-common-service/lib/model/market.model';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
 
@@ -37,7 +34,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   countText;
 
   isAppProcessing = false;
-  applications = new SellerAppsWrapper();
 
   chartData: ChartStatisticModel = {
     data: null,
@@ -96,8 +92,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               public appService: AppsService,
               public appsVersionService: AppVersionService,
               public router: Router,
-              private modalService: DialogService,
-              private commonService: CommonService,
               private modal: NgbModal,
               private toaster: ToastrService,
               private appTypeService: AppTypeService,
@@ -109,8 +103,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loader = this.loadingBar.useRef();
     this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
-    this.applications.list = [];
-    this.commonService.scrollToFormInvalidField({form: null, adjustSize: 60});
     this.getApps(1);
   }
 
@@ -178,7 +170,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           this.appListConfig.data.count = response.count;
 
           const parentList = response.list;
-          parentList.map(value => {
+          parentList.forEach(value => {
             value.status = value.parent && value.parent.status ? value.parent.status : value.status;
           });
 
