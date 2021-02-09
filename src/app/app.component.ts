@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {first, takeUntil} from 'rxjs/operators';
-import {AuthenticationService, SiteConfigService} from 'oc-ng-common-service';
+import {AuthenticationService, SiteConfigService, TitleService} from 'oc-ng-common-service';
 import {Subject} from 'rxjs';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
@@ -20,14 +20,14 @@ export class AppComponent implements OnInit {
   constructor(private router: Router,
               private authApiService: AuthenticationService,
               private siteService: SiteConfigService,
-              public loadingBar: LoadingBarService) {
+              public loadingBar: LoadingBarService,
+              private titleService: TitleService) {
 
     this.loader = this.loadingBar.useRef();
   }
 
   ngOnInit() {
-    this.siteService.siteConfig = siteConfig;
-    this.siteService.setMeta();
+    this.siteService.initSiteConfiguration(siteConfig);
     // refresh JWT token if exists
     this.loader.start();
     this.authApiService.tryLoginByRefreshToken()
