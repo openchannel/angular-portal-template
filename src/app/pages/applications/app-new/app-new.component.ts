@@ -13,7 +13,7 @@ import {
   ChartStatisticPeriodModel,
   CreateAppModel,
   FullAppData,
-  TitleService,
+  SiteConfigService,
   UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -112,7 +112,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               private activeRoute: ActivatedRoute,
               private modal: NgbModal,
               private loadingBar: LoadingBarService,
-              private titleService: TitleService,
+              private siteService: SiteConfigService,
               private toaster: ToastrService,
               public chartService: ChartService) {
   }
@@ -278,7 +278,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       (appVersion) => {
         if (appVersion) {
           this.parentApp = appVersion;
-          this.titleService.setPrefix(appVersion.name);
+          this.siteService.setPrefix(appVersion.name);
 
           this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
            .subscribe((appType) => {
