@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.siteService.siteConfig = siteConfig;
+    this.siteService.setMeta();
     // refresh JWT token if exists
     this.loader.start();
     this.authApiService.tryLoginByRefreshToken()
