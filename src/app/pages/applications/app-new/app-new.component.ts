@@ -13,7 +13,7 @@ import {
   ChartStatisticPeriodModel,
   CreateAppModel,
   FullAppData,
-  TitleService,
+  SiteConfigService, TitleService,
   UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -278,7 +278,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       (appVersion) => {
         if (appVersion) {
           this.parentApp = appVersion;
-          this.titleService.setPrefix(appVersion.name);
+          this.titleService.setSpecialTitle(appVersion.name);
 
           this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
            .subscribe((appType) => {
