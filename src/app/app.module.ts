@@ -16,11 +16,13 @@ import {SharedModule} from '@shared/shared.module';
 import {HomeComponent} from './pages/home/home.component';
 import {environment} from '@env';
 import { LoadingBarModule } from '@ngx-loading-bar/core';
+import {NotFoundComponent} from './pages/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
+    NotFoundComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA,
