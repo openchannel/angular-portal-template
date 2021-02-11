@@ -51,13 +51,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
-
       return this.authenticationService.refreshToken({refreshToken: this.authHolderService.refreshToken}).pipe(
-        catchError(response => {
-          this.authHolderService.clearTokensInStorage();
-          this.router.navigate(['/login']);
-          return throwError(response);
-        }),
+        catchError(error => this.handleRefreshTokenError(error)),
         switchMap((response: LoginResponse) => {
           this.isRefreshing = false;
           this.authHolderService.persist(response.accessToken, response.refreshToken);
@@ -68,7 +63,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
       return this.refreshTokenSubject.pipe(
         filter(token => token != null),
         take(1),
+        catchError(error => this.handleRefreshTokenError(error)),
         switchMap(jwt => {
+          this.isRefreshing = false;
           return next.handle(HttpConfigInterceptor.addToken(request, jwt));
         }));
     }
@@ -92,5 +89,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
   private isCsrfError(error: HttpErrorResponse): boolean {
     return error?.status === 403 && error?.error?.toLowerCase()?.includes('csrf');
+  }
+
+  private handleRefreshTokenError(error: any): Observable<any> {
+    this.authHolderService.clearTokensInStorage();
+    this.router.navigate(['/login']).then(() => this.isRefreshing = false);
+    return throwError(error);
   }
 }
