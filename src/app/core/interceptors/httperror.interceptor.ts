@@ -4,7 +4,7 @@ import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest}
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
-import {catchError, filter, switchMap, take} from 'rxjs/operators';
+import {catchError, switchMap, take} from 'rxjs/operators';
 import {AuthenticationService, AuthHolderService, LoginResponse} from 'oc-ng-common-service';
 import {ToastrService} from 'ngx-toastr';
 import {HttpConfigInterceptor} from './httpconfig.interceptor';
@@ -50,27 +50,30 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
-
       return this.authenticationService.refreshToken({refreshToken: this.authHolderService.refreshToken}).pipe(
-        catchError(response => {
-          this.authHolderService.clearTokensInStorage();
-          this.router.navigate(['/login']);
-          return throwError(response);
-        }),
-        switchMap((response: LoginResponse) => {
-          this.isRefreshing = false;
-          this.authHolderService.persist(response.accessToken, response.refreshToken);
-          this.refreshTokenSubject.next(response.accessToken);
-          return next.handle(HttpConfigInterceptor.addToken(request, response.accessToken));
-        }));
+          catchError(response => {
+            this.authHolderService.clearTokensInStorage();
+            this.router.navigate(['/login'])
+            .then(() => this.isRefreshing = false);
+            this.refreshTokenSubject.next(null);
+            return throwError(response);
+          }),
+          switchMap((response: LoginResponse) => {
+            this.authHolderService.persist(response.accessToken, response.refreshToken);
+            this.refreshTokenSubject.next(response.accessToken);
+            this.isRefreshing = false;
+            return next.handle(HttpConfigInterceptor.addToken(request, response.accessToken));
+          }));
     } else {
       return this.refreshTokenSubject.pipe(
-        filter(token => token != null),
-        take(1),
-        switchMap(jwt => {
-          return next.handle(HttpConfigInterceptor.addToken(request, jwt));
-        }));
+          take(1),
+          switchMap((jwt, e) => {
+            if (jwt != null) {
+              return next.handle(HttpConfigInterceptor.addToken(request, jwt));
+            } else {
+              return next.handle(request);
+            }
+          }));
     }
   }
 
@@ -92,5 +95,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
   private isCsrfError(error: HttpErrorResponse): boolean {
     return error?.status === 403 && error?.error?.toLowerCase()?.includes('csrf');
+  }
+
+  private handleRefreshTokenError(error: any): Observable<any> {
+    this.authHolderService.clearTokensInStorage();
+    return throwError(error);
+    this.router.navigate(['/login']).then(() => this.isRefreshing = false);
   }
 }
