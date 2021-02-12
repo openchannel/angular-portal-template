@@ -15,16 +15,22 @@
 }
 
 .container-m {
-  max-width: 920px;
-  width: 100%;
+  max-width: 950px;
 }
 
-.form-btn {
-  @include media-breakpoint-md {
-    width: 100%;
-    margin-bottom: 1rem;
-    .btn-link {
-      text-align: center;
+.form {
+  &-buttons {
+    margin-top: 40px;
+    margin-bottom: 80px;
+  }
+
+  &-btn {
+    @include media-breakpoint-md {
+      width: 100%;
+      margin-bottom: 1rem;
+      .btn-link {
+        text-align: center;
+      }
     }
   }
 }
