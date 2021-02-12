@@ -18,9 +18,16 @@
             </ul>
             <div class="form-inline my-2 my-lg-0 ml-0">
                 <div class="my-2 my-lg-0 ml-4 ml-md-0" *ngIf="authService.isLoggedInUser()">
-                    <oc-profile-navbar username="More" (logout)="onLogout()"
-                                       [dropdownItems]="menuItems"
-                                       (chosenDropdownItem)="onDropdownItemChose($event)"></oc-profile-navbar>
+                    <oc-profile-navbar username="More">
+                        <ng-container>
+                            <div class="dropdown-item cursor-pointer" *ngIf="!isSSO"
+                                 routerLink="/management/profile">My Profile</div>
+                            <div class="dropdown-item cursor-pointer"
+                                 *ngIf="authService.userDetails.role === 'ADMIN'"
+                                 routerLink="/management/company">My Company</div>
+                            <div class="dropdown-item cursor-pointer" (click)="logout()">Logout</div>
+                        </ng-container>
+                    </oc-profile-navbar>
                 </div>
                 <div *ngIf="!authService.isLoggedInUser()">
                     <button class="btn header-login-btn header-btn mr-2" (click)="login()">Log in</button>
