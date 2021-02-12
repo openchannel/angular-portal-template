@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {Router, RouterStateSnapshot} from '@angular/router';
-import {AuthHolderService} from 'oc-ng-common-service';
+import {Router} from '@angular/router';
+import {AuthHolderService, DropdownModel} from 'oc-ng-common-service';
 import {LogOutService} from '@core/services/logout-service/log-out.service';
 
 @Component({
@@ -10,6 +10,7 @@ import {LogOutService} from '@core/services/logout-service/log-out.service';
 })
 export class HeaderComponent implements OnInit {
   isSSO = false;
+  menuItems: DropdownModel<string> [] = [];
 
   constructor(public router: Router,
               public authService: AuthHolderService,
@@ -18,23 +19,33 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.isSSO = this.authService?.userDetails?.isSSO;
-  }
-
-  logout() {
-    this.logOutService.logOut();
+    this.generateDropdownMenuItems();
   }
 
   login() {
     this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.routerState.snapshot.url }});
   }
 
-  get initials(): string {
-    if (this.authService.userDetails) {
-      const splitName = this.authService.getUserName().split(' ');
-      return splitName[0].substring(0, 1) + splitName[splitName.length - 1].substring(0, 1);
-    } else {
-      return '';
+  onLogout() {
+    this.logOutService.logOut();
+  }
+
+  generateDropdownMenuItems() {
+    if (!this.isSSO) {
+      this.menuItems.push({
+        value: '/management/profile',
+        label: 'My Profile'
+      });
+    }
+    if (this.authService.userDetails.role === 'ADMIN') {
+      this.menuItems.push({
+        value: '/management/company',
+        label: 'My Company'
+      });
     }
   }
 
+  onDropdownItemChose(item: DropdownModel<string>) {
+    this.router.navigate([item.value]).then();
+  }
 }
