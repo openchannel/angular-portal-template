@@ -16,7 +16,7 @@
                     <a class="nav-link" routerLink="/app/manage">Manage Apps</a>
                 </li>
             </ul>
-            <div class="form-inline my-2 my-lg-0 button-section ml-0">
+            <div class="form-inline my-2 my-lg-0 ml-0">
                 <div class="my-2 my-lg-0 ml-4 ml-md-0" *ngIf="authService.isLoggedInUser()">
                     <oc-profile-navbar username="More" (logout)="onLogout()"
                                        [dropdownItems]="menuItems"
