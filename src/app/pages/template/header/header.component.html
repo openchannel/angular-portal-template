@@ -17,7 +17,7 @@
                 </li>
             </ul>
             <div class="form-inline my-2 my-lg-0 button-section ml-0">
-                <div class="form-inline my-2 my-lg-0 ml-4 ml-md-0" *ngIf="authService.isLoggedInUser()">
+                <div class="my-2 my-lg-0 ml-4 ml-md-0" *ngIf="authService.isLoggedInUser()">
                     <oc-profile-navbar username="More" (logout)="onLogout()"
                                        [dropdownItems]="menuItems"
                                        (chosenDropdownItem)="onDropdownItemChose($event)"></oc-profile-navbar>
