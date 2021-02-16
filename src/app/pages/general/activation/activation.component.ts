@@ -1,5 +1,5 @@
 import {Component, OnDestroy} from '@angular/core';
-import {NativeLoginService, SellerActivation, UsersService} from 'oc-ng-common-service';
+import {NativeLoginService, UserActivationModel, UsersService} from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -17,7 +17,7 @@ export class ActivationComponent implements OnDestroy {
     resendActivationUrl = '/resend-activation';
     inProcess = false;
 
-    activationModel = new SellerActivation();
+    activationModel = new UserActivationModel();
 
     private destroy$: Subject<void> = new Subject();
 

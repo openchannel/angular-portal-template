@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ChangePasswordRequest, NativeLoginService} from 'oc-ng-common-service';
+import {NativeLoginService} from 'oc-ng-common-service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import {NgForm} from '@angular/forms';
+import {FormGroup, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 
 @Component({
@@ -13,7 +13,22 @@ import {ToastrService} from 'ngx-toastr';
 export class ChangePasswordComponent implements OnInit {
 
   isSaveInProcess = false;
-  changePassModel: ChangePasswordRequest = {password: '', newPassword: ''};
+
+  formPasswordDefinition = {
+    fields: [{
+      id: 'password',
+      label: 'Current Password',
+      type: 'password',
+      attributes: [],
+    }, {
+      id: 'newPassword',
+      label: 'New Password',
+      type: 'password',
+      attributes: [],
+    }],
+  };
+
+  public passwordFormGroup: FormGroup;
 
   private destroy$: Subject<void> = new Subject<void>();
 
@@ -22,27 +37,38 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
-  changePassword(form: NgForm): void {
-    if (!form.valid) {
+  changePassword(): void {
+    if (this.passwordFormGroup) {
+      this.passwordFormGroup.markAllAsTouched();
+    }
+    if (this.passwordFormGroup?.invalid || this.isSaveInProcess) {
       return;
     }
     this.isSaveInProcess = true;
-    this.nativeLoginService.changePassword(form.value)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
-        for (const controlKey of Object.keys(form.form.controls)) {
-          const control = form.form.controls[controlKey];
-          control.reset();
-          control.setErrors(null);
-        }
+    this.nativeLoginService.changePassword(this.passwordFormGroup.value)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(() => {
+      for (const controlKey of Object.keys(this.passwordFormGroup.controls)) {
+        const control = this.passwordFormGroup.controls[controlKey];
+        control.reset();
+        control.setErrors(null);
+      }
+      this.toasterService.success('Password has been updated');
+    }, () => {
+      this.isSaveInProcess = false;
+    }, () => {
+      this.isSaveInProcess = false;
+    });
+  }
 
-        this.toasterService.success('Password has been updated');
-      }, (err) => {
-        this.isSaveInProcess = false;
-      }, () => {
-        this.isSaveInProcess = false;
-      });
+  setPasswordFormGroup(passwordGroup: FormGroup) {
+    this.passwordFormGroup = passwordGroup;
+    // clear validation for current user password
+    this.passwordFormGroup.controls.password.clearValidators();
+    this.passwordFormGroup.controls.password.setValidators(Validators.required);
+    this.passwordFormGroup.controls.password.updateValueAndValidity();
   }
 }

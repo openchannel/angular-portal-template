@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   AppsService,
   AppStatusValue,
+  AppTypeFieldModel,
   AppTypeModel,
   AppTypeService,
   AppVersionService,
@@ -10,16 +11,15 @@ import {
   ChartStatisticFiledModel,
   ChartStatisticModel,
   ChartStatisticPeriodModel,
+  CreateAppModel,
   FullAppData,
-  SellerAppDetailsModel,
-  TitleService,
+  SiteConfigService, TitleService,
+  UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AppTypeFieldModel} from 'oc-ng-common-service/lib/model/app-type-model';
 import {Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, takeUntil} from 'rxjs/operators';
-import {CreateAppModel, UpdateAppVersionModel} from 'oc-ng-common-service/lib/model/app-data-model';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import {ToastrService} from 'ngx-toastr';
@@ -33,8 +33,6 @@ import {LoadingBarService} from '@ngx-loading-bar/core';
     './app-new.component.scss'],
 })
 export class AppNewComponent implements OnInit, OnDestroy {
-
-  appDetails = new SellerAppDetailsModel();
 
   chartData: ChartStatisticModel = {
     data: null,
@@ -77,7 +75,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
   };
   generatedForm: FormGroup;
 
-  lockSubmitButton = false;
   draftSaveInProcess = false;
   submitInProcess = false;
 
@@ -153,38 +150,38 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   openConfirmationModal(): void {
-    if (!this.lockSubmitButton && !this.draftSaveInProcess) {
-      this.submitInProcess = true;
-      const modalRef = this.modal.open(AppConfirmationModalComponent);
+    if (this.generatedForm) {
+      this.generatedForm.markAllAsTouched();
 
-      modalRef.componentInstance.modalTitle = 'Submit app';
-      modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
-      modalRef.componentInstance.type = 'submission';
-      modalRef.componentInstance.buttonText = 'Yes, submit it';
-      modalRef.componentInstance.cancelButtonText = 'Save as draft';
+      if (!(this.generatedForm.invalid || this.submitInProcess || this.draftSaveInProcess)) {
 
-      modalRef.result.then(res => {
-        if (res && res === 'success') {
-          this.saveApp('submit');
-        } else if (res && res === 'draft') {
-          this.submitInProcess = false;
-          this.saveApp('draft');
-        } else {
-          this.submitInProcess = false;
-        }
-      });
-    } else if (this.generatedForm) {
-        this.generatedForm.markAllAsTouched();
+        const modalRef = this.modal.open(AppConfirmationModalComponent);
+
+        modalRef.componentInstance.modalTitle = 'Submit app';
+        modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
+        modalRef.componentInstance.type = 'submission';
+        modalRef.componentInstance.buttonText = 'Yes, submit it';
+        modalRef.componentInstance.cancelButtonText = 'Save as draft';
+
+        modalRef.result.then(res => {
+          if (res && res === 'success') {
+            this.saveApp('submit');
+          } else if (res && res === 'draft') {
+            this.saveApp('draft');
+          }
+        });
+      }
     }
   }
 
   // saving app to the server
   saveApp(saveType: 'submit' | 'draft'): void {
-    if ((saveType === 'draft' && this.isValidAppName() && !this.draftSaveInProcess)
-      || (saveType === 'submit' && !this.lockSubmitButton)) {
+    if ((!this.draftSaveInProcess && !this.submitInProcess)
+        && ((saveType === 'draft' && this.isValidAppName()) || (saveType === 'submit' && this.generatedForm?.valid))) {
+
       this.disableOutgo = true;
       this.draftSaveInProcess = saveType === 'draft';
-      this.lockSubmitButton = true;
+      this.submitInProcess = saveType === 'submit';
 
       if (this.pageType === 'create') {
         this.appsService.createApp(this.buildDataForCreate(this.appFormData))
@@ -194,19 +191,18 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (saveType === 'submit') {
               this.publishApp(appResponse.appId, appResponse.version);
             } else {
-              this.lockSubmitButton = false;
               this.draftSaveInProcess = false;
               this.router.navigate(['/app/manage']).then(() => {
                 this.showSuccessToaster(saveType);
               });
             }
           } else {
-            this.lockSubmitButton = false;
             this.draftSaveInProcess = false;
+            this.submitInProcess = false;
           }
         }, () => {
-          this.lockSubmitButton = false;
           this.draftSaveInProcess = false;
+          this.submitInProcess = false;
         });
       } else {
         this.appVersionService
@@ -218,18 +214,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
               if (saveType === 'submit') {
                 this.publishApp(response.appId, response.version);
               } else {
-                this.lockSubmitButton = false;
                 this.draftSaveInProcess = false;
                 this.showSuccessToaster(saveType);
                 this.router.navigate(['/app/manage']).then();
               }
             } else {
-              this.lockSubmitButton = false;
               this.draftSaveInProcess = false;
+              this.submitInProcess = false;
             }
           }, () => {
-            this.lockSubmitButton = false;
             this.draftSaveInProcess = false;
+            this.submitInProcess = false;
           },
         );
       }
@@ -242,12 +237,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
       autoApprove: false,
     }).pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-      this.lockSubmitButton = false;
       this.submitInProcess = false;
       this.showSuccessToaster('submit');
       this.router.navigate(['/app/manage']).then();
-    }, error => {
-      this.lockSubmitButton = false;
+    }, () => {
       this.submitInProcess = false;
     });
   }
@@ -285,7 +278,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       (appVersion) => {
         if (appVersion) {
           this.parentApp = appVersion;
-          this.titleService.setSubtitle(appVersion.name);
+          this.titleService.setSpecialTitle(appVersion.name);
 
           this.appTypeService.getOneAppType(appVersion.type).pipe(takeUntil(this.destroy$))
            .subscribe((appType) => {
@@ -298,7 +291,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             };
             this.checkDataValidityRedirect();
             this.loader.complete();
-          }, error => {
+          }, () => {
             this.loader.complete();
             this.router.navigate(['/app/manage']).then();
           });
@@ -306,24 +299,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.loader.complete();
           this.router.navigate(['/app/manage']).then();
         }
-      }, error => {
+      }, () => {
         this.loader.complete();
         this.router.navigate(['/app/manage']).then();
       },
     );
   }
 
-  getAppFormStatus(status: boolean): void {
-    this.lockSubmitButton = status;
-  }
-
-  getCreatedForm(form: FormGroup): void {
+  setGeneratedForm(form: FormGroup): void {
     this.generatedForm = form;
     if (this.setFormErrors) {
-      if (this.generatedForm.controls) {
-        (Object as any).values(this.generatedForm.controls).forEach(control => control.enable());
-      }
-      this.lockSubmitButton = this.generatedForm.invalid;
+      this.generatedForm.markAllAsTouched();
     }
   }
 
@@ -343,7 +329,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.count += chartData.labelsY.reduce((a, b) => a + b);
         this.countText = `Total ${field.label}`;
         this.loader.complete();
-      }, (error) => {
+      }, () => {
         this.loader.complete();
       });
   }
@@ -380,7 +366,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.router.navigate(['/app/manage']).then();
           this.currentAppsTypesItems = [];
         }
-      }, (error) => {
+      }, () => {
         this.currentAppsTypesItems = [];
         this.loader.complete();
         this.router.navigate(['/app/manage']).then();
