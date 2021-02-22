@@ -10,11 +10,12 @@ import {LogOutService} from '@core/services/logout-service/log-out.service';
 })
 export class HeaderComponent implements OnInit {
   isSSO = false;
+  isCollapsed = true;
 
   constructor(public router: Router,
               public authService: AuthHolderService,
               private logOutService: LogOutService) {
-}
+  }
 
   ngOnInit(): void {
     this.isSSO = this.authService?.userDetails?.isSSO;
