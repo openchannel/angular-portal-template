@@ -9,6 +9,7 @@ import {SharedModule} from '@shared/shared.module';
 import {ManagementComponent} from './my-company/management/management.component';
 import {MyCompanyComponent} from './my-company/my-company.component';
 import { CompanyDetailsComponent } from './my-company/company-details/company-details.component';
+import { OcFormComponentsModule, OcManagementComponentsModule } from 'oc-ng-common-component';
 
 
 @NgModule({
@@ -24,6 +25,8 @@ import { CompanyDetailsComponent } from './my-company/company-details/company-de
     CommonModule,
     AccountManagementRoutingModule,
     SharedModule,
+    OcManagementComponentsModule,
+    OcFormComponentsModule
   ],
 })
 export class AccountManagementModule { }
