@@ -2,8 +2,8 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   DeveloperAccountModel,
   DeveloperAccountService,
-  DeveloperAccountTypesService,
   DeveloperDataModel,
+  DeveloperRoleService,
   InviteDeveloperModel,
   InviteUserService,
   ModalUpdateUserModel,
@@ -51,7 +51,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
               private userService: UsersService,
               private inviteUserService: InviteUserService,
               private developerAccountService: DeveloperAccountService,
-              private developerAccountTypesService: DeveloperAccountTypesService,
+              private developerRolesService: DeveloperRoleService,
               private toaster: ToastrService,
               private modal: NgbModal) {
   }
@@ -250,8 +250,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalData.userData = developerAccount;
     modalData.modalTitle = 'Edit member';
     modalData.successButtonText = 'Save';
-    modalData.requestFindUserTypes =
-        () => this.developerAccountTypesService.getAllDeveloperAccountsType(1, 100);
+    modalData.requestFindUserRoles =
+        () => this.developerRolesService.getDeveloperRoles(1, 100);
     modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
         this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
     modalRef.componentInstance.modalData = modalData;

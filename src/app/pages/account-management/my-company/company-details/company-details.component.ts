@@ -1,17 +1,19 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
+  AccessLevel,
   AuthHolderService,
   DeveloperDataModel,
   DeveloperModel,
   DeveloperService,
   DeveloperTypeFieldModel,
-  DeveloperTypeService
+  DeveloperTypeService,
+  PermissionType
 } from 'oc-ng-common-service';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { LoadingBarService } from '@ngx-loading-bar/core';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-company',
@@ -115,8 +117,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
   }
 
   updateSaveButton(): void {
-    const type = this.authHolderService.userDetails.role;
-    this.showSaveButton = type === 'ADMIN' || !type;
+    this.showSaveButton = this.authHolderService.hasPermission(PermissionType.ORGANIZATIONS, [AccessLevel.MODIFY]);
   }
 
   private getCustomDataValues(customData: any): any {
