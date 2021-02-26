@@ -6,6 +6,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {takeUntil} from 'rxjs/operators';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
+import {merge} from 'lodash';
 
 @Component({
   selector: 'app-invited-signup',
@@ -17,6 +18,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
   public developerInviteData: InviteDeveloperModel;
   public isExpired = false;
   public formConfig: any;
+  public formResultData: any;
   public inProcess = false;
   private signUpGroup: FormGroup;
 
@@ -64,13 +66,15 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
             id: 'uname',
             label: 'Name',
             type: 'text',
-            attributes: {required: false}
+            attributes: {required: false},
+            defaultValue: this.developerInviteData?.name
           },
           {
             id: 'email',
             label: 'Email',
             type: 'emailAddress',
             attributes: {required: true},
+            defaultValue: this.developerInviteData?.email
           },
           {
             id: 'password',
@@ -129,7 +133,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
   }
 
   // getting generated form group for disabling special fields
-  getCreatedForm(form) {
+  setCreatedForm(form) {
     form.get('email').disable();
     const companyKey = Object.keys(form.value).find(key => key.includes('company'));
     if (companyKey) {
@@ -146,7 +150,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     if (this.signUpGroup.valid && !this.inProcess) {
       this.inProcess = true;
 
-      const request = this.signUpGroup.getRawValue();
+      const request = merge(this.developerInviteData, this.formResultData);
       delete request.terms;
 
       this.nativeLoginService.signupByInvite({
@@ -159,5 +163,9 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         this.inProcess = false;
       });
     }
+  }
+
+  setFormData(resultData: any) {
+    this.formResultData = resultData;
   }
 }

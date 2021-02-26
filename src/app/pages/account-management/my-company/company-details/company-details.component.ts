@@ -1,17 +1,20 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
+  AccessLevel,
   AuthHolderService,
   DeveloperDataModel,
   DeveloperModel,
   DeveloperService,
   DeveloperTypeFieldModel,
-  DeveloperTypeService
+  DeveloperTypeService,
+  Permission,
+  PermissionType
 } from 'oc-ng-common-service';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
-import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { LoadingBarService } from '@ngx-loading-bar/core';
+import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
+import {LoadingBarService} from '@ngx-loading-bar/core';
 
 @Component({
   selector: 'app-company',
@@ -29,7 +32,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
 
   isInvalidForm = true;
   savingCompanyData = false;
-  showSaveButton = false;
 
   private newCustomData: any;
   private defaultDeveloperTypeFields: DeveloperTypeFieldModel [] = [{
@@ -42,6 +44,11 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
   }];
   private subscriptions: Subscription = new Subscription();
   private loader: LoadingBarState;
+
+  readonly savePermissions: Permission[] = [{
+    type: PermissionType.ORGANIZATIONS,
+    access: [AccessLevel.MODIFY]
+  }];
 
   constructor(private developerService: DeveloperService,
               private developerTypeService: DeveloperTypeService,
@@ -67,10 +74,13 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    if (this.loader) {
+      this.loader.complete();
+    }
   }
 
   saveType(): void {
-    if (this.showSaveButton && !this.savingCompanyData && !this.isInvalidForm) {
+    if (!this.savingCompanyData && !this.isInvalidForm) {
       this.savingCompanyData = true;
       const request = {
         name: this.getDeveloperName(this.developerData.developer, this.newCustomData),
@@ -84,7 +94,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
         this.developerData.developer = developerResponse;
         this.savingCompanyData = false;
         this.toastService.success('Your organization details has been updated');
-      }, error => {
+      }, () => {
         this.savingCompanyData = false;
       }));
     }
@@ -94,7 +104,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
     this.typeFields = {
       fields: this.mapTypeFields(this.developerData.developer, fields)
     };
-    this.updateSaveButton();
     this.loader.complete();
   }
 
@@ -112,11 +121,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
       return newName;
     }
     return developer.name;
-  }
-
-  updateSaveButton(): void {
-    const type = this.authHolderService.userDetails.role;
-    this.showSaveButton = type === 'ADMIN' || !type;
   }
 
   private getCustomDataValues(customData: any): any {

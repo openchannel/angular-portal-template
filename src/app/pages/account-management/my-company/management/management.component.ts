@@ -2,8 +2,8 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   DeveloperAccountModel,
   DeveloperAccountService,
-  DeveloperAccountTypesService,
   DeveloperDataModel,
+  DeveloperRoleService,
   InviteDeveloperModel,
   InviteUserService,
   ModalUpdateUserModel,
@@ -51,7 +51,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
               private userService: UsersService,
               private inviteUserService: InviteUserService,
               private developerAccountService: DeveloperAccountService,
-              private developerAccountTypesService: DeveloperAccountTypesService,
+              private developerRolesService: DeveloperRoleService,
               private toaster: ToastrService,
               private modal: NgbModal) {
   }
@@ -64,6 +64,9 @@ export class ManagementComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.loader) {
+      this.loader.complete();
+    }
   }
 
   scroll(pageNumber: number) {
@@ -129,7 +132,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
           // push new developers
           this.userProperties.data.list.push(...activeDevelopers.list.map(developer => this.mapToGridUserFromDeveloper(developer)));
           this.loader.complete();
-        }, (error) => {
+        }, () => {
           responseCallBack();
           this.loader.complete();
         })
@@ -221,9 +224,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   editUser(userAction: UserGridActionModel, user: UserAccountGridModel) {
     const developerAccount = this.mapToDeveloperAccount(user);
-    if (user?.inviteStatus === 'INVITED') {
-      this.editDeveloperInvite(developerAccount);
-    } else if (user?.inviteStatus === 'ACTIVE') {
+    if (user?.inviteStatus === 'ACTIVE') {
       this.editDeveloperAccount(developerAccount);
     } else {
       console.error('Not implement edit type : ', user?.inviteStatus);
@@ -237,10 +238,6 @@ export class ManagementComponent implements OnInit, OnDestroy {
     };
   }
 
-  private editDeveloperInvite(developerAccount: DeveloperAccountModel) {
-    // todo edit invite by token.
-  }
-
   private editDeveloperAccount(developerAccount: DeveloperAccountModel) {
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
@@ -250,8 +247,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalData.userData = developerAccount;
     modalData.modalTitle = 'Edit member';
     modalData.successButtonText = 'Save';
-    modalData.requestFindUserTypes =
-        () => this.developerAccountTypesService.getAllDeveloperAccountsType(1, 100);
+    modalData.requestFindUserRoles =
+        () => this.developerRolesService.getDeveloperRoles(1, 100);
     modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
         this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
     modalRef.componentInstance.modalData = modalData;
