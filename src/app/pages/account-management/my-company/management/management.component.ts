@@ -64,6 +64,9 @@ export class ManagementComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.loader) {
+      this.loader.complete();
+    }
   }
 
   scroll(pageNumber: number) {
@@ -129,7 +132,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
           // push new developers
           this.userProperties.data.list.push(...activeDevelopers.list.map(developer => this.mapToGridUserFromDeveloper(developer)));
           this.loader.complete();
-        }, (error) => {
+        }, () => {
           responseCallBack();
           this.loader.complete();
         })
@@ -221,9 +224,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   editUser(userAction: UserGridActionModel, user: UserAccountGridModel) {
     const developerAccount = this.mapToDeveloperAccount(user);
-    if (user?.inviteStatus === 'INVITED') {
-      this.editDeveloperInvite(developerAccount);
-    } else if (user?.inviteStatus === 'ACTIVE') {
+    if (user?.inviteStatus === 'ACTIVE') {
       this.editDeveloperAccount(developerAccount);
     } else {
       console.error('Not implement edit type : ', user?.inviteStatus);
@@ -235,10 +236,6 @@ export class ManagementComponent implements OnInit, OnDestroy {
       ...userGrid,
       developerId: userGrid.userId
     };
-  }
-
-  private editDeveloperInvite(developerAccount: DeveloperAccountModel) {
-    // todo edit invite by token.
   }
 
   private editDeveloperAccount(developerAccount: DeveloperAccountModel) {

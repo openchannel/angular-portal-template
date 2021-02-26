@@ -7,6 +7,7 @@ import {
   DeveloperService,
   DeveloperTypeFieldModel,
   DeveloperTypeService,
+  Permission,
   PermissionType
 } from 'oc-ng-common-service';
 import {Subscription} from 'rxjs';
@@ -31,7 +32,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
 
   isInvalidForm = true;
   savingCompanyData = false;
-  showSaveButton = false;
 
   private newCustomData: any;
   private defaultDeveloperTypeFields: DeveloperTypeFieldModel [] = [{
@@ -44,6 +44,11 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
   }];
   private subscriptions: Subscription = new Subscription();
   private loader: LoadingBarState;
+
+  readonly savePermissions: Permission[] = [{
+    type: PermissionType.ORGANIZATIONS,
+    access: [AccessLevel.MODIFY]
+  }];
 
   constructor(private developerService: DeveloperService,
               private developerTypeService: DeveloperTypeService,
@@ -69,10 +74,13 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    if (this.loader) {
+      this.loader.complete();
+    }
   }
 
   saveType(): void {
-    if (this.showSaveButton && !this.savingCompanyData && !this.isInvalidForm) {
+    if (!this.savingCompanyData && !this.isInvalidForm) {
       this.savingCompanyData = true;
       const request = {
         name: this.getDeveloperName(this.developerData.developer, this.newCustomData),
@@ -86,7 +94,7 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
         this.developerData.developer = developerResponse;
         this.savingCompanyData = false;
         this.toastService.success('Your organization details has been updated');
-      }, error => {
+      }, () => {
         this.savingCompanyData = false;
       }));
     }
@@ -96,7 +104,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
     this.typeFields = {
       fields: this.mapTypeFields(this.developerData.developer, fields)
     };
-    this.updateSaveButton();
     this.loader.complete();
   }
 
@@ -114,10 +121,6 @@ export class CompanyDetailsComponent implements OnInit, OnDestroy {
       return newName;
     }
     return developer.name;
-  }
-
-  updateSaveButton(): void {
-    this.showSaveButton = this.authHolderService.hasPermission(PermissionType.ORGANIZATIONS, [AccessLevel.MODIFY]);
   }
 
   private getCustomDataValues(customData: any): any {

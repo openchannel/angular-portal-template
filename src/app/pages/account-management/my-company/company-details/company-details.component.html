@@ -4,7 +4,8 @@
             (isFormInvalid)="setIsFormInvalid($event)"
             (formDataUpdated)="setCompanyData($event)">
   </oc-form>
-  <oc-button *ngIf="showSaveButton" type="primary" text="Save" class="save-button ml-auto mr-0"
+  <oc-button type="primary" text="Save" class="save-button ml-auto mr-0"
+             [appPermissions]="savePermissions"
              [class]="'w-100'"
              [process]="savingCompanyData"
              (click)="saveType()">
