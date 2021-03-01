@@ -1,8 +1,7 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   DeveloperAccountModel,
   DeveloperAccountService,
-  DeveloperDataModel,
   DeveloperRoleService,
   InviteDeveloperModel,
   InviteUserService,
@@ -25,9 +24,6 @@ import {OcConfirmationModalComponent, OcInviteModalComponent} from 'oc-ng-common
   styleUrls: ['./management.component.scss']
 })
 export class ManagementComponent implements OnInit, OnDestroy {
-
-  @Input()
-  private developerData: DeveloperDataModel;
 
   userProperties: UsersGridParametersModel = {
     data: {
