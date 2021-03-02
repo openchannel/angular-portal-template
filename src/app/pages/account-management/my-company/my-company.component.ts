@@ -1,11 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {
+  AccessLevel,
   AuthHolderService,
-  DeveloperAccountTypesService,
   DeveloperDataModel,
+  DeveloperRoleService,
   DeveloperService,
   InviteUserService,
   ModalInviteUserModel,
+  Permission,
+  PermissionType,
 } from 'oc-ng-common-service';
 import {ActivatedRoute} from '@angular/router';
 import {Subscription} from 'rxjs';
@@ -17,7 +20,7 @@ export interface Page {
   pageId: string;
   pageTitle: string;
   placeholder: string;
-  showByTypes: string [];
+  permissions: Permission [];
 }
 
 @Component({
@@ -27,17 +30,22 @@ export interface Page {
 })
 export class MyCompanyComponent implements OnInit {
 
-
   pages: Page[] = [{
     pageId: 'company',
     pageTitle: 'My company',
     placeholder: 'Company details',
-    showByTypes: ['ADMIN', 'GENERAL'],
+    permissions: [{
+      type: PermissionType.ORGANIZATIONS,
+      access: [AccessLevel.READ, AccessLevel.MODIFY]
+    }]
   }, {
     pageId: 'profile',
     pageTitle: 'My company',
     placeholder: 'User management',
-    showByTypes: ['*'],
+    permissions: [{
+      type: PermissionType.ACCOUNTS,
+      access: [AccessLevel.READ, AccessLevel.MODIFY]
+    }],
   }];
 
   currentPages: Page[] = [];
@@ -55,7 +63,7 @@ export class MyCompanyComponent implements OnInit {
       private modal: NgbModal,
       private toaster: ToastrService,
       private authHolderService: AuthHolderService,
-      private developerAccountTypesService: DeveloperAccountTypesService,
+      private developerRolesService: DeveloperRoleService,
       private inviteService: InviteUserService) {
   }
 
@@ -74,7 +82,7 @@ export class MyCompanyComponent implements OnInit {
   private initProfile() {
     this.subscriptions.add(this.developerService.getDeveloper().subscribe(developer => {
       this.developerData.developer = developer;
-      this.currentPages = this.filterPagesByDeveloperType(this.authHolderService.userDetails.role);
+      this.currentPages = this.filterPagesByDeveloperType();
       this.initMainPage();
     }));
   }
@@ -91,9 +99,8 @@ export class MyCompanyComponent implements OnInit {
     }
   }
 
-  private filterPagesByDeveloperType(developerType: string): Page [] {
-    return this.currentPages = this.pages.filter(page =>
-        page.showByTypes.filter(pattern => pattern === '*' || pattern === developerType || !developerType).length > 0);
+  private filterPagesByDeveloperType(): Page [] {
+    return this.currentPages = this.pages.filter(page => this.authHolderService.hasAnyPermission(page.permissions));
   }
 
   openInviteModal() {
@@ -105,8 +112,8 @@ export class MyCompanyComponent implements OnInit {
     const modalData = new ModalInviteUserModel();
     modalData.modalTitle = 'Invite a member';
     modalData.successButtonText = 'Send Invite';
-    modalData.requestFindUserTypes =
-        () => this.developerAccountTypesService.getAllDeveloperAccountsType(1, 100);
+    modalData.requestFindUserRoles =
+        () => this.developerRolesService.getDeveloperRoles(1, 100);
     modalData.requestSendInvite = (accountData: any) => {
       return this.inviteService.sendDeveloperInvite(inviteTemplateId, this.developerData.developer.name, accountData);
     };

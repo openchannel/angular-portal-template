@@ -10,6 +10,7 @@ import {ForgotPasswordComponent} from './forgot-password/forgot-password.compone
 import {ActivationComponent} from './activation/activation.component';
 import {SharedModule} from '@shared/shared.module';
 import {InvitedSignupComponent} from './invited-signup/invited-signup.component';
+import { OcAuthComponentsModule, OcFormComponentsModule } from 'oc-ng-common-component';
 
 
 @NgModule({
@@ -26,6 +27,8 @@ import {InvitedSignupComponent} from './invited-signup/invited-signup.component'
     CommonModule,
     GeneralRoutingModule,
     SharedModule,
+    OcAuthComponentsModule,
+    OcFormComponentsModule
   ]
 })
 export class GeneralModule { }
