@@ -42,7 +42,7 @@
                 <div class="form-btn">
                     <oc-button type="secondary" text="Cancel" class="w-100" routerLink="/app/manage"></oc-button>
                 </div>
-                <div class="form-btn">
+                <div class="form-btn" *ngIf="!hasPageAndAppStatus('update', 'pending')">
                     <oc-button type="secondary" text="Save" class="w-100"
                                [process]="draftSaveInProcess"
                                (click)="saveApp('draft')"></oc-button>
