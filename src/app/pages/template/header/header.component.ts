@@ -1,15 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {AccessLevel, AuthHolderService, Permission, PermissionType} from 'oc-ng-common-service';
+import {AccessLevel, AuthenticationService, AuthHolderService, Permission, PermissionType} from 'oc-ng-common-service';
 import {LogOutService} from '@core/services/logout-service/log-out.service';
+import {map, takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   isSSO = false;
+  isSsoConfigExist = true;
   isCollapsed = true;
 
   readonly companyPermissions: Permission[] = [
@@ -19,13 +22,27 @@ export class HeaderComponent implements OnInit {
     }
   ];
 
+  private destroy$: Subject<void> = new Subject();
+
   constructor(public router: Router,
               public authService: AuthHolderService,
+              private openIdAuthService: AuthenticationService,
               private logOutService: LogOutService) {
   }
 
   ngOnInit(): void {
     this.isSSO = this.authService?.userDetails?.isSSO;
+
+    this.openIdAuthService.getAuthConfig()
+        .pipe(
+            takeUntil(this.destroy$),
+            map(value => !!value))
+        .subscribe((authConfigExistence) => this.isSsoConfigExist = authConfigExistence);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   login() {
