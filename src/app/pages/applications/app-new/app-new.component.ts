@@ -211,7 +211,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           .subscribe(
           response => {
             if (response) {
-              if (saveType === 'submit') {
+              if (saveType === 'submit' && this.parentApp.status.value !== 'pending') {
                 this.publishApp(response.appId, response.version);
               } else {
                 this.draftSaveInProcess = false;

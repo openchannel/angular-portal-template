@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   AccessLevel,
   AuthHolderService,
-  DeveloperDataModel,
+  DeveloperModel,
   DeveloperRoleService,
   DeveloperService,
   InviteUserService,
@@ -11,10 +11,11 @@ import {
   PermissionType,
 } from 'oc-ng-common-service';
 import {ActivatedRoute} from '@angular/router';
-import {Subscription} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
 import {OcInviteModalComponent} from 'oc-ng-common-component';
+import {takeUntil} from 'rxjs/operators';
 
 export interface Page {
   pageId: string;
@@ -28,9 +29,11 @@ export interface Page {
   templateUrl: './my-company.component.html',
   styleUrls: ['./my-company.component.scss']
 })
-export class MyCompanyComponent implements OnInit {
+export class MyCompanyComponent implements OnInit, OnDestroy {
 
-  pages: Page[] = [{
+  public organizationData: Observable<DeveloperModel>;
+
+  public pages: Page[] = [{
     pageId: 'company',
     pageTitle: 'My company',
     placeholder: 'Company details',
@@ -48,14 +51,13 @@ export class MyCompanyComponent implements OnInit {
     }],
   }];
 
-  currentPages: Page[] = [];
-  selectedPage: Page;
+  public currentPages: Page[] = [];
+  public selectedPage: Page;
+  public isProcessing = false;
 
-  isProcessing = false;
+  private organizationName: string;
+  private $destroy: Subject<void> = new Subject();
 
-  developerData: DeveloperDataModel = {};
-
-  private subscriptions = new Subscription();
 
   constructor(
       private activatedRoute: ActivatedRoute,
@@ -68,7 +70,16 @@ export class MyCompanyComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.organizationData = this.developerService.getDeveloper().pipe(takeUntil(this.$destroy));
+    this.organizationData.subscribe(data => {
+      this.organizationName = data?.name;
+    });
     this.initProfile();
+  }
+
+  ngOnDestroy(): void {
+    this.$destroy.next();
+    this.$destroy.complete();
   }
 
   gotoPage(newPage: Page) {
@@ -80,11 +91,8 @@ export class MyCompanyComponent implements OnInit {
   }
 
   private initProfile() {
-    this.subscriptions.add(this.developerService.getDeveloper().subscribe(developer => {
-      this.developerData.developer = developer;
-      this.currentPages = this.filterPagesByDeveloperType();
-      this.initMainPage();
-    }));
+    this.currentPages = this.filterPagesByDeveloperType();
+    this.initMainPage();
   }
 
   private initMainPage() {
@@ -112,11 +120,14 @@ export class MyCompanyComponent implements OnInit {
     const modalData = new ModalInviteUserModel();
     modalData.modalTitle = 'Invite a member';
     modalData.successButtonText = 'Send Invite';
+
     modalData.requestFindUserRoles =
-        () => this.developerRolesService.getDeveloperRoles(1, 100);
-    modalData.requestSendInvite = (accountData: any) => {
-      return this.inviteService.sendDeveloperInvite(inviteTemplateId, this.developerData.developer.name, accountData);
-    };
+        () => this.developerRolesService.getDeveloperRoles(1, 100)
+        .pipe(takeUntil(this.$destroy));
+
+    modalData.requestSendInvite =
+        (accountData: any) => this.inviteService.sendDeveloperInvite(inviteTemplateId, this.organizationName, accountData)
+        .pipe(takeUntil(this.$destroy));
 
     modalRef.componentInstance.modalData = modalData;
 
