@@ -20,8 +20,7 @@
                     <a class="nav-link" routerLink="/app/manage">Manage Apps</a>
                 </li>
             </ul>
-            <div class="form-inline my-2 my-lg-0 ml-0">
-                <div class="my-2 my-lg-0 ml-4 ml-md-0" *ngIf="authService.isLoggedInUser()">
+                <div class="my-2 my-lg-0 ml-4 ml-lg-0" *ngIf="authService.isLoggedInUser()">
                     <oc-profile-navbar username="More">
                         <ng-container>
                             <div class="dropdown-item cursor-pointer" *ngIf="!isSSO"
@@ -32,9 +31,10 @@
                         </ng-container>
                     </oc-profile-navbar>
                 </div>
-                <div *ngIf="!authService.isLoggedInUser()">
-                    <button class="btn header-login-btn header-btn mr-2" (click)="login()">Log in</button>
-                    <button class="btn btn-primary header-btn" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
+            <div class="d-flex my-2 my-lg-0 ml-0 ml-lg-4 auth-button">
+                <div *ngIf="!authService.isLoggedInUser()" class="d-flex auth-button">
+                    <button class="btn header-login-btn header-btn" (click)="login()">Log in</button>
+                    <button class="btn btn-primary header-btn ml-md-2" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
                 </div>
             </div>
         </div>

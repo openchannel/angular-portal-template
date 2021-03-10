@@ -1,5 +1,5 @@
 @import '~assets/styles/mixins';
-
+@import "../../../../assets/styles/mixins";
 .navbar {
   padding: 0 1rem;
   border-bottom: 1px solid rgba(201, 213, 234, 0.5);
@@ -105,4 +105,27 @@ li.nav-item.dropdown:hover{
   min-height: unset;
   padding: 0;
   border-radius: 4px;
+}
+
+@include media-breakpoint-md() {
+
+  .navbar {
+    .container {
+      .navbar-collapse{
+        height: 100vh;
+      }
+    }
+  }
+
+  .header-btn {
+    width: 256px;
+    height: 52px;
+    margin-bottom: 16px;
+  }
+
+  .auth-button {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 }
