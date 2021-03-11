@@ -14,6 +14,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isSSO = false;
   isSsoConfigExist = true;
   isCollapsed = true;
+  isMenuCollapsed = true;
 
   readonly companyPermissions: Permission[] = [
     {
@@ -51,5 +52,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   logout() {
     this.logOutService.logOut();
+  }
+
+  closedMenu() {
+    this.isMenuCollapsed = true;
+    this.isCollapsed = true;
+  }
+
+  checkIncludesUrl(url1, url2?) {
+    return this.router.url.includes(url1) || (url2 && this.router.url.includes(url2));
   }
 }
