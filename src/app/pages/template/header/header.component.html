@@ -6,7 +6,7 @@
                 <img src="assets/img/logo-company.png" alt="brand-logo" class="company-logo">
                 <img src="assets/img/logo-company-mobile.png" alt="brand-logo" class="company-logo company-logo-mobile">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation"
                     (click)="isCollapsed = !isCollapsed">
                 <div class="cursor-pointer" [ngClass]="{'navbar-icon': isCollapsed,'close-icon': !isCollapsed}">
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="my-2 my-lg-0 ml-md-3 navbar-none" *ngIf="authService.isLoggedInUser()">
+            <div class="my-2 my-lg-0 ml-md-6 navbar-none" *ngIf="authService.isLoggedInUser()">
                 <oc-profile-navbar username="More">
                     <ng-container>
                         <div class="dropdown-item cursor-pointer" *ngIf="!isSSO"
