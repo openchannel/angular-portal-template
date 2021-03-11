@@ -107,6 +107,18 @@ li.nav-item.dropdown:hover{
   border-radius: 4px;
 }
 
+.close-icon {
+  width: 16px;
+  height: 16px;
+  background-image: url(../../../../assets/img/close-icon.svg);
+}
+
+.navbar-icon {
+  width: 16px;
+  height: 16px;
+  background-image: url(../../../../assets/img/navbar-menu.svg);
+}
+
 @include media-breakpoint-md() {
 
   .navbar {
