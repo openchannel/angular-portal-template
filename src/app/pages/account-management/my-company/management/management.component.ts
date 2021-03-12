@@ -43,6 +43,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   private loader: LoadingBarState;
 
+  private inProgress = false;
+
   constructor(public loadingBar: LoadingBarService,
               private userService: UsersService,
               private inviteUserService: InviteUserService,
@@ -54,7 +56,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loader = this.loadingBar.useRef();
-    this.scroll(1);
+    this.getAllDevelopers(() => {});
   }
 
   ngOnDestroy(): void {
@@ -65,10 +67,12 @@ export class ManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  scroll(pageNumber: number) {
-    this.userProperties.data.pageNumber = pageNumber;
-    this.getAllDevelopers(() => {
-    });
+  scroll() {
+    if (!this.inProgress) {
+      this.userProperties.data.pageNumber++;
+      this.getAllDevelopers(() => {
+      });
+    }
   }
 
   catchSortChanges(sortBy) {
@@ -93,6 +97,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
   }
 
   private getAllDevelopers(responseCallBack: () => void) {
+    this.inProgress = true;
     this.loader.start();
     this.subscriptions.add(
         this.inviteUserService.getDeveloperInvites(this.userProperties.data.pageNumber, 10, this.sortQuery)
@@ -128,9 +133,11 @@ export class ManagementComponent implements OnInit, OnDestroy {
           // push new developers
           this.userProperties.data.list.push(...activeDevelopers.list.map(developer => this.mapToGridUserFromDeveloper(developer)));
           this.loader.complete();
+          this.inProgress = false;
         }, () => {
           responseCallBack();
           this.loader.complete();
+          this.inProgress = false;
         })
     );
   }
