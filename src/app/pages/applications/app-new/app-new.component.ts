@@ -13,7 +13,7 @@ import {
   ChartStatisticPeriodModel,
   CreateAppModel,
   FullAppData,
-  SiteConfigService, TitleService,
+  TitleService,
   UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -155,7 +155,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
       if (!(this.generatedForm.invalid || this.submitInProcess || this.draftSaveInProcess)) {
 
-        const modalRef = this.modal.open(AppConfirmationModalComponent);
+        const modalRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
 
         modalRef.componentInstance.modalTitle = 'Submit app';
         modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
