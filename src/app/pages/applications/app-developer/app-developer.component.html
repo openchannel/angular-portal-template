@@ -15,11 +15,11 @@
   <div class="my-3">
     <oc-chart
         [chartData]="chartData"
-        [updateChartDataFunc]="updateChartData"
         minDropdownWidth="auto"
         [count]="count"
         [countText]="countText"
-        [downloadUrl]="downloadUrl">
+        [downloadUrl]="downloadUrl"
+        (changeChartOptions)="updateChartData($event)">
     </oc-chart>
   </div>
   <div class="pb-2">
