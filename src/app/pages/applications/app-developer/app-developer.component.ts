@@ -242,7 +242,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
         break;
       case 'DELETE':
-        const modalDelRef = this.modal.open(AppConfirmationModalComponent);
+        const modalDelRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
 
         modalDelRef.componentInstance.type = 'delete';
         modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
@@ -286,7 +286,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       case 'SUSPEND':
         if (this.appListConfig.data.list
           .find(app => app.appId === menuEvent.appId).status.value === 'approved') {
-          const modalSuspendRef = this.modal.open(AppConfirmationModalComponent);
+          const modalSuspendRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
 
           modalSuspendRef.componentInstance.type = 'suspend';
           modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
@@ -314,10 +314,10 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   }
 
   private submitApp(menuEvent: AppListMenuAction) {
-    const modalRef = this.modal.open(AppConfirmationModalComponent);
+    const modalRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
 
     modalRef.componentInstance.type = 'simple';
-    modalRef.componentInstance.modalText = 'Submit This App To The Marketplace Now?';
+    modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
     modalRef.componentInstance.modalTitle = 'Submit app';
     modalRef.componentInstance.buttonText = 'Yes, submit it';
 
