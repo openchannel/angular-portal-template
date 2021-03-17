@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, AfterViewInit, ViewChildren, QueryList, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   AccessLevel,
   AuthHolderService,
@@ -30,9 +30,7 @@ export interface Page {
   templateUrl: './my-company.component.html',
   styleUrls: ['./my-company.component.scss']
 })
-export class MyCompanyComponent implements OnInit, OnDestroy, AfterViewInit {
-
-  // @ViewChildren('AppManagement') AppManagement: QueryList<ManagementComponent>;
+export class MyCompanyComponent implements OnInit, OnDestroy {
   @ViewChild('AppManagement') appManagement: ManagementComponent;
 
   public organizationData: Observable<DeveloperModel>;
@@ -79,9 +77,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy, AfterViewInit {
       this.organizationName = data?.name;
     });
     this.initProfile();
-  }
-
-  ngAfterViewInit() {
   }
 
   ngOnDestroy(): void {
