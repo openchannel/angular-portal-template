@@ -2,7 +2,7 @@ import {ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot} from '@angul
 import {Injectable} from '@angular/core';
 import {AppNewComponent} from './app-new.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ConfirmationModalComponent} from '@shared/modals/confirmation-modal/confirmation-modal.component';
+import {OcConfirmationModalComponent} from 'oc-ng-common-component';
 
 @Injectable({providedIn: 'root'})
 export class AppDataChangesGuard implements CanDeactivate<AppNewComponent> {
@@ -16,14 +16,13 @@ export class AppDataChangesGuard implements CanDeactivate<AppNewComponent> {
   }
 
   openConfirmationModal(): Promise<any> {
-    const modalRef = this.modal.open(ConfirmationModalComponent);
-
+    const modalRef = this.modal.open(OcConfirmationModalComponent, {size: 'md'});
+    modalRef.componentInstance.ngbModalRef = modalRef;
     modalRef.componentInstance.modalTitle = 'Skip unsaved data';
     modalRef.componentInstance.modalText = 'Unsaved data detected. Want to exit?';
-    modalRef.componentInstance.type = 'submission';
-    modalRef.componentInstance.buttonText = 'Agree';
-    modalRef.componentInstance.cancelButtonText = 'Cancel';
-
+    modalRef.componentInstance.rejectButtonText = 'Cancel';
+    modalRef.componentInstance.confirmButtonText = 'Agree';
+    modalRef.componentInstance.confirmButtonType = 'primary';
     return modalRef.result;
   }
 }
