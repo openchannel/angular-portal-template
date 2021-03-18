@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white">
-    <div class="container" [class.my-2]="!authService.isLoggedInUser()">
+    <div class="container">
         <div class="navbar-wrapper">
             <a routerLink=""
                class="navbar-brand" (click)="closedMenu()">
@@ -38,7 +38,7 @@
                 </li>
             </ul>
 
-            <div class="collaps-items">
+            <div class="collaps-items" *ngIf="!authService.isLoggedInUser()">
                 <div [ngbCollapse]="isMenuCollapsed" id="collapsMoreContent" class="collapse">
                     <ul class="navbar-nav ml-5">
                         <li class="nav-item">
@@ -71,10 +71,10 @@
                     </ng-container>
                 </oc-profile-navbar>
             </div>
-            <div *ngIf="!authService.isLoggedInUser()" class="d-flex my-2 my-lg-0 ml-0 ml-lg-4 auth-button">
+            <div *ngIf="!authService.isLoggedInUser()" class="d-flex my-2 my-lg-0 ml-0 ml-md-6 auth-button">
                 <div class="d-flex auth-button">
-                    <button class="btn header-login-btn header-btn" (click)="login()">Log in</button>
-                    <button class="btn btn-primary header-btn ml-md-2" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
+                    <button class="btn header-login-btn header-btn font-med" (click)="login()">Log in</button>
+                    <button class="btn btn-primary header-btn ml-md-2 font-med" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
                 </div>
             </div>
         </div>
