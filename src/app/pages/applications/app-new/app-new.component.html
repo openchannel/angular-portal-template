@@ -1,7 +1,7 @@
 <div class="bg-container bg-s ">
     <div class="container header-padding">
         <img src="assets/img/arrow-left.svg" alt="arrow-icon">
-        <a routerLink="/app/manage" class="font-m font-med pl-1">Back to Manage Apps</a>
+        <a routerLink="/manage" class="font-m font-med pl-1">Back to Manage Apps</a>
         <h3 class="mt-1">{{pageTitle}}</h3>
     </div>
 </div>
@@ -40,7 +40,7 @@
             <div class="col-md-3 mr-2 pl-0 mb-md-0"></div>
             <div class="d-flex flex-row justify-content-between w-100">
                 <div class="form-btn">
-                    <oc-button type="secondary" text="Cancel" class="w-100" routerLink="/app/manage"></oc-button>
+                    <oc-button type="secondary" text="Cancel" class="w-100" routerLink="/manage"></oc-button>
                 </div>
                 <div class="form-btn" *ngIf="!hasPageAndAppStatus('update', 'pending')">
                     <oc-button type="secondary" text="Save" class="w-100"

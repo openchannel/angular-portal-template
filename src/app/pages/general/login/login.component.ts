@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['app/manage']);
+            this.router.navigate(['manage']);
         }
 
         this.retrieveRedirectUrl();
@@ -113,11 +113,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     private retrieveRedirectUrl() {
-        this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/app/manage';
+        this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/manage';
     }
 
     private processLoginResponse(response: LoginResponse, redirectUrl: string) {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigateByUrl(redirectUrl || 'app/manage');
+        this.router.navigateByUrl(redirectUrl || 'manage');
     }
 }
