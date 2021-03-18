@@ -31,7 +31,7 @@ export interface Page {
   styleUrls: ['./my-company.component.scss']
 })
 export class MyCompanyComponent implements OnInit, OnDestroy {
-  @ViewChild('AppManagement') appManagement: ManagementComponent;
+  @ViewChild('appManagement') appManagement: ManagementComponent;
 
   public organizationData: Observable<DeveloperModel>;
 
