@@ -1,13 +1,38 @@
+@import '../../../../assets/styles/mixins';
+
 .active-link {
   color: #537cfd !important;
-  font-family: "Rubik-Medium";
+  font-family: 'Rubik-Medium', sans-serif;
 }
 
 ul.list-unstyled {
+  @include media-breakpoint-md {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
   li {
+    @include media-breakpoint-md {
+      white-space: nowrap;
+    }
+
+    & + li {
+      @include media-breakpoint-md {
+        margin-left: 2rem;
+      }
+    }
+
     a {
-      color: inherit;
+      color: #999;
       cursor: pointer;
+      font-family: Rubik-Medium, sans-serif;
+
+      &.active-link {
+        color: #333 !important;
+        border-bottom: 3px solid #537cfd;
+        padding-bottom: 8px;
+      }
     }
   }
 }

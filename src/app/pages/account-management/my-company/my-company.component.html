@@ -22,9 +22,18 @@
                     <a (click)="gotoPage(page)" class="font-m"
                        [ngClass]="{'active-link' : page.pageId === selectedPage.pageId}">{{page.placeholder}}</a>
                 </li>
+                <li class="py-1">
+                    <a class="font-m">Test longlink 1</a>
+                </li>
+                <li class="py-1">
+                    <a class="font-m">Test longlink 2</a>
+                </li>
+                <li class="py-1">
+                    <a class="font-m">Test longlink 3</a>
+                </li>
             </ul>
         </div>
-        <div [ngSwitch]="selectedPage?.pageId" class="col pt-1">
+        <div [ngSwitch]="selectedPage?.pageId" class="col-md-9 pt-1">
             <app-company *ngSwitchCase="pages[0].pageId"></app-company>
             <app-management *ngSwitchCase="pages[1].pageId"></app-management>
         </div>
