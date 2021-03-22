@@ -24,14 +24,19 @@ ul.list-unstyled {
     }
 
     a {
-      color: #999;
       cursor: pointer;
-      font-family: Rubik-Medium, sans-serif;
+      color: inherit;
+      @include media-breakpoint-md {
+        color: #999;
+        font-family: Rubik-Medium, sans-serif;
+      }
 
       &.active-link {
-        color: #333 !important;
-        border-bottom: 3px solid #537cfd;
-        padding-bottom: 8px;
+        @include media-breakpoint-md {
+          color: #333 !important;
+          border-bottom: 3px solid #537cfd;
+          padding-bottom: 8px;
+        }
       }
     }
   }
