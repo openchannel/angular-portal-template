@@ -1,6 +1,218 @@
 @import "src/assets/styles/mixins";
 @import "~oc-ng-common-component/assets/styles/theme.scss";
 
+.home {
+
+  &__hero {
+    padding: 8rem 0 13rem;
+    @include media-breakpoint-sm {
+      padding: 3rem 0 4rem;
+    }
+
+    &-title {
+      font-size: 38px;
+      line-height: 58px;
+      @include media-breakpoint-sm {
+        font-size: 24px;
+        line-height: 36px;
+        margin: 0;
+      }
+    }
+
+    &-description {
+      font-size: 18px;
+      line-height: 28px;
+      margin: 0;
+      @include media-breakpoint-sm {
+        font-size: 14px;
+        line-height: 22px;
+        margin: 1rem 0 0;
+      }
+    }
+
+    &-partner {
+      margin-top: 3rem;
+      @include media-breakpoint-sm {
+        width: 256px;
+      }
+    }
+  }
+
+  &__services {
+    padding-top: 100px;
+    padding-bottom: 110px;
+    @include media-breakpoint-sm {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+
+    &-title {
+      line-height: 36px;
+      margin-bottom: 0;
+      @include media-breakpoint-sm {
+        font-size: 18px;
+        line-height: 28px;
+      }
+    }
+
+    &-description {
+      font-size: 14px;
+      line-height: 22px;
+      margin-top: 1rem;
+      margin-bottom: 0;
+      @include media-breakpoint-sm {
+
+      }
+    }
+
+    &-image {
+      margin-top: 4.5rem;
+      @include media-breakpoint-sm {
+        margin-top: 3rem;
+      }
+    }
+
+    &-list {
+      @include media-breakpoint-md {
+        margin-top: 4.5rem;
+      }
+
+      .home__services-card {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        & + .home__services-card {
+          margin-top: 3.5rem;
+        }
+
+        &-description {
+          font-size: 14px;
+          line-height: 22px;
+        }
+      }
+    }
+  }
+
+  &__technology {
+    padding-top: 100px;
+    padding-bottom: 95px;
+    @include media-breakpoint-md {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+
+    &-title {
+      line-height: 36px;
+      margin: 0;
+      @include media-breakpoint-md {
+        font-size: 18px;
+        line-height: 28px;
+      }
+    }
+
+    &-list {
+      margin-top: 39px;
+      justify-content: space-between;
+      @include media-breakpoint-md {
+        margin-top: 20px;
+      }
+
+      .home__technology-card {
+        background-color: #fff;
+        width: 32%;
+        @include media-breakpoint-md {
+          width: 100%;
+          margin-right: 0;
+          margin-bottom: 1rem;
+        }
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        .technology-icon {
+          width: 44px;
+          height: 44px;
+
+          img {
+            width: 100%;
+            height: auto;
+          }
+        }
+
+        .technology-description {
+          width: 100%;
+          font-size: 14px;
+          height: 72px;
+          overflow-y: hidden;
+        }
+      }
+    }
+  }
+
+  &__approach {
+    padding-top: 100px;
+    padding-bottom: 44px;
+    @include media-breakpoint-md {
+      padding-top: 3rem;
+      padding-bottom: 0;
+    }
+
+    &-title {
+      line-height: 36px;
+      margin-bottom: 7rem;
+      max-width: 400px;
+      width: 100%;
+      @include media-breakpoint-md {
+        font-size: 18px;
+        line-height: 28px;
+        margin-bottom: 3rem;
+      }
+      @include media-breakpoint-sm {
+        margin: 0 0 3rem;
+      }
+    }
+
+    &-card {
+      padding: 0;
+      margin-bottom: 5rem;
+      @include media-breakpoint-sm {
+        padding: 0 15px;
+      }
+
+      &-heading {
+        display: flex;
+      }
+
+      &-name {
+        margin: 0 0 0 1.5rem;
+      }
+
+      &-text {
+        margin-top: 2rem;
+        margin-bottom: 0;
+        font-size: 14px;
+        line-height: 22px;
+      }
+
+      &-link {
+        font-size: 14px;
+        line-height: 22px;
+      }
+    }
+  }
+
+  &__register {
+    padding-top: 80px;
+    padding-bottom: 80px;
+    @include media-breakpoint-sm {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+  }
+}
+
 .article-image {
   border-radius: 12px;
   box-shadow: 0 0 16px 0 rgba(44, 100, 131, 0.08);
@@ -9,13 +221,6 @@
   width: 100%;
   height: auto;
   max-height: 144px;
-}
-
-.feature-card {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 24px;
 }
 
 .feature-icon {
@@ -28,34 +233,6 @@
   }
 }
 
-.technology-card {
-  background-color: #fff;
-  margin-right: 2rem;
-  margin-bottom: 1rem;
-  width: 30%;
-  @include media-breakpoint-md {
-    width: 100%;
-    margin-right: 0;
-  }
-  &:last-child {
-    margin-right: 0;
-  }
-  .technology-icon {
-    width: 44px;
-    height: 44px;
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
-  .technology-description {
-    width: 100%;
-    font-size: 14px;
-    height: 72px;
-    overflow-y: hidden;
-  }
-}
-
 .list-number {
   background-color: $primary;
   color: #fff;
@@ -64,10 +241,4 @@
   height: 24px;
   text-align: center;
   border-radius: 50%;
-  font-weight: 700;
-}
-
-.container-padding {
-  padding-top: 104px;
-  padding-bottom: 104px;
 }
