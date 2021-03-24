@@ -13,7 +13,7 @@
   </div>
 <div class="container">
   <div class="my-3">
-    <oc-chart
+    <oc-chart *ngIf="chartData"
         [chartData]="chartData"
         minDropdownWidth="auto"
         [count]="count"
@@ -24,12 +24,12 @@
   </div>
   <div class="pb-2">
     <oc-app-table noAppMessage="No Apps Found"
-                [properties]="appListConfig"
-                menuUrl="../../../../assets/img/dots-hr-icon.svg"
-                defaultAppIcon="../../../../assets/img/app-icon1.svg"
-                descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
-                ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
-                (pageScrolled)="getApps($event)"
+                  [properties]="appListConfig"
+                  menuUrl="../../../../assets/img/dots-hr-icon.svg"
+                  defaultAppIcon="../../../../assets/img/app-icon1.svg"
+                  descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
+                  ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
+                  (pageScrolled)="getApps($event)"
                   (menuClicked)="catchMenuAction($event)"
                   (sortChosen)="changeSorting($event)"></oc-app-table>
   </div>
