@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { ApplicationsRoutingModule } from './applications-routing.module';
 import {SharedModule} from '@shared/shared.module';
 import {AppNewComponent} from './app-new/app-new.component';
-import {AppDeveloperComponent} from './app-developer/app-developer.component';
 import {
   OcFormComponentsModule,
   OcPortalComponentsModule,
@@ -14,7 +13,6 @@ import {
 @NgModule({
   declarations: [
     AppNewComponent,
-    AppDeveloperComponent,
   ],
   imports: [
     CommonModule,

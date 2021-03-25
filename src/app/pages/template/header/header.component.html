@@ -1,10 +1,10 @@
 <nav class="navbar navbar-expand-md navbar-light bg-white">
-    <div class="container" [class.my-2]="!authService.isLoggedInUser()">
+    <div class="container">
         <div class="navbar-wrapper">
             <a routerLink=""
                class="navbar-brand" (click)="closedMenu()">
-                <img src="assets/img/logo-company.png" alt="brand-logo" class="company-logo">
-                <img src="assets/img/logo-company-mobile.png" alt="brand-logo" class="company-logo company-logo-mobile">
+                <img src="assets/img/logo-company-2x.png" alt="brand-logo" class="company-logo">
+                <img src="assets/img/logo-company-mobile-2x.png" alt="brand-logo" class="company-logo company-logo-mobile">
             </a>
             <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation"
@@ -18,8 +18,8 @@
             <ul class="navbar-nav justify-content-end w-100 mb-0">
                 <li class="nav-item"
                     *ngIf="authService.isLoggedInUser()"
-                    [class.active]="checkIncludesUrl('app/manage')">
-                    <a routerLink="/app/manage"
+                    [class.active]="checkIncludesUrl('manage')">
+                    <a routerLink="/manage"
                        class="nav-link cursor-pointer" (click)="closedMenu()">Manage Apps</a>
                 </li>
                 <li class="nav-item collaps-none justify-content-between align-items-center"
@@ -38,7 +38,7 @@
                 </li>
             </ul>
 
-            <div class="collaps-items">
+            <div class="collaps-items" *ngIf="!authService.isLoggedInUser()">
                 <div [ngbCollapse]="isMenuCollapsed" id="collapsMoreContent" class="collapse">
                     <ul class="navbar-nav ml-5">
                         <li class="nav-item">
@@ -71,10 +71,10 @@
                     </ng-container>
                 </oc-profile-navbar>
             </div>
-            <div *ngIf="!authService.isLoggedInUser()" class="d-flex my-2 my-lg-0 ml-0 ml-lg-4 auth-button">
+            <div *ngIf="!authService.isLoggedInUser()" class="d-flex my-2 my-lg-0 ml-0 ml-md-6 auth-button">
                 <div class="d-flex auth-button">
-                    <button class="btn header-login-btn header-btn" (click)="login()">Log in</button>
-                    <button class="btn btn-primary header-btn ml-md-2" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
+                    <button class="btn header-login-btn header-btn font-med" (click)="login()">Log in</button>
+                    <button class="btn btn-primary header-btn ml-md-2 font-med" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
                 </div>
             </div>
         </div>
