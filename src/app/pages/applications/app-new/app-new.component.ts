@@ -530,4 +530,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
     return !(this.generatedForm && this.generatedForm.dirty);
   }
+
+  goToAppManagePage() {
+    this.router.navigate(['app/manage']).then();
+  }
 }
