@@ -17,6 +17,7 @@ import {HomeComponent} from './pages/home/home.component';
 import {environment} from '@env';
 import { LoadingBarModule } from '@ngx-loading-bar/core';
 import {NotFoundComponent} from './pages/not-found/not-found.component';
+import {OcMarketComponentsModule} from 'oc-ng-common-component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {NotFoundComponent} from './pages/not-found/not-found.component';
     ToastrModule.forRoot(),
     CustomHttpClientXsrfModule.withOptions({headerName: 'X-CSRF-TOKEN', apiUrl: environment.apiUrl}),
     SharedModule,
-    LoadingBarModule
+    LoadingBarModule,
+    OcMarketComponentsModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true},
