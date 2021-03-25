@@ -162,7 +162,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.type = 'submission';
         modalRef.componentInstance.buttonText = 'Yes, submit it';
         modalRef.componentInstance.cancelButtonText = 'Save as draft';
-
+        if (this.hasPageAndAppStatus('update', 'pending')){
+          modalRef.componentInstance.showCancel = false;
+        }
         modalRef.result.then(res => {
           if (res && res === 'success') {
             this.saveApp('submit');
