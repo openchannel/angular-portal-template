@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   AccessLevel,
   AuthHolderService,
@@ -16,6 +16,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
 import {OcInviteModalComponent} from 'oc-ng-common-component';
 import {takeUntil} from 'rxjs/operators';
+import {ManagementComponent} from './management/management.component';
 
 export interface Page {
   pageId: string;
@@ -30,6 +31,7 @@ export interface Page {
   styleUrls: ['./my-company.component.scss']
 })
 export class MyCompanyComponent implements OnInit, OnDestroy {
+  @ViewChild('appManagement') appManagement: ManagementComponent;
 
   public organizationData: Observable<DeveloperModel>;
 
@@ -134,6 +136,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     modalRef.result.then(result => {
       if (result) {
         this.toaster.success('Invitation sent');
+        this.appManagement.updateDevelopersAfterInvite();
       }
     });
   }

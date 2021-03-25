@@ -75,6 +75,10 @@ export class ManagementComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateDevelopersAfterInvite() {
+    this.getAllDevelopers(() => this.userProperties.data.list = []);
+  }
+
   catchSortChanges(sortBy) {
     switch (sortBy) {
       case 'name':
