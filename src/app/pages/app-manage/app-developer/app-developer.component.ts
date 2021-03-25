@@ -6,8 +6,8 @@ import {
   AppTypeService,
   AppVersionService,
   ChartLayoutTypeModel,
+  ChartOptionsChange,
   ChartService,
-  ChartStatisticFiledModel,
   ChartStatisticModel,
   ChartStatisticPeriodModel,
   FullAppData,
@@ -77,7 +77,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       list: [],
       count: 50
     },
-    options: ['EDIT', 'PREVIEW', 'SUBMIT', 'SUSPEND', 'DELETE'],
+    options: ['EDIT', 'PREVIEW', 'SUBMIT', 'SUSPEND', 'DELETE', 'UNSUSPEND'],
     previewTemplate: ''
   };
 
@@ -102,7 +102,10 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loader = this.loadingBar.useRef();
-    this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
+    this.updateChartData({
+      period: this.chartData.periods[0],
+      field: this.chartData.fields[0]
+    });
     this.getApps(1);
   }
 
@@ -111,11 +114,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
+  updateChartData(chartOptions: ChartOptionsChange): void {
     const dateEnd = new Date();
-    const dateStart = this.getDateStartByCurrentPeriod(dateEnd, period);
+    const dateStart = this.getDateStartByCurrentPeriod(dateEnd, chartOptions.period);
     this.loader.start();
-    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime())
+    this.chartService.getTimeSeries(chartOptions.period.id, chartOptions.field.id, dateStart.getTime(), dateEnd.getTime())
       .pipe(takeUntil(this.destroy$))
       .subscribe((chartData) => {
         this.count = 0;
@@ -124,7 +127,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           data: chartData
         };
         this.count += chartData.labelsY.reduce((a, b) => a + b);
-        this.countText = `Total ${field.label}`;
+        this.countText = `Total ${chartOptions.field.label}`;
         this.loader.complete();
       }, () => {
         this.loader.complete();
@@ -282,6 +285,30 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         break;
       case 'SUBMIT':
         this.submitApp(menuEvent);
+        break;
+      case 'UNSUSPEND':
+        const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
+
+        modalUnsuspendRef.componentInstance.type = 'unsuspend';
+        modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
+        modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
+        modalUnsuspendRef.componentInstance.buttonText = 'Yes, unsuspend it';
+
+        modalUnsuspendRef.result.then(res => {
+          if (res && res === 'success') {
+            this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(resp => {
+                  if (resp.code && resp.code !== 200) {
+                    this.toaster.error(resp.message);
+                  } else {
+                    this.appListConfig.data.pageNumber = 0;
+                    this.toaster.success('Your app has been unsuspended');
+                    this.getApps(1);
+                  }
+                });
+          }
+        });
         break;
       case 'SUSPEND':
         if (this.appListConfig.data.list

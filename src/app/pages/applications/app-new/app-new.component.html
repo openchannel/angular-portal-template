@@ -5,11 +5,11 @@
     <div class="my-5" *ngIf="pageType === 'update'">
         <oc-chart
                 [chartData]="chartData"
-                [updateChartDataFunc]="updateChartData"
                 minDropdownWidth="auto"
                 [count]="count"
                 [countText]="countText"
-                [downloadUrl]="downloadUrl">
+                [downloadUrl]="downloadUrl"
+                (changeChartOptions)="updateChartData($event)">
         </oc-chart>
     </div>
     <form [formGroup]="appTypeFormGroup">
@@ -35,7 +35,7 @@
         <div class="main-container_options">
             <div class="main-container_options_empty"></div>
             <div class="main-container_options_buttons">
-                <oc-button type="secondary" text="Cancel" routerLink="/app/manage"></oc-button>
+                <oc-button type="secondary" text="Cancel" routerLink="/manage"></oc-button>
                 <oc-button type="secondary" text="Save"
                            *ngIf="!hasPageAndAppStatus('update', 'pending')"
                            [process]="draftSaveInProcess"

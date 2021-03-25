@@ -1,16 +1,10 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AppDeveloperComponent} from './app-developer/app-developer.component';
 import {AppNewComponent} from './app-new/app-new.component';
 import {AppDataChangesGuard} from './app-new/deactivation-guard';
 import {AuthGuard} from '@core/guards/auth.guard';
 
 const routes: Routes = [
-  {
-    path: 'manage',
-    component: AppDeveloperComponent,
-    canActivate: [AuthGuard],
-    data: {title: 'Manage apps'}},
   {
     path: 'create',
     component: AppNewComponent,
