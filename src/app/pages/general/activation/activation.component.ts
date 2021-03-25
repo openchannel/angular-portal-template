@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ActivationComponent implements OnDestroy {
 
-    companyLogoUrl = './assets/img/logo-company.png';
+    companyLogoUrl = './assets/img/logo-company-2x.png';
     signupUrl = '/signup';
     resendActivationUrl = '/resend-activation';
     inProcess = false;
