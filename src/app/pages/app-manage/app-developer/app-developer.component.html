@@ -1,0 +1,35 @@
+  <div class="bg-container height-unset">
+    <div class="container">
+      <div class="row py-3 px-3 px-md-0">
+        <div class="col-md-9 mb-3 mb-md-0 d-flex align-items-center">
+          <h1 class="mb-0 page-title-size">Manage apps</h1>
+        </div>
+        <a class="col-md" routerLink="/app/create">
+          <oc-button text="Create app" type="primary" class="btn-block">
+          </oc-button>
+        </a>
+      </div>
+    </div>
+  </div>
+<div class="container">
+  <div class="my-3">
+    <oc-chart [chartData]="chartData"
+              [updateChartDataFunc]="updateChartData"
+              minDropdownWidth="auto"
+              [count]="count"
+              [countText]="countText"
+              [downloadUrl]="downloadUrl">
+    </oc-chart>
+  </div>
+  <div class="pb-2">
+    <oc-app-table noAppMessage="No Apps Found"
+                  [properties]="appListConfig"
+                  menuUrl="../../../../assets/img/dots-hr-icon.svg"
+                  defaultAppIcon="../../../../assets/img/app-icon1.svg"
+                  descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
+                  ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
+                  (pageScrolled)="getApps($event)"
+                  (menuClicked)="catchMenuAction($event)"
+                  (sortChosen)="changeSorting($event)"></oc-app-table>
+  </div>
+</div>
