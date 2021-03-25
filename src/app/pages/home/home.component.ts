@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.titleService.setSpecialTitle(this.siteService.siteConfig.tagline, true);
     if (this.authHolderService.isLoggedInUser()) {
-      this.router.navigate(['/app/manage']).then();
+      this.router.navigate(['/manage']).then();
     }
   }
 
