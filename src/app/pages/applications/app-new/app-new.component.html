@@ -5,11 +5,11 @@
     <div class="my-5" *ngIf="pageType === 'update'">
         <oc-chart
                 [chartData]="chartData"
-                [updateChartDataFunc]="updateChartData"
                 minDropdownWidth="auto"
                 [count]="count"
                 [countText]="countText"
-                [downloadUrl]="downloadUrl">
+                [downloadUrl]="downloadUrl"
+                (changeChartOptions)="updateChartData($event)">
         </oc-chart>
     </div>
     <form [formGroup]="appTypeFormGroup">
