@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
-import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
 import {catchError, switchMap, take} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import {HttpConfigInterceptor} from './httpconfig.interceptor';
 export class HttpErrorInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  private refreshTokenSubject: Subject<string> = new Subject<string>();
 
   constructor(private router: Router,
               private errorService: OcErrorService,
