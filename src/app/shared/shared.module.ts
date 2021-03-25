@@ -6,12 +6,15 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {AppConfirmationModalComponent} from './modals/app-confirmation-modal/app-confirmation-modal.component';
 import {PermissionDirective} from './directive/permission.directive';
+import {PageTitleComponent} from './components/page-title/page-title.component';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   declarations: [
     AppConfirmationModalComponent,
     CamelCaseToNormalPipe,
     PermissionDirective,
+    PageTitleComponent,
   ],
   imports: [
     CommonModule,
@@ -19,13 +22,15 @@ import {PermissionDirective} from './directive/permission.directive';
     ReactiveFormsModule,
     FormsModule,
     NgbModule,
+    RouterModule,
   ],
   exports: [
     OcCommonLibModule,
     CamelCaseToNormalPipe,
     FormsModule,
     ReactiveFormsModule,
-    PermissionDirective
+    PermissionDirective,
+    PageTitleComponent
   ]
 })
 export class SharedModule { }
