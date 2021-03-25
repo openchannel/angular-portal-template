@@ -532,6 +532,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   goToAppManagePage() {
-    this.router.navigate(['app/manage']).then();
+    this.router.navigate(['/manage']).then();
   }
 }
