@@ -1,5 +1,6 @@
 <div class="bg-container bg-s">
-    <app-page-title [pageTitle]="pageTitle" (navigate)="goToAppManagePage()" navigateText="Back"></app-page-title>
+    <app-page-title [pageTitle]="pageTitle" navigateText="Back"
+                    (navigateClick)="goToAppManagePage()"></app-page-title>
 </div>
 <div class="container main-container mt-5">
     <div class="my-5" *ngIf="pageType === 'update'">

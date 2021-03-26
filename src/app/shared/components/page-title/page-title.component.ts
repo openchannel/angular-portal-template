@@ -7,7 +7,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class PageTitleComponent {
 
-  @Input() navigateText: string;
   @Input() pageTitle: string;
-  @Output() navigate: EventEmitter<void> = new EventEmitter<void>();
+  @Input() navigateText: string;
+  @Input() buttonText: string;
+  @Output() navigateClick: EventEmitter<void> = new EventEmitter<void>();
+  @Output() buttonClick: EventEmitter<void> = new EventEmitter<void>();
 }

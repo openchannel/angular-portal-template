@@ -20,7 +20,6 @@ import {ManagementComponent} from './management/management.component';
 
 export interface Page {
   pageId: string;
-  pageTitle: string;
   placeholder: string;
   permissions: Permission [];
 }
@@ -37,7 +36,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
 
   public pages: Page[] = [{
     pageId: 'company',
-    pageTitle: 'My company',
     placeholder: 'Company details',
     permissions: [{
       type: PermissionType.ORGANIZATIONS,
@@ -45,7 +43,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }]
   }, {
     pageId: 'profile',
-    pageTitle: 'My company',
     placeholder: 'User management',
     permissions: [{
       type: PermissionType.ACCOUNTS,
