@@ -44,32 +44,3 @@ ul.list-unstyled {
     }
   }
 }
-
-.breadcrumbs-wrapper {
-  display: flex;
-  align-items: center;
-
-  .breadcrumbs-icon {
-    padding-bottom: 1px;
-  }
-}
-
-.page-title {
-  line-height: 40px;
-  margin-bottom: 0;
-  @include media-breakpoint-md {
-    font-size: 24px;
-    line-height: 36px;
-  }
-}
-
-.header-padding {
-  @include media-breakpoint-md {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-}
-
-.button-container {
-  width: 255px;
-}
