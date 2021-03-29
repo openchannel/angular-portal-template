@@ -248,8 +248,6 @@ export class ManagementComponent implements OnInit, OnDestroy {
   private editDeveloperAccount(developerAccount: DeveloperAccountModel) {
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
-    modalRef.componentInstance.ngbModalRef = modalRef;
-
     const modalData = new ModalUpdateUserModel();
     modalData.userData = developerAccount;
     modalData.modalTitle = 'Edit member';
@@ -259,12 +257,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
         this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
     modalRef.componentInstance.modalData = modalData;
-
-    modalRef.result.then(result => {
-      if (result) {
-        this.toaster.success('User details have been updated');
-      }
-    });
+    modalRef.result.then(() => this.toaster.success('User details have been updated'), () => {});
   }
 
   private openDeleteModal(modalTitle: string, modalText: string, confirmText: string, deleteCallback: () => void) {
@@ -274,11 +267,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalSuspendRef.componentInstance.modalText = modalText;
     modalSuspendRef.componentInstance.confirmButtonText = confirmText;
     modalSuspendRef.componentInstance.confirmButtonType = 'danger';
-    modalSuspendRef.result.then(result => {
-      if (result) {
-        deleteCallback();
-      }
-    });
+    modalSuspendRef.result.then(() => deleteCallback(), () => {});
   }
 
   private findUserByAction(userAction: UserGridActionModel): UserAccountGridModel {
