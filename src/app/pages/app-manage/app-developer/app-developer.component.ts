@@ -79,7 +79,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       list: [],
       count: 50
     },
-    options: ['EDIT', 'PREVIEW', 'SUBMIT', 'SUSPEND', 'DELETE'],
+    options: ['EDIT', 'PREVIEW', 'SUBMIT', 'SUSPEND', 'DELETE', 'UNSUSPEND'],
     previewTemplate: ''
   };
 
@@ -287,6 +287,30 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         break;
       case 'SUBMIT':
         this.submitApp(menuEvent);
+        break;
+      case 'UNSUSPEND':
+        const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
+
+        modalUnsuspendRef.componentInstance.type = 'unsuspend';
+        modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
+        modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
+        modalUnsuspendRef.componentInstance.buttonText = 'Yes, unsuspend it';
+
+        modalUnsuspendRef.result.then(res => {
+          if (res && res === 'success') {
+            this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(resp => {
+                  if (resp.code && resp.code !== 200) {
+                    this.toaster.error(resp.message);
+                  } else {
+                    this.appListConfig.data.pageNumber = 0;
+                    this.toaster.success('Your app has been unsuspended');
+                    this.getApps(1);
+                  }
+                });
+          }
+        });
         break;
       case 'SUSPEND':
         if (this.appListConfig.data.list

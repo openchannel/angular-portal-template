@@ -11,7 +11,7 @@ export class SignupComponent implements OnInit {
 
   loginUrl = '/login';
   activationUrl = '/activate';
-  companyLogoUrl = './assets/img/logo-company.png';
+  companyLogoUrl = './assets/img/logo-company-2x.png';
   termsAndConditionPageUrl = 'https://my.openchannel.io/terms-of-service';
   dataProcessingPolicyUrl = 'https://my.openchannel.io/data-processing-policy';
   forgotPasswordDoneIconPath = './assets/img/forgot-password-complete-icon.svg';

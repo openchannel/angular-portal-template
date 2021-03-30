@@ -166,7 +166,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.type = 'submission';
         modalRef.componentInstance.buttonText = 'Yes, submit it';
         modalRef.componentInstance.cancelButtonText = 'Save as draft';
-
+        if (this.hasPageAndAppStatus('update', 'pending')){
+          modalRef.componentInstance.showCancel = false;
+        }
         modalRef.result.then(res => {
           if (res && res === 'success') {
             this.saveApp('submit');
@@ -196,7 +198,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               this.publishApp(appResponse.appId, appResponse.version);
             } else {
               this.draftSaveInProcess = false;
-              this.router.navigate(['/app/manage']).then(() => {
+              this.router.navigate(['/manage']).then(() => {
                 this.showSuccessToaster(saveType);
               });
             }
@@ -220,7 +222,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               } else {
                 this.draftSaveInProcess = false;
                 this.showSuccessToaster(saveType);
-                this.router.navigate(['/app/manage']).then();
+                this.router.navigate(['/manage']).then();
               }
             } else {
               this.draftSaveInProcess = false;
@@ -243,7 +245,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       .subscribe(() => {
       this.submitInProcess = false;
       this.showSuccessToaster('submit');
-      this.router.navigate(['/app/manage']).then();
+      this.router.navigate(['/manage']).then();
     }, () => {
       this.submitInProcess = false;
     });
@@ -297,15 +299,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.loader.complete();
           }, () => {
             this.loader.complete();
-            this.router.navigate(['/app/manage']).then();
+            this.router.navigate(['/manage']).then();
           });
         } else {
           this.loader.complete();
-          this.router.navigate(['/app/manage']).then();
+          this.router.navigate(['/manage']).then();
         }
       }, () => {
         this.loader.complete();
-        this.router.navigate(['/app/manage']).then();
+        this.router.navigate(['/manage']).then();
       },
     );
   }
@@ -367,13 +369,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.loader.complete();
         } else {
           this.loader.complete();
-          this.router.navigate(['/app/manage']).then();
+          this.router.navigate(['/manage']).then();
           this.currentAppsTypesItems = [];
         }
       }, () => {
         this.currentAppsTypesItems = [];
         this.loader.complete();
-        this.router.navigate(['/app/manage']).then();
+        this.router.navigate(['/manage']).then();
       });
   }
 
@@ -533,5 +535,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
       return true;
     }
     return !(this.generatedForm && this.generatedForm.dirty);
+  }
+
+  goToAppManagePage() {
+    this.router.navigate(['/manage']).then();
   }
 }
