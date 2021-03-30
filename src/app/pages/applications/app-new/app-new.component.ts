@@ -173,7 +173,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           } else if (res && res === 'draft') {
             this.saveApp('draft');
           }
-        });
+        }, () => {});
       }
     }
   }

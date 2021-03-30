@@ -281,7 +281,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                 });
             }
           }
-        });
+        }, () => {});
         break;
       case 'SUBMIT':
         this.submitApp(menuEvent);
@@ -308,7 +308,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                   }
                 });
           }
-        });
+        }, () => {});
         break;
       case 'SUSPEND':
         if (this.appListConfig.data.list
@@ -377,7 +377,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               }
             });
       }
-    });
+    }, () => {});
   }
 
   getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
