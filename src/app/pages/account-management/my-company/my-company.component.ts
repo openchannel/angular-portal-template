@@ -133,7 +133,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     modalRef.result.then(result => {
       if (result) {
         this.toaster.success('Invitation sent');
-        this.appManagement.updateDevelopersAfterInvite();
+        this.appManagement.getAllDevelopers(true);
       }
     });
   }
