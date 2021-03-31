@@ -1,11 +1,11 @@
-<div class="bg-container pt-sm-5" *ngIf="!loginType">
+<div class="bg-container pt-sm-5">
     <oc-login class="login-position"
               [loginModel]="signIn"
+              [hidden]="isSsoLogin"
               [forgotPwdUrl]="forgotPwdUrl"
               [signupUrl]="signupUrl"
               [companyLogoUrl]="companyLogoUrl"
               (submit)="login($event)"
-              [loginType]="loginType"
               (sendActivationLink)="sendActivationEmail($event)"
               [process]="inProcess"></oc-login>
 </div>
