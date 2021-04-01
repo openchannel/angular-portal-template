@@ -19,6 +19,7 @@ import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
 import {OcConfirmationModalComponent, OcInviteModalComponent} from 'oc-ng-common-component';
 import {flatMap, map, takeUntil, tap} from 'rxjs/operators';
+import {cloneDeep} from 'lodash';
 
 @Component({
   selector: 'app-management',
@@ -256,7 +257,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
     const modalData = new ModalUpdateUserModel();
-    modalData.userData = developerAccount;
+    modalData.userData = cloneDeep(developerAccount);
     modalData.modalTitle = 'Edit member';
     modalData.successButtonText = 'Save';
     modalData.requestFindUserRoles =
@@ -264,7 +265,10 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
         this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
     modalRef.componentInstance.modalData = modalData;
-    modalRef.result.then(() => this.toaster.success('User details have been updated'), () => {});
+    modalRef.result.then(() => {
+      this.getAllDevelopers(true);
+      this.toaster.success('User details have been updated');
+    }, () => {});
   }
 
   private openDeleteModal(modalTitle: string, modalText: string, confirmText: string, deleteCallback: () => void) {
