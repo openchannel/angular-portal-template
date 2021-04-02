@@ -43,7 +43,7 @@
     "oc-ng-common-component": "1.0.4-2",
     "oc-ng-common-service": "1.0.2-1",
     "popper.js": "^1.16.0",
-    "rxjs": "~6.5.5",
+    "rxjs": "~6.6.3",
     "string": "^3.3.3",
     "tinymce": "^5.6.2",
     "tslib": "^2.0.0",
