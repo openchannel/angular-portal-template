@@ -13,6 +13,7 @@ import {
   CreateAppModel,
   FullAppData,
   TitleService,
+  TypeModel,
   UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -66,12 +67,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
   currentAppsTypesItems: AppTypeModel [] = [];
 
   appTypeFormGroup: FormGroup;
-  appFields: {
-    fields: AppTypeFieldModel []
-  };
-  savedFields: {
-    fields: AppTypeFieldModel []
-  };
+  appFields: TypeModel<AppTypeFieldModel>;
+  savedFields: TypeModel<AppTypeFieldModel>;
   generatedForm: FormGroup;
 
   draftSaveInProcess = false;
@@ -457,8 +454,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
       // map other fields
       if (field?.fields) {
         field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
-        field.subFieldDefinitions = field.fields;
-        field.fields = null;
       }
     }
     return field;
