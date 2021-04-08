@@ -520,7 +520,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue) {
-    return this.pageType === pageType && this.parentApp && this.parentApp?.status?.value === appStatus;
+    return this.pageType === pageType && this.parentApp?.status?.value === appStatus;
+  }
+
+  hasParentAppStatus(appStatus: AppStatusValue) {
+    return this.parentApp?.parent?.status?.value === appStatus;
   }
 
   isOutgoAllowed() {
