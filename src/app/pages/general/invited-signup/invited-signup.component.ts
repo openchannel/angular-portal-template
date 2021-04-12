@@ -7,6 +7,7 @@ import {takeUntil} from 'rxjs/operators';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
 import {merge} from 'lodash';
+import {LogOutService} from '@core/services/logout-service/log-out.service';
 
 @Component({
   selector: 'app-invited-signup',
@@ -33,6 +34,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
               private inviteUserService: InviteUserService,
               private typeService: DeveloperAccountTypesService,
               private nativeLoginService: NativeLoginService,
+              private logOutService: LogOutService,
               private loadingBar: LoadingBarService) {
   }
 
@@ -157,8 +159,16 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         userCustomData: request,
         inviteToken: this.developerInviteData.token
       }).pipe(takeUntil(this.destroy$)).subscribe(() => {
-        this.inProcess = false;
-        this.router.navigate(['login']);
+
+        this.logOutService.logOut()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(r => {
+          this.inProcess = false;
+          this.router.navigate(['login']).then();
+        }, () => {
+          this.inProcess = false;
+          this.router.navigate(['login']).then();
+        });
       }, () => {
         this.inProcess = false;
       });
