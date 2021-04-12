@@ -6,17 +6,19 @@ import {
   InviteDeveloperModel,
   InviteUserService,
   ModalUpdateUserModel,
+  Page,
   UserAccountGridModel,
   UserGridActionModel,
   UsersGridParametersModel,
   UsersService
 } from 'oc-ng-common-service';
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
 import {OcConfirmationModalComponent, OcInviteModalComponent} from 'oc-ng-common-component';
+import {flatMap, takeUntil, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-management',
@@ -36,14 +38,11 @@ export class ManagementComponent implements OnInit, OnDestroy {
     options: ['DELETE', 'EDIT']
   };
 
-  private subscriptions = new Subscription();
   private sortQuery = '{"name": 1}';
-
   private destroy$: Subject<void> = new Subject();
-
   private loader: LoadingBarState;
-
-  private inProgress = false;
+  private readonly DEVELOPERS_LIMIT_PER_REQUEST = 10;
+  private inProcessGettingDevelopers = false;
 
   constructor(public loadingBar: LoadingBarService,
               private userService: UsersService,
@@ -56,7 +55,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loader = this.loadingBar.useRef();
-    this.getAllDevelopers(() => {});
+    this.getAllDevelopers(true);
   }
 
   ngOnDestroy(): void {
@@ -64,14 +63,6 @@ export class ManagementComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     if (this.loader) {
       this.loader.complete();
-    }
-  }
-
-  scroll() {
-    if (!this.inProgress) {
-      this.userProperties.data.pageNumber++;
-      this.getAllDevelopers(() => {
-      });
     }
   }
 
@@ -92,54 +83,53 @@ export class ManagementComponent implements OnInit, OnDestroy {
       default:
         break;
     }
-    this.userProperties.data.pageNumber = 1;
-    this.getAllDevelopers(() => this.userProperties.data.list = []);
+    this.getAllDevelopers(true);
   }
 
-  private getAllDevelopers(responseCallBack: () => void) {
-    this.inProgress = true;
-    this.loader.start();
-    this.subscriptions.add(
-        this.inviteUserService.getDeveloperInvites(this.userProperties.data.pageNumber, 10, this.sortQuery)
-        .subscribe(invites => {
-          this.loader.complete();
-          this.getActiveDevelopers(invites.list.map(developerInvite => this.mapToGridUserFromInvite(developerInvite)), responseCallBack);
-        }, () => {
-          this.loader.complete();
-          this.getActiveDevelopers([], responseCallBack);
-        })
-    );
-  }
+  getAllDevelopers(startNewPagination: boolean) {
+    if (!this.inProcessGettingDevelopers) {
+      this.loader.start();
+      this.inProcessGettingDevelopers = true;
+      if (startNewPagination) {
+        this.userProperties.data.pageNumber = 1;
+      }
+      let inviteResponse: Page<InviteDeveloperModel>;
+      this.inviteUserService.getDeveloperInvites(this.userProperties.data.pageNumber, this.DEVELOPERS_LIMIT_PER_REQUEST, this.sortQuery)
+      .pipe(
+          tap((response) => inviteResponse = response),
+          flatMap(() => this.developerAccountService.getDeveloperAccounts(
+              this.userProperties.data.pageNumber, this.DEVELOPERS_LIMIT_PER_REQUEST, this.sortQuery)),
+          takeUntil(this.destroy$))
+      .subscribe((activeUsers) => {
+        this.loader.complete();
 
-  private getActiveDevelopers(invites: UserAccountGridModel[], responseCallBack: () => void) {
-    this.loader.start();
-    this.subscriptions.add(this.developerAccountService.getDeveloperAccounts(this.userProperties.data.pageNumber, 10, this.sortQuery)
-        .subscribe(activeDevelopers => {
-          responseCallBack();
+        if (startNewPagination) {
+          this.userProperties.data.list = [];
+        }
 
-          // push new invites
-          if (this.userProperties.data.pageNumber === 1) {
-            this.userProperties.data.list
-            .push(...invites);
-          } else {
-            const lastInvitedDev = this.userProperties.data.list
-            .filter(developer => developer.inviteStatus === 'INVITED').pop();
-            if (lastInvitedDev) {
-              this.userProperties.data.list
-              .splice(this.userProperties.data.list.lastIndexOf(lastInvitedDev) + 1, 0, ...invites);
-            }
+        const invites = inviteResponse.list.map(userInvite => this.mapToGridUserFromInvite(userInvite));
+
+        // push new invites
+        if (this.userProperties.data.pageNumber === 1) {
+          this.userProperties.data.list.push(...invites);
+        } else {
+          const lastInvitedDev = this.userProperties.data.list
+          .filter(user => user.inviteStatus === 'INVITED').pop();
+          if (lastInvitedDev) {
+            this.userProperties.data.list.splice(
+                this.userProperties.data.list.lastIndexOf(lastInvitedDev) + 1, 0, ...invites);
           }
-
-          // push new developers
-          this.userProperties.data.list.push(...activeDevelopers.list.map(developer => this.mapToGridUserFromDeveloper(developer)));
-          this.loader.complete();
-          this.inProgress = false;
-        }, () => {
-          responseCallBack();
-          this.loader.complete();
-          this.inProgress = false;
-        })
-    );
+        }
+        // push new developers
+        this.userProperties.data.pageNumber++;
+        this.userProperties.data.list
+        .push(...activeUsers.list.map(user => this.mapToGridUserFromDeveloper(user)));
+        this.inProcessGettingDevelopers = false;
+      }, () => {
+        this.loader.complete();
+        this.inProcessGettingDevelopers = false;
+      });
+    }
   }
 
   private mapToGridUserFromDeveloper(developer: DeveloperAccountModel): UserAccountGridModel {
@@ -244,8 +234,6 @@ export class ManagementComponent implements OnInit, OnDestroy {
   private editDeveloperAccount(developerAccount: DeveloperAccountModel) {
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
-    modalRef.componentInstance.ngbModalRef = modalRef;
-
     const modalData = new ModalUpdateUserModel();
     modalData.userData = developerAccount;
     modalData.modalTitle = 'Edit member';
@@ -255,12 +243,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
         this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
     modalRef.componentInstance.modalData = modalData;
-
-    modalRef.result.then(result => {
-      if (result) {
-        this.toaster.success('User details have been updated');
-      }
-    });
+    modalRef.result.then(() => this.toaster.success('User details have been updated'), () => {});
   }
 
   private openDeleteModal(modalTitle: string, modalText: string, confirmText: string, deleteCallback: () => void) {
@@ -270,11 +253,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalSuspendRef.componentInstance.modalText = modalText;
     modalSuspendRef.componentInstance.confirmButtonText = confirmText;
     modalSuspendRef.componentInstance.confirmButtonType = 'danger';
-    modalSuspendRef.result.then(result => {
-      if (result) {
-        deleteCallback();
-      }
-    });
+    modalSuspendRef.result.then(() => deleteCallback(), () => {});
   }
 
   private findUserByAction(userAction: UserGridActionModel): UserAccountGridModel {

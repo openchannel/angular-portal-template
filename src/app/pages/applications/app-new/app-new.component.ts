@@ -7,13 +7,13 @@ import {
   AppTypeService,
   AppVersionService,
   ChartLayoutTypeModel,
+  ChartOptionsChange,
   ChartService,
-  ChartStatisticFiledModel,
   ChartStatisticModel,
-  ChartStatisticPeriodModel,
   CreateAppModel,
   FullAppData,
   TitleService,
+  TypeModel,
   UpdateAppVersionModel,
 } from 'oc-ng-common-service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -67,12 +67,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
   currentAppsTypesItems: AppTypeModel [] = [];
 
   appTypeFormGroup: FormGroup;
-  appFields: {
-    fields: AppTypeFieldModel []
-  };
-  savedFields: {
-    fields: AppTypeFieldModel []
-  };
+  appFields: TypeModel<AppTypeFieldModel>;
+  savedFields: TypeModel<AppTypeFieldModel>;
   generatedForm: FormGroup;
 
   draftSaveInProcess = false;
@@ -128,8 +124,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
     if (this.pageType === 'create') {
       this.addListenerAppTypeField();
     } else {
-      this.updateChartData(this.chartData.periods[0], this.chartData.fields[0]);
       this.getAppData();
+      this.updateChartData({
+        period: this.chartData.periods[0],
+        field: this.chartData.fields[0]
+      });
     }
   }
 
@@ -162,14 +161,16 @@ export class AppNewComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.type = 'submission';
         modalRef.componentInstance.buttonText = 'Yes, submit it';
         modalRef.componentInstance.cancelButtonText = 'Save as draft';
-
+        if (this.hasPageAndAppStatus('update', 'pending')){
+          modalRef.componentInstance.showCancel = false;
+        }
         modalRef.result.then(res => {
           if (res && res === 'success') {
             this.saveApp('submit');
           } else if (res && res === 'draft') {
             this.saveApp('draft');
           }
-        });
+        }, () => {});
       }
     }
   }
@@ -192,7 +193,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               this.publishApp(appResponse.appId, appResponse.version);
             } else {
               this.draftSaveInProcess = false;
-              this.router.navigate(['/app/manage']).then(() => {
+              this.router.navigate(['/manage']).then(() => {
                 this.showSuccessToaster(saveType);
               });
             }
@@ -216,7 +217,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
               } else {
                 this.draftSaveInProcess = false;
                 this.showSuccessToaster(saveType);
-                this.router.navigate(['/app/manage']).then();
+                this.router.navigate(['/manage']).then();
               }
             } else {
               this.draftSaveInProcess = false;
@@ -239,7 +240,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
       .subscribe(() => {
       this.submitInProcess = false;
       this.showSuccessToaster('submit');
-      this.router.navigate(['/app/manage']).then();
+      this.router.navigate(['/manage']).then();
     }, () => {
       this.submitInProcess = false;
     });
@@ -293,15 +294,15 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.loader.complete();
           }, () => {
             this.loader.complete();
-            this.router.navigate(['/app/manage']).then();
+            this.router.navigate(['/manage']).then();
           });
         } else {
           this.loader.complete();
-          this.router.navigate(['/app/manage']).then();
+          this.router.navigate(['/manage']).then();
         }
       }, () => {
         this.loader.complete();
-        this.router.navigate(['/app/manage']).then();
+        this.router.navigate(['/manage']).then();
       },
     );
   }
@@ -313,12 +314,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateChartData = (period: ChartStatisticPeriodModel, field: ChartStatisticFiledModel) => {
+  updateChartData(chartOptions: ChartOptionsChange): void {
     const dateEnd = new Date();
-    const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, period);
+    const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, chartOptions.period);
 
     this.loader.start();
-    this.chartService.getTimeSeries(period.id, field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
+    this.chartService.getTimeSeries(chartOptions.period.id, chartOptions.field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((chartData) => {
         this.count = 0;
@@ -327,7 +328,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
           data: chartData
         };
         this.count += chartData.labelsY.reduce((a, b) => a + b);
-        this.countText = `Total ${field.label}`;
+        this.countText = `Total ${chartOptions.field.label}`;
         this.loader.complete();
       }, () => {
         this.loader.complete();
@@ -363,13 +364,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
           this.loader.complete();
         } else {
           this.loader.complete();
-          this.router.navigate(['/app/manage']).then();
+          this.router.navigate(['/manage']).then();
           this.currentAppsTypesItems = [];
         }
       }, () => {
         this.currentAppsTypesItems = [];
         this.loader.complete();
-        this.router.navigate(['/app/manage']).then();
+        this.router.navigate(['/manage']).then();
       });
   }
 
@@ -453,8 +454,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
       // map other fields
       if (field?.fields) {
         field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
-        field.subFieldDefinitions = field.fields;
-        field.fields = null;
       }
     }
     return field;
@@ -521,7 +520,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
   }
 
   hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue) {
-    return this.pageType === pageType && this.parentApp && this.parentApp?.status?.value === appStatus;
+    return this.pageType === pageType && this.parentApp?.status?.value === appStatus;
+  }
+
+  hasParentAppStatus(appStatus: AppStatusValue) {
+    return this.parentApp?.parent?.status?.value === appStatus;
   }
 
   isOutgoAllowed() {
@@ -529,5 +532,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
       return true;
     }
     return !(this.generatedForm && this.generatedForm.dirty);
+  }
+
+  goToAppManagePage() {
+    this.router.navigate(['/manage']).then();
   }
 }

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   AccessLevel,
   AuthHolderService,
@@ -16,10 +16,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
 import {OcInviteModalComponent} from 'oc-ng-common-component';
 import {takeUntil} from 'rxjs/operators';
+import {ManagementComponent} from './management/management.component';
 
 export interface Page {
   pageId: string;
-  pageTitle: string;
   placeholder: string;
   permissions: Permission [];
 }
@@ -30,12 +30,12 @@ export interface Page {
   styleUrls: ['./my-company.component.scss']
 })
 export class MyCompanyComponent implements OnInit, OnDestroy {
+  @ViewChild('appManagement') appManagement: ManagementComponent;
 
   public organizationData: Observable<DeveloperModel>;
 
   public pages: Page[] = [{
     pageId: 'company',
-    pageTitle: 'My company',
     placeholder: 'Company details',
     permissions: [{
       type: PermissionType.ORGANIZATIONS,
@@ -43,7 +43,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }]
   }, {
     pageId: 'profile',
-    pageTitle: 'My company',
     placeholder: 'User management',
     permissions: [{
       type: PermissionType.ACCOUNTS,
@@ -115,7 +114,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     const inviteTemplateId = '5fc663f2217876017548dc25';
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
-    modalRef.componentInstance.ngbModalRef = modalRef;
 
     const modalData = new ModalInviteUserModel();
     modalData.modalTitle = 'Invite a member';
@@ -130,11 +128,9 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.$destroy));
 
     modalRef.componentInstance.modalData = modalData;
-
-    modalRef.result.then(result => {
-      if (result) {
+    modalRef.result.then(() => {
         this.toaster.success('Invitation sent');
-      }
-    });
+        this.appManagement.getAllDevelopers(true);
+    }, () => {});
   }
 }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
-import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {OcErrorService} from 'oc-ng-common-component';
 import {catchError, switchMap, take} from 'rxjs/operators';
@@ -13,7 +13,7 @@ import {HttpConfigInterceptor} from './httpconfig.interceptor';
 export class HttpErrorInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  private refreshTokenSubject: Subject<string> = new Subject<string>();
 
   constructor(private router: Router,
               private errorService: OcErrorService,
@@ -26,7 +26,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     return next.handle(request)
       .pipe(catchError((response: HttpErrorResponse) => {
 
-        if (response instanceof HttpErrorResponse && response.status === 401) {
+        if (response instanceof HttpErrorResponse && response.status === 401 && !response.url.includes('refresh')) {
           return this.handle401Error(request, next);
         } else if (response.error && response.error['validation-errors']) {
           this.handleValidationError(response.error['validation-errors']);
@@ -83,9 +83,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     if (error.error instanceof ErrorEvent) {
       // client-side error
       errorMessage = `Error: ${error.error.message}`;
-    } else if (error.error.message) {
+    } else if (error.error?.message) {
       // server-side error
       errorMessage = `Error Code: ${error.error.status}\nMessage: ${error.error.message}`;
+    } else if (error.status === 403) {
+      errorMessage = `You are not authorized to perform this action`;
     } else {
       // server-side error
       errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
@@ -95,11 +97,5 @@ export class HttpErrorInterceptor implements HttpInterceptor {
 
   private isCsrfError(error: HttpErrorResponse): boolean {
     return error?.status === 403 && error?.error?.toLowerCase()?.includes('csrf');
-  }
-
-  private handleRefreshTokenError(error: any): Observable<any> {
-    this.authHolderService.clearTokensInStorage();
-    return throwError(error);
-    this.router.navigate(['/login']).then(() => this.isRefreshing = false);
   }
 }

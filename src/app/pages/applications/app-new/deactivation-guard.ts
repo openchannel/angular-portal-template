@@ -17,12 +17,11 @@ export class AppDataChangesGuard implements CanDeactivate<AppNewComponent> {
 
   openConfirmationModal(): Promise<any> {
     const modalRef = this.modal.open(OcConfirmationModalComponent, {size: 'md'});
-    modalRef.componentInstance.ngbModalRef = modalRef;
     modalRef.componentInstance.modalTitle = 'Skip unsaved data';
     modalRef.componentInstance.modalText = 'Unsaved data detected. Want to exit?';
     modalRef.componentInstance.rejectButtonText = 'Cancel';
     modalRef.componentInstance.confirmButtonText = 'Agree';
     modalRef.componentInstance.confirmButtonType = 'primary';
-    return modalRef.result;
+    return modalRef.result.then(() => true, () => false);
   }
 }

@@ -1,21 +1,46 @@
-.active-link {
-  color: #537cfd !important;
-  font-family: "Rubik-Medium";
-}
+@import '~assets/styles/mixins';
 
-ul.list-unstyled {
-  li {
-    a {
-      color: inherit;
-      cursor: pointer;
-    }
+.active-link {
+  color: #537cfd;
+  font-family: 'Rubik-Medium', sans-serif;
+  @include media-breakpoint-md {
+    color: #333 !important;
+    border-bottom: 3px solid #537cfd;
+    padding-bottom: 1rem;
   }
 }
 
-.page-title {
-  line-height: 40px;
+.page-navigation {
+  padding-top: 5rem;
+  @include media-breakpoint-md {
+    padding-top: 3rem;
+  }
 }
 
-.button-container {
-  width: 255px;
+ul.list-unstyled {
+  @include media-breakpoint-md {
+    display: flex;
+  }
+
+  li {
+    padding: 1rem 0;
+    @include media-breakpoint-md {
+      padding: 0;
+    }
+
+    & + li {
+      @include media-breakpoint-md {
+        margin-left: 30px;
+      }
+    }
+
+    a {
+      color: inherit;
+      cursor: pointer;
+      @include media-breakpoint-md {
+        font-family: 'Rubik-Medium', sans-serif;
+        color: #999;
+      }
+    }
+  }
 }
