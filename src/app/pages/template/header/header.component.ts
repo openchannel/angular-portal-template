@@ -19,7 +19,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
   readonly companyPermissions: Permission[] = [
     {
       type: PermissionType.ORGANIZATIONS,
-      access: [AccessLevel.MODIFY]
+      access: [AccessLevel.MODIFY, AccessLevel.READ]
+    },
+    {
+      type: PermissionType.ACCOUNTS,
+      access: [AccessLevel.READ, AccessLevel.MODIFY]
     }
   ];
 
@@ -51,7 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.logOutService.logOut();
+    this.logOutService.logOutAndRedirect('/');
   }
 
   closedMenu() {

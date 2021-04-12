@@ -32,6 +32,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
   count;
   countText;
+  page = 1;
 
   isAppProcessing = false;
 
@@ -42,9 +43,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         id: 'month',
         label: 'Monthly',
         active: true,
+        tabularLabel: 'Month'
       }, {
         id: 'day',
-        label: 'Daily'
+        label: 'Daily',
+        tabularLabel: 'Day'
       }
     ],
     fields: [
@@ -88,16 +91,17 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject();
   private loader: LoadingBarState;
 
-  constructor(public chartService: ChartService,
-              public appService: AppsService,
-              public appsVersionService: AppVersionService,
-              public router: Router,
-              private modal: NgbModal,
-              private toaster: ToastrService,
-              private appTypeService: AppTypeService,
-              private marketService: MarketService,
-              private loadingBar: LoadingBarService) {
-
+  constructor(
+    public chartService: ChartService,
+    public appService: AppsService,
+    public appsVersionService: AppVersionService,
+    public router: Router,
+    private modal: NgbModal,
+    private toaster: ToastrService,
+    private appTypeService: AppTypeService,
+    private marketService: MarketService,
+    private loadingBar: LoadingBarService
+  ) {
   }
 
   ngOnInit(): void {
@@ -106,7 +110,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       period: this.chartData.periods[0],
       field: this.chartData.fields[0]
     });
-    this.getApps(1);
+    this.getApps(true);
   }
 
   ngOnDestroy() {
@@ -138,10 +142,16 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  getApps(page: number): void {
+  getApps(startNewPagination: boolean): void {
     this.loader.start();
     this.isAppProcessing = true;
     const sort = JSON.stringify(this.appSorting);
+
+    if (startNewPagination) {
+      this.page = 1;
+    } else {
+      this.page++;
+    }
 
     const query = {
       $or: [
@@ -164,10 +174,10 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     this.getPreviewAppUrl().pipe(takeUntil(this.destroy$)).subscribe(url => url);
 
-    if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < page) {
-     this.appsVersionService.getAppsVersions(page, 10, sort, JSON.stringify(query))
-       .pipe(takeUntil(this.destroy$))
-       .subscribe(response => {
+    if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < this.page) {
+      this.appsVersionService.getAppsVersions(this.page, 10, sort, JSON.stringify(query))
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(response => {
           this.appListConfig.data.pageNumber = response.pageNumber;
           this.appListConfig.data.pages = response.pages;
           this.appListConfig.data.count = response.count;
@@ -177,7 +187,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
             value.status = value.parent && value.parent.status ? value.parent.status : value.status;
           });
 
-          if (page === 1) {
+          if (this.page === 1) {
             this.appListConfig.data.list = this.getAppsChildren(parentList, sort);
           } else {
             this.appListConfig.data.list = [...this.appListConfig.data.list,
@@ -232,14 +242,14 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
       case 'PREVIEW':
         this.getPreviewAppUrl().pipe(takeUntil(this.destroy$))
           .subscribe(previewUrl => {
-          if (previewUrl) {
-            window.open(previewUrl
-            .replace('{appId}', menuEvent.appId)
-            .replace('{version}', `${menuEvent.appVersion}`));
-          } else {
-            this.toaster.warning('Please Please set the preview App URL.');
-          }
-        }, () => this.toaster.warning('Please Please set the preview App URL.'));
+            if (previewUrl) {
+              window.open(previewUrl
+                .replace('{appId}', menuEvent.appId)
+                .replace('{version}', `${menuEvent.appVersion}`));
+            } else {
+              this.toaster.warning('Please Please set the preview App URL.');
+            }
+          }, () => this.toaster.warning('Please Please set the preview App URL.'));
         break;
       case 'EDIT':
         this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
@@ -258,13 +268,13 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               this.appsVersionService
                 .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
                 .pipe(takeUntil(this.destroy$))
-                .subscribe( resp => {
+                .subscribe(resp => {
                   if (resp.code && resp.code !== 200) {
                     this.toaster.error(resp.message);
                   } else {
                     this.appListConfig.data.pageNumber = 0;
                     this.toaster.success('Your app has been deleted');
-                    this.getApps(1);
+                    this.getApps(true);
                   }
                 });
             } else {
@@ -276,11 +286,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                   } else {
                     this.appListConfig.data.pageNumber = 0;
                     this.toaster.success('Your app has been deleted');
-                    this.getApps(1);
+                    this.getApps(true);
                   }
                 });
             }
           }
+        }, () => {
         });
         break;
       case 'SUBMIT':
@@ -297,17 +308,14 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         modalUnsuspendRef.result.then(res => {
           if (res && res === 'success') {
             this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(resp => {
-                  if (resp.code && resp.code !== 200) {
-                    this.toaster.error(resp.message);
-                  } else {
-                    this.appListConfig.data.pageNumber = 0;
-                    this.toaster.success('Your app has been unsuspended');
-                    this.getApps(1);
-                  }
-                });
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(resp => {
+                this.appListConfig.data.pageNumber = 0;
+                this.toaster.success('Your app has been unsuspended');
+                this.getApps(true);
+              });
           }
+        }, () => {
         });
         break;
       case 'SUSPEND':
@@ -323,16 +331,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
           modalSuspendRef.result.then(res => {
             if (res && res === 'success') {
               this.appService.changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(resp => {
-                if (resp.code && resp.code !== 200) {
-                  this.toaster.error(resp.message);
-                } else {
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(resp => {
                   this.appListConfig.data.pageNumber = 0;
                   this.toaster.success('Your app has been suspended');
-                  this.getApps(1);
-                }
-              });
+                  this.getApps(true);
+                });
             }
           });
         }
@@ -361,14 +365,14 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
               this.appListConfig.data.pageNumber = 0;
               this.toaster.success('Your app has been submitted for approval');
-              this.getApps(1);
+              this.getApps(true);
             },
             err => {
               this.loader.complete();
 
               if (err.status === 400) {
                 this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion],
-                    {queryParams: {formStatus: 'invalid'}})
+                  {queryParams: {formStatus: 'invalid'}})
                   .then(() => {
                     this.toaster.info('Fill out all mandatory fields before submitting');
                   });
@@ -377,6 +381,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               }
             });
       }
+    }, () => {
     });
   }
 
@@ -404,16 +409,16 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
     this.appListConfig.data.count = 50;
     this.appListConfig.data.pageNumber = 0;
-    this.getApps(1);
+    this.getApps(true);
   }
 
   private getPreviewAppUrl(): Observable<string> {
     if (!this.appListConfig?.previewTemplate) {
       return this.marketService.getCurrentMarket()
-      .pipe(map((marketSettings: MarketModel) => {
-        this.appListConfig.previewTemplate = marketSettings.previewAppUrl;
-        return marketSettings.previewAppUrl;
-      }));
+        .pipe(map((marketSettings: MarketModel) => {
+          this.appListConfig.previewTemplate = marketSettings.previewAppUrl;
+          return marketSettings.previewAppUrl;
+        }));
     } else {
       return of(this.appListConfig.previewTemplate);
     }
