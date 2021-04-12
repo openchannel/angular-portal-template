@@ -114,7 +114,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     const inviteTemplateId = '5fc663f2217876017548dc25';
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
-    modalRef.componentInstance.ngbModalRef = modalRef;
 
     const modalData = new ModalInviteUserModel();
     modalData.modalTitle = 'Invite a member';
@@ -129,12 +128,9 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.$destroy));
 
     modalRef.componentInstance.modalData = modalData;
-
-    modalRef.result.then(result => {
-      if (result) {
+    modalRef.result.then(() => {
         this.toaster.success('Invitation sent');
-        this.appManagement.updateDevelopersAfterInvite();
-      }
-    });
+        this.appManagement.getAllDevelopers(true);
+    }, () => {});
   }
 }

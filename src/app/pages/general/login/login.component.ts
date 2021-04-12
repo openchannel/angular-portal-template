@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     AuthenticationService,
     AuthHolderService,
@@ -7,13 +7,13 @@ import {
     NativeLoginService,
     UserLoginModel,
 } from 'oc-ng-common-service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {filter, takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {OAuthService} from 'angular-oauth2-oidc';
-import {ToastrService} from 'ngx-toastr';
-import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
-import {LoadingBarService} from '@ngx-loading-bar/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { filter, takeUntil, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { ToastrService } from 'ngx-toastr';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { LoadingBarService } from '@ngx-loading-bar/core';
 
 @Component({
     selector: 'app-login',
@@ -27,9 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     forgotPwdUrl = '/forgot-password';
     signIn = new UserLoginModel();
     inProcess = false;
-    isLoading = false;
-
-    loginType: string;
+    isSsoLogin = true;
 
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
@@ -56,11 +54,11 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.loader.start();
 
         this.openIdAuthService.getAuthConfig()
-            .pipe(
-                takeUntil(this.destroy$),
-                filter(value => value))
-            .subscribe((authConfig) => {
-                    this.loginType = authConfig.type;
+          .pipe(
+            tap(value => this.isSsoLogin = !!value),
+            filter(value => !!value),
+            takeUntil(this.destroy$))
+          .subscribe((authConfig) => {
 
                     this.oauthService.configure({
                         ...authConfig,
