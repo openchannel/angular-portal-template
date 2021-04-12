@@ -217,7 +217,9 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   editUser(userAction: UserGridActionModel, user: UserAccountGridModel) {
     const developerAccount = this.mapToDeveloperAccount(user);
-    if (user?.inviteStatus === 'ACTIVE') {
+    if (user?.inviteStatus === 'INVITED') {
+      this.editInvite(developerAccount);
+    } else if (user?.inviteStatus === 'ACTIVE') {
       this.editDeveloperAccount(developerAccount);
     } else {
       console.error('Not implement edit type : ', user?.inviteStatus);
@@ -265,5 +267,22 @@ export class ManagementComponent implements OnInit, OnDestroy {
       }
     }
     return null;
+  }
+
+  private editInvite(developerAccount: DeveloperAccountModel) {
+    const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
+    const modalData = new ModalUpdateUserModel();
+    modalData.userData = developerAccount;
+    modalData.modalTitle = 'Edit invite';
+    modalData.successButtonText = 'Save';
+    modalData.requestFindUserRoles =
+      () => this.developerRolesService.getDeveloperRoles(1, 100);
+    modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
+      this.inviteUserService.editDeveloperInvite(accountData.inviteId, accountData);
+    modalRef.componentInstance.modalData = modalData;
+    modalRef.result.then(() => {
+      this.getAllDevelopers(true);
+      this.toaster.success('User details have been updated');
+    }, () => {});
   }
 }
