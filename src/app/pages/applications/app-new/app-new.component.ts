@@ -453,10 +453,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
       if (field?.options) {
         field.options = this.mapOptions(field);
       }
-      // map other fields
-      if (field?.fields) {
-        field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
-      }
     }
     return field;
   }
