@@ -43,9 +43,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         id: 'month',
         label: 'Monthly',
         active: true,
+        tabularLabel: 'Month'
       }, {
         id: 'day',
-        label: 'Daily'
+        label: 'Daily',
+        tabularLabel: 'Day'
       }
     ],
     fields: [

@@ -41,9 +41,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         id: 'month',
         label: 'Monthly',
         active: true,
+        tabularLabel: 'Month'
       }, {
         id: 'day',
-        label: 'Daily'
+        label: 'Daily',
+        tabularLabel: 'Day'
       }
     ],
     fields: [
@@ -450,10 +452,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
       // map options
       if (field?.options) {
         field.options = this.mapOptions(field);
-      }
-      // map other fields
-      if (field?.fields) {
-        field.fields.forEach(child => this.mapRecursiveField(child, defaultValues));
       }
     }
     return field;
