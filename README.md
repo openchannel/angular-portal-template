@@ -1,6 +1,5 @@
-# template3-portal-frontend
+# Template3-portal-frontend
 
-<!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
 * [About the Project](#about-the-project)
@@ -10,110 +9,146 @@
   * [Installation](#installation)
 * [Contact](#contact)
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
-It is Frontend for Developer marketplace.
+The goal of a portal template site is to give partners a dashboard where they can manage, create and submit applications to the marketplace.
 
-Functional for Developer :
- - SSO sign in by Okta | Google
- - work with Apps.
- - view stats about Apps.
- - create form submissions.
+This is a Frontend for Developer marketplace.
+
+Functional for Developer:
+- SSO sign in by Okta | Google
+- work with applications.
+- view application statistics.
+- create form submissions.
 
 ### Built With
-* [Bootstrap](https://getbootstrap.com) v. 4.4.1
-* [Angular](https://angular.io) v. 9.1.1
+- [Bootstrap](https://getbootstrap.com) v. 4.4.1
+- [Angular](https://angular.io) v. 11.2.3
 
-<!-- GETTING STARTED -->
 ## Getting Started
-
-### Prerequisites
-
-Install support elements: <br>
-   * Node & npm [https://www.digitalocean.com/community/tutorials/node-js-ubuntu-18-04-ru](https://www.digitalocean.com/community/tutorials/node-js-ubuntu-18-04-ru)
    
 ### Installation
 
-1. Install NPM packages
+- Install [node.js and npm](https://linuxize.com/post/how-to-install-node-js-on-ubuntu-18.04/):
 ```
-   npm install
+sudo apt install nodejs
 ```
-
-2. Optional. Dependency with oc-ng-common-service.
+- Install the [Angular CLI](https://angular.io/cli) using the npm package manager:
+```
+npm install -g @angular/cli
+```
+- Install NPM packages
+```
+npm install
+```
+- Optional. Dependency with oc-ng-common-service.
 ```
 npm install file:<absolute path to common service project dist/oc-ng-common-service>
 ```
-
-3. Optional. Dependency with oc-ng-common-components.
+- Optional. Dependency with oc-ng-common-components.
 ```
 npm install file:<absolute path to common component project dist/oc-ng-common-components>
 ```
 
-<!-- USAGE EXAMPLES -->
 ### Usage
 
-####  Run project with the remote site configs (dev1, stage1) :
-1. Update hosts:
-   * Open file :<br>
-    ```/etc/hosts```
-   * Add to file two lines:<br>
-     ``
-     127.0.0.1 stage1-local-template-portal.openchannel.io
-     ``<br>
-     ``
-     127.0.0.1 dev1-local-template-portal.openchannel.io
-     ``
-2. Run project:
-   * Run project with the stage1 environment:<br>
-   ``
-   sudo npm run start-stage1
-   ``
-   * Run project with the dev1 environment:<br>
-   ``
-   sudo npm run start-dev1
-   ``
-####  Run project with the remote site configs (us1) :
-Note: replace  <font color="red">YOUR_SITE_DOMAIN</font> with your market domain.
+#### Run project with the remote site configs (dev1, stage1):
 
-1. Update hosts:
-   * Open file :<br>
-    ```/etc/hosts```
-   * Add to file this line:<br>
-     ``
-     127.0.0.1 YOUR_SITE_DOMAIN
-     ``
-2. Run project:
-   * Run project with the us1 environment:<br>
-   ``
-   sudo npm run start-us1 YOUR_SITE_DOMAIN
-   ``
+- Open file:
+```
+/etc/hosts
+```
+- Add to file two lines:
+```
+127.0.0.1 stage1-local-template-portal.openchannel.io
+127.0.0.1 dev1-local-template-portal.openchannel.io
+```
+- Run project with the stage1 environment:
+```
+sudo npm run start-stage1
+```
+- Run project with the dev1 environment:
+```
+sudo npm run start-dev1
+```
+
+####  Run project with the Moesif plugin for Chrome:
+
+- Install [Moesif](https://chrome.google.com/webstore/detail/moesif-origin-cors-change/digfbfaphojjndkpccljibejjbppifbc/related) CORS plugin for Chrome
+- Submit your work email address there
+- Open advanced settings
+- Fill in the 'Request Headers' field:
+```
+https://stage1-local-template-portal.openchannel.io/
+```
+or:
+```
+https://dev1-local-template-portal.openchannel.io/
+```
+- Fill in the 'Response headers' field:
+```
+http://localhost:4200/
+```
+- Run project using:
+```
+sudo ng serve
+```
+
+####  Run project with the remote site configs (us1):
+Note: replace <font color="red">YOUR_SITE_DOMAIN</font> with your market domain.
+
+- Open file:
+```
+/etc/hosts
+```
+- Add to file this line:
+```
+127.0.0.1 YOUR_SITE_DOMAIN
+```
+- Run project with the us1 environment:
+```
+sudo npm run start-us1 YOUR_SITE_DOMAIN
+```
 
 #### Run project with the local site configs:
 
-1. Run <font color="red">ONE</font> of this :
-    * Project with the Okta SSO <br>
-       ``npm run start-okta``
-    * Project with Google SSO <br>
-      ``npm run start-google``
+##### Run <font color="red">ONE</font> of this:
+
+- Project with the Okta SSO
+```
+npm run start-okta
+```
+- Project with Google SSO
+```
+npm run start-google
+```
 
 ## Documentation Compodoc
-Compodoc show project structure. (modules, components, routes and etc.)
+Compodoc shows project structure. (modules, components, routes etc.)
 
-* Install NPM packages :<br>
-  ``npm install``
+- Install NPM packages:
+```
+npm install
+```
+- Generate Documentation:
+```
+npm run create-compodoc
+```
+- Run Compodoc:
+```
+npm run start-compodoc
+```
 
-* Generate Documentation :<br>
+Documentation [http://localhost:8803](http://localhost:8803)
 
-  ``npm run create-compodoc``
+### Sonarcloud code quality badge
 
-* Run Compodoc :<br>
-
-  ``npm run start-compodoc``
-  
-* Documentation [http://localhost:8803](http://localhost:8803)
+SonarCloud Quality Gate Status [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=openchannel_template3-portal-frontend&metric=alert_status&token=3be31c8f86a9d425e8a04bb3c1e624897c81eb62)](https://sonarcloud.io/dashboard?id=openchannel_template3-portal-frontend)
 
 ## Contact
 
 Project Link: [https://bitbucket.org/openchannel/template3-portal-frontend/branch/master](https://bitbucket.org/openchannel/template3-portal-frontend/branch/master)
 
+## Designs
+
+Project Designs: [https://app.zeplin.io/project/5fad60184ae36d25530c9843/screen/60547f8a946c301f466e61f1](https://app.zeplin.io/project/5fad60184ae36d25530c9843/screen/60547f8a946c301f466e61f1)
