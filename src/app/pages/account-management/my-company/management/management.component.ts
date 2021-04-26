@@ -12,13 +12,14 @@ import {
   UsersGridParametersModel,
   UsersService
 } from 'oc-ng-common-service';
-import {Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
 import {OcConfirmationModalComponent, OcInviteModalComponent} from 'oc-ng-common-component';
-import {flatMap, takeUntil, tap} from 'rxjs/operators';
+import {flatMap, map, takeUntil, tap} from 'rxjs/operators';
+import {cloneDeep} from 'lodash';
 
 @Component({
   selector: 'app-management',
@@ -38,6 +39,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
     options: ['DELETE', 'EDIT']
   };
 
+  private listRoles: any = {};
   private sortQuery = '{"name": 1}';
   private destroy$: Subject<void> = new Subject();
   private loader: LoadingBarState;
@@ -86,6 +88,14 @@ export class ManagementComponent implements OnInit, OnDestroy {
     this.getAllDevelopers(true);
   }
 
+  getRoles(startNewPagination: boolean, oldRoles: any): Observable<any> {
+     return startNewPagination ? this.developerRolesService.getDeveloperRoles(1, 100)
+        .pipe(map(response => {
+          const tempRoles = {};
+          response.list.forEach(r => tempRoles[r.developerRoleId] = r.name);
+          return tempRoles;
+        })) : of(oldRoles);
+  }
   getAllDevelopers(startNewPagination: boolean) {
     if (!this.inProcessGettingDevelopers) {
       this.loader.start();
@@ -94,41 +104,45 @@ export class ManagementComponent implements OnInit, OnDestroy {
         this.userProperties.data.pageNumber = 1;
       }
       let inviteResponse: Page<InviteDeveloperModel>;
+      let activeResponse: Page<DeveloperAccountModel>;
       this.inviteUserService.getDeveloperInvites(this.userProperties.data.pageNumber, this.DEVELOPERS_LIMIT_PER_REQUEST, this.sortQuery)
       .pipe(
-          tap((response) => inviteResponse = response),
-          flatMap(() => this.developerAccountService.getDeveloperAccounts(
-              this.userProperties.data.pageNumber, this.DEVELOPERS_LIMIT_PER_REQUEST, this.sortQuery)),
-          takeUntil(this.destroy$))
-      .subscribe((activeUsers) => {
-        this.loader.complete();
+        tap((response) => inviteResponse = response),
+        flatMap(() => this.developerAccountService.getDeveloperAccounts(
+            this.userProperties.data.pageNumber, this.DEVELOPERS_LIMIT_PER_REQUEST, this.sortQuery)),
+        tap((response) =>  activeResponse = response),
+        flatMap(() => this.getRoles(startNewPagination, this.listRoles)),
+        tap(mappedRoles =>  this.listRoles = mappedRoles),
+        takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.loader.complete();
 
-        if (startNewPagination) {
-          this.userProperties.data.list = [];
-        }
+          if (startNewPagination) {
+            this.userProperties.data.list = [];
+          }
 
-        const invites = inviteResponse.list.map(userInvite => this.mapToGridUserFromInvite(userInvite));
+          const invites = inviteResponse.list.map(userInvite => this.mapToGridUserFromInvite(userInvite));
 
-        // push new invites
-        if (this.userProperties.data.pageNumber === 1) {
-          this.userProperties.data.list.push(...invites);
-        } else {
-          const lastInvitedDev = this.userProperties.data.list
-          .filter(user => user.inviteStatus === 'INVITED').pop();
-          if (lastInvitedDev) {
+          // push new invites
+          if (this.userProperties.data.pageNumber === 1) {
+            this.userProperties.data.list.push(...invites);
+          } else {
+            const lastInvitedDev = this.userProperties.data.list
+                .filter(user => user.inviteStatus === 'INVITED').pop();
+            if (lastInvitedDev) {
             this.userProperties.data.list.splice(
                 this.userProperties.data.list.lastIndexOf(lastInvitedDev) + 1, 0, ...invites);
+            }
           }
-        }
-        // push new developers
-        this.userProperties.data.pageNumber++;
-        this.userProperties.data.list
-        .push(...activeUsers.list.map(user => this.mapToGridUserFromDeveloper(user)));
-        this.inProcessGettingDevelopers = false;
-      }, () => {
-        this.loader.complete();
-        this.inProcessGettingDevelopers = false;
-      });
+          // push new developers
+          this.userProperties.data.pageNumber++;
+          this.userProperties.data.list
+              .push(...activeResponse.list.map(user => this.mapToGridUserFromDeveloper(user)));
+          this.inProcessGettingDevelopers = false;
+        }, () => {
+          this.loader.complete();
+          this.inProcessGettingDevelopers = false;
+        });
     }
   }
 
@@ -142,6 +156,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
       userAccountId: developer.developerAccountId,
       created: developer.created,
       inviteStatus: 'ACTIVE',
+      roles: this.toRoleName(developer.roles)
     };
   }
 
@@ -156,8 +171,15 @@ export class ManagementComponent implements OnInit, OnDestroy {
       created: developer.createdDate,
       inviteId: developer.developerInviteId,
       inviteToken: developer.token,
-      inviteStatus: 'INVITED'
+      inviteStatus: 'INVITED',
+      roles: this.toRoleName(developer.roles)
     };
+  }
+
+  private toRoleName(userRoles: string[]) {
+    const roleName = [];
+    userRoles.forEach(r => roleName.push(this.listRoles[r]));
+    return roleName;
   }
 
   userAction(userAction: UserGridActionModel) {
@@ -217,7 +239,9 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
   editUser(userAction: UserGridActionModel, user: UserAccountGridModel) {
     const developerAccount = this.mapToDeveloperAccount(user);
-    if (user?.inviteStatus === 'ACTIVE') {
+    if (user?.inviteStatus === 'INVITED') {
+      this.editInvite(developerAccount);
+    } else if (user?.inviteStatus === 'ACTIVE') {
       this.editDeveloperAccount(developerAccount);
     } else {
       console.error('Not implement edit type : ', user?.inviteStatus);
@@ -235,7 +259,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
 
     const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
     const modalData = new ModalUpdateUserModel();
-    modalData.userData = developerAccount;
+    modalData.userData = cloneDeep(developerAccount);
     modalData.modalTitle = 'Edit member';
     modalData.successButtonText = 'Save';
     modalData.requestFindUserRoles =
@@ -243,7 +267,10 @@ export class ManagementComponent implements OnInit, OnDestroy {
     modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
         this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
     modalRef.componentInstance.modalData = modalData;
-    modalRef.result.then(() => this.toaster.success('User details have been updated'), () => {});
+    modalRef.result.then(() => {
+      this.getAllDevelopers(true);
+      this.toaster.success('User details have been updated');
+    }, () => {});
   }
 
   private openDeleteModal(modalTitle: string, modalText: string, confirmText: string, deleteCallback: () => void) {
@@ -265,5 +292,22 @@ export class ManagementComponent implements OnInit, OnDestroy {
       }
     }
     return null;
+  }
+
+  private editInvite(developerAccount: DeveloperAccountModel) {
+    const modalRef = this.modal.open(OcInviteModalComponent, {size: 'sm'});
+    const modalData = new ModalUpdateUserModel();
+    modalData.userData = developerAccount;
+    modalData.modalTitle = 'Edit invite';
+    modalData.successButtonText = 'Save';
+    modalData.requestFindUserRoles =
+      () => this.developerRolesService.getDeveloperRoles(1, 100);
+    modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
+      this.inviteUserService.editDeveloperInvite(accountData.inviteId, accountData);
+    modalRef.componentInstance.modalData = modalData;
+    modalRef.result.then(() => {
+      this.getAllDevelopers(true);
+      this.toaster.success('User details have been updated');
+    }, () => {});
   }
 }
