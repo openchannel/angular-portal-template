@@ -7,9 +7,6 @@
 
   .container {
     padding: 48px 0;
-    @include media-breakpoint-sm() {
-      padding: 32px;
-    }
     @include media-breakpoint-md() {
       padding: 32px;
     }
@@ -17,9 +14,6 @@
     .footer-direction {
       display: flex;
       flex-direction: row;
-      @include media-breakpoint-sm() {
-        flex-direction: column;
-      }
       @include media-breakpoint-md() {
         flex-direction: column;
       }
@@ -35,6 +29,7 @@
       .info-column {
         white-space: nowrap;
         width: 16%;
+
         h5 {
           color: $body-color;
           font-size: 12px;
@@ -46,6 +41,9 @@
         li {
           padding-top: 3.5px;
           padding-bottom: 1px;
+          @include media-breakpoint-md() {
+            margin-bottom: 16px;
+          }
 
           a {
             color: $secondary;
@@ -55,13 +53,6 @@
             text-align: center;
           }
         }
-
-        @include media-breakpoint-sm() {
-          margin-bottom: 16px;
-        }
-        @include media-breakpoint-md() {
-          margin-bottom: 16px;
-        }
       }
 
       .min-content {
@@ -70,39 +61,18 @@
 
       .social-networks {
         display: flex;
-        flex-direction: row;
+        align-items: flex-start;
         margin-left: auto;
-        align-items: start;
-        img {
-          margin-right: 24px;
-        }
-        @include media-breakpoint-lg() {
-          height: min-content;
-          max-width: 154px;
-          flex-wrap: wrap;
-          justify-content: flex-end;
-          img {
-            margin-right: 16px;
-            margin-bottom: 16px;
-            &:nth-child(3) {
-              margin-right: 0;
-            }
-          }
-        }
         @include media-breakpoint-md() {
-          flex-wrap: unset;
-          max-width: unset;
-          margin: auto auto auto 0;
-          img {
-            margin-bottom: 0;
-            margin-right: 16px;
-            &:nth-child(3) {
-              margin-right: 16px;
-            }
-          }
+          margin-right: auto;
+          margin-left: 0;
         }
-        :last-child {
-          margin-right: 0;
+
+        &__item {
+
+          & + .social-networks__item {
+            margin-left: 16px;
+          }
         }
       }
     }
