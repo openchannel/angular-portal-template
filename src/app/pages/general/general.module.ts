@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
-import { GeneralRoutingModule } from './general-routing.module';
+import {GeneralRoutingModule} from './general-routing.module';
 import {SignupComponent} from './signup/signup.component';
 import {LoginComponent} from './login/login.component';
 import {ResendActivationComponent} from './resend-activation/resend-activation.component';
@@ -10,7 +10,7 @@ import {ForgotPasswordComponent} from './forgot-password/forgot-password.compone
 import {ActivationComponent} from './activation/activation.component';
 import {SharedModule} from '@shared/shared.module';
 import {InvitedSignupComponent} from './invited-signup/invited-signup.component';
-import { OcAuthComponentsModule, OcFormComponentsModule } from 'oc-ng-common-component';
+import {OcAuthComponentsModule, OcFormComponentsModule} from 'oc-ng-common-component';
 
 
 @NgModule({
