@@ -1,11 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  AccessLevel,
   AuthenticationService,
-  AuthHolderService,
   DeveloperAccountService,
   OCOrganization,
-  PermissionType,
   PropertiesService,
 } from 'oc-ng-common-service';
 import {map, takeUntil, tap} from 'rxjs/operators';
@@ -52,9 +49,6 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
 
   public inSaveProcess = false;
 
-  public canReadAccount = false;
-  public canModifyAccount = false;
-
   public formGroup: FormGroup;
   public resultData: OcEditUserResult;
 
@@ -66,7 +60,6 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
 
   constructor(private developerService: DeveloperAccountService,
               private authService: AuthenticationService,
-              private authHolder: AuthHolderService,
               public loadingBar: LoadingBarService,
               private propertiesService: PropertiesService,
               private ocTypeService: OcEditUserTypeService,
@@ -75,7 +68,6 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loader = this.loadingBar.useRef();
-    this.initFormPermissions();
     this.initDefaultFormConfig();
   }
 
@@ -87,34 +79,20 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  private initFormPermissions(): void {
-    this.canModifyAccount = this.authHolder.hasAnyPermission([{
-      type: PermissionType.ACCOUNTS,
-      access: [AccessLevel.MODIFY]
-    }]);
-    this.canReadAccount = this.canModifyAccount || this.authHolder.hasAnyPermission([{
-      type: PermissionType.ACCOUNTS,
-      access: [AccessLevel.READ]
-    }]);
-  }
-
-
   private initDefaultFormConfig(): void {
-    if (this.canReadAccount) {
-      this.loader.start();
-      forkJoin({
-        canChangeType: this.getCanChangeTypePermission(),
-        accountData: this.developerService.getAccount(),
-        formConfigs: this.ocTypeService.injectTypeDataIntoConfigs(
-            this.formConfigsWithoutTypeData, false, true)
-      }).subscribe(result => {
-        this.loader.complete();
-        this.formEnableTypesDropdown = result.canChangeType && this.canModifyAccount;
-        this.formAccountData = result.accountData;
-        this.formConfigs = result.formConfigs;
-        this.formConfigsLoaded = true;
-      }, () => this.loader.complete());
-    }
+    this.loader.start();
+    forkJoin({
+      canChangeType: this.getCanChangeTypePermission(),
+      accountData: this.developerService.getAccount(),
+      formConfigs: this.ocTypeService.injectTypeDataIntoConfigs(
+          this.formConfigsWithoutTypeData, false, true)
+    }).subscribe(result => {
+      this.loader.complete();
+      this.formEnableTypesDropdown = result.canChangeType;
+      this.formAccountData = result.accountData;
+      this.formConfigs = result.formConfigs;
+      this.formConfigsLoaded = true;
+    }, () => this.loader.complete());
   }
 
   private getCanChangeTypePermission(): Observable<boolean> {
@@ -129,7 +107,7 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
     this.formGroup.markAllAsTouched();
 
     const accountData = this.resultData?.account;
-    if (!this.inSaveProcess && this.canModifyAccount && accountData) {
+    if (!this.inSaveProcess && accountData) {
 
       this.loader.start();
       this.inSaveProcess = true;
