@@ -95,11 +95,11 @@
                 }
               ]
             },
-            "us1": {
+            "production": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.us1.ts"
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
