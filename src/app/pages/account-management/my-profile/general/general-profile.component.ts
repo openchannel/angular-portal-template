@@ -3,15 +3,17 @@ import {
   AuthenticationService,
   DeveloperAccountService,
   OCOrganization,
-  PropertiesService,
 } from 'oc-ng-common-service';
-import {map, takeUntil, tap} from 'rxjs/operators';
-import {forkJoin, Observable, Subject} from 'rxjs';
+import {takeUntil, tap} from 'rxjs/operators';
+import {forkJoin, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
 import {FormGroup} from '@angular/forms';
-import { OcEditUserFormConfig, OcEditUserResult } from 'oc-ng-common-component/src/lib/auth-components';
+import {
+  OcEditUserFormConfig,
+  OcEditUserResult
+} from 'oc-ng-common-component/src/lib/auth-components';
 import {OcEditUserTypeService} from '@core/services/user-type-service/user-type.service';
 
 @Component({
@@ -45,7 +47,6 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
   public formConfigsLoaded = false;
   public formConfigs: OcEditUserFormConfig[];
   public formAccountData: OCOrganization;
-  public formEnableTypesDropdown = false;
 
   public inSaveProcess = false;
 
@@ -55,13 +56,9 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
   private loader: LoadingBarState;
   private $destroy = new Subject<void>();
 
-  private readonly CHANGE_TYPE_PROPERTY_ID = 'canchangetype';
-  private readonly CHANGE_TYPE_PROPERTY_VALUE = 'true';
-
   constructor(private developerService: DeveloperAccountService,
               private authService: AuthenticationService,
               public loadingBar: LoadingBarService,
-              private propertiesService: PropertiesService,
               private ocTypeService: OcEditUserTypeService,
               private toasterService: ToastrService) {
   }
@@ -82,25 +79,15 @@ export class GeneralProfileComponent implements OnInit, OnDestroy {
   private initDefaultFormConfig(): void {
     this.loader.start();
     forkJoin({
-      canChangeType: this.getCanChangeTypePermission(),
       accountData: this.developerService.getAccount(),
       formConfigs: this.ocTypeService.injectTypeDataIntoConfigs(
           this.formConfigsWithoutTypeData, false, true)
     }).subscribe(result => {
       this.loader.complete();
-      this.formEnableTypesDropdown = result.canChangeType;
       this.formAccountData = result.accountData;
       this.formConfigs = result.formConfigs;
       this.formConfigsLoaded = true;
     }, () => this.loader.complete());
-  }
-
-  private getCanChangeTypePermission(): Observable<boolean> {
-    return this.propertiesService.getProperties(
-        JSON.stringify({propertyId: this.CHANGE_TYPE_PROPERTY_ID}))
-    .pipe(
-        map(e => e.list[0]?.value === this.CHANGE_TYPE_PROPERTY_VALUE),
-        takeUntil(this.$destroy));
   }
 
   public saveUserData(): void {
