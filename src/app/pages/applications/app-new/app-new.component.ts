@@ -9,7 +9,7 @@ import {
     TitleService,
     TypeModel,
     UpdateAppVersionModel,
-} from 'oc-ng-common-service';
+} from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -26,7 +26,7 @@ import {
     ChartLayoutTypeModel,
     AppTypeModel,
     AppTypeFieldModel
-} from 'oc-ng-common-component';
+} from '@openchannel/angular-common-components';
 
 @Component({
     selector: 'app-app-new',

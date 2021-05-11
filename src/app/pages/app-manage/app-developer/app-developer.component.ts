@@ -6,7 +6,7 @@ import {
     ChartService,
     MarketModel,
     MarketService,
-} from 'oc-ng-common-service';
+} from '@openchannel/angular-common-services';
 import { Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -23,7 +23,7 @@ import {
     ChartStatisticPeriodModel,
     AppListing,
     AppListMenuAction
-} from 'oc-ng-common-component';
+} from '@openchannel/angular-common-components';
 
 @Component({
     selector: 'app-app-developer',

@@ -9,7 +9,7 @@ import {SharedModule} from '@shared/shared.module';
 import {ManagementComponent} from './my-company/management/management.component';
 import {MyCompanyComponent} from './my-company/my-company.component';
 import { CompanyDetailsComponent } from './my-company/company-details/company-details.component';
-import { OcFormComponentsModule, OcManagementComponentsModule, OcAuthComponentsModule } from 'oc-ng-common-component';
+import { OcFormComponentsModule, OcManagementComponentsModule, OcAuthComponentsModule } from '@openchannel/angular-common-components';
 
 
 @NgModule({

@@ -8,12 +8,12 @@ import {
   InviteUserService,
   Permission,
   PermissionType,
-} from 'oc-ng-common-service';
+} from '@openchannel/angular-common-services';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { OcInviteModalComponent, ModalInviteUserModel } from 'oc-ng-common-component';
+import { OcInviteModalComponent, ModalInviteUserModel } from '@openchannel/angular-common-components';
 import { takeUntil } from 'rxjs/operators';
 import { ManagementComponent } from './management/management.component';
 

@@ -2,7 +2,7 @@ import {ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot} from '@angul
 import {Injectable} from '@angular/core';
 import {AppNewComponent} from './app-new.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {OcConfirmationModalComponent} from 'oc-ng-common-component';
+import {OcConfirmationModalComponent} from '@openchannel/angular-common-components';
 
 @Injectable({providedIn: 'root'})
 export class AppDataChangesGuard implements CanDeactivate<AppNewComponent> {

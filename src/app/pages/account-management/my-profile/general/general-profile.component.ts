@@ -3,14 +3,14 @@ import {
     AuthenticationService,
     DeveloperAccountService,
     PropertiesService,
-} from 'oc-ng-common-service';
+} from '@openchannel/angular-common-services';
 import { map, takeUntil, tap } from 'rxjs/operators';
 import { forkJoin, Observable, Subject } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { FormGroup } from '@angular/forms';
-import { OcEditUserFormConfig, OcEditUserResult, OCOrganization } from 'oc-ng-common-component';
+import { OcEditUserFormConfig, OcEditUserResult, OCOrganization } from '@openchannel/angular-common-components';
 import { OcEditUserTypeService } from '@core/services/user-type-service/user-type.service';
 
 @Component({

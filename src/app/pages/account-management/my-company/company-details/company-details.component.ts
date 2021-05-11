@@ -10,7 +10,7 @@ import {
   PermissionType,
   TypeMapperUtils,
   TypeModel
-} from 'oc-ng-common-service';
+} from '@openchannel/angular-common-services';
 import {Subject} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
