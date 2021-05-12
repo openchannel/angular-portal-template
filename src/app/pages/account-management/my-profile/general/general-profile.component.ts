@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     AuthenticationService,
     DeveloperAccountService,
-    OCOrganization,
 } from '@openchannel/angular-common-services';
 import { takeUntil, tap } from 'rxjs/operators';
 import { forkJoin, Subject } from 'rxjs';
@@ -10,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { FormGroup } from '@angular/forms';
-import { OcEditUserFormConfig, OcEditUserResult } from '@openchannel/angular-common-components';
+import { OcEditUserFormConfig, OcEditUserResult, OCOrganization } from '@openchannel/angular-common-components';
 import { OcEditUserTypeService } from '@core/services/user-type-service/user-type.service';
 
 @Component({
