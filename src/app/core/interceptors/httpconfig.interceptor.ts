@@ -3,8 +3,8 @@ import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/com
 
 import {Observable} from 'rxjs';
 import {Router} from '@angular/router';
-import {OcErrorService} from 'oc-ng-common-component';
-import {AuthHolderService} from 'oc-ng-common-service';
+import {OcErrorService} from '@openchannel/angular-common-components';
+import {AuthHolderService} from '@openchannel/angular-common-services';
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {

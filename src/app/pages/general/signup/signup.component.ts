@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NativeLoginService} from 'oc-ng-common-service';
+import {NativeLoginService} from '@openchannel/angular-common-services';
 import {Subject} from 'rxjs';
 import {LoadingBarState} from '@ngx-loading-bar/core/loading-bar.state';
 import {LoadingBarService} from '@ngx-loading-bar/core';
@@ -7,7 +7,7 @@ import {takeUntil} from 'rxjs/operators';
 import {
   OcEditUserFormConfig,
   OcEditUserResult,
-} from 'oc-ng-common-component/src/lib/auth-components';
+} from '@openchannel/angular-common-components/src/lib/auth-components';
 import {OcEditUserTypeService} from '@core/services/user-type-service/user-type.service';
 
 @Component({

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {AuthHolderService} from 'oc-ng-common-service';
+import {AuthHolderService} from '@openchannel/angular-common-services';
 
 
 @Injectable({providedIn: 'root'})

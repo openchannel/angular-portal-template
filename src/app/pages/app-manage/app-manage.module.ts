@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { AppManageRoutingModule } from './app-manage-routing.module';
 import { AppDeveloperComponent } from './app-developer/app-developer.component';
-import { OcPortalComponentsModule } from 'oc-ng-common-component';
+import { OcPortalComponentsModule } from '@openchannel/angular-common-components';
 import { SharedModule } from '@shared/shared.module';
 
 
