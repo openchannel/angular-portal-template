@@ -23,9 +23,13 @@ export class HttpErrorInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(request)
-      .pipe(catchError((response: HttpErrorResponse) => {
+    const errorHeader = request.headers.get('x-handle-error');
+    const notHandledErrors = errorHeader ? errorHeader.split(',').map(Number) : [];
 
+    return next.handle(request.clone({
+      headers: request.headers.delete('x-handle-error'),
+    }))
+      .pipe(catchError((response: HttpErrorResponse) => {
         if (response instanceof HttpErrorResponse && response.status === 401 && !response.url.includes('refresh')) {
           return this.handle401Error(request, next);
         } else if (response.error && response.error['validation-errors']) {
@@ -33,9 +37,11 @@ export class HttpErrorInterceptor implements HttpInterceptor {
         } else if (response?.error?.errors?.length >= 1 && response?.error?.errors[0]?.field) {
           this.handleValidationError(response.error.errors);
         } else if (this.isCsrfError(response)) {
-          return throwError(response);
+            return throwError(response);
         } else {
-          this.handleError(response);
+          if (!notHandledErrors.includes(response.status)) {
+            this.handleError(response);
+          }
         }
         return throwError(response);
       }));
