@@ -453,6 +453,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
       if (field?.options) {
         field.options = this.mapOptions(field);
       }
+      if (field?.fields) {
+        field.fields.forEach(f => this.mapRecursiveField(f, defaultValues));
+      }
     }
     return field;
   }
@@ -466,7 +469,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
   private mapOptions(appTypeFiled: AppTypeFieldModel): string [] {
     const newOptions = [];
-    appTypeFiled.options.forEach(o => newOptions.push(o?.value ? o.value : o));
+    appTypeFiled.options.forEach(o => newOptions.push(o?.value !== undefined ? o.value : o));
     return newOptions;
   }
 

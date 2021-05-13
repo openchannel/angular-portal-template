@@ -73,8 +73,8 @@
             </div>
             <div *ngIf="!authService.isLoggedInUser()" class="d-flex my-2 my-lg-0 ml-0 ml-md-6 auth-button">
                 <div class="d-flex auth-button">
-                    <button class="btn header-login-btn header-btn font-med" (click)="login()">Log in</button>
-                    <button class="btn btn-primary header-btn ml-md-2 font-med" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</button>
+                    <a class="btn header-login-btn header-btn font-med" routerLink="/login">Log in</a>
+                    <a class="btn btn-primary header-btn ml-md-2 font-med" routerLink="/signup" *ngIf="!isSsoConfigExist">Sign up</a>
                 </div>
             </div>
         </div>
