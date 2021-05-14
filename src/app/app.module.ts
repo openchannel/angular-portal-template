@@ -4,11 +4,10 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HttpConfigInterceptor} from '@core/interceptors/httpconfig.interceptor';
-import {CustomHttpClientXsrfModule, OcCommonServiceModule} from 'oc-ng-common-service';
+import {CustomHttpClientXsrfModule, OcCommonServiceModule} from '@openchannel/angular-common-services';
 import {OAuthModule} from 'angular-oauth2-oidc';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-// tslint:disable-next-line:max-line-length
 import {ToastrModule} from 'ngx-toastr';
 import {TINYMCE_SCRIPT_SRC} from '@tinymce/tinymce-angular';
 import {HttpErrorInterceptor} from '@core/interceptors/httperror.interceptor';
@@ -17,7 +16,7 @@ import {HomeComponent} from './pages/home/home.component';
 import {environment} from '@env';
 import { LoadingBarModule } from '@ngx-loading-bar/core';
 import {NotFoundComponent} from './pages/not-found/not-found.component';
-import {OcMarketComponentsModule} from 'oc-ng-common-component';
+import {OcMarketComponentsModule} from '@openchannel/angular-common-components';
 
 @NgModule({
   declarations: [

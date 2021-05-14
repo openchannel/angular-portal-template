@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {NativeLoginService} from 'oc-ng-common-service';
+import {NativeLoginService} from '@openchannel/angular-common-services';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {FormGroup, Validators} from '@angular/forms';
