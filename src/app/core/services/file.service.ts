@@ -4,9 +4,7 @@ import { FileUploaderService, FileDetails } from '@openchannel/angular-common-co
 import { Observable } from 'rxjs';
 import { HttpResponse, HttpUploadProgressEvent } from '@angular/common/http';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class FileService extends FileUploaderService {
     constructor(private fileUploaderService: FileUploadDownloadService) {
         super();
