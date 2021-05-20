@@ -1,5 +1,6 @@
+@import "assets/styles/fonts";
 @import "assets/styles/mixins";
-@import "~@openchannel/angular-common-components/assets/styles/styles.scss";
+@import "~@openchannel/angular-common-components/assets/styles/styles";
 
 .bg-container {
     width: 100%;
@@ -26,14 +27,14 @@
 
 .header-divider {
     border-top: 1px solid rgba(83, 124, 253, 0.2);
-    // box-shadow: 0px -1px 0 2px rgba(83, 124, 253, 0.2);
 }
 
+/** Froala Editor **/
 
-/** Flora Editor **/
 .fr-box {
+
     .second-toolbar {
-        border-bottom: 0px;
+        border-bottom: 0;
     }
 }
 
@@ -42,13 +43,13 @@
 }
 
 .fr-toolbar.fr-top {
-    border-bottom: 0px !important;
+    border-bottom: 0 !important;
     border-radius: 4px 4px 0 0 !important;
     -moz-border-radius: 4px 4px 0 0 !important;
     -webkit-border-radius: 4px 4px 0 0 !important;
 
     .fr-newline {
-        height: 0px;
+        height: 0;
     }
 }
 
@@ -69,11 +70,10 @@
 .fr-box.fr-basic .fr-wrapper {
     border: 1px solid $info !important;
     border-bottom-color: $info !important;
-    // border-radius: 0 0 4px 4px;
 }
 
 .fr-box.fr-basic .fr-element {
-    font-family: "Rubik Regular" !important;
+    font-family: 'Rubik', sans-serif !important;
     padding: 16px !important;
     height: 100%;
 
@@ -82,9 +82,10 @@
     }
 }
 
-/** End Flora Editor **/
+/** End Froala Editor **/
 
 // Dropdown menu style
+
 .dropdown-menu {
     padding: 0;
     min-width: 136px;
@@ -92,26 +93,20 @@
     top: 70px;
     left: -28px;
 
-    .dropdown-item {
-        font-size: 14px;
-        padding: 14px 16px;
-        border-bottom: 1px solid #c9d5ea;
-    }
-
     .dropdown-item:hover,
     .dropdown-item:focus {
         background-color: rgba(201, 213, 234, 0.1);
         color: #537cfd;
-        // box-shadow: 0px 1px 0 #c9d5ea;
     }
 
     .dropdown-item:active {
         color: #537cfd;
-        box-shadow: 0px 1px 0 #c9d5ea;
+        box-shadow: 0 1px 0 #c9d5ea;
     }
 }
 
 .oc-dropdown-toggle {
+
     .dropdown-toggle.btn-secondary {
         border-radius: 4px;
         color: #333333 !important;
@@ -152,7 +147,7 @@
         min-width: 247px;
         top: -2px !important;
         border-top: 0;
-        border-bottom: 0px;
+        border-bottom: 0;
         border-top-left-radius: 0;
         border-top-right-radius: 0;
 
@@ -171,15 +166,14 @@ button:focus {
     outline: none !important;
 }
 
-
 html, body {
     height: 100%;
 }
 
 body {
-    @include font-family-rubik('Regular');
-    font-size: 16px;
-    font-weight: normal;
+    font-family: 'Rubik', sans-serif;
+    font-style: normal;
+    font-weight: 400;
     margin: 0;
 }
 
@@ -198,10 +192,11 @@ body {
 
 .active-link {
     color: $primary !important;
-    font-family: "Rubik-Medium";
+    @include font-medium();
 }
 
 /** Toast styles */
+
 .toast-message {
     font-size: 12px;
 }
@@ -225,6 +220,7 @@ body {
 }
 
 // modals - start
+
 @media (min-width: 730px) {
     .modal-dialog {
         max-width: 750px;

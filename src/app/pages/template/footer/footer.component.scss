@@ -1,122 +1,127 @@
 @import "~assets/styles/mixins";
-@import "~@openchannel/angular-common-components/assets/styles/theme";
-@import "~@openchannel/angular-common-components/assets/styles/mixins";
+@import "~@openchannel/angular-common-components/assets/styles/styles";
 
 .footer {
-  border-top: 1px solid rgba(201, 213, 234, 0.5);
+    border-top: 1px solid rgba(201, 213, 234, 0.5);
 
-  .container {
-    padding: 48px 0;
-    @include media-breakpoint-sm() {
-      padding: 32px;
-    }
-    @include media-breakpoint-md() {
-      padding: 32px;
-    }
-
-    .footer-direction {
-      display: flex;
-      flex-direction: row;
-      @include media-breakpoint-sm() {
-        flex-direction: column;
-      }
-      @include media-breakpoint-md() {
-        flex-direction: column;
-      }
-
-      .company-logo {
-        margin-right: auto;
-        @include media-breakpoint-md() {
-          display: block;
-          margin-bottom: 24px;
-        }
-      }
-
-      .info-column {
-        white-space: nowrap;
-        width: 16%;
-        h5 {
-          color: $body-color;
-          font-size: 12px;
-          line-height: 20px;
-          margin-bottom: 12px;
-          @include font-family-rubik('Bold');
-        }
-
-        li {
-          padding-top: 3.5px;
-          padding-bottom: 1px;
-
-          a {
-            color: $secondary;
-            @include font-family-rubik('Light');
-            font-size: 12px;
-            line-height: 28px;
-            text-align: center;
-          }
-        }
-
+    .container {
+        padding: 48px 0;
         @include media-breakpoint-sm() {
-          margin-bottom: 16px;
+            padding: 32px;
         }
         @include media-breakpoint-md() {
-          margin-bottom: 16px;
+            padding: 32px;
         }
-      }
 
-      .min-content {
-        width: min-content;
-      }
-
-      .social-networks {
-        display: flex;
-        flex-direction: row;
-        margin-left: auto;
-        align-items: start;
-        img {
-          margin-right: 24px;
-        }
-        @include media-breakpoint-lg() {
-          height: min-content;
-          max-width: 154px;
-          flex-wrap: wrap;
-          justify-content: flex-end;
-          img {
-            margin-right: 16px;
-            margin-bottom: 16px;
-            &:nth-child(3) {
-              margin-right: 0;
+        .footer-direction {
+            display: flex;
+            flex-direction: row;
+            @include media-breakpoint-sm() {
+                flex-direction: column;
             }
-          }
-        }
-        @include media-breakpoint-md() {
-          flex-wrap: unset;
-          max-width: unset;
-          margin: auto auto auto 0;
-          img {
-            margin-bottom: 0;
-            margin-right: 16px;
-            &:nth-child(3) {
-              margin-right: 16px;
+            @include media-breakpoint-md() {
+                flex-direction: column;
             }
-          }
-        }
-        :last-child {
-          margin-right: 0;
-        }
-      }
-    }
 
-    .bottom-info {
-      margin-top: 32px;
-      color: $secondary;
-      font-size: 12px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      letter-spacing: normal;
-      text-align: center;
-      @include font-family-rubik('Light');
+            .company-logo {
+                margin-right: auto;
+                @include media-breakpoint-md() {
+                    display: block;
+                    margin-bottom: 24px;
+                }
+            }
+
+            .info-column {
+                white-space: nowrap;
+                width: 16%;
+                @include media-breakpoint-sm() {
+                    margin-bottom: 16px;
+                }
+                @include media-breakpoint-md() {
+                    margin-bottom: 16px;
+                }
+
+                h5 {
+                    color: $body-color;
+                    font-size: 12px;
+                    line-height: 20px;
+                    margin-bottom: 12px;
+                    @include font-bold();
+                }
+
+                li {
+                    padding-top: 3.5px;
+                    padding-bottom: 1px;
+
+                    a {
+                        color: $secondary;
+                        @include font-light();
+                        font-size: 12px;
+                        line-height: 28px;
+                        text-align: center;
+                    }
+                }
+            }
+
+            .min-content {
+                width: min-content;
+            }
+
+            .social-networks {
+                display: flex;
+                flex-direction: row;
+                margin-left: auto;
+                align-items: start;
+                @include media-breakpoint-lg() {
+                    height: min-content;
+                    max-width: 154px;
+                    flex-wrap: wrap;
+                    justify-content: flex-end;
+
+                    img {
+                        margin-right: 16px;
+                        margin-bottom: 16px;
+
+                        &:nth-child(3) {
+                            margin-right: 0;
+                        }
+                    }
+                }
+                @include media-breakpoint-md() {
+                    flex-wrap: unset;
+                    max-width: unset;
+                    margin: auto auto auto 0;
+
+                    img {
+                        margin-bottom: 0;
+                        margin-right: 16px;
+
+                        &:nth-child(3) {
+                            margin-right: 16px;
+                        }
+                    }
+                }
+
+                img {
+                    margin-right: 24px;
+                }
+
+                :last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+
+        .bottom-info {
+            margin-top: 32px;
+            color: $secondary;
+            font-size: 12px;
+            font-weight: normal;
+            font-stretch: normal;
+            font-style: normal;
+            letter-spacing: normal;
+            text-align: center;
+            @include font-light();
+        }
     }
-  }
 }
