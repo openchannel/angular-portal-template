@@ -7,7 +7,7 @@ import {AppNewComponent} from './app-new/app-new.component';
 import {
   OcFormComponentsModule,
   OcPortalComponentsModule,
-} from 'oc-ng-common-component';
+} from '@openchannel/angular-common-components';
 
 
 @NgModule({

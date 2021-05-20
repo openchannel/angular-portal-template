@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   AccessLevel,
   AuthHolderService,
@@ -6,17 +6,16 @@ import {
   DeveloperRoleService,
   DeveloperService,
   InviteUserService,
-  ModalInviteUserModel,
   Permission,
   PermissionType,
-} from 'oc-ng-common-service';
-import {ActivatedRoute} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ToastrService} from 'ngx-toastr';
-import {OcInviteModalComponent} from 'oc-ng-common-component';
-import {takeUntil} from 'rxjs/operators';
-import {ManagementComponent} from './management/management.component';
+} from '@openchannel/angular-common-services';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
+import { OcInviteModalComponent, ModalInviteUserModel } from '@openchannel/angular-common-components';
+import { takeUntil } from 'rxjs/operators';
+import { ManagementComponent } from './management/management.component';
 
 export interface Page {
   pageId: string;

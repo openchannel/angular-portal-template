@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {AccessLevel, AuthenticationService, AuthHolderService, Permission, PermissionType} from 'oc-ng-common-service';
+import {AccessLevel, AuthenticationService, AuthHolderService, Permission, PermissionType} from '@openchannel/angular-common-services';
 import {LogOutService} from '@core/services/logout-service/log-out.service';
 import {map, takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';

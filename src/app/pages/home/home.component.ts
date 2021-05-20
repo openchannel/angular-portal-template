@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthHolderService, SiteConfigService, TitleService} from 'oc-ng-common-service';
+import {AuthHolderService, SiteConfigService, TitleService} from '@openchannel/angular-common-services';
 import { Router } from '@angular/router';
 
 @Component({

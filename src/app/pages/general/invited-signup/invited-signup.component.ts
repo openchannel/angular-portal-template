@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {DeveloperAccountTypesService, InviteDeveloperModel, InviteUserService, NativeLoginService} from 'oc-ng-common-service';
+import {DeveloperAccountTypesService, InviteDeveloperModel, InviteUserService, NativeLoginService} from '@openchannel/angular-common-services';
 import {Subject} from 'rxjs';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {takeUntil} from 'rxjs/operators';
