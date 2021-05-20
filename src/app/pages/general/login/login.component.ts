@@ -4,9 +4,8 @@ import {
     AuthHolderService,
     LoginRequest,
     LoginResponse,
-    NativeLoginService,
-    UserLoginModel,
-} from 'oc-ng-common-service';
+    NativeLoginService
+} from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, takeUntil, tap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -14,6 +13,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
+import { ComponentsUserLoginModel } from '@openchannel/angular-common-components';
 
 @Component({
     selector: 'app-login',
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     companyLogoUrl = './assets/img/logo-company-2x.png';
     signupUrl = '/signup';
     forgotPwdUrl = '/forgot-password';
-    signIn = new UserLoginModel();
+    signIn = new ComponentsUserLoginModel();
     inProcess = false;
     isSsoLogin = true;
 
@@ -60,28 +60,28 @@ export class LoginComponent implements OnInit, OnDestroy {
             takeUntil(this.destroy$))
           .subscribe((authConfig) => {
 
-                    this.oauthService.configure({
-                        ...authConfig,
-                        redirectUri: authConfig.redirectUri || (window.location.origin + '/login'),
-                    });
+                this.oauthService.configure({
+                    ...authConfig,
+                    redirectUri: authConfig.redirectUri || (window.location.origin + '/login'),
+                });
 
-                    this.oauthService.loadDiscoveryDocumentAndLogin({
-                        onTokenReceived: receivedTokens => {
-                            this.loader.start();
-                            this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
-                                .pipe(takeUntil(this.destroy$))
-                                .subscribe((response: LoginResponse) => {
-                                    this.processLoginResponse(response, this.oauthService.state);
-                                    this.loader.complete();
-                                });
-                        },
-                        state: this.returnUrl,
-                    }).then(() => {
-                        this.loader.complete();
-                    });
-                }, err => {
-                },
-                () => this.loader.complete());
+                this.oauthService.loadDiscoveryDocumentAndLogin({
+                    onTokenReceived: receivedTokens => {
+                        this.loader.start();
+                        this.openIdAuthService.login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
+                          .pipe(takeUntil(this.destroy$))
+                          .subscribe((response: LoginResponse) => {
+                              this.processLoginResponse(response, this.oauthService.state);
+                              this.loader.complete();
+                          });
+                    },
+                    state: this.returnUrl,
+                }).then(() => {
+                    this.loader.complete();
+                });
+            }, err => {
+            },
+            () => this.loader.complete());
     }
 
     ngOnDestroy(): void {
@@ -93,21 +93,21 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (event === true) {
             this.inProcess = true;
             this.nativeLoginService.signIn(this.signIn)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe((response: LoginResponse) => {
-                        this.processLoginResponse(response, this.returnUrl);
-                        this.inProcess = false;
-                    },
-                    () => this.inProcess = false);
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((response: LoginResponse) => {
+                    this.processLoginResponse(response, this.returnUrl);
+                    this.inProcess = false;
+                },
+                () => this.inProcess = false);
         }
     }
 
     sendActivationEmail(email: string) {
         this.nativeLoginService.sendActivationCode(email)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(value => {
-                this.toastService.success('Activation email was sent to your inbox!');
-            });
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(value => {
+              this.toastService.success('Activation email was sent to your inbox!');
+          });
     }
 
     private retrieveRedirectUrl() {

@@ -1,9 +1,10 @@
-import {Component, OnDestroy} from '@angular/core';
-import {NativeLoginService, UserActivationModel, UsersService} from 'oc-ng-common-service';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import { Component, OnDestroy } from '@angular/core';
+import { NativeLoginService } from '@openchannel/angular-common-services';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
+import { ComponentsUserActivationModel } from '@openchannel/angular-common-components';
 
 @Component({
     selector: 'app-activation',
@@ -17,7 +18,7 @@ export class ActivationComponent implements OnDestroy {
     resendActivationUrl = '/resend-activation';
     inProcess = false;
 
-    activationModel = new UserActivationModel();
+    activationModel = new ComponentsUserActivationModel();
 
     private destroy$: Subject<void> = new Subject();
 
@@ -32,16 +33,16 @@ export class ActivationComponent implements OnDestroy {
         if (event === true) {
             this.inProcess = true;
             this.nativeLoginService.activate(this.activationModel.code)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(res => {
-                        this.toaster.success('Account successfully activated!');
-                        this.inProcess = false;
-                        this.router.navigate(['login']);
-                    },
-                    error => {
-                        this.inProcess = false;
-                    },
-                );
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(res => {
+                    this.toaster.success('Account successfully activated!');
+                    this.inProcess = false;
+                    this.router.navigate(['login']);
+                },
+                error => {
+                    this.inProcess = false;
+                },
+              );
         }
 
     }
