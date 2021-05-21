@@ -1,10 +1,6 @@
 {
   "name": "template3-portal-frontend",
-<<<<<<< HEAD
-  "version": "1.1.7.1",
-=======
-  "version": "1.1.7",
->>>>>>> 23acd3d654fbd877e49b83e1047faac4b398e0cd
+  "version": "1.1.7-1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -36,13 +32,8 @@
     "@ng-bootstrap/ng-bootstrap": "^6.0.2",
     "@ng-select/ng-select": "^4.0.0",
     "@ngx-loading-bar/core": "^5.1.1",
-<<<<<<< HEAD
     "@openchannel/angular-common-components": "2.1.0-0",
     "@openchannel/angular-common-services": "2.1.0-0",
-=======
-    "@openchannel/angular-common-components": "2.0.1",
-    "@openchannel/angular-common-services": "2.0.1",
->>>>>>> 23acd3d654fbd877e49b83e1047faac4b398e0cd
     "@tinymce/tinymce-angular": "^4.2.0",
     "angular-oauth2-oidc": "^10.0.3",
     "bootstrap": "^4.4.1",
