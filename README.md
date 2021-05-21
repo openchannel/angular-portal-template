@@ -5,8 +5,8 @@
 * [About the Project](#about-the-project)
   * [Built With](#built-with)
 * [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
   * [Installation](#installation)
+* [Usage](#usage)
 * [Contact](#contact)
 
 ## About The Project
@@ -16,10 +16,11 @@ The goal of a portal template site is to give partners a dashboard where they ca
 This is a Frontend for Developer marketplace.
 
 Functional for Developer:
-- SSO sign in by Okta | Google
-- work with applications.
-- view application statistics.
-- create form submissions.
+- Native or SSO login.
+- Work with applications (create, update, change app status).
+- View application statistics.
+- Updating profile and organization data.
+- Managing developers from your organization. Invite new developers.
 
 ### Built With
 - [Bootstrap](https://getbootstrap.com) v. 4.4.1
@@ -50,7 +51,7 @@ npm install file:<absolute path to common service project dist/angular-common-se
 npm install file:<absolute path to common component project dist/angular-common-components>
 ```
 
-### Usage
+## Usage
 
 #### Run project with the remote site configs (dev1, stage1):
 
@@ -60,8 +61,8 @@ npm install file:<absolute path to common component project dist/angular-common-
 ```
 - Add to file two lines:
 ```
-127.0.0.1 stage1-local-template-portal.openchannel.io
-127.0.0.1 dev1-local-template-portal.openchannel.io
+127.0.0.1 stage1-template-portal.openchannel.io
+127.0.0.1 dev1-template-portal.openchannel.io
 ```
 - Run project with the stage1 environment:
 ```
@@ -77,22 +78,32 @@ sudo npm run start-dev1
 - Install [Moesif](https://chrome.google.com/webstore/detail/moesif-origin-cors-change/digfbfaphojjndkpccljibejjbppifbc/related) CORS plugin for Chrome
 - Submit your work email address there
 - Open advanced settings
-- Fill in the 'Request Headers' field:
-```
-https://stage1-local-template-portal.openchannel.io/
-```
-or:
-```
-https://dev1-local-template-portal.openchannel.io/
-```
-- Fill in the 'Response headers' field:
-```
-http://localhost:4200/
-```
-- Run project using:
-```
-sudo ng serve
-```
+- Fill in the 'Access-Control-Allow-Credentials'<br>
+``
+  true
+``
+- Fill in the 'Response headers' field: <br>
+``
+  http://localhost:4200
+``
+- Fill in the 'Request Headers' field:<br>
+  Example for dev1 environment: <br>
+``
+  https://dev1-template-portal.openchannel.io
+``<br>
+  Example for stage1 environment: <br>
+  ``
+  https://stage1-template-portal.openchannel.io
+  ``<br>
+- Then start project with command:<br>
+  Example for dev1 environment: <br>
+``
+ ng serve -c dev1
+``<br>
+  Example for stage1 environment: <br>
+``
+  ng serve -c stage1
+``
 
 ####  Run project with the remote site configs (us1):
 Note: replace <font color="red">YOUR_SITE_DOMAIN</font> with your market domain.
@@ -108,19 +119,6 @@ Note: replace <font color="red">YOUR_SITE_DOMAIN</font> with your market domain.
 - Run project with the us1 environment:
 ```
 sudo npm run start-us1 YOUR_SITE_DOMAIN
-```
-
-#### Run project with the local site configs:
-
-##### Run <font color="red">ONE</font> of this:
-
-- Project with the Okta SSO
-```
-npm run start-okta
-```
-- Project with Google SSO
-```
-npm run start-google
 ```
 
 ## Documentation Compodoc
