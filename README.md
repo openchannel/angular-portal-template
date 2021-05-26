@@ -149,4 +149,4 @@ Project Link: [https://bitbucket.org/openchannel/template3-portal-frontend/branc
 
 ## Designs
 
-Project Designs: [https://app.zeplin.io/project/5fad60184ae36d25530c9843/screen/60547f8a946c301f466e61f1](https://app.zeplin.io/project/5fad60184ae36d25530c9843/screen/60547f8a946c301f466e61f1)
+App Store Designs: [https://support.openchannel.io/guides/app-store-designs/](https://support.openchannel.io/guides/app-store-designs/)
