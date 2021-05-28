@@ -145,7 +145,7 @@ SonarCloud Quality Gate Status [![Quality Gate Status](https://sonarcloud.io/api
 
 ## Contact
 
-Project Link: [https://bitbucket.org/openchannel/template3-portal-frontend/branch/master](https://bitbucket.org/openchannel/template3-portal-frontend/branch/master)
+Website: [https://openchannel.io](https://openchannel.io)
 
 ## Designs
 
