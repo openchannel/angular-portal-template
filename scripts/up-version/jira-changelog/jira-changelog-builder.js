@@ -2,12 +2,11 @@ const fetch = require('node-fetch');
 const Buffer = require('buffer').Buffer;
 const fs = require('fs')
 
-if (!(process.env.EMAIL && process.env.API_KEY && process.env.FIX_VERSION && process.env.GIT_BRANCHES && process.env.NPM_VERSION)) {
+if (!(process.env.EMAIL && process.env.API_KEY && process.env.FIX_VERSION && process.env.NPM_VERSION)) {
     console.error('Creating changelog.md failed. Missed required inputs : ' +
         (!process.env.EMAIL ? 'EMAIL,' : '') +
         (!process.env.API_KEY ? 'API_KEY,' : '') +
         (!process.env.FIX_VERSION ? 'FIX_VERSION,' : '') +
-        (!process.env.GIT_BRANCHES ? 'GIT_BRANCHES,' : '') +
         (!process.env.NPM_VERSION ? 'NPM_VERSION,' : ''))
     process.exit(1);
 }
@@ -20,8 +19,7 @@ const jiraFixVersion = process.env.FIX_VERSION;
 const jiraMaxIssues = 100;
 const npmVersion = process.env.NPM_VERSION;
 const gitRepoName = process.env.GIT_REPOSITORY_NAME || 'Project'
-const gitBranches = process.env.GIT_BRANCHES;
-const resultFilePath = process.env.RESULT_FILE_PATH || '../../changelog.md';
+const resultFilePath = process.env.RESULT_FILE_PATH || '../../../changelog.md';
 
 // Options for creating file
 const filePatternValues = {
@@ -31,9 +29,9 @@ const filePatternValues = {
     ISSUE_NAME: (issue) => issue ? issue.fields.summary : '',
     ISSUE_TYPE: (issue) => issue ? issue.fields.issuetype.name : '',
 }
-const filePatternHeader = `Release notes - PROJECT_NAME - Version NPM_VERSION<br>`
-const filePatternTitle = `### ISSUE_TYPE<br>`
-const filePatternIssue = `ISSUE_KEY - ISSUE_NAME<br>`
+const filePatternHeader = "## Release notes - PROJECT_NAME - Version NPM_VERSION<br>\n"
+const filePatternTitle = `### ISSUE_TYPE<br>\n`
+const filePatternIssue = `ISSUE_KEY - ISSUE_NAME<br>\n`
 
 
 async function getIssuesFromAPI(jiraSubDomain, jiraEmail, jiraApiKey, jiraFixVersion, maxIssues) {
@@ -53,15 +51,11 @@ function sortIssuesByType(issues) {
     return issues.sort(issue => issue.fields.issuetype.name);
 }
 
-function filterIssuesByGitBranches(issuesArray, gitBranchesStr) {
-    return issuesArray.filter(issue => gitBranchesStr.includes(issue.key));
-}
-
 function buildFile(issuesArray) {
     // header line
     let tempFile = replacePatternValues(null, filePatternHeader, filePatternValues);
 
-    for (let i = 0; i < issuesArray.length; i++) {
+    for (let i = 0; i < issuesArray.length;) {
         const issueFirstInGroup = issuesArray[i]
         let issueGroupType = filePatternValues.ISSUE_TYPE(issueFirstInGroup);
         // title line
@@ -88,7 +82,7 @@ function replacePatternValues(issueObj, patternStr, values) {
 }
 
 getIssuesFromAPI(jiraSubDomain, jiraEmail, jiraApiKey, jiraFixVersion, jiraMaxIssues)
-    .then(response => filterIssuesByGitBranches(sortIssuesByType(response.issues), gitBranches))
+    .then(response => sortIssuesByType(response.issues))
     .then(availableIssues => buildFile(availableIssues))
     .then(fileBody => {
         fs.writeFile(resultFilePath, fileBody, (err) => {
