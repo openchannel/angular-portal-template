@@ -10,8 +10,6 @@ import { OC_API_URL } from 'app/app.module';
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
 
-    private readonly proxyApiUrl = environment.apiUrl;
-
     constructor(private router: Router,
                 private errorService: OcErrorService,
                 private authHolderService: AuthHolderService) {
