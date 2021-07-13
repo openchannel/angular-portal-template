@@ -93,3 +93,4 @@ fi
 
 echo "Push commit"
 git push
+git push origin --tags
