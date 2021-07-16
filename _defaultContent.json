@@ -7,8 +7,8 @@
     "logo": "assets/img/logo-company.png",
     "menu": {
       "items": [{
-        "label": "",
-        "location": ""
+        "label": "Manage Apps",
+        "location": "/manage"
       }]
     }
   },
