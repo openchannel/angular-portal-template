@@ -1,5 +1,7 @@
-@import "assets/styles/fonts";
-@import "assets/styles/mixins";
+@import "./assets/styles/fonts";
+@import "./assets/styles/theme";
+@import "./assets/styles/mixins";
+@import "~@openchannel/angular-common-components/assets/styles/general-styles";
 @import "~@openchannel/angular-common-components/assets/styles/styles";
 
 .bg-container {
