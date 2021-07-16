@@ -25,18 +25,9 @@
 .navbar-wrapper .navbar-brand {
     display: flex;
     align-items: center;
-
     .company-logo {
-        display: block;
         @include media-breakpoint-sm() {
-            display: none;
-        }
-
-        &-mobile {
-            display: none;
-            @include media-breakpoint-sm() {
-                display: block;
-            }
+            max-width: 100%;
         }
     }
 }
