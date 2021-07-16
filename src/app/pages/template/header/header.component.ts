@@ -1,65 +1,95 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {AccessLevel, AuthenticationService, AuthHolderService, Permission, PermissionType} from '@openchannel/angular-common-services';
-import {LogOutService} from '@core/services/logout-service/log-out.service';
-import {map, takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AccessLevel, AuthenticationService, AuthHolderService, Permission, PermissionType } from '@openchannel/angular-common-services';
+import { LogOutService } from '@core/services/logout-service/log-out.service';
+import { map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { CmsContentService } from '@core/services/cms-content-service/cms-content-service.service';
+
+interface HeaderItemDFA {
+    label: string;
+    location: string;
+    authorized: boolean;
+}
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  isSSO = false;
-  isSsoConfigExist = true;
-  isCollapsed = true;
-  isMenuCollapsed = true;
+    readonly companyPermissions: Permission[] = [
+        {
+            type: PermissionType.ORGANIZATIONS,
+            access: [AccessLevel.MODIFY, AccessLevel.READ],
+        },
+        {
+            type: PermissionType.ACCOUNTS,
+            access: [AccessLevel.READ, AccessLevel.MODIFY],
+        },
+    ];
 
-  readonly companyPermissions: Permission[] = [
-    {
-      type: PermissionType.ORGANIZATIONS,
-      access: [AccessLevel.MODIFY, AccessLevel.READ]
-    },
-    {
-      type: PermissionType.ACCOUNTS,
-      access: [AccessLevel.READ, AccessLevel.MODIFY]
+    isSSO = false;
+    isSsoConfigExist = true;
+    isCollapsed = true;
+    isMenuCollapsed = true;
+
+    cmsData = {
+        headerItemsDFA: [] as HeaderItemDFA[],
+        headerLogoURL: '',
+    };
+
+    private destroy$: Subject<void> = new Subject();
+
+    constructor(
+        public router: Router,
+        public authService: AuthHolderService,
+        private openIdAuthService: AuthenticationService,
+        private logOutService: LogOutService,
+        private cmsService: CmsContentService,
+    ) {}
+
+    ngOnInit(): void {
+        this.isSSO = this.authService?.userDetails?.isSSO;
+
+        this.openIdAuthService
+            .getAuthConfig()
+            .pipe(
+                takeUntil(this.destroy$),
+                map(value => !!value),
+            )
+            .subscribe(authConfigExistence => (this.isSsoConfigExist = authConfigExistence));
+
+        this.initCMSData();
     }
-  ];
 
-  private destroy$: Subject<void> = new Subject();
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
 
-  constructor(public router: Router,
-              public authService: AuthHolderService,
-              private openIdAuthService: AuthenticationService,
-              private logOutService: LogOutService) {
-  }
+    logout(): void {
+        this.logOutService.logOutAndRedirect('/');
+    }
 
-  ngOnInit(): void {
-    this.isSSO = this.authService?.userDetails?.isSSO;
+    closedMenu(): void {
+        this.isMenuCollapsed = true;
+        this.isCollapsed = true;
+    }
 
-    this.openIdAuthService.getAuthConfig()
-        .pipe(
-            takeUntil(this.destroy$),
-            map(value => !!value))
-        .subscribe((authConfigExistence) => this.isSsoConfigExist = authConfigExistence);
-  }
+    checkIncludesUrl(url1: string, url2?: string): boolean {
+        return this.router.url.includes(url1) || (url2 && this.router.url.includes(url2));
+    }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  logout() {
-    this.logOutService.logOutAndRedirect('/');
-  }
-
-  closedMenu() {
-    this.isMenuCollapsed = true;
-    this.isCollapsed = true;
-  }
-
-  checkIncludesUrl(url1, url2?) {
-    return this.router.url.includes(url1) || (url2 && this.router.url.includes(url2));
-  }
+    initCMSData(): void {
+        this.cmsService
+            .getContentByPaths({
+                headerLogoURL: 'default-header.logo',
+                headerItemsDFA: 'default-header.menu.items',
+            })
+            .subscribe(content => {
+                this.cmsData.headerLogoURL = content.headerLogoURL as string;
+                this.cmsData.headerItemsDFA = (content.headerItemsDFA as HeaderItemDFA[]) || [];
+            });
+    }
 }
