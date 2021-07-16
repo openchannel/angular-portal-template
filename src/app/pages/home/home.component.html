@@ -1,11 +1,7 @@
 <div class="home__hero bg-container bg-a">
     <div class="container d-flex flex-column align-items-center justify-content-center">
-        <h1 class="home__hero-title text-center">
-            Reach millions of developers through <br> the Marketplace
-        </h1>
-        <p class="home__hero-description text-secondary text-center">
-            A design template for implementing your app store with OpenChannel
-        </p>
+        <h1 class="home__hero-title text-center">{{cmsData.pageInfoTitle}}</h1>
+        <p class="home__hero-description text-secondary text-center">{{cmsData.pageInfoSubtext}}</p>
         <oc-button class="home__hero-partner"
                    type="primary"
                    text="Become a Partner"></oc-button>
@@ -175,11 +171,11 @@
 </div>
 <div class="home__register bg-container bg-a">
     <div class="container">
-        <oc-app-get-started getStartedDescription="Register as an app developer
-                    and submit your app easily with our App Store Developer Portal"
-                            getStartedButtonText="Get Started as an App Developer"
-                            getStartedImage="./assets/img/get-started.svg"
-                            (getStarted)="getStartedRedirect()">
+        <oc-app-get-started [getStartedHeader]="cmsData.bottomCalloutHeader"
+                            [getStartedImage]="cmsData.bottomCalloutImageURL"
+                            [getStartedDescription]="cmsData.bottomCalloutDescription"
+                            [getStartedButtonText]="cmsData.bottomCalloutButtonText"
+                            (getStarted)="router.navigate([cmsData.bottomCalloutButtonLocation || ''])">
         </oc-app-get-started>
     </div>
 </div>
