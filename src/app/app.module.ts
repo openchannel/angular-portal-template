@@ -18,6 +18,8 @@ import { LoadingBarModule } from '@ngx-loading-bar/core';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { FileUploaderService, OcMarketComponentsModule } from '@openchannel/angular-common-components';
 import { FileService } from '@core/services/file.service';
+import { OcAppsSearchService } from '@core/services/oc-apps-search.service';
+import { AppsSearchService } from '@openchannel/angular-common-components/src/lib/form-components';
 
 function getApiUrl(): string {
     if (environment.enableProxy) {
@@ -50,6 +52,7 @@ export const OC_API_URL = getApiUrl();
         { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
         { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' },
         { provide: FileUploaderService, useClass: FileService },
+        { provide: AppsSearchService, useClass: OcAppsSearchService },
     ],
     bootstrap: [AppComponent],
     entryComponents: [],
