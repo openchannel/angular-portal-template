@@ -3,8 +3,7 @@
         <div class="navbar-wrapper">
             <a routerLink=""
                class="navbar-brand" (click)="closedMenu()">
-                <img src="assets/img/logo-company-2x.png" alt="brand-logo" class="company-logo">
-                <img src="assets/img/logo-company-mobile-2x.png" alt="brand-logo" class="company-logo company-logo-mobile">
+                <img [src]="cmsData.headerLogoURL" alt="brand-logo" class="company-logo">
             </a>
             <button class="navbar-toggler p-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation"
@@ -16,12 +15,17 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent"
              [ngbCollapse]="isCollapsed">
             <ul class="navbar-nav justify-content-end w-100 mb-0">
-                <li class="nav-item"
-                    *ngIf="authService.isLoggedInUser()"
-                    [class.active]="router.url.endsWith('manage')">
-                    <a routerLink="/manage"
-                       class="nav-link cursor-pointer" (click)="closedMenu()">Manage Apps</a>
-                </li>
+                <ng-container *ngFor="let headerItem of cmsData.headerItemsDFA">
+                    <li class="nav-item"
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }">
+                        <a [routerLink]="headerItem.location || ''"
+                           (click)="closedMenu()"
+                           class="nav-link cursor-pointer">{{headerItem.label}}
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                </ng-container>
                 <li class="nav-item collaps-none justify-content-between align-items-center"
                     *ngIf="authService.isLoggedInUser()"
                     [class.active]="checkIncludesUrl('/management/profile','/management/company')"

@@ -357,7 +357,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     this.count = 0;
                     this.chartData = {
                         ...this.chartData,
-                        data: chartData,
+                        data: {
+                            labelsY: chartData.labelsY.map(String),
+                            labelsX: (chartData.labelsX as any[]).map(String),
+                            tabularLabels: chartData.tabularLabels,
+                        },
                     };
                     this.count += chartData.labelsY.reduce((a, b) => a + b);
                     this.countText = `Total ${chartOptions.field.label}`;
@@ -512,9 +516,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
             // map options
             if (field?.options) {
                 field.options = this.mapOptions(field);
-            }
-            if (field?.fields) {
-                field.fields.forEach(f => this.mapRecursiveField(f, defaultValues));
             }
         }
         return field;

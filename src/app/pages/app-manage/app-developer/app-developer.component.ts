@@ -130,7 +130,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
               this.count = 0;
               this.chartData = {
                   ...this.chartData,
-                  data: chartData
+                  data: {
+                      labelsY: chartData.labelsY.map(String),
+                      labelsX: (chartData.labelsX as any[]).map(String),
+                      tabularLabels: chartData.tabularLabels,
+                  }
               };
               this.count += chartData.labelsY.reduce((a, b) => a + b);
               this.countText = `Total ${chartOptions.field.label}`;
