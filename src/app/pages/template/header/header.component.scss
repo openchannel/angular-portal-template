@@ -25,18 +25,9 @@
 .navbar-wrapper .navbar-brand {
     display: flex;
     align-items: center;
-
     .company-logo {
-        display: block;
         @include media-breakpoint-sm() {
-            display: none;
-        }
-
-        &-mobile {
-            display: none;
-            @include media-breakpoint-sm() {
-                display: block;
-            }
+            max-width: 100%;
         }
     }
 }
@@ -186,6 +177,7 @@ a:hover {
         width: 256px;
         height: 52px;
         margin-bottom: 16px;
+        line-height: 52px;
     }
 
     .auth-button {

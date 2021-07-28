@@ -1,3 +1,6 @@
+[[plugins]]
+  package = "./netlify/netlify-enable-proxy"
+
 [[headers]]
   for = "/*"
   [headers.values]
