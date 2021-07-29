@@ -136,6 +136,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     private filterPagesByDeveloperType(): Page[] {
-        return (this.currentPages = this.pages.filter(page => this.authHolderService.hasAnyPermission(page.permissions)));
+        return (this.pages.filter(page => this.authHolderService.hasAnyPermission(page.permissions)));
     }
 }
