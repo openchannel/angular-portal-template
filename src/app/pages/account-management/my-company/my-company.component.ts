@@ -95,10 +95,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     openInviteModal(): void {
-        const inviteTemplateId = '5fc663f2217876017548dc25';
-
         const modalRef = this.modal.open(OcInviteModalComponent, { size: 'sm' });
-
         const modalData = new ModalInviteUserModel();
         modalData.modalTitle = 'Invite a member';
         modalData.successButtonText = 'Send Invite';
@@ -106,7 +103,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         modalData.requestFindUserRoles = () => this.developerRolesService.getDeveloperRoles(1, 100).pipe(takeUntil(this.$destroy));
 
         modalData.requestSendInvite = (accountData: any) =>
-            this.inviteService.sendDeveloperInvite(this.organizationName, accountData, inviteTemplateId).pipe(takeUntil(this.$destroy));
+            this.inviteService.sendDeveloperInvite(this.organizationName, accountData).pipe(takeUntil(this.$destroy));
 
         modalRef.componentInstance.modalData = modalData;
         modalRef.result.then(
