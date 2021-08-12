@@ -105,7 +105,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         modalData.requestFindUserRoles = () => this.developerRolesService.getDeveloperRoles(1, 100).pipe(takeUntil(this.$destroy));
 
         modalData.requestSendInvite = (accountData: any) =>
-            this.inviteService.sendDeveloperInvite(this.organizationName, accountData, inviteTemplateId).pipe(takeUntil(this.$destroy));
+            this.inviteService.sendDeveloperInvite(inviteTemplateId, this.organizationName, accountData).pipe(takeUntil(this.$destroy));
 
         modalRef.componentInstance.modalData = modalData;
         modalRef.result.then(
