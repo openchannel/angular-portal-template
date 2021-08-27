@@ -15,12 +15,13 @@
     </div>
     <form [formGroup]="appTypeFormGroup">
         <div class="d-flex flex-column flex-md-row align-items-md-center mb-2">
-            <oc-label text="Choose your app type" required="true" class="text-nowrap col-md-3 mr-1 mb-1 mb-md-0 pl-0"></oc-label>
+            <oc-label text="Choose your app type" required="true"
+                      class="text-nowrap col-md-3 mr-1 mb-1 mb-md-0 pl-0"></oc-label>
             <div class="d-flex flex-column w-100">
                 <oc-select formControlName="type"
                            labelField="label"
                            [selectValArr]="currentAppsTypesItems"
-                            class="w-100">
+                           class="w-100">
                 </oc-select>
                 <oc-error [control]="appTypeFormGroup.get('appType')"></oc-error>
             </div>
@@ -28,26 +29,25 @@
     </form>
     <div *ngIf="appFields?.fields">
         <oc-form [formJsonData]="appFields"
-                 (formDataUpdated)="getAppFormData($event)"
+                 displayType="wizard"
+                 buttonPosition="justify"
+                 [process]="submitInProcess"
+                 [additionalButton]="customSaveButton"
+                 (formSubmitted)="openConfirmationModal()"
+                 (formDataUpdated)="onFormDataUpdated($event)"
                  (createdForm)="setGeneratedForm($event)"
-                 labelPosition="left"
-                 [showButton]="false">
+                 (cancelSubmit)="onCancelClick()"
+                 [showSubmitButton]="!hasParentAppStatus('suspended')"
+                 [(currentStep)]="currentStep">
         </oc-form>
-        <div class="main-container_options">
-            <div class="main-container_options_empty"></div>
-            <div class="main-container_options_buttons">
-                <oc-button type="secondary" text="Cancel" routerLink="/manage"></oc-button>
-                <oc-button type="secondary"
-                           text="Save"
-                           *ngIf="!hasPageAndAppStatus('update', 'pending')"
-                           [process]="draftSaveInProcess"
-                           (click)="saveApp('draft')"></oc-button>
-                <oc-button type="primary"
-                           text="Submit"
-                           *ngIf="!hasParentAppStatus('suspended')"
-                           [process]="submitInProcess"
-                           (click)="openConfirmationModal()"></oc-button>
-            </div>
-        </div>
     </div>
 </div>
+
+<ng-template #customSaveButton>
+    <oc-button *ngIf="!hasPageAndAppStatus('update', 'pending')"
+               type="secondary"
+               class="form__button"
+               text="Save"
+               [process]="draftSaveInProcess"
+               (click)="saveApp('draft')"></oc-button>
+</ng-template>

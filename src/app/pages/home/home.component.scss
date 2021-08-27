@@ -1,6 +1,13 @@
 @import '~@openchannel/angular-common-components/assets/styles/theme';
 @import 'src/assets/styles/mixins';
 
+
+@mixin title-size() {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
 .home {
 
     &__hero {
@@ -47,6 +54,7 @@
         }
 
         &-title {
+            font-size: 24px;
             line-height: 36px;
             margin-bottom: 0;
             @include media-breakpoint-sm {
@@ -83,6 +91,10 @@
                     margin-top: 3.5rem;
                 }
 
+                &-title {
+                    @include title-size();
+                }
+
                 &-description {
                     font-size: 14px;
                     line-height: 22px;
@@ -101,6 +113,7 @@
 
         &-title {
             line-height: 36px;
+            font-size: 24px;
             margin: 0;
             @include media-breakpoint-md {
                 font-size: 18px;
@@ -158,6 +171,7 @@
 
         &-title {
             line-height: 36px;
+            font-size: 24px;
             margin-bottom: 7rem;
             max-width: 400px;
             width: 100%;
@@ -183,6 +197,7 @@
             }
 
             &-name {
+                @include title-size();
                 margin: 0 0 0 1.5rem;
             }
 

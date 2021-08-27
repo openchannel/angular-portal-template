@@ -71,7 +71,7 @@ definitions:
           - git remote set-url origin git@github.com:openchannel/angular-portal-template.git
           - git remote -v
           - git push origin master:main
-          - git push origin --tags
+          - git push origin --force --tags
     - step: &up-libs-version
         name: "Up repository and libs version"
         script:
