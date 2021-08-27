@@ -6,13 +6,12 @@ import {
     AppVersionService,
     ChartService,
     CreateAppModel,
-    FileUploadDownloadService,
     TitleService,
     TypeModel,
     UpdateAppVersionModel,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,12 +20,12 @@ import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import {
-    FullAppData,
-    ChartStatisticModel,
-    ChartOptionsChange,
-    ChartLayoutTypeModel,
-    AppTypeModel,
     AppTypeFieldModel,
+    AppTypeModel,
+    ChartLayoutTypeModel,
+    ChartOptionsChange,
+    ChartStatisticModel,
+    FullAppData,
 } from '@openchannel/angular-common-components';
 
 @Component({
@@ -77,7 +76,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     appTypeFormGroup: FormGroup;
     appFields: TypeModel<AppTypeFieldModel>;
     savedFields: TypeModel<AppTypeFieldModel>;
-    generatedForm: FormGroup;
+    generatedForm: FormGroup | FormArray;
 
     draftSaveInProcess = false;
     submitInProcess = false;
@@ -93,6 +92,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     count;
     countText;
     downloadUrl = './assets/img/cloud-download.svg';
+    currentStep = 1;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -120,7 +120,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private titleService: TitleService,
         private toaster: ToastrService,
         public chartService: ChartService,
-        public uploadFileService: FileUploadDownloadService,
     ) {}
 
     ngOnInit(): void {
@@ -147,6 +146,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
+    onCancelClick(): void {
+        this.router.navigate(['manage']).then();
+    }
+
     initAppDataGroup(): void {
         this.appTypeFormGroup = this.fb.group({
             type: ['', Validators.required],
@@ -154,14 +157,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     // getting app data from the form on form changing
-    getAppFormData(fields: any): void {
+    onFormDataUpdated(fields: any): void {
         this.appFormData = fields;
     }
 
     openConfirmationModal(): void {
         if (this.generatedForm) {
             this.generatedForm.markAllAsTouched();
-
             if (!(this.generatedForm.invalid || this.submitInProcess || this.draftSaveInProcess)) {
                 const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
 
@@ -251,7 +253,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }
     }
 
-    publishApp(appId: string, appVersion: number) {
+    publishApp(appId: string, appVersion: number): void {
         this.appsService
             .publishAppByVersion(appId, {
                 version: appVersion,
@@ -291,7 +293,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         };
     }
 
-    getAppData() {
+    getAppData(): void {
         this.appId = this.activeRoute.snapshot.paramMap.get('appId');
         this.appVersion = Number(this.activeRoute.snapshot.paramMap.get('versionId'));
 
@@ -337,7 +339,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             );
     }
 
-    setGeneratedForm(form: FormGroup): void {
+    setGeneratedForm(form: FormGroup | FormArray): void {
         this.generatedForm = form;
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
@@ -373,22 +375,22 @@ export class AppNewComponent implements OnInit, OnDestroy {
             );
     }
 
-    hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue) {
+    hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue): boolean {
         return this.pageType === pageType && this.parentApp?.status?.value === appStatus;
     }
 
-    hasParentAppStatus(appStatus: AppStatusValue) {
+    hasParentAppStatus(appStatus: AppStatusValue): boolean {
         return this.parentApp?.parent?.status?.value === appStatus;
     }
 
-    isOutgoAllowed() {
+    isOutgoAllowed(): boolean {
         if (this.disableOutgo) {
             return true;
         }
         return !(this.generatedForm && this.generatedForm.dirty);
     }
 
-    goToAppManagePage() {
+    goToAppManagePage(): void {
         this.router.navigate(['/manage']).then();
     }
 
@@ -450,7 +452,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             });
     }
 
-    private mergeWithSaveData(savedData: any, newFields: AppTypeFieldModel[]) {
+    private mergeWithSaveData(savedData: any, newFields: AppTypeFieldModel[]): void {
         if (savedData && this.savedFields) {
             this.mergeField(this.savedFields.fields, newFields, savedData);
         }
@@ -459,7 +461,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         };
     }
 
-    private mergeField(originalFields: AppTypeFieldModel[], newFields: AppTypeFieldModel[], savedData: any) {
+    private mergeField(originalFields: AppTypeFieldModel[], newFields: AppTypeFieldModel[], savedData: any): void {
         if (savedData) {
             originalFields.forEach(originalField => {
                 const newField = newFields.find(
@@ -535,7 +537,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     private getPageTitleByPage(currentPage: string): 'Create app' | 'Edit app' {
-        if ('create' === currentPage) {
+        if (currentPage === 'create') {
             return 'Create app';
         }
         return 'Edit app';
@@ -550,15 +552,28 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     private isValidAppName(): boolean {
-        const controlName = this.generatedForm?.get('name');
-        if (controlName) {
-            controlName.markAsTouched();
-            return controlName.valid;
+        if (this.generatedForm instanceof FormGroup) {
+            const controlName = this.generatedForm.get('name');
+            if (controlName) {
+                controlName.markAsTouched();
+                return controlName.valid;
+            }
         }
-        return false;
+        for (let i = 0; i < this.generatedForm.controls.length; i++) {
+            const nameFormControl = (this.generatedForm.controls[i] as AbstractControl).get('name');
+            if (nameFormControl) {
+                nameFormControl.markAsTouched();
+                if (nameFormControl.valid) {
+                    return true;
+                } else {
+                    this.currentStep = i + 1;
+                    return false;
+                }
+            }
+        }
     }
 
-    private showSuccessToaster(saveType: 'submit' | 'draft') {
+    private showSuccessToaster(saveType: 'submit' | 'draft'): void {
         switch (saveType ? saveType : '') {
             case 'draft': {
                 if (this.hasPageAndAppStatus('update', 'approved')) {
