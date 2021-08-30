@@ -7,7 +7,7 @@ import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { siteConfig } from '../assets/data/siteConfig';
 import { CmsContentService } from '@core/services/cms-content-service/cms-content-service.service';
-import { MetaDefinition } from '@angular/platform-browser';
+import { PortalMetaTagService } from '@core/services/meta-tag-service/meta-tag-service.service';
 
 @Component({
     selector: 'app-root',
@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
         private siteService: SiteConfigService,
         public loadingBar: LoadingBarService,
         private titleService: TitleService,
+        private metaTagService: PortalMetaTagService,
         private cmsService: CmsContentService,
     ) {
         this.loader = this.loadingBar.useRef();
@@ -51,13 +52,11 @@ export class AppComponent implements OnInit {
             .getContentByPaths({
                 siteTitle: 'site.title',
                 siteFaviconHref: 'site.favicon',
-                siteMetaTags: 'meta-tags',
             })
             .subscribe(content => {
                 const config = { ...siteConfig };
                 config.title = content.siteTitle as string;
                 config.favicon.href = content.siteFaviconHref as string;
-                config.metaTags = (content.siteMetaTags as MetaDefinition[]) || config.metaTags;
                 this.siteService.initSiteConfiguration(config);
             });
     }
