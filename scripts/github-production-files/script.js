@@ -7,7 +7,7 @@
  * 2) Rename from environment.prod.ts to environment.ts and remove another environment.<?>.ts files.
  */
 
-fs = require('fs');
+const fs = require('fs');
 
 const replaceFileConfig = {
   scanFolder: '../../',
@@ -36,23 +36,25 @@ function replaceOnlyGitHubFiles(files) {
 readFolder(modifyEnvFilesConfig.scanFolder, setupPrimaryEnvironmentFile);
 
 function setupPrimaryEnvironmentFile(files) {
-  // remove not production environments
-  files
-  .filter(fileName => fileName !== modifyEnvFilesConfig.primaryEnvFile)
-  .forEach(fileName => {
-    const removeFile = `${modifyEnvFilesConfig.scanFolder}/${fileName}`;
-    fs.unlink(removeFile, error => {
-      if(error) {
-        console.error(`Can\'t remove file : ${removeFile}`);
-        process.exit(1);
-      }
+  if(files.length !== 1) {
+    // remove not production environments
+    files
+    .filter(fileName => fileName !== modifyEnvFilesConfig.primaryEnvFile)
+    .forEach(fileName => {
+      const removeFile = `${modifyEnvFilesConfig.scanFolder}/${fileName}`;
+      fs.unlink(removeFile, error => {
+        if (error) {
+          console.error(`Can\'t remove file : ${removeFile}`);
+          process.exit(1);
+        }
+      })
     })
-  })
 
-  // rename production environments to default
-  const oldFilePath = `${modifyEnvFilesConfig.scanFolder}${modifyEnvFilesConfig.primaryEnvFile}`;
-  const newFilePath = `${modifyEnvFilesConfig.scanFolder}environment.ts`;
-  renameFile(oldFilePath, newFilePath);
+    // rename production environments to default
+    const oldFilePath = `${modifyEnvFilesConfig.scanFolder}${modifyEnvFilesConfig.primaryEnvFile}`;
+    const newFilePath = `${modifyEnvFilesConfig.scanFolder}environment.ts`;
+    renameFile(oldFilePath, newFilePath);
+  }
 }
 
 // utils
