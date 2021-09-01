@@ -10,12 +10,12 @@
 const fs = require('fs');
 
 const replaceFileConfig = {
-  scanFolder: '../../',
+  scanFolder: './',
   searchKey: '-github'
 }
 
 const modifyEnvFilesConfig = {
-  scanFolder: '../../src/environments/',
+  scanFolder: './src/environments/',
   primaryEnvFile: 'environment.prod.ts'
 }
 
