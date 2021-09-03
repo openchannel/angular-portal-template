@@ -4,7 +4,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpConfigInterceptor } from '@core/interceptors/httpconfig.interceptor';
-import { CustomHttpClientXsrfModule, OcCommonServiceModule } from '@openchannel/angular-common-services';
+import { CustomHttpClientXsrfModule, NetlifyPrerenderModule, OcCommonServiceModule } from '@openchannel/angular-common-services';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -43,6 +43,7 @@ export const OC_API_URL = getApiUrl();
         OAuthModule.forRoot(),
         ToastrModule.forRoot(),
         CustomHttpClientXsrfModule.withOptions({ headerName: 'X-CSRF-TOKEN', apiUrl: OC_API_URL }),
+        NetlifyPrerenderModule.withOptions(),
         SharedModule,
         LoadingBarModule,
         OcMarketComponentsModule,
