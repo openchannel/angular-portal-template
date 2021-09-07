@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FileUploadDownloadService } from '@openchannel/angular-common-services';
 import { FileUploaderService, FileDetails } from '@openchannel/angular-common-components';
 import { Observable } from 'rxjs';
-import { HttpResponse, HttpUploadProgressEvent } from '@angular/common/http';
+import { HttpHeaders, HttpResponse, HttpUploadProgressEvent } from '@angular/common/http';
 
 @Injectable()
 export class FileService extends FileUploaderService {
@@ -19,6 +19,6 @@ export class FileService extends FileUploaderService {
     }
 
     fileDetailsRequest(fileId: string): Observable<FileDetails> {
-        return this.fileUploaderService.downloadFileDetails(fileId);
+        return this.fileUploaderService.downloadFileDetails(fileId, new HttpHeaders({ 'x-handle-error': '404' }));
     }
 }
