@@ -3,7 +3,6 @@ import { MetaTagsPageConfig, SiteConfig} from '@openchannel/angular-common-servi
 export const metaTags: MetaTagsPageConfig = {
     defaultMetaTags: [
         { name: 'author', content: 'OpenChannel' },
-        { name: 'description', content: 'OpenChannel' },
         { name: 'generator', content: 'OpenChannel' },
         { name: 'og:url', definitionPath: 'windowUrl' },
     ],
