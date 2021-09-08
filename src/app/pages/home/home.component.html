@@ -9,7 +9,7 @@
 </div>
 <div class="home__services container d-flex justify-content-between flex-column flex-md-row">
     <section class="home__services-intro col-md-5">
-        <h4 class="home__services-title">Why list on the OpenChannel Marketplace?</h4>
+        <h2 class="home__services-title">Why list on the OpenChannel Marketplace?</h2>
         <p class="home__services-description text-secondary">
             Build traction for your open source project or software
             company by listing your 1-Click Application in the Open Channel Marketplace.
@@ -23,7 +23,7 @@
                 <div class="feature-icon">
                     <img src="../../../assets/img/app-icon1.svg" alt="">
                 </div>
-                <p class="font-med ml-2 mb-0">Reach more users</p>
+                <h3 class="home__services-card-title ml-2 mb-0">Reach more users</h3>
             </div>
             <p class="home__services-card-description text-secondary mt-2 mb-0">
                 Open Channel global community of 4 million developers relies heavily on open source
@@ -36,7 +36,7 @@
                 <div class="feature-icon">
                     <img src="../../../assets/img/icon-placeholder.svg" alt="">
                 </div>
-                <p class="font-med ml-2 mb-0">Create new revenue streams</p>
+                <h3 class="home__services-card-title ml-2 mb-0">Create new revenue streams</h3>
             </div>
             <p class="home__services-card-description text-secondary mt-2 mb-0">
                 You can sell licenses directly to users now and, we plan to make new billing
@@ -48,7 +48,7 @@
                 <div class="feature-icon">
                     <img src="../../../assets/img/icon-placeholder2.svg" alt="">
                 </div>
-                <p class="font-med ml-2 mb-0">Find new committers</p>
+                <h3 class="home__services-card-title ml-2 mb-0">Find new committers</h3>
             </div>
             <p class="home__services-card-description text-secondary mt-2 mb-0">
                 Putting your 1-Click App in the DigitalOcean Marketplace introduces your
@@ -60,9 +60,9 @@
 </div>
 <div class="home__technology bg-container bg-a">
     <div class="container d-flex flex-column align-items-center justify-content-center">
-        <h4 class="home__technology-title text-center">
+        <h2 class="home__technology-title text-center">
             How developers are using the Open Channel <br> Marketplace?
-        </h4>
+        </h2>
         <div class="home__technology-list row">
             <div class="home__technology-card p-2">
                 <div class="row mx-0 align-items-center">
@@ -116,12 +116,12 @@
     </div>
 </div>
 <div class="home__approach container d-flex flex-column">
-    <h4 class="home__approach-title row">Why list on the OpenChannel Marketplace?</h4>
+    <h2 class="home__approach-title row">Why list on the OpenChannel Marketplace?</h2>
     <div class="row justify-content-between">
         <div class="home__approach-card col-md-5">
             <div class="home__approach-card-heading align-items-center flex-nowrap">
                 <span class="list-number">1</span>
-                <p class="home__approach-card-name font-med">Register to become a Marketplace Vendor</p>
+                <h3 class="home__approach-card-name">Register to become a Marketplace Vendor</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
                 Just click <a href="" class="home__approach-card-link link font-med">Become a Seller</a> and give us a few pieces
@@ -132,7 +132,7 @@
         <div class="home__approach-card col-md-5">
             <div class="home__approach-card-heading align-items-center flex-nowrap">
                 <span class="list-number">2</span>
-                <p class="home__approach-card-name font-med">Build your image</p>
+                <h3 class="home__approach-card-name">Build your image</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
                 Quickly and simply build a VM image on Open Channel manually,
@@ -147,7 +147,7 @@
         <div class="home__approach-card col-md-5">
             <div class="home__approach-card-heading align-items-center flex-nowrap">
                 <span class="list-number">3</span>
-                <p class="home__approach-card-name font-med">Give us the details about your listing</p>
+                <h3 class="home__approach-card-name">Give us the details about your listing</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
                 Provide the details and your 1-Click Apps on Droplet VMs and Open Channel
@@ -158,7 +158,7 @@
         <div class="home__approach-card col-md-5">
             <div class="home__approach-card-heading align-items-center flex-nowrap">
                 <span class="list-number">4</span>
-                <p class="home__approach-card-name font-med">Engage with the community</p>
+                <h3 class="home__approach-card-name">Engage with the community</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
                 We encourage you to connect with your users by sharing links to
@@ -172,6 +172,7 @@
 <div class="home__register bg-container bg-a">
     <div class="container">
         <oc-app-get-started [getStartedHeader]="cmsData.bottomCalloutHeader"
+                            getStartedHeadingTag="h2"
                             [getStartedImage]="cmsData.bottomCalloutImageURL"
                             [getStartedDescription]="cmsData.bottomCalloutDescription"
                             [getStartedButtonText]="cmsData.bottomCalloutButtonText"
