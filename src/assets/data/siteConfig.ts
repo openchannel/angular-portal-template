@@ -1,13 +1,18 @@
-import { SiteConfig } from '@openchannel/angular-common-services';
+import { MetaTagsPageConfig, SiteConfig} from '@openchannel/angular-common-services';
+
+export const metaTags: MetaTagsPageConfig = {
+    defaultMetaTags: [
+        { name: 'author', content: 'OpenChannel' },
+        { name: 'generator', content: 'OpenChannel' },
+        { name: 'og:url', definitionPath: 'windowUrl' },
+    ],
+    pages: [],
+};
 
 export const siteConfig: SiteConfig = {
     title: '',
     tagline: 'All the apps and integrations that you need',
-    metaTags: [
-        { name: 'author', content: 'OpenChannel' },
-        { name: 'description', content: 'OpenChannel' },
-        { name: 'generator', content: 'OpenChannel' },
-    ],
+    metaTags: [],
     favicon: {
         href: '',
         type: 'image/x-icon',
