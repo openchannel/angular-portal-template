@@ -58,41 +58,43 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         this.loader.start();
 
+        this.oauthService.events.pipe(takeUntil(this.destroy$)).subscribe(oAuthEvent => {
+            if (oAuthEvent.type === 'token_received') {
+                this.loader.start();
+                this.openIdAuthService
+                    .login(new LoginRequest(this.oauthService.getIdToken(), this.oauthService.getAccessToken()))
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe((response: LoginResponse) => {
+                        this.processLoginResponse(response, this.oauthService.state);
+                        this.loader.complete();
+                    });
+            }
+        });
+
         this.openIdAuthService
             .getAuthConfig()
             .pipe(
                 tap(value => (this.isSsoLogin = !!value)),
-                filter(value => !!value),
+                filter(value => value),
                 takeUntil(this.destroy$),
             )
             .subscribe(
                 authConfig => {
                     this.oauthService.configure({
                         ...authConfig,
+                        responseType: authConfig.grantType === 'authorization_code' ? 'code' : '',
                         redirectUri: authConfig.redirectUri || window.location.origin + '/login',
                     });
 
                     this.oauthService
                         .loadDiscoveryDocumentAndLogin({
-                            onTokenReceived: receivedTokens => {
-                                this.loader.start();
-                                this.openIdAuthService
-                                    .login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
-                                    .pipe(takeUntil(this.destroy$))
-                                    .subscribe((response: LoginResponse) => {
-                                        this.processLoginResponse(response, this.oauthService.state);
-                                        this.loader.complete();
-                                    });
-                            },
                             state: this.returnUrl,
                         })
                         .then(() => {
                             this.loader.complete();
                         });
                 },
-                err => {
-                    this.loader.complete();
-                },
+                () => this.loader.complete(),
                 () => this.loader.complete(),
             );
 
