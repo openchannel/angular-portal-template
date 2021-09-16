@@ -13,7 +13,8 @@
                 (changeChartOptions)="updateChartData($event)">
         </oc-chart>
     </div>
-    <form [formGroup]="appTypeFormGroup">
+    <form [formGroup]="appTypeFormGroup"
+          *ngIf="currentStep === 1">
         <div class="d-flex flex-column flex-md-row align-items-md-center mb-2">
             <oc-label text="Choose your app type" required="true"
                       class="text-nowrap col-md-3 mr-1 mb-1 mb-md-0 pl-0"></oc-label>
