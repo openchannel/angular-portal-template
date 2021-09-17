@@ -17,6 +17,18 @@ AT-379 - A search engine can be blocked from crawling the site based on search e
 ### Bug<br>
 AT-1511 - [Portal / Market] [Alias Email] Email field does not accepts the alias emails.<br>
 AT-1406 - [Dev1][Portal] Getting error when selecting an App Type.<br>
+## Release notes - template3-portal-frontend - Version 1.35.0 (9/15/2021)<br>
+### Bug<br>
+AT-1509 - [Reset Password] Getting wrong password validation when entered password does not match expected criteria.<br>
+AT-1497 - For components, fix as many moderate and high package security vulnerabilities as is convenient<br>
+AT-1496 - For marketplace, fix as many moderate and high package security vulnerabilities as is convenient<br>
+AT-1495 - For partner portal, fix as many moderate and high package security vulnerabilities as is convenient<br>
+### Story<br>
+AT-379 - A search engine can be blocked from crawling the site based on search engine discoverability property<br>
+## Release notes - template3-portal-frontend - Version 1.34.0 (9/13/2021)<br>
+### Bug<br>
+AT-1511 - [Portal / Market] [Alias Email] Email field does not accepts the alias emails.<br>
+AT-1406 - [Dev1][Portal] Getting error when selecting an App Type.<br>
 ## Release notes - template3-portal-frontend - Version 1.33.0 (9/8/2021)<br>
 ### Task<br>
 AT-1420 - Make the developerInviteTemplateId and userInviteTemplateId configurable and only allow sending developerInviteTemplateId/userInviteTemplateId, type, roles and email parameters in CAP endpoint<br>
