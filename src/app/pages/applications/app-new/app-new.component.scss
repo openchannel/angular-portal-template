@@ -5,7 +5,10 @@
 }
 
 .main-container {
-    width: 950px;
+    width: 1200px;
+    @include media-breakpoint-xl {
+        width: 950px;
+    }
     @include media-breakpoint-sm {
         width: auto;
     }
