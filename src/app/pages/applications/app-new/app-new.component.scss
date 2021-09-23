@@ -6,7 +6,7 @@
 
 .main-container {
     width: 1200px;
-    @include media-breakpoint-xl {
+    @include media-breakpoint-xxl {
         width: 950px;
     }
     @include media-breakpoint-sm {
