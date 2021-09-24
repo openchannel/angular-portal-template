@@ -26,6 +26,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     forgotPwdUrl = '/forgot-password';
     signIn = new ComponentsUserLoginModel();
     inProcess = false;
+    isLoading = false;
+
     isSsoLogin = true;
 
     cmsData = {
@@ -35,6 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
     private returnUrl: string;
+    private authConfig: any;
 
     constructor(
         public loadingBar: LoadingBarService,
@@ -51,48 +54,55 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['manage']);
+            this.router.navigate(['']).then();
         }
 
         this.retrieveRedirectUrl();
 
         this.loader.start();
 
+        this.oauthService.events.pipe(takeUntil(this.destroy$)).subscribe(oAuthEvent => {
+            if (oAuthEvent.type === 'token_received') {
+                this.loader.start();
+                this.openIdAuthService
+                    .login(new LoginRequest(this.oauthService.getIdToken(), this.oauthService.getAccessToken()))
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe((response: LoginResponse) => {
+                        const redirectUri =
+                            this.authConfig.grantType === 'authorization_code'
+                                ? decodeURIComponent(this.oauthService.state)
+                                : this.oauthService.state;
+                        this.processLoginResponse(response, redirectUri);
+                        this.loader.complete();
+                    });
+            }
+        });
+
         this.openIdAuthService
             .getAuthConfig()
             .pipe(
                 tap(value => (this.isSsoLogin = !!value)),
-                filter(value => !!value),
+                filter(value => value),
                 takeUntil(this.destroy$),
             )
             .subscribe(
                 authConfig => {
+                    this.authConfig = authConfig;
                     this.oauthService.configure({
                         ...authConfig,
-                        redirectUri: authConfig.redirectUri || window.location.origin + '/login',
+                        responseType: authConfig.grantType === 'authorization_code' ? 'code' : '',
+                        redirectUri: window.location.origin + '/login',
                     });
 
                     this.oauthService
                         .loadDiscoveryDocumentAndLogin({
-                            onTokenReceived: receivedTokens => {
-                                this.loader.start();
-                                this.openIdAuthService
-                                    .login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
-                                    .pipe(takeUntil(this.destroy$))
-                                    .subscribe((response: LoginResponse) => {
-                                        this.processLoginResponse(response, this.oauthService.state);
-                                        this.loader.complete();
-                                    });
-                            },
                             state: this.returnUrl,
                         })
                         .then(() => {
                             this.loader.complete();
                         });
                 },
-                err => {
-                    this.loader.complete();
-                },
+                () => (this.isSsoLogin = false),
                 () => this.loader.complete(),
             );
 
@@ -124,7 +134,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.nativeLoginService
             .sendActivationCode(email)
             .pipe(takeUntil(this.destroy$))
-            .subscribe(value => {
+            .subscribe(() => {
                 this.toastService.success('Activation email was sent to your inbox!');
             });
     }
