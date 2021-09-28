@@ -5,6 +5,7 @@ import {
     LoginRequest,
     LoginResponse,
     NativeLoginService,
+    SiteAuthConfig,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, takeUntil, tap } from 'rxjs/operators';
@@ -26,6 +27,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     forgotPwdUrl = '/forgot-password';
     signIn = new ComponentsUserLoginModel();
     inProcess = false;
+    isLoading = false;
+
     isSsoLogin = true;
 
     cmsData = {
@@ -35,6 +38,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
     private returnUrl: string;
+    private redirectUri: string = window.location.origin + '/login';
+    private authConfig: SiteAuthConfig;
 
     constructor(
         public loadingBar: LoadingBarService,
@@ -51,12 +56,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
         if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['manage']);
+            this.router.navigate(['']).then();
         }
 
-        this.retrieveRedirectUrl();
-
         this.loader.start();
+
+        this.retrieveRedirectUrl();
+        this.setupLoginFlowResponseProcess();
 
         this.openIdAuthService
             .getAuthConfig()
@@ -67,32 +73,35 @@ export class LoginComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 authConfig => {
-                    this.oauthService.configure({
-                        ...authConfig,
-                        redirectUri: authConfig.redirectUri || window.location.origin + '/login',
-                    });
+                    this.authConfig = authConfig;
 
-                    this.oauthService
-                        .loadDiscoveryDocumentAndLogin({
-                            onTokenReceived: receivedTokens => {
-                                this.loader.start();
-                                this.openIdAuthService
-                                    .login(new LoginRequest(receivedTokens.idToken, receivedTokens.accessToken))
-                                    .pipe(takeUntil(this.destroy$))
-                                    .subscribe((response: LoginResponse) => {
-                                        this.processLoginResponse(response, this.oauthService.state);
-                                        this.loader.complete();
-                                    });
-                            },
-                            state: this.returnUrl,
-                        })
-                        .then(() => {
-                            this.loader.complete();
-                        });
+                    const code = this.route.snapshot.queryParamMap.get('code');
+                    if (code && this.isClientAccessTypeConfidential()) {
+                        if (this.checkState()) {
+                            this.openIdAuthService
+                                .verifyCode(code, this.redirectUri)
+                                .pipe(takeUntil(this.destroy$))
+                                .subscribe(response => {
+                                    this.processLoginResponse(response, this.oauthService.state);
+                                    this.loader.complete();
+                                });
+                        } else {
+                            // tslint:disable-next-line:no-console
+                            console.error('State is incorrect');
+                        }
+                    } else {
+                        this.configureOAuthService();
+
+                        this.oauthService
+                            .loadDiscoveryDocumentAndLogin({
+                                state: this.returnUrl,
+                            })
+                            .then(() => {
+                                this.loader.complete();
+                            });
+                    }
                 },
-                err => {
-                    this.loader.complete();
-                },
+                () => (this.isSsoLogin = false),
                 () => this.loader.complete(),
             );
 
@@ -104,7 +113,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    login(event: any): void {
+    login(event: boolean): void {
         if (event === true) {
             this.inProcess = true;
             this.nativeLoginService
@@ -124,18 +133,58 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.nativeLoginService
             .sendActivationCode(email)
             .pipe(takeUntil(this.destroy$))
-            .subscribe(value => {
+            .subscribe(() => {
                 this.toastService.success('Activation email was sent to your inbox!');
             });
     }
 
+    private setupLoginFlowResponseProcess(): void {
+        this.oauthService.events.pipe(takeUntil(this.destroy$)).subscribe(oAuthEvent => {
+            if (oAuthEvent.type === 'token_received') {
+                this.loader.start();
+                this.openIdAuthService
+                    .login(new LoginRequest(this.oauthService.getIdToken(), this.oauthService.getAccessToken()))
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe((response: LoginResponse) => {
+                        const redirectUri =
+                            this.authConfig.grantType === 'authorization_code'
+                                ? decodeURIComponent(this.oauthService.state)
+                                : this.oauthService.state;
+                        this.processLoginResponse(response, redirectUri);
+                        this.loader.complete();
+                    });
+            }
+        });
+    }
+
+    private checkState(): boolean {
+        const stateParam = this.route.snapshot.queryParamMap.get('state');
+        const state = stateParam.split(';')[0];
+        this.returnUrl = stateParam.split(';')[1];
+
+        return state === sessionStorage.getItem('nonce');
+    }
+
+    private configureOAuthService(): void {
+        this.oauthService.configure({
+            ...this.authConfig,
+            responseType: this.authConfig.grantType === 'implicit' ? '' : 'code',
+            disablePKCE: this.isClientAccessTypeConfidential(),
+            redirectUri: this.redirectUri,
+        });
+    }
+
+    private isClientAccessTypeConfidential(): boolean {
+        return this.authConfig.clientAccessType === 'confidential';
+    }
+
     private retrieveRedirectUrl(): void {
-        this.returnUrl = this.route.snapshot.queryParams.returnUrl || '/manage';
+        this.returnUrl = this.route.snapshot.queryParams.returnUrl || '';
     }
 
     private processLoginResponse(response: LoginResponse, redirectUrl: string): void {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigateByUrl(redirectUrl || 'manage');
+        this.router.navigate([redirectUrl || '']).then(() => {});
     }
 
     private initCMSData(): void {
