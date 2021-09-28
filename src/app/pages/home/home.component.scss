@@ -1,7 +1,6 @@
 @import '~@openchannel/angular-common-components/assets/styles/theme';
 @import 'src/assets/styles/mixins';
 
-
 @mixin title-size() {
     font-size: 16px;
     font-weight: 400;
@@ -131,14 +130,14 @@
             .home__technology-card {
                 background-color: #fff;
                 width: 32%;
+                padding: 2rem;
                 @include media-breakpoint-md {
                     width: 100%;
-                    margin-right: 0;
-                    margin-bottom: 1rem;
+                    margin: 0 2rem 2rem;
                 }
 
                 &:last-child {
-                    margin-right: 0;
+                    margin-bottom: 0;
                 }
 
                 .technology-icon {
@@ -156,6 +155,9 @@
                     font-size: 14px;
                     height: 72px;
                     overflow-y: hidden;
+                    @include media-breakpoint-md {
+                        height: 64px;
+                    }
                 }
             }
         }
