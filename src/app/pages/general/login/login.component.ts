@@ -81,10 +81,13 @@ export class LoginComponent implements OnInit, OnDestroy {
                             this.openIdAuthService
                                 .verifyCode(code, this.redirectUri)
                                 .pipe(takeUntil(this.destroy$))
-                                .subscribe(response => {
-                                    this.processLoginResponse(response, this.returnUrl);
-                                    this.loader.complete();
-                                });
+                                .subscribe(
+                                    response => {
+                                        this.processLoginResponse(response, this.returnUrl);
+                                        this.loader.complete();
+                                    },
+                                    () => this.oauthService.logOut(true),
+                                );
                         } else {
                             // tslint:disable-next-line:no-console
                             console.error('State is incorrect');
@@ -145,14 +148,17 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.openIdAuthService
                     .login(new LoginRequest(this.oauthService.getIdToken(), this.oauthService.getAccessToken()))
                     .pipe(takeUntil(this.destroy$))
-                    .subscribe((response: LoginResponse) => {
-                        const redirectUri =
-                            this.authConfig.grantType === 'authorization_code'
-                                ? decodeURIComponent(this.oauthService.state)
-                                : this.oauthService.state;
-                        this.processLoginResponse(response, redirectUri);
-                        this.loader.complete();
-                    });
+                    .subscribe(
+                        (response: LoginResponse) => {
+                            const redirectUri =
+                                this.authConfig.grantType === 'authorization_code'
+                                    ? decodeURIComponent(this.oauthService.state)
+                                    : this.oauthService.state;
+                            this.processLoginResponse(response, redirectUri);
+                            this.loader.complete();
+                        },
+                        () => this.oauthService.logOut(true),
+                    );
             }
         });
     }
