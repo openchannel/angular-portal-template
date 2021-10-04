@@ -4,7 +4,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpConfigInterceptor } from '@core/interceptors/httpconfig.interceptor';
-import { CustomHttpClientXsrfModule, NetlifyPrerenderModule, OcCommonServiceModule } from '@openchannel/angular-common-services';
+import { CustomHttpClientXsrfModule, NetlifyPrerenderModule, OcCommonServiceModule, AuthHolderService} from '@openchannel/angular-common-services';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -21,14 +21,7 @@ import { FileService } from '@core/services/file.service';
 import { OcAppsSearchService } from '@core/services/oc-apps-search.service';
 import { AppsSearchService } from '@openchannel/angular-common-components/src/lib/form-components';
 
-function getApiUrl(): string {
-    if (environment.enableProxy) {
-        return `${window.origin}/client-api/`;
-    }
-    return environment.apiUrl;
-}
-
-export const OC_API_URL = getApiUrl();
+const apiURl = environment.enableProxy ? `${window.origin}/client-api/` : environment.apiUrl;
 
 @NgModule({
     declarations: [AppComponent, HomeComponent, NotFoundComponent],
@@ -38,18 +31,23 @@ export const OC_API_URL = getApiUrl();
         AppRoutingModule,
         BrowserModule,
         BrowserAnimationsModule,
-        OcCommonServiceModule.forRoot(OC_API_URL),
+        OcCommonServiceModule.forRoot(apiURl),
         DragDropModule,
         OAuthModule.forRoot(),
         ToastrModule.forRoot(),
-        CustomHttpClientXsrfModule.withOptions({ headerName: 'X-CSRF-TOKEN', apiUrl: OC_API_URL }),
+        CustomHttpClientXsrfModule.withOptions({ headerName: 'X-CSRF-TOKEN', apiUrl: apiURl }),
         NetlifyPrerenderModule.withOptions(),
         SharedModule,
         LoadingBarModule,
         OcMarketComponentsModule,
     ],
     providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useFactory: (authHolderService: AuthHolderService): HttpConfigInterceptor => new HttpConfigInterceptor(authHolderService, apiURl),
+            deps: [AuthHolderService],
+            multi: true,
+        },
         { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
         { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' },
         { provide: FileUploaderService, useClass: FileService },
