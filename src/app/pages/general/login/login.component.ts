@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             .getAuthConfig()
             .pipe(
                 tap(value => (this.isSsoLogin = !!value)),
-                filter(value => value),
+                filter(value => !!value),
                 takeUntil(this.destroy$),
             )
             .subscribe(
