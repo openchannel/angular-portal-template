@@ -24,6 +24,7 @@ import {
     AppListing,
     AppListMenuAction,
 } from '@openchannel/angular-common-components';
+import { SortChosen } from '@openchannel/angular-common-components/src/lib/portal-components/oc-app-table/oc-app-table.component';
 
 @Component({
     selector: 'app-app-developer',
@@ -118,7 +119,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         this.getApps(true);
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
     }
@@ -204,11 +205,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                             value.status = value.parent && value.parent.status ? value.parent.status : value.status;
                         });
 
-                        if (this.page === 1) {
-                            this.appListConfig.data.list = this.getAppsChildren(parentList, sort);
-                        } else {
-                            this.appListConfig.data.list = [...this.appListConfig.data.list, ...this.getAppsChildren(parentList, sort)];
-                        }
+                        this.appListConfig.data.list =
+                            this.page === 1
+                                ? this.getAppsChildren(parentList, sort)
+                                : [...this.appListConfig.data.list, ...this.getAppsChildren(parentList, sort)];
+
                         this.isAppProcessing = false;
                         this.loader.complete();
                     },
@@ -278,97 +279,18 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     .then();
                 break;
             case 'DELETE':
-                const modalDelRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-
-                modalDelRef.componentInstance.type = 'delete';
-                modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
-                modalDelRef.componentInstance.modalTitle = 'Delete app';
-                modalDelRef.componentInstance.buttonText = 'Yes, delete it';
-
-                modalDelRef.result.then(
-                    res => {
-                        if (res && res === 'success') {
-                            if (menuEvent.isChild) {
-                                this.appsVersionService
-                                    .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
-                                    .pipe(takeUntil(this.destroy$))
-                                    .subscribe(resp => {
-                                        if (resp.code && resp.code !== 200) {
-                                            this.toaster.error(resp.message);
-                                        } else {
-                                            this.appListConfig.data.pageNumber = 0;
-                                            this.toaster.success('Your app has been deleted');
-                                            this.getApps(true);
-                                        }
-                                    });
-                            } else {
-                                this.appService
-                                    .deleteApp(menuEvent.appId)
-                                    .pipe(takeUntil(this.destroy$))
-                                    .subscribe(resp => {
-                                        if (resp.code && resp.code !== 200) {
-                                            this.toaster.error(resp.message);
-                                        } else {
-                                            this.appListConfig.data.pageNumber = 0;
-                                            this.toaster.success('Your app has been deleted');
-                                            this.getApps(true);
-                                        }
-                                    });
-                            }
-                        }
-                    },
-                    () => {},
-                );
+                this.deleteAppAction(menuEvent);
                 break;
             case 'SUBMIT':
                 this.submitApp(menuEvent);
                 break;
             case 'UNSUSPEND':
-                const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-
-                modalUnsuspendRef.componentInstance.type = 'unsuspend';
-                modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
-                modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
-                modalUnsuspendRef.componentInstance.buttonText = 'Yes, unsuspend it';
-
-                modalUnsuspendRef.result.then(
-                    res => {
-                        if (res && res === 'success') {
-                            this.appService
-                                .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
-                                .pipe(takeUntil(this.destroy$))
-                                .subscribe(resp => {
-                                    this.appListConfig.data.pageNumber = 0;
-                                    this.toaster.success('Your app has been unsuspended');
-                                    this.getApps(true);
-                                });
-                        }
-                    },
-                    () => {},
-                );
+                this.unsuspendAppAction(menuEvent);
                 break;
             case 'SUSPEND':
-                if (this.appListConfig.data.list.find(app => app.appId === menuEvent.appId).status.value === 'approved') {
-                    const modalSuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-
-                    modalSuspendRef.componentInstance.type = 'suspend';
-                    modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
-                    modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
-                    modalSuspendRef.componentInstance.buttonText = 'Yes, suspend it';
-
-                    modalSuspendRef.result.then(res => {
-                        if (res && res === 'success') {
-                            this.appService
-                                .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
-                                .pipe(takeUntil(this.destroy$))
-                                .subscribe(resp => {
-                                    this.appListConfig.data.pageNumber = 0;
-                                    this.toaster.success('Your app has been suspended');
-                                    this.getApps(true);
-                                });
-                        }
-                    });
-                }
+                this.suspendAppAction(menuEvent);
+                break;
+            default:
                 break;
         }
     }
@@ -385,7 +307,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         return dateStart;
     }
 
-    changeSorting(sortSettings) {
+    changeSorting(sortSettings: SortChosen): void {
         if (sortSettings.by === 'status') {
             this.appSorting = {
                 'status.value': sortSettings.ascending ? 1 : -1,
@@ -400,7 +322,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         this.getApps(true);
     }
 
-    private submitApp(menuEvent: AppListMenuAction) {
+    private submitApp(menuEvent: AppListMenuAction): void {
         const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
 
         modalRef.componentInstance.type = 'simple';
@@ -460,5 +382,98 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         } else {
             return of(this.appListConfig.previewTemplate);
         }
+    }
+
+    private deleteAppAction(menuEvent: AppListMenuAction): void {
+        const modalDelRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+
+        modalDelRef.componentInstance.type = 'delete';
+        modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
+        modalDelRef.componentInstance.modalTitle = 'Delete app';
+        modalDelRef.componentInstance.buttonText = 'Yes, delete it';
+
+        modalDelRef.result.then(
+            res => {
+                if (res && res === 'success') {
+                    if (menuEvent.isChild) {
+                        this.appsVersionService
+                            .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe(resp => {
+                                if (resp.code && resp.code !== 200) {
+                                    this.toaster.error(resp.message);
+                                } else {
+                                    this.appListConfig.data.pageNumber = 0;
+                                    this.toaster.success('Your app has been deleted');
+                                    this.getApps(true);
+                                }
+                            });
+                    } else {
+                        this.appService
+                            .deleteApp(menuEvent.appId)
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe(resp => {
+                                if (resp.code && resp.code !== 200) {
+                                    this.toaster.error(resp.message);
+                                } else {
+                                    this.appListConfig.data.pageNumber = 0;
+                                    this.toaster.success('Your app has been deleted');
+                                    this.getApps(true);
+                                }
+                            });
+                    }
+                }
+            },
+            () => {},
+        );
+    }
+
+    private suspendAppAction(menuEvent: AppListMenuAction): void {
+        if (this.appListConfig.data.list.find(app => app.appId === menuEvent.appId).status.value === 'approved') {
+            const modalSuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+
+            modalSuspendRef.componentInstance.type = 'suspend';
+            modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
+            modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
+            modalSuspendRef.componentInstance.buttonText = 'Yes, suspend it';
+
+            modalSuspendRef.result.then(res => {
+                if (res && res === 'success') {
+                    this.appService
+                        .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(resp => {
+                            this.appListConfig.data.pageNumber = 0;
+                            this.toaster.success('Your app has been suspended');
+                            this.getApps(true);
+                        });
+                }
+            });
+        }
+    }
+
+    private unsuspendAppAction(menuEvent: AppListMenuAction): void {
+        const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+
+        modalUnsuspendRef.componentInstance.type = 'unsuspend';
+        modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
+        modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
+        modalUnsuspendRef.componentInstance.buttonText = 'Yes, unsuspend it';
+
+        modalUnsuspendRef.result.then(
+            res => {
+                if (res && res === 'success') {
+                    this.appService
+                        .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(resp => {
+                            this.appListConfig.data.pageNumber = 0;
+                            this.toaster.success('Your app has been unsuspended');
+                            this.getApps(true);
+                        });
+                }
+            },
+            () => {},
+        );
     }
 }
