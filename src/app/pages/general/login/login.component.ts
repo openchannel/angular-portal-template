@@ -61,23 +61,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         this.loader.start();
 
-        this.oauthService.events.pipe(takeUntil(this.destroy$)).subscribe(oAuthEvent => {
-            if (oAuthEvent.type === 'token_received') {
-                this.loader.start();
-                this.openIdAuthService
-                    .login(new LoginRequest(this.oauthService.getIdToken(), this.oauthService.getAccessToken()))
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe((response: LoginResponse) => {
-                        const redirectUri =
-                            this.authConfig.grantType === 'authorization_code'
-                                ? decodeURIComponent(this.oauthService.state)
-                                : this.oauthService.state;
-                        this.processLoginResponse(response, redirectUri);
-                        this.loader.complete();
-                    });
-            }
-        });
-
         this.retrieveRedirectUrl();
         this.setupLoginFlowResponseProcess();
 
