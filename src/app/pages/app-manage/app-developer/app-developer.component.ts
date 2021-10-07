@@ -10,7 +10,6 @@ import {
 import { Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
 import { map, takeUntil } from 'rxjs/operators';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
@@ -456,7 +455,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     private unsuspendAppAction(menuEvent: AppListMenuAction): void {
-        const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+        const modalUnsuspendRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
 
         modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
         modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
