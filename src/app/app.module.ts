@@ -20,6 +20,10 @@ import { FileUploaderService, OcMarketComponentsModule } from '@openchannel/angu
 import { FileService } from '@core/services/file.service';
 import { OcAppsSearchService } from '@core/services/oc-apps-search.service';
 import { AppsSearchService } from '@openchannel/angular-common-components/src/lib/form-components';
+import {
+    AbstractErrorMessageConfiguration,
+    DefaultErrorMessageConfiguration,
+} from '@openchannel/angular-common-components/src/lib/common-components';
 
 const apiURl = environment.enableProxy ? `${window.origin}/client-api/` : environment.apiUrl;
 
@@ -52,6 +56,7 @@ const apiURl = environment.enableProxy ? `${window.origin}/client-api/` : enviro
         { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' },
         { provide: FileUploaderService, useClass: FileService },
         { provide: AppsSearchService, useClass: OcAppsSearchService },
+        { provide: AbstractErrorMessageConfiguration, useValue: new DefaultErrorMessageConfiguration() },
     ],
     bootstrap: [AppComponent],
     entryComponents: [],
