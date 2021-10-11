@@ -1,9 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     AppsService,
     AppTypeService,
     AppVersionService,
-    ChartService,
     MarketModel,
     MarketService,
 } from '@openchannel/angular-common-services';
@@ -15,15 +14,8 @@ import { ToastrService } from 'ngx-toastr';
 import { map, takeUntil } from 'rxjs/operators';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import {
-    FullAppData,
-    ChartStatisticModel,
-    ChartOptionsChange,
-    ChartLayoutTypeModel,
-    ChartStatisticPeriodModel,
-    AppListing,
-    AppListMenuAction
-} from '@openchannel/angular-common-components';
+import { FullAppData, AppListing, AppListMenuAction } from '@openchannel/angular-common-components';
+import {AppChartComponent} from '@shared/components/app-chart/app-chart.component';
 
 @Component({
     selector: 'app-app-developer',
@@ -32,45 +24,11 @@ import {
 })
 export class AppDeveloperComponent implements OnInit, OnDestroy {
 
-    count;
-    countText;
+    @ViewChild('chart', { static: true })
+    chart: AppChartComponent;
+
     page = 1;
-
     isAppProcessing = false;
-
-    chartData: ChartStatisticModel = {
-        data: null,
-        periods: [
-            {
-                id: 'month',
-                label: 'Monthly',
-                active: true,
-                tabularLabel: 'Month'
-            }, {
-                id: 'day',
-                label: 'Daily',
-                tabularLabel: 'Day'
-            }
-        ],
-        fields: [
-            {
-                id: 'downloads',
-                label: 'Downloads',
-                active: true,
-            }, {
-                id: 'reviews',
-                label: 'Reviews',
-            }, {
-                id: 'leads',
-                label: 'Leads',
-            }, {
-                id: 'views',
-                label: 'Views'
-            }],
-        layout: ChartLayoutTypeModel.standard
-    };
-
-    downloadUrl = './assets/img/cloud-download.svg';
     menuUrl = './assets/img/dots-hr-icon.svg';
 
     // Config for the App Version List component
@@ -94,7 +52,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     private loader: LoadingBarState;
 
     constructor(
-      public chartService: ChartService,
       public appService: AppsService,
       public appsVersionService: AppVersionService,
       public router: Router,
@@ -108,40 +65,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
-        this.updateChartData({
-            period: this.chartData.periods[0],
-            field: this.chartData.fields[0]
-        });
         this.getApps(true);
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
-    }
-
-    updateChartData(chartOptions: ChartOptionsChange): void {
-        const dateEnd = new Date();
-        const dateStart = this.getDateStartByCurrentPeriod(dateEnd, chartOptions.period);
-        this.loader.start();
-        this.chartService.getTimeSeries(chartOptions.period.id, chartOptions.field.id, dateStart.getTime(), dateEnd.getTime())
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((chartData) => {
-              this.count = 0;
-              this.chartData = {
-                  ...this.chartData,
-                  data: {
-                      labelsY: chartData.labelsY.map(String),
-                      labelsX: (chartData.labelsX as any[]).map(String),
-                      tabularLabels: chartData.tabularLabels,
-                  }
-              };
-              this.count += chartData.labelsY.reduce((a, b) => a + b);
-              this.countText = `Total ${chartOptions.field.label}`;
-              this.loader.complete();
-          }, () => {
-              this.loader.complete();
-          });
     }
 
     capitalizeFirstLetter(str: string): string {
@@ -269,33 +198,24 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                 modalDelRef.componentInstance.buttonText = 'Yes, delete it';
 
                 modalDelRef.result.then(res => {
-                    if (res && res === 'success') {
-                        if (menuEvent.isChild) {
-                            this.appsVersionService
-                              .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
-                              .pipe(takeUntil(this.destroy$))
-                              .subscribe(resp => {
-                                  if (resp.code && resp.code !== 200) {
-                                      this.toaster.error(resp.message);
-                                  } else {
-                                      this.appListConfig.data.pageNumber = 0;
-                                      this.toaster.success('Your app has been deleted');
-                                      this.getApps(true);
-                                  }
-                              });
-                        } else {
-                            this.appService.deleteApp(menuEvent.appId)
-                              .pipe(takeUntil(this.destroy$))
-                              .subscribe(resp => {
-                                  if (resp.code && resp.code !== 200) {
-                                      this.toaster.error(resp.message);
-                                  } else {
-                                      this.appListConfig.data.pageNumber = 0;
-                                      this.toaster.success('Your app has been deleted');
-                                      this.getApps(true);
-                                  }
-                              });
-                        }
+                    if (res === 'success') {
+
+                        const deleteRequest = menuEvent.isChild
+                                ? this.appsVersionService.deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
+                                : this.appService.deleteApp(menuEvent.appId);
+
+                        deleteRequest
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(() => {
+                            this.toaster.success('Your app has been deleted');
+
+                            // start new pagination
+                            this.appListConfig.data.pageNumber = 0;
+                            this.getApps(true);
+
+                            // load new chart apps
+                            this.chart.initChartWithAppsDropdown();
+                        })
                     }
                 }, () => {
                 });
@@ -319,6 +239,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                               this.appListConfig.data.pageNumber = 0;
                               this.toaster.success('Your app has been unsuspended');
                               this.getApps(true);
+                              // load new chart apps
+                              this.chart.initChartWithAppsDropdown();
                           });
                     }
                 }, () => {
@@ -342,6 +264,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                                   this.appListConfig.data.pageNumber = 0;
                                   this.toaster.success('Your app has been suspended');
                                   this.getApps(true);
+                                  // load new chart apps
+                                  this.chart.initChartWithAppsDropdown();
                               });
                         }
                     });
@@ -389,18 +313,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
             }
         }, () => {
         });
-    }
-
-    getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
-        const dateStart = new Date(dateEnd);
-        if (period?.id === 'month') {
-            dateStart.setFullYear(dateEnd.getFullYear() - 1);
-        } else if (period?.id === 'day') {
-            dateStart.setTime(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
-        } else {
-            dateStart.setMonth(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
-        }
-        return dateStart;
     }
 
     changeSorting(sortSettings) {
