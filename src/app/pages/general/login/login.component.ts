@@ -192,7 +192,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     private processLoginResponse(response: LoginResponse, redirectUrl: string): void {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
-        this.router.navigate([redirectUrl || 'manage']).then(() => {});
+        this.router.navigate([redirectUrl || 'manage']).then();
     }
 
     private initCMSData(): void {
