@@ -20,6 +20,7 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 import { OcConfirmationModalComponent, OcInviteModalComponent, ModalUpdateUserModel } from '@openchannel/angular-common-components';
 import { mergeMap, map, takeUntil, tap } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
+import { SortField, UserGridSortOrder, UserSortChosen } from '@openchannel/angular-common-components/src/lib/management-components';
 
 @Component({
     selector: 'app-management',
@@ -38,8 +39,22 @@ export class ManagementComponent implements OnInit, OnDestroy {
         options: ['DELETE', 'EDIT'],
     };
 
+    tableSortFieldName: { [name in SortField]: string } = {
+        name: 'name',
+        email: 'email',
+        role: 'roles',
+        date: 'createdDate',
+    };
+
+    tableSortOptions: UserGridSortOrder = {
+        role: null,
+        name: null,
+        email: null,
+        date: null,
+    };
+
     private listRoles: any = {};
-    private sortQuery = '{"name": 1}';
+    private sortQuery: string = null;
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
     private readonly DEVELOPERS_LIMIT_PER_REQUEST = 10;
@@ -69,22 +84,16 @@ export class ManagementComponent implements OnInit, OnDestroy {
         }
     }
 
-    catchSortChanges(sortBy: string): void {
-        switch (sortBy) {
-            case 'name':
-                this.sortQuery = '{"name": 1}';
-                break;
-            case 'email':
-                this.sortQuery = '{"email": 1}';
-                break;
-            case 'date':
-                this.sortQuery = '{"created": 1}';
-                break;
-            case 'role':
-                this.sortQuery = '{"type": 1}';
-                break;
-            default:
-                break;
+    catchSortChanges(sortChosen: UserSortChosen): void {
+        for (const field of Object.keys(sortChosen.sortOptions)) {
+            if (field === sortChosen.changedSortOption) {
+                this.tableSortOptions[field] = sortChosen.sortOptions[sortChosen.changedSortOption];
+                // build sort query for the current table column
+                this.sortQuery = `{\"${this.tableSortFieldName[sortChosen.changedSortOption]}\":
+                ${this.tableSortOptions[sortChosen.changedSortOption]}}`;
+            } else {
+                this.tableSortOptions[field] = null;
+            }
         }
         this.getAllDevelopers(true);
     }
@@ -100,6 +109,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
               )
             : of(oldRoles);
     }
+
     getAllDevelopers(startNewPagination: boolean): void {
         if (!this.inProcessGettingDevelopers) {
             this.loader.start();
