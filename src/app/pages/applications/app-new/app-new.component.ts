@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     AppsService,
     AppStatusValue,
@@ -26,6 +26,7 @@ import {
     ChartOptionsChange,
     ChartStatisticModel,
     FullAppData,
+    OcFormComponent,
 } from '@openchannel/angular-common-components';
 
 @Component({
@@ -34,6 +35,8 @@ import {
     styleUrls: ['./app-new.component.scss'],
 })
 export class AppNewComponent implements OnInit, OnDestroy {
+    @ViewChild('form') formComponent: OcFormComponent;
+
     chartData: ChartStatisticModel = {
         data: null,
         periods: [
@@ -80,6 +83,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     draftSaveInProcess = false;
     submitInProcess = false;
+    currentStep = 1;
+    queryParams: string = '';
 
     pageTitle: 'Create app' | 'Edit app';
     pageType: string;
@@ -92,7 +97,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     count;
     countText;
     downloadUrl = './assets/img/cloud-download.svg';
-    currentStep = 1;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -123,6 +127,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        this.activeRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+            this.queryParams = params.formStatus || '';
+        });
         this.loader = this.loadingBar.useRef();
         this.pageType = this.router.url.split('/')[2];
         this.pageTitle = this.getPageTitleByPage(this.pageType);
@@ -343,6 +350,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.generatedForm = form;
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
+            // setTimeout(() => {
+            //     this.formComponent.onSubmitButtonClicked();
+            // }, 0);
+            // TODO
         }
     }
 
@@ -558,6 +569,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 controlName.markAsTouched();
                 return controlName.valid;
             }
+            return true;
         }
         for (let i = 0; i < this.generatedForm.controls.length; i++) {
             const nameFormControl = (this.generatedForm.controls[i] as AbstractControl).get('name');
