@@ -7,19 +7,19 @@
 }
 
 ul.list-unstyled {
-    @include media-breakpoint-md {
+    @include media-breakpoint-lg {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
     }
 
     li {
-        @include media-breakpoint-md {
+        @include media-breakpoint-lg {
             white-space: nowrap;
         }
 
         & + li {
-            @include media-breakpoint-md {
+            @include media-breakpoint-lg {
                 margin-left: 2rem;
             }
         }
@@ -28,14 +28,14 @@ ul.list-unstyled {
             @include font-size-md();
             cursor: pointer;
             color: inherit;
-            @include media-breakpoint-md {
+            @include media-breakpoint-lg {
                 @include font-medium();
                 color: #999;
             }
 
             &.active-link {
                 @include font-medium();
-                @include media-breakpoint-md {
+                @include media-breakpoint-lg {
                     color: #333 !important;
                     border-bottom: 3px solid #537cfd;
                     padding-bottom: 8px;

@@ -1,12 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-    AppsService,
-    AppTypeService,
-    AppVersionService,
-    ChartService,
-    MarketModel,
-    MarketService,
-} from '@openchannel/angular-common-services';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AppsService, AppTypeService, AppVersionService, MarketModel, MarketService } from '@openchannel/angular-common-services';
 import { Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,15 +9,14 @@ import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import {
     FullAppData,
-    ChartStatisticModel,
-    ChartOptionsChange,
-    ChartLayoutTypeModel,
-    ChartStatisticPeriodModel,
     AppListing,
     AppListMenuAction,
     OcConfirmationModalComponent,
+    ChartStatisticPeriodModel,
 } from '@openchannel/angular-common-components';
 import { SortChosen } from '@openchannel/angular-common-components/src/lib/portal-components/oc-app-table/oc-app-table.component';
+import { AppChartComponent } from '@shared/components/app-chart/app-chart.component';
+import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 
 @Component({
     selector: 'app-app-developer',
@@ -32,50 +24,9 @@ import { SortChosen } from '@openchannel/angular-common-components/src/lib/porta
     styleUrls: ['./app-developer.component.scss'],
 })
 export class AppDeveloperComponent implements OnInit, OnDestroy {
-    count;
-    countText;
+    @ViewChild('chart', { static: true }) chart: AppChartComponent;
     page = 1;
-
     isAppProcessing = false;
-
-    chartData: ChartStatisticModel = {
-        data: null,
-        periods: [
-            {
-                id: 'month',
-                label: 'Monthly',
-                active: true,
-                tabularLabel: 'Month',
-            },
-            {
-                id: 'day',
-                label: 'Daily',
-                tabularLabel: 'Day',
-            },
-        ],
-        fields: [
-            {
-                id: 'downloads',
-                label: 'Downloads',
-                active: true,
-            },
-            {
-                id: 'reviews',
-                label: 'Reviews',
-            },
-            {
-                id: 'leads',
-                label: 'Leads',
-            },
-            {
-                id: 'views',
-                label: 'Views',
-            },
-        ],
-        layout: ChartLayoutTypeModel.standard,
-    };
-
-    downloadUrl = './assets/img/cloud-download.svg';
     menuUrl = './assets/img/dots-hr-icon.svg';
 
     // Config for the App Version List component
@@ -99,7 +50,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     private loader: LoadingBarState;
 
     constructor(
-        public chartService: ChartService,
         public appService: AppsService,
         public appsVersionService: AppVersionService,
         public router: Router,
@@ -112,44 +62,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
-        this.updateChartData({
-            period: this.chartData.periods[0],
-            field: this.chartData.fields[0],
-        });
         this.getApps(true);
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
-    }
-
-    updateChartData(chartOptions: ChartOptionsChange): void {
-        const dateEnd = new Date();
-        const dateStart = this.getDateStartByCurrentPeriod(dateEnd, chartOptions.period);
-        this.loader.start();
-        this.chartService
-            .getTimeSeries(chartOptions.period.id, chartOptions.field.id, dateStart.getTime(), dateEnd.getTime())
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(
-                chartData => {
-                    this.count = 0;
-                    this.chartData = {
-                        ...this.chartData,
-                        data: {
-                            labelsY: chartData.labelsY.map(String),
-                            labelsX: (chartData.labelsX as any[]).map(String),
-                            tabularLabels: chartData.tabularLabels,
-                        },
-                    };
-                    this.count += chartData.labelsY.reduce((a, b) => a + b);
-                    this.countText = `Total ${chartOptions.field.label}`;
-                    this.loader.complete();
-                },
-                () => {
-                    this.loader.complete();
-                },
-            );
     }
 
     capitalizeFirstLetter(str: string): string {
@@ -384,30 +302,30 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     private deleteAppAction(menuEvent: AppListMenuAction): void {
-        const modalDelRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
+        const modalDelRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
 
-        modalDelRef.componentInstance.confirmButtonType = 'danger';
+        modalDelRef.componentInstance.type = 'delete';
         modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
         modalDelRef.componentInstance.modalTitle = 'Delete app';
-        modalDelRef.componentInstance.confirmButtonText = 'Yes, delete it';
+        modalDelRef.componentInstance.buttonText = 'Yes, delete it';
 
         modalDelRef.result.then(
             res => {
-                if (res) {
+                if (res === 'success') {
                     const deleteRequest = menuEvent.isChild
                         ? this.appsVersionService.deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
                         : this.appService.deleteApp(menuEvent.appId);
 
-                    deleteRequest.pipe(takeUntil(this.destroy$)).subscribe(
-                        () => {
-                            this.appListConfig.data.pageNumber = 0;
-                            this.toaster.success('Your app has been deleted');
-                            this.getApps(true);
-                        },
-                        error => {
-                            this.toaster.error(error.message);
-                        },
-                    );
+                    deleteRequest.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                        this.toaster.success('Your app has been deleted');
+
+                        // start new pagination
+                        this.appListConfig.data.pageNumber = 0;
+                        this.getApps(true);
+
+                        // load new chart apps
+                        this.chart.initChartWithAppsDropdown();
+                    });
                 }
             },
             () => {},
@@ -433,6 +351,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                                 this.appListConfig.data.pageNumber = 0;
                                 this.toaster.success('Your app has been suspended');
                                 this.getApps(true);
+                                // load new chart apps
+                                this.chart.initChartWithAppsDropdown();
                             });
                     }
                 },
@@ -442,11 +362,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     private unsuspendAppAction(menuEvent: AppListMenuAction): void {
-        const modalUnsuspendRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
+        const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
 
+        modalUnsuspendRef.componentInstance.type = 'unsuspend';
         modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
         modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
-        modalUnsuspendRef.componentInstance.confirmButtonText = 'Yes, unsuspend it';
+        modalUnsuspendRef.componentInstance.buttonText = 'Yes, unsuspend it';
 
         modalUnsuspendRef.result.then(
             res => {
@@ -458,6 +379,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                             this.appListConfig.data.pageNumber = 0;
                             this.toaster.success('Your app has been unsuspended');
                             this.getApps(true);
+                            // load new chart apps
+                            this.chart.initChartWithAppsDropdown();
                         });
                 }
             },
