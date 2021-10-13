@@ -394,33 +394,20 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         modalDelRef.result.then(
             res => {
                 if (res) {
-                    if (menuEvent.isChild) {
-                        this.appsVersionService
-                            .deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe(resp => {
-                                if (resp.code && resp.code !== 200) {
-                                    this.toaster.error(resp.message);
-                                } else {
-                                    this.appListConfig.data.pageNumber = 0;
-                                    this.toaster.success('Your app has been deleted');
-                                    this.getApps(true);
-                                }
-                            });
-                    } else {
-                        this.appService
-                            .deleteApp(menuEvent.appId)
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe(resp => {
-                                if (resp.code && resp.code !== 200) {
-                                    this.toaster.error(resp.message);
-                                } else {
-                                    this.appListConfig.data.pageNumber = 0;
-                                    this.toaster.success('Your app has been deleted');
-                                    this.getApps(true);
-                                }
-                            });
-                    }
+                    const deleteRequest = menuEvent.isChild
+                        ? this.appsVersionService.deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
+                        : this.appService.deleteApp(menuEvent.appId);
+
+                    deleteRequest.pipe(takeUntil(this.destroy$)).subscribe(
+                        () => {
+                            this.appListConfig.data.pageNumber = 0;
+                            this.toaster.success('Your app has been deleted');
+                            this.getApps(true);
+                        },
+                        error => {
+                            this.toaster.error(error.message);
+                        },
+                    );
                 }
             },
             () => {},
