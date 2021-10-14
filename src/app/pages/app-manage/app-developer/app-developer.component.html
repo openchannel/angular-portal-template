@@ -15,6 +15,7 @@
                   ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
                   (pageScrolled)="getApps(false)"
                   (menuClicked)="catchMenuAction($event)"
-                  (sortChosen)="changeSorting($event)"></oc-app-table>
+                  [sortOptions]="sortOptions"
+                  (sortOptionsChosen)="changeSorting($event)"></oc-app-table>
   </div>
 </div>

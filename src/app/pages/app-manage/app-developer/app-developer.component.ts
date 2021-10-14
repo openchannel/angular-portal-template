@@ -7,16 +7,9 @@ import { ToastrService } from 'ngx-toastr';
 import { map, takeUntil } from 'rxjs/operators';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import {
-    FullAppData,
-    AppListing,
-    AppListMenuAction,
-    OcConfirmationModalComponent,
-    ChartStatisticPeriodModel,
-} from '@openchannel/angular-common-components';
-import { SortChosen } from '@openchannel/angular-common-components/src/lib/portal-components/oc-app-table/oc-app-table.component';
+import { FullAppData, AppListing, AppListMenuAction, OcConfirmationModalComponent } from '@openchannel/angular-common-components';
 import { AppChartComponent } from '@shared/components/app-chart/app-chart.component';
-import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
+import { AppGridSortChosen, AppGridSortColumn, AppGridSortOptions } from '@openchannel/angular-common-components/src/lib/portal-components';
 
 @Component({
     selector: 'app-app-developer',
@@ -24,7 +17,10 @@ import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-m
     styleUrls: ['./app-developer.component.scss'],
 })
 export class AppDeveloperComponent implements OnInit, OnDestroy {
+    readonly APPS_LIMIT_PER_REQUEST = 30;
+
     @ViewChild('chart', { static: true }) chart: AppChartComponent;
+
     page = 1;
     isAppProcessing = false;
     menuUrl = './assets/img/dots-hr-icon.svg';
@@ -42,9 +38,20 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         previewTemplate: '',
     };
 
-    appSorting: any = {
-        created: 1,
+    sortOptions: AppGridSortOptions = {
+        created: -1,
+        name: -1,
+        status: -1,
     };
+
+    sortOptionsQueryPattern: { [name in AppGridSortColumn]: (order: number) => string } = {
+        created: order => `{'created': ${order}}`,
+        name: order => `{'name': ${order}}`,
+        status: order => `{'status.value': ${order}, 'parent.status.value': ${order}}`,
+    };
+
+    // init default search query by 'created' field.
+    private sortQuery: string = this.sortOptionsQueryPattern.created(-1);
 
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
@@ -77,7 +84,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     getApps(startNewPagination: boolean): void {
         this.loader.start();
         this.isAppProcessing = true;
-        const sort = JSON.stringify(this.appSorting);
 
         if (startNewPagination) {
             this.page = 1;
@@ -110,7 +116,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
         if (this.appListConfig.data && this.appListConfig.data.count !== 0 && this.appListConfig.data.pageNumber < this.page) {
             this.appsVersionService
-                .getAppsVersions(this.page, 10, sort, JSON.stringify(query))
+                .getAppsVersions(this.page, this.APPS_LIMIT_PER_REQUEST, this.sortQuery, JSON.stringify(query))
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(
                     response => {
@@ -123,11 +129,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                             value.status = value.parent && value.parent.status ? value.parent.status : value.status;
                         });
 
-                        this.appListConfig.data.list =
-                            this.page === 1
-                                ? this.getAppsChildren(parentList, sort)
-                                : [...this.appListConfig.data.list, ...this.getAppsChildren(parentList, sort)];
-
+                        if (this.page === 1) {
+                            this.appListConfig.data.list = this.getAppsChildren(parentList);
+                        } else {
+                            this.appListConfig.data.list = [...this.appListConfig.data.list, ...this.getAppsChildren(parentList)];
+                        }
                         this.isAppProcessing = false;
                         this.loader.complete();
                     },
@@ -142,7 +148,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         }
     }
 
-    getAppsChildren(parentList: FullAppData[], sort: string): FullAppData[] {
+    getAppsChildren(parentList: FullAppData[]): FullAppData[] {
         const parents = [...parentList];
         let allChildren: FullAppData[];
 
@@ -161,7 +167,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
             };
 
             this.appsVersionService
-                .getAppsVersions(1, 200, sort, JSON.stringify(childQuery))
+                .getAppsVersions(1, this.APPS_LIMIT_PER_REQUEST, this.sortQuery, JSON.stringify(childQuery))
                 .pipe(takeUntil(this.destroy$))
                 .subscribe(response => {
                     allChildren = response.list as FullAppData[];
@@ -213,28 +219,15 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         }
     }
 
-    getDateStartByCurrentPeriod(dateEnd: Date, period: ChartStatisticPeriodModel): Date {
-        const dateStart = new Date(dateEnd);
-        if (period?.id === 'month') {
-            dateStart.setFullYear(dateEnd.getFullYear() - 1);
-        } else if (period?.id === 'day') {
-            dateStart.setTime(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
-        } else {
-            dateStart.setMonth(dateStart.getTime() - 31 * 24 * 60 * 60 * 1000);
-        }
-        return dateStart;
-    }
-
-    changeSorting(sortSettings: SortChosen): void {
-        if (sortSettings.by === 'status') {
-            this.appSorting = {
-                'status.value': sortSettings.ascending ? 1 : -1,
-                'parent.status.value': sortSettings.ascending ? 1 : -1,
-            };
-        } else {
-            this.appSorting = {
-                [sortSettings.by]: sortSettings.ascending ? 1 : -1,
-            };
+    changeSorting(sortChosen: AppGridSortChosen): void {
+        for (const field of Object.keys(sortChosen.sortOptions)) {
+            if (field === sortChosen.changedSortOption) {
+                this.sortOptions[field] = sortChosen.sortOptions[sortChosen.changedSortOption];
+                // build sort query for the current table column
+                this.sortQuery = this.sortOptionsQueryPattern[sortChosen.changedSortOption](this.sortOptions[sortChosen.changedSortOption]);
+            } else {
+                this.sortOptions[field] = -1;
+            }
         }
         this.appListConfig.data.count = 50;
         this.appListConfig.data.pageNumber = 0;

@@ -47,14 +47,14 @@ export class ManagementComponent implements OnInit, OnDestroy {
     };
 
     tableSortOptions: UserGridSortOrder = {
-        role: null,
-        name: null,
-        email: null,
-        date: null,
+        role: -1,
+        name: -1,
+        email: -1,
+        date: -1,
     };
 
     private listRoles: any = {};
-    private sortQuery: string = null;
+    private sortQuery: string = `{'${this.tableSortFieldName.date}':${this.tableSortOptions.date}}`;
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
     private readonly DEVELOPERS_LIMIT_PER_REQUEST = 10;
@@ -92,7 +92,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
                 this.sortQuery = `{\"${this.tableSortFieldName[sortChosen.changedSortOption]}\":
                 ${this.tableSortOptions[sortChosen.changedSortOption]}}`;
             } else {
-                this.tableSortOptions[field] = null;
+                this.tableSortOptions[field] = -1;
             }
         }
         this.getAllDevelopers(true);
