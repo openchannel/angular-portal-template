@@ -302,12 +302,12 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     private deleteAppAction(menuEvent: AppListMenuAction): void {
-        const modalDelRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+        const modalDelRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
 
-        modalDelRef.componentInstance.type = 'delete';
         modalDelRef.componentInstance.modalText = 'Delete this app from the marketplace now?';
         modalDelRef.componentInstance.modalTitle = 'Delete app';
-        modalDelRef.componentInstance.buttonText = 'Yes, delete it';
+        modalDelRef.componentInstance.confirmButtonText = 'Yes, delete it';
+        modalDelRef.componentInstance.confirmButtonType = 'danger';
 
         modalDelRef.result.then(
             res => {
@@ -362,12 +362,11 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     private unsuspendAppAction(menuEvent: AppListMenuAction): void {
-        const modalUnsuspendRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+        const modalUnsuspendRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
 
-        modalUnsuspendRef.componentInstance.type = 'unsuspend';
         modalUnsuspendRef.componentInstance.modalText = 'Unsuspend this app from the marketplace now?';
         modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
-        modalUnsuspendRef.componentInstance.buttonText = 'Yes, unsuspend it';
+        modalUnsuspendRef.componentInstance.confirmButtonText = 'Yes, unsuspend it';
 
         modalUnsuspendRef.result.then(
             res => {
