@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     AppsService,
     AppStatusValue,
@@ -26,7 +26,6 @@ import {
     ChartOptionsChange,
     ChartStatisticModel,
     FullAppData,
-    OcFormComponent,
 } from '@openchannel/angular-common-components';
 
 @Component({
@@ -35,7 +34,6 @@ import {
     styleUrls: ['./app-new.component.scss'],
 })
 export class AppNewComponent implements OnInit, OnDestroy {
-    @ViewChild('form') formComponent: OcFormComponent;
 
     chartData: ChartStatisticModel = {
         data: null,
@@ -350,10 +348,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.generatedForm = form;
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
-            // setTimeout(() => {
-            //     this.formComponent.onSubmitButtonClicked();
-            // }, 0);
-            // TODO
         }
     }
 

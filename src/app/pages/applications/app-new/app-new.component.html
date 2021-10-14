@@ -29,11 +29,11 @@
         </div>
     </form>
     <div *ngIf="appFields?.fields">
-        <oc-form #form
-                 displayType="wizard"
+        <oc-form displayType="wizard"
                  buttonPosition="justify"
                  [queryParams]="queryParams"
                  [maxStepsToShow]="4"
+                 [enableTextTruncation]="true"
                  [formJsonData]="appFields"
                  [process]="submitInProcess"
                  [additionalButton]="customSaveButton"
