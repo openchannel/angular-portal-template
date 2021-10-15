@@ -14,7 +14,7 @@ export class NativeLoginGuard implements CanActivate {
       return true;
     } else {
       if (this.authService.isLoggedInUser()) {
-        this.router.navigate(['/manage']);
+        this.router.navigate(['/manage-apps']).then();
       }
       return false;
     }

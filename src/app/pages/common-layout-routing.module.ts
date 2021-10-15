@@ -12,7 +12,7 @@ const routes: Routes = [
                 loadChildren: () => import('./applications/applications.module').then(m => m.ApplicationsModule),
             },
             {
-                path: 'manage',
+                path: 'manage-apps',
                 loadChildren: () => import('./app-manage/app-manage.module').then(m => m.AppManageModule),
             },
             {

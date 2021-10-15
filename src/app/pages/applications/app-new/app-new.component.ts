@@ -147,7 +147,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     onCancelClick(): void {
-        this.router.navigate(['manage']).then();
+        this.router.navigate(['manage-apps']).then();
     }
 
     initAppDataGroup(): void {
@@ -211,7 +211,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                     this.publishApp(appResponse.appId, appResponse.version);
                                 } else {
                                     this.draftSaveInProcess = false;
-                                    this.router.navigate(['/manage']).then(() => {
+                                    this.router.navigate(['/manage-apps']).then(() => {
                                         this.showSuccessToaster(saveType);
                                     });
                                 }
@@ -237,7 +237,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                 } else {
                                     this.draftSaveInProcess = false;
                                     this.showSuccessToaster(saveType);
-                                    this.router.navigate(['/manage']).then();
+                                    this.router.navigate(['/manage-apps']).then();
                                 }
                             } else {
                                 this.draftSaveInProcess = false;
@@ -264,7 +264,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 () => {
                     this.submitInProcess = false;
                     this.showSuccessToaster('submit');
-                    this.router.navigate(['/manage']).then();
+                    this.router.navigate(['/manage-apps']).then();
                 },
                 () => {
                     this.submitInProcess = false;
@@ -324,17 +324,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                 },
                                 () => {
                                     this.loader.complete();
-                                    this.router.navigate(['/manage']).then();
+                                    this.router.navigate(['/manage-apps']).then();
                                 },
                             );
                     } else {
                         this.loader.complete();
-                        this.router.navigate(['/manage']).then();
+                        this.router.navigate(['/manage-apps']).then();
                     }
                 },
                 () => {
                     this.loader.complete();
-                    this.router.navigate(['/manage']).then();
+                    this.router.navigate(['/manage-apps']).then();
                 },
             );
     }
@@ -391,7 +391,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     goToAppManagePage(): void {
-        this.router.navigate(['/manage']).then();
+        this.router.navigate(['/manage-apps']).then();
     }
 
     private addListenerAppTypeField(): void {
@@ -429,14 +429,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
                         this.loader.complete();
                     } else {
                         this.loader.complete();
-                        this.router.navigate(['/manage']).then();
+                        this.router.navigate(['/manage-apps']).then();
                         this.currentAppsTypesItems = [];
                     }
                 },
                 () => {
                     this.currentAppsTypesItems = [];
                     this.loader.complete();
-                    this.router.navigate(['/manage']).then();
+                    this.router.navigate(['/manage-apps']).then();
                 },
             );
     }
