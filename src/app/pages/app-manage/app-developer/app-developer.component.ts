@@ -258,7 +258,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                   }, () => this.toaster.warning('Please Please set the preview App URL.'));
                 break;
             case 'EDIT':
-                this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
+                this.router.navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion], {queryParams: {formStatus: 'invalid'}}).then();
                 break;
             case 'DELETE':
                 const modalDelRef = this.modal.open(AppConfirmationModalComponent, {size: 'md'});
@@ -377,7 +377,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                         this.loader.complete();
 
                         if (err.status === 400) {
-                            this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion],
+                            this.router.navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion],
                               {queryParams: {formStatus: 'invalid'}})
                               .then(() => {
                                   this.toaster.info('Fill out all mandatory fields before submitting');

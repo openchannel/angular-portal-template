@@ -8,10 +8,13 @@ import { AppDataChangesGuard } from './app-new/deactivation-guard';
 const routes: Routes = [
     {
         path: '',
-        component: AppDeveloperComponent,
-        canActivate: [AuthGuard],
-        data: { title: 'Manage apps' },
         children: [
+            {
+                path: '',
+                component: AppDeveloperComponent,
+                canActivate: [AuthGuard],
+                data: { title: 'Manage apps' },
+            },
             {
                 path: 'create',
                 component: AppNewComponent,
@@ -20,7 +23,7 @@ const routes: Routes = [
                 data: { title: 'New app' },
             },
             {
-                path: 'update/:appId/:versionId',
+                path: 'edit/:appId/:versionId',
                 component: AppNewComponent,
                 canActivate: [AuthGuard],
                 canDeactivate: [AppDataChangesGuard],
