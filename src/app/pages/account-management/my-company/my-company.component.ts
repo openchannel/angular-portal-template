@@ -9,7 +9,7 @@ import {
     Permission,
     PermissionType,
 } from '@openchannel/angular-common-services';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -20,6 +20,7 @@ import { ManagementComponent } from './management/management.component';
 export interface Page {
     pageId: string;
     placeholder: string;
+    routerLink: string;
     permissions: Permission[];
 }
 
@@ -37,6 +38,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         {
             pageId: 'company',
             placeholder: 'Company details',
+            routerLink: '/my-company/company-details',
             permissions: [
                 {
                     type: PermissionType.ORGANIZATIONS,
@@ -47,6 +49,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         {
             pageId: 'profile',
             placeholder: 'User management',
+            routerLink: '/my-company/user-management',
             permissions: [
                 {
                     type: PermissionType.ACCOUNTS,
@@ -64,13 +67,13 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     private $destroy: Subject<void> = new Subject();
 
     constructor(
-        private activatedRoute: ActivatedRoute,
         private developerService: DeveloperService,
         private modal: NgbModal,
         private toaster: ToastrService,
         private authHolderService: AuthHolderService,
         private developerRolesService: DeveloperRoleService,
         private inviteService: InviteUserService,
+        private router: Router,
     ) {}
 
     ngOnInit(): void {
@@ -87,7 +90,9 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     gotoPage(newPage: Page): void {
-        this.selectedPage = newPage;
+        this.router.navigate([newPage.routerLink]).then(() => {
+            this.selectedPage = newPage;
+        });
     }
 
     goBack(): void {
@@ -121,15 +126,9 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     private initMainPage(): void {
-        const pageType = this.activatedRoute.snapshot.paramMap.get('pageId');
-        if (pageType) {
-            const pageByUrl = this.currentPages.filter(page => page.pageId === pageType)[0];
-            if (pageByUrl) {
-                this.selectedPage = pageByUrl;
-            }
-        } else {
-            this.selectedPage = this.currentPages[0];
-        }
+        const pagePath = this.router.url;
+        const pageByUrl = this.currentPages.find(page => page.routerLink === pagePath);
+        this.selectedPage = pageByUrl || this.currentPages[0];
     }
 
     private filterPagesByDeveloperType(): Page[] {
