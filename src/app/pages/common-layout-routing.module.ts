@@ -7,10 +7,10 @@ const routes: Routes = [
         path: '',
         component: CommonLayoutComponent,
         children: [
-            {
-                path: 'app',
-                loadChildren: () => import('./applications/applications.module').then(m => m.ApplicationsModule),
-            },
+            // {
+            //     path: 'app',
+            //     loadChildren: () => import('./applications/applications.module').then(m => m.ApplicationsModule),
+            // },
             {
                 path: 'manage-apps',
                 loadChildren: () => import('./app-manage/app-manage.module').then(m => m.AppManageModule),
