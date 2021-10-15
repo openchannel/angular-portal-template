@@ -4,16 +4,16 @@ import { AuthGuard } from '@core/guards/auth.guard';
 import { AppDeveloperComponent } from './app-developer/app-developer.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: AppDeveloperComponent,
-    canActivate: [AuthGuard],
-    data: {title: 'Manage apps'}
+    {
+        path: '',
+        component: AppDeveloperComponent,
+        canActivate: [AuthGuard],
+        data: { title: 'Manage apps' },
     },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
 })
-export class AppManageRoutingModule { }
+export class AppManageRoutingModule {}

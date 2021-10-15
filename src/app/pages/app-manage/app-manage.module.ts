@@ -6,16 +6,8 @@ import { AppDeveloperComponent } from './app-developer/app-developer.component';
 import { OcPortalComponentsModule } from '@openchannel/angular-common-components';
 import { SharedModule } from '@shared/shared.module';
 
-
 @NgModule({
-  declarations: [
-    AppDeveloperComponent,
-  ],
-  imports: [
-    CommonModule,
-    AppManageRoutingModule,
-    OcPortalComponentsModule,
-    SharedModule,
-  ]
+    declarations: [AppDeveloperComponent],
+    imports: [CommonModule, AppManageRoutingModule, OcPortalComponentsModule, SharedModule],
 })
-export class AppManageModule { }
+export class AppManageModule {}
