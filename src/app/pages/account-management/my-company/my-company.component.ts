@@ -96,7 +96,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     goBack(): void {
-        history.back();
+        this.router.navigate(['/manage-apps']).then();
     }
 
     openInviteModal(): void {

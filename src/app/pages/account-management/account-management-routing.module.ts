@@ -6,7 +6,14 @@ import { AuthGuard } from '@core/guards/auth.guard';
 import { NativeLoginGuard } from '@core/guards/native-login.guard';
 
 const routes: Routes = [
-    { path: 'profile', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard], data: { title: 'My profile' } },
+    {
+        path: 'my-profile',
+        data: { title: 'My profile' },
+        children: [
+            { path: 'profile-details', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard] },
+            { path: 'password', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard] },
+        ],
+    },
     {
         path: 'my-company',
         data: { title: 'My company' },
