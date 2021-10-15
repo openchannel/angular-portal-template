@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-my-profile',
@@ -9,13 +10,18 @@ import { Router } from '@angular/router';
 export class MyProfileComponent implements OnInit {
     selectedPage: 'profile-details' | 'password' = 'profile-details';
 
-    constructor(private router: Router) {}
+    constructor(private router: Router, private location: Location) {}
 
     ngOnInit(): void {
-        this.selectedPage = this.router.url.split('/')[2] as 'profile-details' | 'password';
+        this.selectedPage = this.router.url.split('/my-profile/')[1] as 'profile-details' | 'password';
+    }
+
+    gotoPage(pagePath: 'profile-details' | 'password'): void {
+        this.selectedPage = pagePath;
+        this.location.replaceState('/my-profile/' + pagePath);
     }
 
     goBack(): void {
-        this.router.navigate(['/manage-apps']).then();
+        history.back();
     }
 }

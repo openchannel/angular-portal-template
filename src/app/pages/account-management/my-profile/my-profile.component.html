@@ -6,12 +6,12 @@
         <div class="col-lg-3 col-xxl-2">
             <ul class="list-unstyled">
                 <li>
-                    <a routerLink="/my-profile/profile-details" class="font-m"
-                       routerLinkActive="active-link">Profile details</a>
+                    <a (click)="gotoPage('profile-details')" class="font-m"
+                       [class.active-link]="selectedPage === 'profile-details'"> Profile Details </a>
                 </li>
                 <li>
-                    <a routerLink="/my-profile/password" class="font-m"
-                       routerLinkActive="active-link">Password</a>
+                    <a (click)="gotoPage('password')" class="font-m"
+                       [class.active-link]="selectedPage === 'password'"> Password </a>
                 </li>
             </ul>
         </div>

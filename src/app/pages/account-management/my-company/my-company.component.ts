@@ -16,6 +16,7 @@ import { ToastrService } from 'ngx-toastr';
 import { OcInviteModalComponent, ModalInviteUserModel } from '@openchannel/angular-common-components';
 import { takeUntil } from 'rxjs/operators';
 import { ManagementComponent } from './management/management.component';
+import { Location } from '@angular/common';
 
 export interface Page {
     pageId: string;
@@ -64,6 +65,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     isProcessing = false;
 
     private organizationName: string;
+
     private $destroy: Subject<void> = new Subject();
 
     constructor(
@@ -74,6 +76,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         private developerRolesService: DeveloperRoleService,
         private inviteService: InviteUserService,
         private router: Router,
+        private location: Location,
     ) {}
 
     ngOnInit(): void {
@@ -90,13 +93,12 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     gotoPage(newPage: Page): void {
-        this.router.navigate([newPage.routerLink]).then(() => {
-            this.selectedPage = newPage;
-        });
+        this.selectedPage = newPage;
+        this.location.replaceState(newPage.routerLink);
     }
 
     goBack(): void {
-        this.router.navigate(['/manage-apps']).then();
+        history.back();
     }
 
     openInviteModal(): void {
