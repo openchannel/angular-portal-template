@@ -81,7 +81,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     draftSaveInProcess = false;
     submitInProcess = false;
     currentStep = 1;
-    // queryParams: string = '';
 
     pageTitle: 'Create app' | 'Edit app';
     pageType: string;
@@ -124,9 +123,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        // this.activeRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
-        //     this.queryParams = params.formStatus || '';
-        // });
         this.loader = this.loadingBar.useRef();
         this.pageType = this.router.url.split('/')[2];
         this.pageTitle = this.getPageTitleByPage(this.pageType);
