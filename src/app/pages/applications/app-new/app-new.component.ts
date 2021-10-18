@@ -3,6 +3,7 @@ import {
     AppsService,
     AppStatusValue,
     AppTypeService,
+    AppVersionResponse,
     AppVersionService,
     ChartService,
     CreateAppModel,
@@ -19,6 +20,7 @@ import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-m
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
+import { get } from 'lodash';
 import {
     AppTypeFieldModel,
     AppTypeModel,
@@ -273,22 +275,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     buildDataForCreate(fields: any): CreateAppModel {
-        const customDataValue = { ...fields };
-        const name = customDataValue?.name ? customDataValue?.name : null;
-        delete customDataValue.name;
-        const appTypeId = this.appTypeFormGroup.value?.type?.appTypeId;
         return {
-            name,
-            type: appTypeId ? appTypeId : null,
-            customData: customDataValue,
+            ...fields,
+            name: fields.name || null,
+            type: this.appTypeFormGroup.value?.type?.appTypeId || null,
         };
     }
 
     buildDataForUpdate(fields: any): UpdateAppVersionModel {
-        const appData = this.buildDataForCreate(fields);
         return {
-            ...appData,
-            customData: appData.customData,
+            customData: null, // required model field.
+            ...this.buildDataForCreate(fields),
             approvalRequired: true,
         };
     }
@@ -317,8 +314,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                     this.addListenerAppTypeField();
 
                                     this.appFields = {
-                                        fields: this.mapAppTypeFields(this.parentApp, appType),
+                                        fields: this.mapFields(appType.fields, appVersion),
                                     };
+
                                     this.checkDataValidityRedirect();
                                     this.loader.complete();
                                 },
@@ -447,7 +445,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe((appTypeResponse: any) => {
                 if (appTypeResponse) {
-                    this.mergeWithSaveData(this.appFormData, this.mapAppTypeToFields(appTypeResponse));
+                    this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
                 }
             });
     }
@@ -490,50 +488,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }
 
         return false;
-    }
-
-    private mapAppTypeFields(appVersionModel: FullAppData, appTypeModel: AppTypeModel): AppTypeFieldModel[] {
-        if (appVersionModel && appTypeModel) {
-            const defaultValues = new Map(Object.entries({ ...appVersionModel, ...appVersionModel.customData }));
-            if (appTypeModel?.fields) {
-                return appTypeModel.fields.filter(field => field?.id).map(field => this.mapRecursiveField(field, defaultValues));
-            }
-        }
-        return [];
-    }
-
-    private mapRecursiveField(field: AppTypeFieldModel, defaultValues?: Map<string, any>): AppTypeFieldModel {
-        if (field) {
-            // map field Id
-            if (field?.id) {
-                field.id = field.id.replace('customData.', '');
-                // set default value if present
-                if (defaultValues) {
-                    const defaultValue = defaultValues.get(field.id);
-                    if (defaultValue) {
-                        field.defaultValue = defaultValue;
-                    }
-                }
-            }
-            // map options
-            if (field?.options) {
-                field.options = this.mapOptions(field);
-            }
-        }
-        return field;
-    }
-
-    private mapAppTypeToFields(appTypeModel: AppTypeModel): AppTypeFieldModel[] {
-        if (appTypeModel && appTypeModel?.fields) {
-            return appTypeModel.fields.map(field => this.mapRecursiveField(field));
-        }
-        return [];
-    }
-
-    private mapOptions(appTypeFiled: AppTypeFieldModel): string[] {
-        const newOptions = [];
-        appTypeFiled.options.forEach(o => newOptions.push(o?.value !== undefined ? o.value : o));
-        return newOptions;
     }
 
     private getPageTitleByPage(currentPage: string): 'Create app' | 'Edit app' {
@@ -593,5 +547,39 @@ export class AppNewComponent implements OnInit, OnDestroy {
             default:
                 console.error('Incorrect save type : ', saveType);
         }
+    }
+
+    private mapFields(definitionFields: AppTypeFieldModel[], value?: FullAppData | AppVersionResponse): AppTypeFieldModel[] {
+        if (!definitionFields) {
+            return definitionFields;
+        }
+
+        definitionFields.forEach(field => {
+            // normalize field options.
+            if (field.options) {
+                field.options = this.mapOptions(field);
+            }
+
+            const userValue: any = value ? get(value, field.id) : undefined;
+
+            if (field.fields) {
+                // set DFA values.
+                if (Array.isArray(userValue) && userValue.length > 0) {
+                    field.defaultValue = userValue;
+                }
+                // map DFA fields with default values.
+                this.mapFields(field.fields);
+            } else if (userValue !== undefined) {
+                field.defaultValue = userValue;
+            }
+        });
+
+        return definitionFields;
+    }
+
+    private mapOptions(appTypeFiled: AppTypeFieldModel): string[] {
+        const newOptions = [];
+        appTypeFiled.options.forEach(o => newOptions.push(o?.value !== undefined ? o.value : o));
+        return newOptions;
     }
 }
