@@ -31,9 +31,8 @@
     <div *ngIf="appFields?.fields">
         <oc-form displayType="wizard"
                  buttonPosition="justify"
-                 [queryParams]="queryParams"
+                 [setFormErrors]="setFormErrors"
                  [maxStepsToShow]="4"
-                 [enableTextTruncation]="true"
                  [formJsonData]="appFields"
                  [process]="submitInProcess"
                  [additionalButton]="customSaveButton"
