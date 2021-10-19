@@ -229,6 +229,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         if (sortSettings.by === 'status') {
             this.appSorting = {
                 'status.value': sortSettings.ascending ? 1 : -1,
+                'parent.status.value': sortSettings.ascending ? 1 : -1,
             };
         } else {
             this.appSorting = {
