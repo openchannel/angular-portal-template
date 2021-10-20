@@ -20,15 +20,8 @@ import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-m
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
+import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
-import {
-    AppTypeFieldModel,
-    AppTypeModel,
-    ChartLayoutTypeModel,
-    ChartOptionsChange,
-    ChartStatisticModel,
-    FullAppData,
-} from '@openchannel/angular-common-components';
 
 @Component({
     selector: 'app-app-new',
@@ -36,43 +29,6 @@ import {
     styleUrls: ['./app-new.component.scss'],
 })
 export class AppNewComponent implements OnInit, OnDestroy {
-    chartData: ChartStatisticModel = {
-        data: null,
-        periods: [
-            {
-                id: 'month',
-                label: 'Monthly',
-                active: true,
-                tabularLabel: 'Month',
-            },
-            {
-                id: 'day',
-                label: 'Daily',
-                tabularLabel: 'Day',
-            },
-        ],
-        fields: [
-            {
-                id: 'downloads',
-                label: 'Downloads',
-                active: true,
-            },
-            {
-                id: 'reviews',
-                label: 'Reviews',
-            },
-            {
-                id: 'leads',
-                label: 'Leads',
-            },
-            {
-                id: 'views',
-                label: 'Views',
-            },
-        ],
-        layout: ChartLayoutTypeModel.standard,
-    };
-
     currentAppsTypesItems: AppTypeModel[] = [];
 
     appTypeFormGroup: FormGroup;
@@ -91,9 +47,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     setFormErrors = false;
     disableOutgo = false;
     // chart variables
-    count;
-    countText;
-    downloadUrl = './assets/img/cloud-download.svg';
     currentStep = 1;
 
     private appTypePageNumber = 1;
@@ -121,7 +74,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private loadingBar: LoadingBarService,
         private titleService: TitleService,
         private toaster: ToastrService,
-        public chartService: ChartService,
     ) {}
 
     ngOnInit(): void {
@@ -136,10 +88,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.addListenerAppTypeField();
         } else {
             this.getAppData();
-            this.updateChartData({
-                period: this.chartData.periods[0],
-                field: this.chartData.fields[0],
-            });
         }
     }
 
@@ -342,35 +290,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
         }
-    }
-
-    updateChartData(chartOptions: ChartOptionsChange): void {
-        const dateEnd = new Date();
-        const dateStart = this.chartService.getDateStartByCurrentPeriod(dateEnd, chartOptions.period);
-
-        this.loader.start();
-        this.chartService
-            .getTimeSeries(chartOptions.period.id, chartOptions.field.id, dateStart.getTime(), dateEnd.getTime(), this.appId)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(
-                chartData => {
-                    this.count = 0;
-                    this.chartData = {
-                        ...this.chartData,
-                        data: {
-                            labelsY: chartData.labelsY.map(String),
-                            labelsX: (chartData.labelsX as any[]).map(String),
-                            tabularLabels: chartData.tabularLabels,
-                        },
-                    };
-                    this.count += chartData.labelsY.reduce((a, b) => a + b);
-                    this.countText = `Total ${chartOptions.field.label}`;
-                    this.loader.complete();
-                },
-                () => {
-                    this.loader.complete();
-                },
-            );
     }
 
     hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue): boolean {

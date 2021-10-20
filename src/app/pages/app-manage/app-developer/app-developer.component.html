@@ -4,13 +4,7 @@
 </div>
 <div class="container">
   <div class="my-3">
-    <oc-chart [chartData]="chartData"
-              minDropdownWidth="auto"
-              [count]="count"
-              [countText]="countText"
-              [downloadUrl]="downloadUrl"
-              (changeChartOptions)="updateChartData($event)">
-    </oc-chart>
+    <app-chart #chart showAppsDropdown="true"></app-chart>
   </div>
   <div class="pb-2">
     <oc-app-table noAppMessage="No Apps Found"
@@ -21,6 +15,7 @@
                   ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
                   (pageScrolled)="getApps(false)"
                   (menuClicked)="catchMenuAction($event)"
-                  (sortChosen)="changeSorting($event)"></oc-app-table>
+                  [sortOptions]="sortOptions"
+                  (sortOptionsChosen)="changeSorting($event)"></oc-app-table>
   </div>
 </div>
