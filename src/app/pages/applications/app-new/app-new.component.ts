@@ -558,7 +558,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 controlName.markAsTouched();
                 return controlName.valid;
             }
-            return true;
+            console.log('The "name" field not found. Please check dashboard settings.');
+            return false;
         }
         for (let i = 0; i < this.generatedForm.controls.length; i++) {
             const nameFormControl = (this.generatedForm.controls[i] as AbstractControl).get('name');
