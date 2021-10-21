@@ -1,6 +1,6 @@
 {
   "name": "template3-portal-frontend",
-  "version": "1.44.0",
+  "version": "1.44.1",
   "scripts": {
     "ng": "ng",
     "start": "./node_modules/.bin/ng serve",
@@ -73,7 +73,7 @@
     "ngx-infinite-scroll": "^10.0.0",
     "ngx-owl-carousel-o": "^4.0.0",
     "ngx-spinner": "^9.0.2",
-    "prettier": "^2.2.1",
+    "prettier": "^2.4.1",
     "protractor": "~7.0.0",
     "ts-node": "~7.0.0",
     "tslint": "~6.1.0",
