@@ -305,7 +305,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
         modalDelRef.result.then(
             res => {
-                if (res === 'success') {
+                if (res) {
                     const deleteRequest = menuEvent.isChild
                         ? this.appsVersionService.deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
                         : this.appService.deleteApp(menuEvent.appId);
@@ -364,7 +364,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
         modalUnsuspendRef.result.then(
             res => {
-                if (res && res === 'success') {
+                if (res) {
                     this.appService
                         .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
                         .pipe(takeUntil(this.destroy$))
