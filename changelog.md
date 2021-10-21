@@ -1,3 +1,7 @@
+## Release notes - template3-portal-frontend - Version 1.44.1 (10/21/2021)<br>
+### Bug<br>
+AT-1572 - [Portal][Delete App] Developer is not able to Delete the application.<br>
+AT-1571 - [Portal][Unsuspend App] Developer is not able to unsuspend the application once suspended.<br>
 ## Release notes - template3-portal-frontend - Version 1.44.0 (10/21/2021)<br>
 ### Bug<br>
 AT-1548 - [Apps] [Multiselect list] Multiselect list should restrict additional entry except the predefined from core.<br>
