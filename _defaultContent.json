@@ -8,7 +8,7 @@
     "menu": {
       "items": [{
         "label": "Manage Apps",
-        "location": "/manage"
+        "location": "/manage-apps"
       }]
     }
   },

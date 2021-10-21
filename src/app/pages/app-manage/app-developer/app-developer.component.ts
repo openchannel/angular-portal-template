@@ -273,7 +273,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     );
                 break;
             case 'EDIT':
-                this.router.navigate(['/app/update', menuEvent.appId, menuEvent.appVersion]).then();
+                this.router.navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion]).then();
                 break;
             case 'DELETE':
                 const modalDelRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
@@ -430,7 +430,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
                                 if (err.status === 400) {
                                     this.router
-                                        .navigate(['/app/update', menuEvent.appId, menuEvent.appVersion], {
+                                        .navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion], {
                                             queryParams: { formStatus: 'invalid' },
                                         })
                                         .then(() => {
