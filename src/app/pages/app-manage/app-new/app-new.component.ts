@@ -80,6 +80,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     draftSaveInProcess = false;
     submitInProcess = false;
+    currentStep = 1;
 
     pageTitle: 'Create app' | 'Edit app';
     pageType: string;
@@ -92,7 +93,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     count;
     countText;
     downloadUrl = './assets/img/cloud-download.svg';
-    currentStep = 1;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -558,6 +558,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 controlName.markAsTouched();
                 return controlName.valid;
             }
+            console.log('The "name" field not found. Please check dashboard settings.');
+            return false;
         }
         for (let i = 0; i < this.generatedForm.controls.length; i++) {
             const nameFormControl = (this.generatedForm.controls[i] as AbstractControl).get('name');
