@@ -285,3 +285,13 @@ app-not-found header {
 .get-started__info-heading {
     font-size: 28px;
 }
+
+.confirmation-modal__custom-button {
+    .oc-button_primary {
+        background-color: $suspended;
+        border-color: $suspended;
+        &:hover {
+            box-shadow: 1px 5px 30px 0 rgba($suspended, 0.5);
+        }
+    }
+}
