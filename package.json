@@ -1,6 +1,6 @@
 {
   "name": "template3-portal-frontend",
-  "version": "1.44.0",
+  "version": "1.44.1",
   "scripts": {
     "ng": "ng",
     "start": "./node_modules/.bin/ng serve",
