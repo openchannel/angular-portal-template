@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     AppsService,
     AppStatusValue,
+    AppTypeFieldModelResponse,
     AppTypeService,
     AppVersionResponse,
     AppVersionService,
-    ChartService,
     CreateAppModel,
     TitleService,
     TypeModel,
@@ -44,6 +44,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
     appId: string;
     appVersion: number;
     parentApp: FullAppData;
+    appDataForInvalidAppType: AppVersionResponse;
+    preventShowInvalidAppTypeError = false;
     setFormErrors = false;
     disableOutgo = false;
     // chart variables
@@ -252,6 +254,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (appVersion) {
                         this.parentApp = appVersion as FullAppData;
                         this.titleService.setSpecialTitle(this.parentApp.name);
+                        this.addListenerAppTypeField();
 
                         this.appTypeService
                             .getOneAppType(this.parentApp.type)
@@ -259,18 +262,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
                             .subscribe(
                                 appType => {
                                     this.appTypeFormGroup.get('type').setValue(appType);
-                                    this.addListenerAppTypeField();
 
-                                    this.appFields = {
-                                        fields: this.mapFields(appType.fields, appVersion),
-                                    };
+                                    this.setAppFieldsByType(appType.fields, appVersion);
 
                                     this.checkDataValidityRedirect();
                                     this.loader.complete();
                                 },
                                 () => {
+                                    this.appDataForInvalidAppType = appVersion;
+
+                                    if (this.currentAppsTypesItems.length === 1) {
+                                        this.preventShowInvalidAppTypeError = true;
+                                        this.appTypeFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+                                    }
+
                                     this.loader.complete();
-                                    this.router.navigate(['/manage']).then();
                                 },
                             );
                     } else {
@@ -309,6 +315,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     goToAppManagePage(): void {
         this.router.navigate(['/manage']).then();
+    }
+
+    private setAppFieldsByType(appTypeFields: AppTypeFieldModelResponse[], appData: AppVersionResponse): void {
+        this.appFields = {
+            fields: this.mapFields(appTypeFields, appData),
+        };
     }
 
     private addListenerAppTypeField(): void {
@@ -364,7 +376,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe((appTypeResponse: any) => {
                 if (appTypeResponse) {
-                    this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
+                    // If app doesn't have correct type and user chooses type for the first time in EDIT mode
+                    if (this.appDataForInvalidAppType) {
+                        this.setAppFieldsByType(appTypeResponse.fields, this.appDataForInvalidAppType);
+                        this.appDataForInvalidAppType = null;
+                    } else {
+                        this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
+                    }
                 }
             });
     }

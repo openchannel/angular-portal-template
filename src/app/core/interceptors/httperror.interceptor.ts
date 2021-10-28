@@ -110,6 +110,10 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     }
 
     private handleError(error) {
+        if (error.url.includes('appTypes') && error.status === 404) {
+            return;
+        }
+
         let errorMessage: string;
         if (error.error instanceof ErrorEvent) {
             // client-side error
