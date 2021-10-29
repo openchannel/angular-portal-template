@@ -45,7 +45,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     appVersion: number;
     parentApp: FullAppData;
     appDataForInvalidAppType: AppVersionResponse;
-    preventShowInvalidAppTypeError = false;
     setFormErrors = false;
     disableOutgo = false;
     // chart variables
@@ -254,7 +253,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (appVersion) {
                         this.parentApp = appVersion as FullAppData;
                         this.titleService.setSpecialTitle(this.parentApp.name);
-                        this.addListenerAppTypeField();
 
                         this.appTypeService
                             .getOneAppType(this.parentApp.type)
@@ -262,6 +260,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                             .subscribe(
                                 appType => {
                                     this.appTypeFormGroup.get('type').setValue(appType);
+                                    this.addListenerAppTypeField();
 
                                     this.setAppFieldsByType(appType.fields, appVersion);
 
@@ -270,10 +269,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                 },
                                 () => {
                                     this.appDataForInvalidAppType = appVersion;
+                                    this.addListenerAppTypeField();
 
                                     if (this.currentAppsTypesItems.length === 1) {
-                                        this.preventShowInvalidAppTypeError = true;
                                         this.appTypeFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+                                    } else {
+                                        this.setInvalidAppTypeError();
                                     }
 
                                     this.loader.complete();
@@ -315,6 +316,16 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     goToAppManagePage(): void {
         this.router.navigate(['/manage']).then();
+    }
+
+    private setInvalidAppTypeError(): void {
+        this.appTypeFormGroup.get('type').markAsTouched();
+        this.appTypeFormGroup.get('type').setErrors({ invalidAppType: true });
+    }
+
+    private removeInvalidAppTypeError(): void {
+        this.appTypeFormGroup.get('type').setErrors({ invalidAppType: null });
+        this.appTypeFormGroup.get('type').updateValueAndValidity();
     }
 
     private setAppFieldsByType(appTypeFields: AppTypeFieldModelResponse[], appData: AppVersionResponse): void {
@@ -380,6 +391,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (this.appDataForInvalidAppType) {
                         this.setAppFieldsByType(appTypeResponse.fields, this.appDataForInvalidAppType);
                         this.appDataForInvalidAppType = null;
+                        this.removeInvalidAppTypeError();
                     } else {
                         this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
                     }
