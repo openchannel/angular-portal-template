@@ -23,6 +23,7 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 
+export type pageDestination = 'edit' | 'create';
 @Component({
     selector: 'app-app-new',
     templateUrl: './app-new.component.html',
@@ -41,7 +42,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     currentStep = 1;
 
     pageTitle: 'Create app' | 'Edit app';
-    pageType: string;
+    pageType: pageDestination;
     appId: string;
     appVersion: number;
     parentApp: FullAppData;
@@ -110,7 +111,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     // getting app data from the form on form changing
-    onFormDataUpdated(fields: any): void {
+    onFormDataeditd(fields: any): void {
         this.appFormData = fields;
     }
 
@@ -125,7 +126,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 modalRef.componentInstance.type = 'submission';
                 modalRef.componentInstance.buttonText = 'Yes, submit it';
                 modalRef.componentInstance.cancelButtonText = 'Save as draft';
-                if (this.hasPageAndAppStatus('update', 'pending')) {
+                if (this.hasPageAndAppStatus('edit', 'pending')) {
                     modalRef.componentInstance.showCancel = false;
                 }
                 modalRef.result.then(
@@ -295,7 +296,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue): boolean {
+    hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
         return this.pageType === pageType && this.parentApp?.status?.value === appStatus;
     }
 
@@ -454,7 +455,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     private showSuccessToaster(saveType: 'submit' | 'draft'): void {
         switch (saveType ? saveType : '') {
             case 'draft': {
-                if (this.hasPageAndAppStatus('update', 'approved')) {
+                if (this.hasPageAndAppStatus('edit', 'approved')) {
                     this.toaster.success('New app version created and saved as draft');
                 } else {
                     this.toaster.success('App has been saved as draft');
@@ -462,7 +463,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 break;
             }
             case 'submit':
-                if (this.hasPageAndAppStatus('update', 'approved')) {
+                if (this.hasPageAndAppStatus('edit', 'approved')) {
                     this.toaster.success('New app version has been submitted for approval');
                 } else {
                     this.toaster.success('App has been submitted for approval');
