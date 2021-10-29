@@ -111,7 +111,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     // getting app data from the form on form changing
-    onFormDataeditd(fields: any): void {
+    onFormDataUpdated(fields: any): void {
         this.appFormData = fields;
     }
 
