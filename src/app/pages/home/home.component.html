@@ -4,7 +4,8 @@
         <p class="home__hero-description text-secondary text-center">{{cmsData.pageInfoSubtext}}</p>
         <oc-button class="home__hero-partner"
                    type="primary"
-                   text="Become a partner"></oc-button>
+                   text="Become a partner"
+                   (click)="router.navigate([cmsData.bottomCalloutButtonLocation || ''])"></oc-button>
     </div>
 </div>
 <div class="home__services container d-flex justify-content-between flex-column flex-md-row">

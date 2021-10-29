@@ -37,6 +37,7 @@
         }
 
         &-partner {
+            display: block;
             margin-top: 3rem;
             @include media-breakpoint-sm {
                 width: 256px;
