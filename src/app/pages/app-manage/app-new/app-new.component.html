@@ -3,7 +3,7 @@
                     (navigateClick)="goToAppManagePage()"></app-page-title>
 </div>
 <div class="container main-container mt-5">
-    <div class="my-5" *ngIf="pageType === 'update'">
+    <div class="my-5" *ngIf="pageType === 'edit'">
         <app-chart [appId]="appId"></app-chart>
     </div>
     <form [formGroup]="appTypeFormGroup"
@@ -22,23 +22,25 @@
         </div>
     </form>
     <div *ngIf="appFields?.fields">
-        <oc-form [formJsonData]="appFields"
-                 displayType="wizard"
+        <oc-form displayType="wizard"
                  buttonPosition="justify"
+                 [setFormErrors]="setFormErrors"
+                 [maxStepsToShow]="4"
+                 [formJsonData]="appFields"
                  [process]="submitInProcess"
                  [additionalButton]="customSaveButton"
+                 [showSubmitButton]="!hasParentAppStatus('suspended')"
+                 [(currentStep)]="currentStep"
                  (formSubmitted)="openConfirmationModal()"
                  (formDataUpdated)="onFormDataUpdated($event)"
                  (createdForm)="setGeneratedForm($event)"
-                 (cancelSubmit)="onCancelClick()"
-                 [showSubmitButton]="!hasParentAppStatus('suspended')"
-                 [(currentStep)]="currentStep">
+                 (cancelSubmit)="onCancelClick()">
         </oc-form>
     </div>
 </div>
 
 <ng-template #customSaveButton>
-    <oc-button *ngIf="!hasPageAndAppStatus('update', 'pending')"
+    <oc-button *ngIf="!hasPageAndAppStatus('edit', 'pending')"
                type="secondary"
                class="form__button"
                text="Save"

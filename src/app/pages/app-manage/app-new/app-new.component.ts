@@ -23,6 +23,7 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 
+export type pageDestination = 'edit' | 'create';
 @Component({
     selector: 'app-app-new',
     templateUrl: './app-new.component.html',
@@ -38,16 +39,19 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     draftSaveInProcess = false;
     submitInProcess = false;
+    currentStep = 1;
 
     pageTitle: 'Create app' | 'Edit app';
-    pageType: string;
+    pageType: pageDestination;
     appId: string;
     appVersion: number;
     parentApp: FullAppData;
     setFormErrors = false;
     disableOutgo = false;
     // chart variables
-    currentStep = 1;
+    count;
+    countText;
+    downloadUrl = './assets/img/cloud-download.svg';
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -78,7 +82,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
-        this.pageType = this.router.url.split('/')[2];
+        this.pageType = this.router.url.split('/')[2] as pageDestination;
         this.pageTitle = this.getPageTitleByPage(this.pageType);
 
         this.initAppDataGroup();
@@ -97,7 +101,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     onCancelClick(): void {
-        this.router.navigate(['manage']).then();
+        this.router.navigate(['manage-apps']).then();
     }
 
     initAppDataGroup(): void {
@@ -122,7 +126,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 modalRef.componentInstance.type = 'submission';
                 modalRef.componentInstance.buttonText = 'Yes, submit it';
                 modalRef.componentInstance.cancelButtonText = 'Save as draft';
-                if (this.hasPageAndAppStatus('update', 'pending')) {
+                if (this.hasPageAndAppStatus('edit', 'pending')) {
                     modalRef.componentInstance.showCancel = false;
                 }
                 modalRef.result.then(
@@ -161,7 +165,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                     this.publishApp(appResponse.appId, appResponse.version);
                                 } else {
                                     this.draftSaveInProcess = false;
-                                    this.router.navigate(['/manage']).then(() => {
+                                    this.router.navigate(['/manage-apps']).then(() => {
                                         this.showSuccessToaster(saveType);
                                     });
                                 }
@@ -187,7 +191,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                 } else {
                                     this.draftSaveInProcess = false;
                                     this.showSuccessToaster(saveType);
-                                    this.router.navigate(['/manage']).then();
+                                    this.router.navigate(['/manage-apps']).then();
                                 }
                             } else {
                                 this.draftSaveInProcess = false;
@@ -214,7 +218,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 () => {
                     this.submitInProcess = false;
                     this.showSuccessToaster('submit');
-                    this.router.navigate(['/manage']).then();
+                    this.router.navigate(['/manage-apps']).then();
                 },
                 () => {
                     this.submitInProcess = false;
@@ -270,17 +274,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                 },
                                 () => {
                                     this.loader.complete();
-                                    this.router.navigate(['/manage']).then();
+                                    this.router.navigate(['/manage-apps']).then();
                                 },
                             );
                     } else {
                         this.loader.complete();
-                        this.router.navigate(['/manage']).then();
+                        this.router.navigate(['/manage-apps']).then();
                     }
                 },
                 () => {
                     this.loader.complete();
-                    this.router.navigate(['/manage']).then();
+                    this.router.navigate(['/manage-apps']).then();
                 },
             );
     }
@@ -292,7 +296,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasPageAndAppStatus(pageType: 'update' | 'create', appStatus: AppStatusValue): boolean {
+    hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
         return this.pageType === pageType && this.parentApp?.status?.value === appStatus;
     }
 
@@ -308,7 +312,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     goToAppManagePage(): void {
-        this.router.navigate(['/manage']).then();
+        this.router.navigate(['/manage-apps']).then();
     }
 
     private addListenerAppTypeField(): void {
@@ -346,14 +350,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
                         this.loader.complete();
                     } else {
                         this.loader.complete();
-                        this.router.navigate(['/manage']).then();
+                        this.router.navigate(['/manage-apps']).then();
                         this.currentAppsTypesItems = [];
                     }
                 },
                 () => {
                     this.currentAppsTypesItems = [];
                     this.loader.complete();
-                    this.router.navigate(['/manage']).then();
+                    this.router.navigate(['/manage-apps']).then();
                 },
             );
     }
@@ -431,6 +435,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 controlName.markAsTouched();
                 return controlName.valid;
             }
+            console.log('The "name" field not found. Please check dashboard settings.');
+            return false;
         }
         for (let i = 0; i < this.generatedForm.controls.length; i++) {
             const nameFormControl = (this.generatedForm.controls[i] as AbstractControl).get('name');
@@ -449,7 +455,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     private showSuccessToaster(saveType: 'submit' | 'draft'): void {
         switch (saveType ? saveType : '') {
             case 'draft': {
-                if (this.hasPageAndAppStatus('update', 'approved')) {
+                if (this.hasPageAndAppStatus('edit', 'approved')) {
                     this.toaster.success('New app version created and saved as draft');
                 } else {
                     this.toaster.success('App has been saved as draft');
@@ -457,7 +463,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 break;
             }
             case 'submit':
-                if (this.hasPageAndAppStatus('update', 'approved')) {
+                if (this.hasPageAndAppStatus('edit', 'approved')) {
                     this.toaster.success('New app version has been submitted for approval');
                 } else {
                     this.toaster.success('App has been submitted for approval');
