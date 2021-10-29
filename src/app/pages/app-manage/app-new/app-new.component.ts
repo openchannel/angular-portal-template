@@ -82,7 +82,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
-        this.pageType = this.router.url.split('/')[2];
+        this.pageType = this.router.url.split('/')[2] as pageDestination;
         this.pageTitle = this.getPageTitleByPage(this.pageType);
 
         this.initAppDataGroup();

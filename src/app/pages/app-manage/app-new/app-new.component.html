@@ -3,7 +3,7 @@
                     (navigateClick)="goToAppManagePage()"></app-page-title>
 </div>
 <div class="container main-container mt-5">
-    <div class="my-5" *ngIf="pageType === 'update'">
+    <div class="my-5" *ngIf="pageType === 'edit'">
         <app-chart [appId]="appId"></app-chart>
     </div>
     <form [formGroup]="appTypeFormGroup"
