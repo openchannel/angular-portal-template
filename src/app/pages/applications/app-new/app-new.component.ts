@@ -22,6 +22,7 @@ import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
     selector: 'app-app-new',
@@ -255,7 +256,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                         this.titleService.setSpecialTitle(this.parentApp.name);
 
                         this.appTypeService
-                            .getOneAppType(this.parentApp.type)
+                            .getOneAppType(this.parentApp.type, new HttpHeaders({ 'x-handle-error': '404' }))
                             .pipe(takeUntil(this.destroy$))
                             .subscribe(
                                 appType => {
