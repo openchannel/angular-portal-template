@@ -38,9 +38,6 @@ export class HomeComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        if (this.authHolderService.isLoggedInUser()) {
-            this.router.navigate(['/manage']).then();
-        }
         this.setTagLineToPageTitleService();
         this.initCMSData();
     }

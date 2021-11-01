@@ -142,7 +142,6 @@ export class AppChartComponent implements OnInit, OnDestroy {
     private initAppDropdownValues(): void {
         // destroy old apps http subscription
         this.destroy$.apps.next();
-
         // open loading bar
         this.loader$.apps.start();
 
@@ -164,9 +163,9 @@ export class AppChartComponent implements OnInit, OnDestroy {
                     hasNext = ++pageNumber <= response.pages;
                     return response.list.map(app => ({ id: app.appId, label: app.name }));
                 }),
-                repeatWhen(obs => obs.pipe(filter(() => hasNext))),
-                finalize(() => this.loader$.apps.complete()),
                 takeUntil(this.destroy$.apps),
+                finalize(() => this.loader$.apps.complete()),
+                repeatWhen(obs => obs.pipe(filter(() => hasNext))),
             )
             .subscribe(dropdownAppValues => this.chartData.apps.items.push(...dropdownAppValues));
     }
