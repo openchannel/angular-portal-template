@@ -20,7 +20,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     readonly APPS_LIMIT_PER_REQUEST = 30;
 
     @ViewChild('chart', { static: true }) chart: AppChartComponent;
-
     page = 1;
     isAppProcessing = false;
     menuUrl = './assets/img/dots-hr-icon.svg';
@@ -198,9 +197,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     );
                 break;
             case 'EDIT':
-                this.router
-                    .navigate(['/app/update', menuEvent.appId, menuEvent.appVersion], { queryParams: { formStatus: 'invalid' } })
-                    .then();
+                this.router.navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion]).then();
                 break;
             case 'DELETE':
                 this.deleteAppAction(menuEvent);
@@ -265,7 +262,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
                                 if (err.status === 400) {
                                     this.router
-                                        .navigate(['/app/update', menuEvent.appId, menuEvent.appVersion], {
+                                        .navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion], {
                                             queryParams: { formStatus: 'invalid' },
                                         })
                                         .then(() => {
