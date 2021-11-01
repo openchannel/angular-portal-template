@@ -19,13 +19,15 @@ export class ChangePasswordComponent {
                 id: 'password',
                 label: 'Current Password',
                 type: 'password',
-                attributes: [],
+                attributes: {},
             },
             {
                 id: 'newPassword',
                 label: 'New Password',
                 type: 'password',
-                attributes: [],
+                attributes: {
+                    required: true,
+                },
             },
         ],
     };
@@ -75,9 +77,9 @@ export class ChangePasswordComponent {
             );
     }
 
-    setPasswordFormGroup(passwordGroup: FormGroup) {
+    setPasswordFormGroup(passwordGroup: FormGroup): void {
         this.passwordFormGroup = passwordGroup;
-        // clear validation for current user password
+        // clear password validator for current user password
         this.passwordFormGroup.controls.password.clearValidators();
         this.passwordFormGroup.controls.password.setValidators(Validators.required);
         this.passwordFormGroup.controls.password.updateValueAndValidity();
