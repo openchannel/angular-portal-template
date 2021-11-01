@@ -68,12 +68,14 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
+        this.loader.start();
         this.getApps(true);
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        this.loader.complete();
     }
 
     capitalizeFirstLetter(str: string): string {
@@ -81,7 +83,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     getApps(startNewPagination: boolean): void {
-        this.loader.start();
         this.isAppProcessing = true;
 
         if (startNewPagination) {

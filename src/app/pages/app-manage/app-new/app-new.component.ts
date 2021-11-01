@@ -5,14 +5,13 @@ import {
     AppTypeService,
     AppVersionResponse,
     AppVersionService,
-    ChartService,
     CreateAppModel,
     TitleService,
     TypeModel,
     UpdateAppVersionModel,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -145,64 +144,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     // saving app to the server
     saveApp(saveType: 'submit' | 'draft'): void {
+        const isDraft = saveType === 'draft';
+        const isSubmit = saveType === 'submit';
         if (
             !this.draftSaveInProcess &&
             !this.submitInProcess &&
-            ((saveType === 'draft' && this.isValidAppName()) || (saveType === 'submit' && this.generatedForm?.valid))
+            ((isDraft && this.isValidAppName()) || (isSubmit && this.generatedForm?.valid))
         ) {
             this.disableOutgo = true;
-            this.draftSaveInProcess = saveType === 'draft';
-            this.submitInProcess = saveType === 'submit';
+            this.draftSaveInProcess = isDraft;
+            this.submitInProcess = isSubmit;
 
             if (this.pageType === 'create') {
-                this.appsService
-                    .createApp(this.buildDataForCreate(this.appFormData))
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe(
-                        appResponse => {
-                            if (appResponse) {
-                                if (saveType === 'submit') {
-                                    this.publishApp(appResponse.appId, appResponse.version);
-                                } else {
-                                    this.draftSaveInProcess = false;
-                                    this.router.navigate(['/manage-apps']).then(() => {
-                                        this.showSuccessToaster(saveType);
-                                    });
-                                }
-                            } else {
-                                this.draftSaveInProcess = false;
-                                this.submitInProcess = false;
-                            }
-                        },
-                        () => {
-                            this.draftSaveInProcess = false;
-                            this.submitInProcess = false;
-                        },
-                    );
+                this.saveNewApp(saveType);
             } else {
-                this.appVersionService
-                    .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData))
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe(
-                        response => {
-                            if (response) {
-                                if (saveType === 'submit' && this.parentApp.status.value !== 'pending') {
-                                    this.publishApp(response.appId, response.version);
-                                } else {
-                                    this.draftSaveInProcess = false;
-                                    this.showSuccessToaster(saveType);
-                                    this.router.navigate(['/manage-apps']).then();
-                                }
-                            } else {
-                                this.draftSaveInProcess = false;
-                                this.submitInProcess = false;
-                            }
-                        },
-                        () => {
-                            this.draftSaveInProcess = false;
-                            this.submitInProcess = false;
-                        },
-                    );
+                this.updateApp(saveType);
             }
         }
     }
@@ -439,7 +395,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             return false;
         }
         for (let i = 0; i < this.generatedForm.controls.length; i++) {
-            const nameFormControl = (this.generatedForm.controls[i] as AbstractControl).get('name');
+            const nameFormControl = this.generatedForm.controls[i].get('name');
             if (nameFormControl) {
                 nameFormControl.markAsTouched();
                 if (nameFormControl.valid) {
@@ -506,5 +462,48 @@ export class AppNewComponent implements OnInit, OnDestroy {
         const newOptions = [];
         appTypeFiled.options.forEach(o => newOptions.push(o?.value !== undefined ? o.value : o));
         return newOptions;
+    }
+
+    private saveNewApp(saveType: 'submit' | 'draft'): void {
+        this.appsService
+            .createApp(this.buildDataForCreate(this.appFormData))
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                appResponse => {
+                    if (saveType === 'submit') {
+                        this.publishApp(appResponse.appId, appResponse.version);
+                    } else {
+                        this.draftSaveInProcess = false;
+                        this.router.navigate(['/manage-apps']).then(() => {
+                            this.showSuccessToaster(saveType);
+                        });
+                    }
+                },
+                () => {
+                    this.draftSaveInProcess = false;
+                    this.submitInProcess = false;
+                },
+            );
+    }
+
+    private updateApp(saveType: 'submit' | 'draft'): void {
+        this.appVersionService
+            .updateAppByVersion(this.appId, this.appVersion, this.buildDataForUpdate(this.appFormData))
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(
+                response => {
+                    if (saveType === 'submit' && this.parentApp.status.value !== 'pending') {
+                        this.publishApp(response.appId, response.version);
+                    } else {
+                        this.draftSaveInProcess = false;
+                        this.showSuccessToaster(saveType);
+                        this.router.navigate(['/manage-apps']).then();
+                    }
+                },
+                () => {
+                    this.draftSaveInProcess = false;
+                    this.submitInProcess = false;
+                },
+            );
     }
 }
