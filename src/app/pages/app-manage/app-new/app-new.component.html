@@ -1,6 +1,5 @@
 <div class="bg-container bg-s">
-    <app-page-title [pageTitle]="pageTitle" navigateText="Back"
-                    (navigateClick)="goToAppManagePage()"></app-page-title>
+    <app-page-title [pageTitle]="pageTitle" navigateText="Back" (navigateClick)="goToAppManagePage()"></app-page-title>
 </div>
 <div class="container main-container mt-5">
     <div class="my-5" *ngIf="pageType === 'edit'">
@@ -20,28 +19,29 @@
             ]"></oc-error>
     </form>
     <div *ngIf="appFields?.fields">
-        <oc-form displayType="wizard"
-                 buttonPosition="justify"
-                 [setFormErrors]="setFormErrors"
-                 [maxStepsToShow]="4"
-                 [formJsonData]="appFields"
-                 [process]="submitInProcess"
-                 [additionalButton]="customSaveButton"
-                 [showSubmitButton]="!hasParentAppStatus('suspended')"
-                 [(currentStep)]="currentStep"
-                 (formSubmitted)="openConfirmationModal()"
-                 (formDataUpdated)="onFormDataUpdated($event)"
-                 (createdForm)="setGeneratedForm($event)"
-                 (cancelSubmit)="onCancelClick()">
-        </oc-form>
+        <oc-form
+            displayType="wizard"
+            buttonPosition="justify"
+            [setFormErrors]="setFormErrors"
+            [maxStepsToShow]="4"
+            [formJsonData]="appFields"
+            [process]="submitInProcess"
+            [additionalButton]="customSaveButton"
+            [showSubmitButton]="!hasParentAppStatus('suspended')"
+            [(currentStep)]="currentStep"
+            (formSubmitted)="openConfirmationModal()"
+            (formDataUpdated)="onFormDataUpdated($event)"
+            (createdForm)="setGeneratedForm($event)"
+            (cancelSubmit)="onCancelClick()"></oc-form>
     </div>
 </div>
 
 <ng-template #customSaveButton>
-    <oc-button *ngIf="!hasPageAndAppStatus('edit', 'pending')"
-               type="secondary"
-               class="form__button"
-               text="Save"
-               [process]="draftSaveInProcess"
-               (click)="saveApp('draft')"></oc-button>
+    <oc-button
+        *ngIf="!hasPageAndAppStatus('edit', 'pending')"
+        type="secondary"
+        class="form__button"
+        text="Save"
+        [process]="draftSaveInProcess"
+        (click)="saveApp('draft')"></oc-button>
 </ng-template>
