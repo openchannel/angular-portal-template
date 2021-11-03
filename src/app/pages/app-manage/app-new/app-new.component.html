@@ -1,49 +1,43 @@
 <div class="bg-container bg-s">
-    <app-page-title [pageTitle]="pageTitle" navigateText="Back"
-                    (navigateClick)="goToAppManagePage()"></app-page-title>
+    <app-page-title [pageTitle]="pageTitle" navigateText="Back" (navigateClick)="goToAppManagePage()"></app-page-title>
 </div>
 <div class="container main-container mt-5">
     <div class="my-5" *ngIf="pageType === 'edit'">
         <app-chart [appId]="appId"></app-chart>
     </div>
-    <form [formGroup]="appTypeFormGroup"
-          *ngIf="currentStep === 1">
+    <form [formGroup]="appTypeFormGroup" *ngIf="currentStep === 1">
         <div class="d-flex flex-column flex-md-row align-items-md-center">
-            <oc-label text="Choose your app type" required="true"
-                      class="text-nowrap col-md-3 mr-1 mb-1 mb-md-0 pl-0"></oc-label>
+            <oc-label text="Choose your app type" required="true" class="text-nowrap col-md-3 mr-1 mb-1 mb-md-0 pl-0"></oc-label>
             <div class="d-flex flex-column w-100">
-                <oc-select formControlName="type"
-                           labelField="label"
-                           [selectValArr]="currentAppsTypesItems"
-                           class="w-100">
-                </oc-select>
+                <oc-select formControlName="type" labelField="label" [selectValArr]="currentAppsTypesItems" class="w-100"></oc-select>
                 <oc-error [control]="appTypeFormGroup.get('appType')"></oc-error>
             </div>
         </div>
     </form>
     <div *ngIf="appFields?.fields">
-        <oc-form displayType="wizard"
-                 buttonPosition="justify"
-                 [setFormErrors]="setFormErrors"
-                 [maxStepsToShow]="4"
-                 [formJsonData]="appFields"
-                 [process]="submitInProcess"
-                 [additionalButton]="customSaveButton"
-                 [showSubmitButton]="!hasParentAppStatus('suspended')"
-                 [(currentStep)]="currentStep"
-                 (formSubmitted)="openConfirmationModal()"
-                 (formDataUpdated)="onFormDataUpdated($event)"
-                 (createdForm)="setGeneratedForm($event)"
-                 (cancelSubmit)="onCancelClick()">
-        </oc-form>
+        <oc-form
+            displayType="wizard"
+            buttonPosition="justify"
+            [setFormErrors]="setFormErrors"
+            [maxStepsToShow]="4"
+            [formJsonData]="appFields"
+            [process]="submitInProcess"
+            [additionalButton]="customSaveButton"
+            [showSubmitButton]="!hasParentAppStatus('suspended')"
+            [(currentStep)]="currentStep"
+            (formSubmitted)="openConfirmationModal()"
+            (formDataUpdated)="onFormDataUpdated($event)"
+            (createdForm)="setGeneratedForm($event)"
+            (cancelSubmit)="onCancelClick()"></oc-form>
     </div>
 </div>
 
 <ng-template #customSaveButton>
-    <oc-button *ngIf="!hasPageAndAppStatus('edit', 'pending')"
-               type="secondary"
-               class="form__button"
-               text="Save"
-               [process]="draftSaveInProcess"
-               (click)="saveApp('draft')"></oc-button>
+    <oc-button
+        *ngIf="!hasPageAndAppStatus('edit', 'pending')"
+        type="secondary"
+        class="form__button"
+        text="Save"
+        [process]="draftSaveInProcess"
+        (click)="saveApp('draft')"></oc-button>
 </ng-template>
