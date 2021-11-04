@@ -1,8 +1,8 @@
-@import "./assets/styles/fonts";
-@import "./assets/styles/theme";
-@import "./assets/styles/mixins";
-@import "~@openchannel/angular-common-components/assets/styles/styles";
-@import "~@openchannel/angular-common-components/assets/styles/general-styles";
+@import './assets/styles/fonts';
+@import './assets/styles/theme';
+@import './assets/styles/mixins';
+@import '~@openchannel/angular-common-components/assets/styles/styles';
+@import '~@openchannel/angular-common-components/assets/styles/general-styles';
 
 .bg-container {
     width: 100%;
@@ -34,7 +34,6 @@
 /** Froala Editor **/
 
 .fr-box {
-
     .second-toolbar {
         border-bottom: 0;
     }
@@ -87,7 +86,6 @@
 /** End Froala Editor **/
 
 .oc-dropdown-toggle {
-
     .dropdown-toggle.btn-secondary {
         border-radius: 4px;
         color: #333333 !important;
@@ -99,7 +97,7 @@
         padding-left: 16px;
     }
 
-    .dropdown-toggle.btn-secondary[aria-expanded="true"] {
+    .dropdown-toggle.btn-secondary[aria-expanded='true'] {
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
     }
@@ -108,7 +106,7 @@
         display: none;
     }
 
-    .dropdown-toggle[aria-expanded="true"]::before {
+    .dropdown-toggle[aria-expanded='true']::before {
         content: url(/assets/img/select-up.svg);
         height: 6px;
         width: 10px;
@@ -116,7 +114,7 @@
         float: right;
     }
 
-    .dropdown-toggle[aria-expanded="false"]::before {
+    .dropdown-toggle[aria-expanded='false']::before {
         content: url(/assets/img/select-down.svg);
         height: 6px;
         width: 10px;
@@ -147,7 +145,8 @@ button:focus {
     outline: none !important;
 }
 
-html, body {
+html,
+body {
     height: 100%;
 }
 

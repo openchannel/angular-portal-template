@@ -1,10 +1,9 @@
 <div class="grid-container pb-3">
-  <oc-menu-user-grid
-          menuUrl="../../../../assets/img/dots-hr-icon.svg"
-          [properties]="userProperties"
-          (menuClicked)="userAction($event)"
-          (pageScrolled)="getAllDevelopers(false)"
-          [sortOptions]="tableSortOptions"
-          (sortOptionsChosen)="catchSortChanges($event)">
-  </oc-menu-user-grid>
+    <oc-menu-user-grid
+        menuUrl="../../../../assets/img/dots-hr-icon.svg"
+        [properties]="userProperties"
+        (menuClicked)="userAction($event)"
+        (pageScrolled)="getAllDevelopers(false)"
+        [sortOptions]="tableSortOptions"
+        (sortOptionsChosen)="catchSortChanges($event)"></oc-menu-user-grid>
 </div>

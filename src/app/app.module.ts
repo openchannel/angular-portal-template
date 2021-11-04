@@ -4,7 +4,12 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpConfigInterceptor } from '@core/interceptors/httpconfig.interceptor';
-import { CustomHttpClientXsrfModule, NetlifyPrerenderModule, OcCommonServiceModule, AuthHolderService} from '@openchannel/angular-common-services';
+import {
+    CustomHttpClientXsrfModule,
+    NetlifyPrerenderModule,
+    OcCommonServiceModule,
+    AuthHolderService,
+} from '@openchannel/angular-common-services';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -48,7 +53,8 @@ const apiURl = environment.enableProxy ? `${window.origin}/client-api/` : enviro
     providers: [
         {
             provide: HTTP_INTERCEPTORS,
-            useFactory: (authHolderService: AuthHolderService): HttpConfigInterceptor => new HttpConfigInterceptor(authHolderService, apiURl),
+            useFactory: (authHolderService: AuthHolderService): HttpConfigInterceptor =>
+                new HttpConfigInterceptor(authHolderService, apiURl),
             deps: [AuthHolderService],
             multi: true,
         },

@@ -1,11 +1,13 @@
 <div class="footer">
     <div class="container">
         <div class="footer-direction">
-            <img [src]="cmsData.logoImageURL" alt="brand-logo" class="company-logo">
+            <img [src]="cmsData.logoImageURL" alt="brand-logo" class="company-logo" />
             <div *ngFor="let column of cmsData.columnsDFA" class="info-column">
-                <h2 [routerLink]="column.location || ''">{{column.label}}</h2>
+                <h2 [routerLink]="column.location || ''">{{ column.label }}</h2>
                 <ul class="list-unstyled">
-                    <li *ngFor="let row of column.items"><a [routerLink]="row.location || ''">{{row.label}}</a></li>
+                    <li *ngFor="let row of column.items">
+                        <a [routerLink]="row.location || ''">{{ row.label }}</a>
+                    </li>
                 </ul>
             </div>
             <div class="social-networks">
