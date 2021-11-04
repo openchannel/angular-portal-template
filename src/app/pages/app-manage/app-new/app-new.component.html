@@ -13,7 +13,7 @@
             </div>
         </div>
         <oc-error
-            [control]="appTypeFormGroup.get('type')"
+            [control]="appTypeFormControl"
             [modifyErrors]="[
                 { validator: 'invalidAppType', message: 'The type for this app no longer exists, please choose a new type' }
             ]"></oc-error>

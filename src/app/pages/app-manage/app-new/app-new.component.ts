@@ -12,7 +12,7 @@ import {
     UpdateAppVersionModel,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -34,6 +34,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     currentAppsTypesItems: AppTypeModel[] = [];
 
     appTypeFormGroup: FormGroup;
+    appTypeFormControl: AbstractControl;
     appFields: TypeModel<AppTypeFieldModel>;
     savedFields: TypeModel<AppTypeFieldModel>;
     generatedForm: FormGroup | FormArray;
@@ -110,6 +111,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.appTypeFormGroup = this.fb.group({
             type: ['', Validators.required],
         });
+        this.appTypeFormControl = this.appTypeFormGroup.get('type');
     }
 
     // getting app data from the form on form changing
@@ -189,7 +191,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         return {
             ...fields,
             name: fields.name || null,
-            type: this.appTypeFormGroup.value?.type?.appTypeId || null,
+            type: this.appTypeFormControl.value?.appTypeId || null,
         };
     }
 
@@ -221,7 +223,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                             .pipe(takeUntil(this.destroy$))
                             .subscribe(
                                 appType => {
-                                    this.appTypeFormGroup.get('type').setValue(appType);
+                                    this.appTypeFormControl.setValue(appType);
                                     this.addListenerAppTypeField();
 
                                     this.setAppFieldsByType(appType.fields, appVersion);
@@ -234,7 +236,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                     this.addListenerAppTypeField();
 
                                     if (this.currentAppsTypesItems.length === 1) {
-                                        this.appTypeFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+                                        this.appTypeFormControl.setValue(this.currentAppsTypesItems[0]);
                                     } else {
                                         this.setInvalidAppTypeError();
                                     }
@@ -281,13 +283,13 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     private setInvalidAppTypeError(): void {
-        this.appTypeFormGroup.get('type').markAsTouched();
-        this.appTypeFormGroup.get('type').setErrors({ invalidAppType: true });
+        this.appTypeFormControl.markAsTouched();
+        this.appTypeFormControl.setErrors({ invalidAppType: true });
     }
 
     private removeInvalidAppTypeError(): void {
-        this.appTypeFormGroup.get('type').setErrors({ invalidAppType: null });
-        this.appTypeFormGroup.get('type').updateValueAndValidity();
+        this.appTypeFormControl.setErrors({ invalidAppType: null });
+        this.appTypeFormControl.updateValueAndValidity();
     }
 
     private setAppFieldsByType(appTypeFields: AppTypeFieldModelResponse[], appData: AppVersionResponse): void {
@@ -297,23 +299,20 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     private addListenerAppTypeField(): void {
-        this.appTypeFormGroup
-            .get('type')
-            .valueChanges.pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(
-                (type: AppTypeModel) => {
-                    if (this.appFields) {
-                        this.savedFields = this.appFields;
-                        this.appFields = null;
-                    }
-                    if (type) {
-                        this.getFieldsByAppType(type.appTypeId);
-                    }
-                },
-                () => {
+        this.appTypeFormControl.valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe(
+            (type: AppTypeModel) => {
+                if (this.appFields) {
+                    this.savedFields = this.appFields;
                     this.appFields = null;
-                },
-            );
+                }
+                if (type) {
+                    this.getFieldsByAppType(type.appTypeId);
+                }
+            },
+            () => {
+                this.appFields = null;
+            },
+        );
     }
 
     private getAllAppTypes(): void {
@@ -326,7 +325,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (appTypesResponse?.list) {
                         this.currentAppsTypesItems = appTypesResponse.list;
                         if (this.pageType === 'create' && this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
-                            this.appTypeFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+                            this.appTypeFormControl.setValue(this.currentAppsTypesItems[0]);
                         }
                         this.loader.complete();
                     } else {
