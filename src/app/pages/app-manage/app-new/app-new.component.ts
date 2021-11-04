@@ -238,7 +238,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                                     if (this.currentAppsTypesItems.length === 1) {
                                         this.appTypeFormControl.setValue(this.currentAppsTypesItems[0]);
                                     } else {
-                                        this.setInvalidAppTypeError();
+                                        this.setInvalidAppTypeError(true);
                                     }
 
                                     this.loader.complete();
@@ -282,14 +282,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/manage-apps']).then();
     }
 
-    private setInvalidAppTypeError(): void {
+    private setInvalidAppTypeError(value: boolean): void {
         this.appTypeFormControl.markAsTouched();
-        this.appTypeFormControl.setErrors({ invalidAppType: true });
-    }
-
-    private removeInvalidAppTypeError(): void {
-        this.appTypeFormControl.setErrors({ invalidAppType: null });
-        this.appTypeFormControl.updateValueAndValidity();
+        this.appTypeFormControl.setErrors({ invalidAppType: value });
+        if (!value) {
+            delete this.appTypeFormControl.errors?.invalidAppType;
+        }
     }
 
     private setAppFieldsByType(appTypeFields: AppTypeFieldModelResponse[], appData: AppVersionResponse): void {
@@ -352,7 +350,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (this.appDataForInvalidAppType) {
                         this.setAppFieldsByType(appTypeResponse.fields, this.appDataForInvalidAppType);
                         this.appDataForInvalidAppType = null;
-                        this.removeInvalidAppTypeError();
+                        this.setInvalidAppTypeError(null);
                     } else {
                         this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
                     }
