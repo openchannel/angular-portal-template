@@ -1,21 +1,24 @@
 <div class="bg-container height-unset">
-  <app-page-title pageTitle="Manage apps" buttonText="Create app"
-                  (buttonClick)="router.navigate(['/manage-apps/create'])"></app-page-title>
+    <app-page-title
+        pageTitle="Manage apps"
+        buttonText="Create app"
+        (buttonClick)="router.navigate(['/manage-apps/create'])"></app-page-title>
 </div>
 <div class="container">
-  <div class="my-3">
-    <app-chart #chart showAppsDropdown="true"></app-chart>
-  </div>
-  <div class="pb-2">
-    <oc-app-table noAppMessage="No Apps Found"
-                  [properties]="appListConfig"
-                  menuUrl="../../../../assets/img/dots-hr-icon.svg"
-                  defaultAppIcon="../../../../assets/img/app-icon1.svg"
-                  descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
-                  ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
-                  (pageScrolled)="getApps(false)"
-                  (menuClicked)="catchMenuAction($event)"
-                  [sortOptions]="sortOptions"
-                  (sortOptionsChosen)="changeSorting($event)"></oc-app-table>
-  </div>
+    <div class="my-3">
+        <app-chart #chart showAppsDropdown="true"></app-chart>
+    </div>
+    <div class="pb-2">
+        <oc-app-table
+            noAppMessage="No apps in your list"
+            [properties]="appListConfig"
+            menuUrl="../../../../assets/img/dots-hr-icon.svg"
+            defaultAppIcon="../../../../assets/img/app-icon1.svg"
+            descendingSortIcon="../../../../assets/img/dropdown-icon.svg"
+            ascendingSortIcon="../../../../assets/img/dropdown-active.svg"
+            (pageScrolled)="getApps(false)"
+            (menuClicked)="catchMenuAction($event)"
+            [sortOptions]="sortOptions"
+            (sortOptionsChosen)="changeSorting($event)"></oc-app-table>
+    </div>
 </div>
