@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     AppsService,
     AppStatusValue,
+    AppTypeFieldModelResponse,
     AppTypeService,
     AppVersionResponse,
     AppVersionService,
@@ -11,7 +12,7 @@ import {
     UpdateAppVersionModel,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +22,7 @@ import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
+import { HttpHeaders } from '@angular/common/http';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -32,6 +34,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     currentAppsTypesItems: AppTypeModel[] = [];
 
     appTypeFormGroup: FormGroup;
+    appTypeFormControl: AbstractControl;
     appFields: TypeModel<AppTypeFieldModel>;
     savedFields: TypeModel<AppTypeFieldModel>;
     generatedForm: FormGroup | FormArray;
@@ -45,6 +48,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     appId: string;
     appVersion: number;
     parentApp: FullAppData;
+    appDataForInvalidAppType: AppVersionResponse;
     setFormErrors = false;
     disableOutgo = false;
     // chart variables
@@ -107,6 +111,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.appTypeFormGroup = this.fb.group({
             type: ['', Validators.required],
         });
+        this.appTypeFormControl = this.appTypeFormGroup.get('type');
     }
 
     // getting app data from the form on form changing
@@ -186,7 +191,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         return {
             ...fields,
             name: fields.name || null,
-            type: this.appTypeFormGroup.value?.type?.appTypeId || null,
+            type: this.appTypeFormControl.value?.appTypeId || null,
         };
     }
 
@@ -214,23 +219,29 @@ export class AppNewComponent implements OnInit, OnDestroy {
                         this.titleService.setSpecialTitle(this.parentApp.name);
 
                         this.appTypeService
-                            .getOneAppType(this.parentApp.type)
+                            .getOneAppType(this.parentApp.type, new HttpHeaders({ 'x-handle-error': '404' }))
                             .pipe(takeUntil(this.destroy$))
                             .subscribe(
                                 appType => {
-                                    this.appTypeFormGroup.get('type').setValue(appType);
+                                    this.appTypeFormControl.setValue(appType);
                                     this.addListenerAppTypeField();
 
-                                    this.appFields = {
-                                        fields: this.mapFields(appType.fields, appVersion),
-                                    };
+                                    this.setAppFieldsByType(appType.fields, appVersion);
 
                                     this.checkDataValidityRedirect();
                                     this.loader.complete();
                                 },
                                 () => {
+                                    this.appDataForInvalidAppType = appVersion;
+                                    this.addListenerAppTypeField();
+
+                                    if (this.currentAppsTypesItems.length === 1) {
+                                        this.appTypeFormControl.setValue(this.currentAppsTypesItems[0]);
+                                    } else {
+                                        this.setInvalidAppTypeError(true);
+                                    }
+
                                     this.loader.complete();
-                                    this.router.navigate(['/manage-apps']).then();
                                 },
                             );
                     } else {
@@ -271,24 +282,35 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/manage-apps']).then();
     }
 
+    private setInvalidAppTypeError(value: boolean): void {
+        this.appTypeFormControl.markAsTouched();
+        this.appTypeFormControl.setErrors({ invalidAppType: value });
+        if (!value) {
+            delete this.appTypeFormControl.errors?.invalidAppType;
+        }
+    }
+
+    private setAppFieldsByType(appTypeFields: AppTypeFieldModelResponse[], appData: AppVersionResponse): void {
+        this.appFields = {
+            fields: this.mapFields(appTypeFields, appData),
+        };
+    }
+
     private addListenerAppTypeField(): void {
-        this.appTypeFormGroup
-            .get('type')
-            .valueChanges.pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(
-                (type: AppTypeModel) => {
-                    if (this.appFields) {
-                        this.savedFields = this.appFields;
-                        this.appFields = null;
-                    }
-                    if (type) {
-                        this.getFieldsByAppType(type.appTypeId);
-                    }
-                },
-                () => {
+        this.appTypeFormControl.valueChanges.pipe(debounceTime(200), distinctUntilChanged()).subscribe(
+            (type: AppTypeModel) => {
+                if (this.appFields) {
+                    this.savedFields = this.appFields;
                     this.appFields = null;
-                },
-            );
+                }
+                if (type) {
+                    this.getFieldsByAppType(type.appTypeId);
+                }
+            },
+            () => {
+                this.appFields = null;
+            },
+        );
     }
 
     private getAllAppTypes(): void {
@@ -301,7 +323,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (appTypesResponse?.list) {
                         this.currentAppsTypesItems = appTypesResponse.list;
                         if (this.pageType === 'create' && this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
-                            this.appTypeFormGroup.get('type').setValue(this.currentAppsTypesItems[0]);
+                            this.appTypeFormControl.setValue(this.currentAppsTypesItems[0]);
                         }
                         this.loader.complete();
                     } else {
@@ -324,7 +346,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe((appTypeResponse: any) => {
                 if (appTypeResponse) {
-                    this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
+                    // If app doesn't have correct type and user chooses type for the first time in EDIT mode
+                    if (this.appDataForInvalidAppType) {
+                        this.setAppFieldsByType(appTypeResponse.fields, this.appDataForInvalidAppType);
+                        this.appDataForInvalidAppType = null;
+                        this.setInvalidAppTypeError(null);
+                    } else {
+                        this.mergeWithSaveData(this.appFormData, this.mapFields(appTypeResponse.fields));
+                    }
                 }
             });
     }
