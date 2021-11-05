@@ -3,19 +3,12 @@ import { CommonModule } from '@angular/common';
 
 import { AppManageRoutingModule } from './app-manage-routing.module';
 import { AppDeveloperComponent } from './app-developer/app-developer.component';
-import { OcPortalComponentsModule } from '@openchannel/angular-common-components';
+import { OcFormComponentsModule, OcPortalComponentsModule } from '@openchannel/angular-common-components';
 import { SharedModule } from '@shared/shared.module';
-
+import { AppNewComponent } from './app-new/app-new.component';
 
 @NgModule({
-  declarations: [
-    AppDeveloperComponent,
-  ],
-  imports: [
-    CommonModule,
-    AppManageRoutingModule,
-    OcPortalComponentsModule,
-    SharedModule,
-  ]
+    declarations: [AppDeveloperComponent, AppNewComponent],
+    imports: [CommonModule, AppManageRoutingModule, OcPortalComponentsModule, SharedModule, OcFormComponentsModule],
 })
-export class AppManageModule { }
+export class AppManageModule {}
