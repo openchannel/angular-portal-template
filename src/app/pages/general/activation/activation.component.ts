@@ -12,7 +12,6 @@ import { ComponentsUserActivationModel } from '@openchannel/angular-common-compo
     styleUrls: ['./activation.component.scss'],
 })
 export class ActivationComponent implements OnDestroy {
-
     companyLogoUrl = './assets/img/logo-company-2x.png';
     signupUrl = '/signup';
     resendActivationUrl = '/resend-activation';
@@ -22,34 +21,36 @@ export class ActivationComponent implements OnDestroy {
 
     private destroy$: Subject<void> = new Subject();
 
-    constructor(private nativeLoginService: NativeLoginService,
-                private router: Router,
-                private route: ActivatedRoute,
-                private toaster: ToastrService) {
+    constructor(
+        private nativeLoginService: NativeLoginService,
+        private router: Router,
+        private route: ActivatedRoute,
+        private toaster: ToastrService,
+    ) {
         this.activationModel.code = this.route.snapshot.queryParamMap.get('token');
     }
 
-    activate(event) {
-        if (event === true) {
+    activate(event: boolean): void {
+        if (event) {
             this.inProcess = true;
-            this.nativeLoginService.activate(this.activationModel.code)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(res => {
-                    this.toaster.success('Account successfully activated!');
-                    this.inProcess = false;
-                    this.router.navigate(['login']);
-                },
-                error => {
-                    this.inProcess = false;
-                },
-              );
+            this.nativeLoginService
+                .activate(this.activationModel.code)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(
+                    res => {
+                        this.toaster.success('Account successfully activated!');
+                        this.inProcess = false;
+                        this.router.navigate(['login']);
+                    },
+                    error => {
+                        this.inProcess = false;
+                    },
+                );
         }
-
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
     }
-
 }
