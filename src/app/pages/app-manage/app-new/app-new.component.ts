@@ -286,7 +286,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.appTypeFormControl.markAsTouched();
         this.appTypeFormControl.setErrors({ invalidAppType: value });
         if (!value) {
-            delete this.appTypeFormControl.errors?.invalidAppType;
+            const modifiedErrors = Object.keys(this.appTypeFormControl.errors).filter(err => err !== 'invalidAppType');
+            this.appTypeFormControl.setErrors(modifiedErrors);
         }
     }
 
