@@ -8,7 +8,6 @@
 }
 
 .home {
-
     &__hero {
         padding: 8rem 0 13rem;
         @include media-breakpoint-sm {
@@ -37,6 +36,7 @@
         }
 
         &-partner {
+            display: block;
             margin-top: 3rem;
             @include media-breakpoint-sm {
                 width: 256px;

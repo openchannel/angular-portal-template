@@ -1,5 +1,5 @@
 @import '~@openchannel/angular-common-components/assets/styles/theme';
-@import "~assets/styles/mixins";
+@import '~assets/styles/mixins';
 
 .card-body {
     font-size: 14px;
@@ -44,4 +44,26 @@
     .border-card {
         border: none;
     }
+}
+
+.invited-signup {
+  &__consent {
+    &__checkbox {
+      align-items: flex-start;
+      display: flex;
+
+      &-input {
+        height: 16px;
+      }
+    }
+
+    &__label {
+      @include font-size-sm();
+    }
+
+    &__link {
+      @include font-size-sm();
+      @include font-medium();
+    }
+  }
 }
