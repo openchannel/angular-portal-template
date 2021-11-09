@@ -57,8 +57,6 @@ export class HomeComponent implements OnInit {
     }
 
     setTagLineToPageTitleService(): void {
-        this.siteService
-            .getSiteConfigAsObservable()
-            .subscribe(config => this.titleService.setSpecialTitle(config.tagline, true));
+        this.siteService.getSiteConfigAsObservable().subscribe(config => this.titleService.setSpecialTitle(config.tagline, true));
     }
 }
