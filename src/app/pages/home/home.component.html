@@ -1,21 +1,22 @@
 <div class="home__hero bg-container bg-a">
     <div class="container d-flex flex-column align-items-center justify-content-center">
-        <h1 class="home__hero-title text-center">{{cmsData.pageInfoTitle}}</h1>
-        <p class="home__hero-description text-secondary text-center">{{cmsData.pageInfoSubtext}}</p>
-        <oc-button class="home__hero-partner"
-                   type="primary"
-                   text="Become a partner"></oc-button>
+        <h1 class="home__hero-title text-center">{{ cmsData.pageInfoTitle }}</h1>
+        <p class="home__hero-description text-secondary text-center">{{ cmsData.pageInfoSubtext }}</p>
+        <oc-button
+            class="home__hero-partner"
+            type="primary"
+            text="Become a partner"
+            (click)="router.navigate([cmsData.bottomCalloutButtonLocation || ''])"></oc-button>
     </div>
 </div>
 <div class="home__services container d-flex justify-content-between flex-column flex-md-row">
     <section class="home__services-intro col-md-5">
         <h2 class="home__services-title">Why list on the OpenChannel Marketplace?</h2>
         <p class="home__services-description text-secondary">
-            Build traction for your open source project or software
-            company by listing your 1-Click Application in the Open Channel Marketplace.
+            Build traction for your open source project or software company by listing your 1-Click Application in the Open Channel
+            Marketplace.
         </p>
-        <img class="home__services-image img-fluid article-image"
-             src="../../../assets/img/temporary_home_pic.png" alt="">
+        <img class="home__services-image img-fluid article-image" src="../../../assets/img/temporary_home_pic.png" alt="">
     </section>
     <div class="home__services-list col-md-5">
         <div class="home__services-card feature-card">
@@ -26,9 +27,8 @@
                 <h3 class="home__services-card-title ml-2 mb-0">Reach more users</h3>
             </div>
             <p class="home__services-card-description text-secondary mt-2 mb-0">
-                Open Channel global community of 4 million developers relies heavily on open source
-                and free software when getting started. The Open Channel Marketplace helps them easily
-                find and launch your project or product.
+                Open Channel global community of 4 million developers relies heavily on open source and free software when getting started.
+                The Open Channel Marketplace helps them easily find and launch your project or product.
             </p>
         </div>
         <div class="home__services-card feature-card">
@@ -39,8 +39,8 @@
                 <h3 class="home__services-card-title ml-2 mb-0">Create new revenue streams</h3>
             </div>
             <p class="home__services-card-description text-secondary mt-2 mb-0">
-                You can sell licenses directly to users now and, we plan to make new billing
-                options available to help you create new and easier revenue streams for your business or projects.
+                You can sell licenses directly to users now and, we plan to make new billing options available to help you create new and
+                easier revenue streams for your business or projects.
             </p>
         </div>
         <div class="home__services-card feature-card">
@@ -51,9 +51,8 @@
                 <h3 class="home__services-card-title ml-2 mb-0">Find new committers</h3>
             </div>
             <p class="home__services-card-description text-secondary mt-2 mb-0">
-                Putting your 1-Click App in the DigitalOcean Marketplace introduces your
-                project to more developers, which can lead to more people supporting and committing
-                to it down the road.
+                Putting your 1-Click App in the DigitalOcean Marketplace introduces your project to more developers, which can lead to more
+                people supporting and committing to it down the road.
             </p>
         </div>
     </div>
@@ -61,7 +60,9 @@
 <div class="home__technology bg-container bg-a">
     <div class="container d-flex flex-column align-items-center justify-content-center">
         <h2 class="home__technology-title text-center">
-            How developers are using the Open Channel <br> Marketplace?
+            How developers are using the Open Channel
+            <br />
+            Marketplace?
         </h2>
         <div class="home__technology-list row">
             <div class="home__technology-card">
@@ -72,8 +73,7 @@
                     <p class="font-med ml-2 mb-0">Plesk</p>
                 </div>
                 <p class="text-secondary mt-2 mb-1 technology-description">
-                    Plesk's free 1-Click Application enabled the company
-                    to capture thousands of new users in record time.
+                    Plesk's free 1-Click Application enabled the company to capture thousands of new users in record time.
                 </p>
                 <a class="cursor-pointer">
                     <span class="text-primary font-m font-med pr-1">See case</span>
@@ -88,8 +88,8 @@
                     <p class="font-med ml-2 mb-0">Hasura GraphQL</p>
                 </div>
                 <p class="text-secondary mt-2 mb-1 technology-description">
-                    As a new startup, Hasura enjoys greater exposure and
-                    faster user adoption for their GraphQL engine, which brings blazing fast…
+                    As a new startup, Hasura enjoys greater exposure and faster user adoption for their GraphQL engine, which brings blazing
+                    fast…
                 </p>
                 <a class="cursor-pointer">
                     <span class="text-primary font-m font-med pr-1">See case</span>
@@ -104,8 +104,7 @@
                     <p class="font-med ml-2 mb-0">Zulip</p>
                 </div>
                 <p class="text-secondary mt-2 mb-1 technology-description">
-                    Zulip users can get an open source chat server
-                    online in just minutes using the Open Channel Marketplace.
+                    Zulip users can get an open source chat server online in just minutes using the Open Channel Marketplace.
                 </p>
                 <a class="cursor-pointer">
                     <span class="text-primary font-m font-med pr-1">See case</span>
@@ -124,9 +123,10 @@
                 <h3 class="home__approach-card-name">Register to become a Marketplace Vendor</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
-                Just click <a href="" class="home__approach-card-link link font-med">Become a Seller</a> and give us a few pieces
-                of information about your 1-Click
-                App idea and your company. We'll respond with next steps or additional questions.
+                Just click
+                <a href="" class="home__approach-card-link link font-med">Become a Seller</a>
+                and give us a few pieces of information about your 1-Click App idea and your company. We'll respond with next steps or
+                additional questions.
             </p>
         </div>
         <div class="home__approach-card col-md-5">
@@ -135,9 +135,8 @@
                 <h3 class="home__approach-card-name">Build your image</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
-                Quickly and simply build a VM image on Open Channel manually,
-                or automate via Fabric and Packer, <a href="" class="home__approach-card-link link font-med">
-                then check its quality and readiness with our tools.</a>
+                Quickly and simply build a VM image on Open Channel manually, or automate via Fabric and Packer,
+                <a href="" class="home__approach-card-link link font-med">then check its quality and readiness with our tools.</a>
                 Or you can simply build a Kubernetes app with a single
                 <a href="" class="home__approach-card-link link font-med">PR on our repo.</a>
             </p>
@@ -150,9 +149,8 @@
                 <h3 class="home__approach-card-name">Give us the details about your listing</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
-                Provide the details and your 1-Click Apps on Droplet VMs and Open Channel
-                Kubernetes will then be made available to all Open Channel customers once approved.
-                (We plan to support listings of SaaS applications soon, too.)
+                Provide the details and your 1-Click Apps on Droplet VMs and Open Channel Kubernetes will then be made available to all Open
+                Channel customers once approved. (We plan to support listings of SaaS applications soon, too.)
             </p>
         </div>
         <div class="home__approach-card col-md-5">
@@ -161,23 +159,21 @@
                 <h3 class="home__approach-card-name">Engage with the community</h3>
             </div>
             <p class="home__approach-card-text text-secondary">
-                We encourage you to connect with your users by sharing links to
-                forums or other support channels within your Marketplace listing.
-                Take advantage of the opportunity to hear what your users want out of your
-                product or project. And don't forget to send users to your new 1-Click App listing.
+                We encourage you to connect with your users by sharing links to forums or other support channels within your Marketplace
+                listing. Take advantage of the opportunity to hear what your users want out of your product or project. And don't forget to
+                send users to your new 1-Click App listing.
             </p>
         </div>
     </div>
 </div>
 <div class="home__register bg-container bg-a">
     <div class="container">
-        <oc-app-get-started [getStartedHeader]="cmsData.bottomCalloutHeader"
-                            getStartedHeadingTag="h2"
-                            [getStartedImage]="cmsData.bottomCalloutImageURL"
-                            [getStartedDescription]="cmsData.bottomCalloutDescription"
-                            [getStartedButtonText]="cmsData.bottomCalloutButtonText"
-                            (getStarted)="router.navigate([cmsData.bottomCalloutButtonLocation || ''])">
-        </oc-app-get-started>
+        <oc-app-get-started
+            [getStartedHeader]="cmsData.bottomCalloutHeader"
+            getStartedHeadingTag="h2"
+            [getStartedImage]="cmsData.bottomCalloutImageURL"
+            [getStartedDescription]="cmsData.bottomCalloutDescription"
+            [getStartedButtonText]="cmsData.bottomCalloutButtonText"
+            (getStarted)="router.navigate([cmsData.bottomCalloutButtonLocation || ''])"></oc-app-get-started>
     </div>
 </div>
-
