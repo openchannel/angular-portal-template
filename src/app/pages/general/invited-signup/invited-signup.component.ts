@@ -29,6 +29,13 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
 
   private loader: LoadingBarState;
 
+  private passwordField = {
+    id: 'password',
+    label: 'Password',
+    type: 'password',
+    attributes: {required: true},
+  };
+
   constructor(private activeRouter: ActivatedRoute,
               private router: Router,
               private inviteUserService: InviteUserService,
@@ -78,12 +85,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
             attributes: {required: true},
             defaultValue: this.developerInviteData?.email
           },
-          {
-            id: 'password',
-            label: 'Password',
-            type: 'password',
-            attributes: {},
-          }
+          this.passwordField,
         ]
       };
       this.loader.stop();
@@ -121,12 +123,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
       }
       return field;
     });
-    mappedFields.push({
-      id: 'password',
-      label: 'Password',
-      type: 'password',
-      attributes: {},
-    });
+    mappedFields.push(this.passwordField);
 
     return mappedFields;
   }
@@ -136,7 +133,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     form.get('email').disable();
     const companyKey = Object.keys(form.value).find(key => key.includes('company'));
     if (companyKey) {
-      form.get(companyKey).disable();
+      form.get([companyKey]).disable();
     }
     this.signUpGroup = form;
     // add terms control into signup form
