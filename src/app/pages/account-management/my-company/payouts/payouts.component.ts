@@ -35,7 +35,13 @@ export class PayoutsComponent implements OnInit, OnDestroy {
 
         this.stripeService
             .getConnectedAccounts()
-            .pipe(takeUntil(this.$destroy))
+            .pipe(
+                catchError(err => {
+                    this.loader.complete();
+                    return throwError(err);
+                }),
+                takeUntil(this.$destroy),
+            )
             .subscribe(res => {
                 this.stripeAccounts = res.accounts;
                 this.connectedAccount = !!this.stripeAccounts.length;
@@ -73,7 +79,13 @@ export class PayoutsComponent implements OnInit, OnDestroy {
 
         this.stripeService
             .disconnectAccount(this.stripeAccounts[0].stripeId)
-            .pipe(takeUntil(this.$destroy))
+            .pipe(
+                catchError(err => {
+                    this.stopProcessing();
+                    return throwError(err);
+                }),
+                takeUntil(this.$destroy),
+            )
             .subscribe(() => {
                 this.stripeAccounts = [];
                 this.connectedAccount = false;
