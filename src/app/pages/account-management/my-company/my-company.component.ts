@@ -10,14 +10,13 @@ import {
     Permission,
     PermissionType,
     SiteConfigService,
-    StripeService,
 } from '@openchannel/angular-common-services';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { ModalInviteUserModel, OcInviteModalComponent } from '@openchannel/angular-common-components';
-import { takeUntil } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { ManagementComponent } from './management/management.component';
 import { Location } from '@angular/common';
 
@@ -93,7 +92,6 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         private inviteService: InviteUserService,
         private router: Router,
         private location: Location,
-        private stripeService: StripeService,
         private siteConfigService: SiteConfigService,
     ) {}
 
@@ -141,9 +139,17 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     private initProfile(): void {
-        this.currentPages = this.filterPagesByDeveloperType();
-        this.currentPages = this.filterPagesByPaymentsGateway();
-        this.initMainPage();
+        this.siteConfigService
+            .getSiteConfigAsObservable()
+            .pipe(
+                first(config => !!config),
+                takeUntil(this.$destroy),
+            )
+            .subscribe(() => {
+                this.currentPages = this.filterPagesByDeveloperType();
+                this.currentPages = this.filterPagesByPaymentsGateway();
+                this.initMainPage();
+            });
     }
 
     private initMainPage(): void {
