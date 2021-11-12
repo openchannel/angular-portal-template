@@ -6,14 +6,17 @@ import {
     DeveloperRoleService,
     DeveloperService,
     InviteUserService,
+    PaymentsGateways,
     Permission,
     PermissionType,
+    SiteConfigService,
+    StripeService,
 } from '@openchannel/angular-common-services';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { OcInviteModalComponent, ModalInviteUserModel } from '@openchannel/angular-common-components';
+import { ModalInviteUserModel, OcInviteModalComponent } from '@openchannel/angular-common-components';
 import { takeUntil } from 'rxjs/operators';
 import { ManagementComponent } from './management/management.component';
 import { Location } from '@angular/common';
@@ -23,6 +26,7 @@ export interface Page {
     placeholder: string;
     routerLink: string;
     permissions: Permission[];
+    paymentsGatewayToActivate?: PaymentsGateways;
 }
 
 @Component({
@@ -58,6 +62,18 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
                 },
             ],
         },
+        {
+            pageId: 'payouts',
+            placeholder: 'Payouts',
+            routerLink: '/my-company/payouts',
+            permissions: [
+                {
+                    type: PermissionType.ACCOUNTS,
+                    access: [AccessLevel.READ, AccessLevel.MODIFY],
+                },
+            ],
+            paymentsGatewayToActivate: PaymentsGateways.STRIPE,
+        },
     ];
 
     currentPages: Page[] = [];
@@ -77,6 +93,8 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         private inviteService: InviteUserService,
         private router: Router,
         private location: Location,
+        private stripeService: StripeService,
+        private siteConfigService: SiteConfigService,
     ) {}
 
     ngOnInit(): void {
@@ -124,6 +142,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
 
     private initProfile(): void {
         this.currentPages = this.filterPagesByDeveloperType();
+        this.currentPages = this.filterPagesByPaymentsGateway();
         this.initMainPage();
     }
 
@@ -135,5 +154,17 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
 
     private filterPagesByDeveloperType(): Page[] {
         return this.pages.filter(page => this.authHolderService.hasAnyPermission(page.permissions));
+    }
+
+    private filterPagesByPaymentsGateway(): Page[] {
+        return this.pages.filter(page => {
+            if (!page.paymentsGatewayToActivate) {
+                return true;
+            }
+
+            const { paymentsEnabled, paymentsGateway } = this.siteConfigService.siteConfig;
+
+            return paymentsEnabled && page.paymentsGatewayToActivate === paymentsGateway;
+        });
     }
 }
