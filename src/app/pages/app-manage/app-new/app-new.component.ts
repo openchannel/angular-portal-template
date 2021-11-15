@@ -7,14 +7,15 @@ import {
     AppVersionResponse,
     AppVersionService,
     CreateAppModel,
+    StripeService,
     TitleService,
     TypeModel,
     UpdateAppVersionModel,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Subject, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
@@ -81,6 +82,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private loadingBar: LoadingBarService,
         private titleService: TitleService,
         private toaster: ToastrService,
+        private stripeService: StripeService,
     ) {}
 
     ngOnInit(): void {
@@ -145,6 +147,40 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 );
             }
         }
+    }
+
+    openConnectStripeModal(): void {
+        const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+
+        modalRef.componentInstance.modalTitle = 'Stripe account required';
+        modalRef.componentInstance.modalText = 'Connect your Stripe account to receive payments for your apps';
+        modalRef.componentInstance.buttonText = 'Connect Stripe';
+        modalRef.componentInstance.cancelButtonText = 'Cancel';
+
+        modalRef.result.then(res => {
+            if (res && res === 'success') {
+                this.connectStripeAccount();
+            }
+        });
+    }
+
+    connectStripeAccount(): void {
+        // Window should be opened right after user interaction (button click), because some browsers
+        // will prevent opening window in async block
+        const stripeWindow = window.open();
+
+        this.stripeService
+            .connectAccount(window.location.origin)
+            .pipe(
+                takeUntil(this.destroy$),
+                catchError(err => {
+                    stripeWindow.close();
+                    return throwError(err);
+                }),
+            )
+            .subscribe(res => {
+                stripeWindow.location.href = res.targetUrl;
+            });
     }
 
     // saving app to the server
