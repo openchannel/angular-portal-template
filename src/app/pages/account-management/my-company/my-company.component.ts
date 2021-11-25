@@ -146,8 +146,7 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
                 takeUntil(this.$destroy),
             )
             .subscribe(() => {
-                this.currentPages = this.filterPagesByDeveloperType();
-                this.currentPages = this.filterPagesByPaymentsGateway();
+                this.currentPages = this.filterPages(this.pages);
                 this.initMainPage();
             });
     }
@@ -158,12 +157,19 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
         this.selectedPage = pageByUrl || this.currentPages[0];
     }
 
-    private filterPagesByDeveloperType(): Page[] {
-        return this.pages.filter(page => this.authHolderService.hasAnyPermission(page.permissions));
+    private filterPages(pagesToFilter: Page[]): Page[] {
+        let filteredPages = this.filterPagesByDeveloperType(pagesToFilter);
+        filteredPages = this.filterPagesByPaymentsGateway(filteredPages);
+
+        return filteredPages;
     }
 
-    private filterPagesByPaymentsGateway(): Page[] {
-        return this.pages.filter(page => {
+    private filterPagesByDeveloperType(pagesToFilter: Page[]): Page[] {
+        return pagesToFilter.filter(page => this.authHolderService.hasAnyPermission(page.permissions));
+    }
+
+    private filterPagesByPaymentsGateway(pagesToFilter: Page[]): Page[] {
+        return pagesToFilter.filter(page => {
             if (!page.paymentsGatewayToActivate) {
                 return true;
             }
