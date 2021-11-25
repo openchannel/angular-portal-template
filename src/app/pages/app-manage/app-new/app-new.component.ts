@@ -20,10 +20,11 @@ import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-m
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
+import { AppTypeFieldModel, AppTypeModel, AppFormField, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
-
+import { PricingFormService } from './pricing-form.service';
+import { pricingConfig } from '../../../../assets/data/siteConfig';
 export type pageDestination = 'edit' | 'create';
 @Component({
     selector: 'app-app-new',
@@ -81,6 +82,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private loadingBar: LoadingBarService,
         private titleService: TitleService,
         private toaster: ToastrService,
+        private pricingFormService: PricingFormService,
     ) {}
 
     ngOnInit(): void {
@@ -364,7 +366,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.mergeField(this.savedFields.fields, newFields, savedData);
         }
         this.appFields = {
-            fields: newFields,
+            fields: this.injectPricingFormToAppFields(newFields, savedData),
         };
     }
 
@@ -535,5 +537,23 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     this.submitInProcess = false;
                 },
             );
+    }
+
+    private injectPricingFormToAppFields(appFields: AppFormField[], appData?: any): AppFormField[] {
+        if (pricingConfig.enablePricingForm) {
+            return [
+                ...(appFields || []),
+                ...this.pricingFormService.createFieldsByData(
+                    this.isFormGroup(appFields),
+                    pricingConfig.enableMultiPricingForms,
+                    appData?.model,
+                ),
+            ];
+        }
+        return appFields;
+    }
+
+    private isFormGroup(fields: AppFormField[]): boolean {
+        return !!fields?.find(field => field.type === 'fieldGroup');
     }
 }
