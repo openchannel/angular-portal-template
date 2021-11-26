@@ -1,4 +1,5 @@
 import { MetaTagsPageConfig, SiteConfig} from '@openchannel/angular-common-services';
+import { PricingFormConfig } from '../../app/pages/app-manage/app-new/pricing-form.service';
 
 export const metaTags: MetaTagsPageConfig = {
     defaultMetaTags: [
@@ -17,4 +18,9 @@ export const siteConfig: SiteConfig = {
         href: '',
         type: 'image/x-icon',
     },
+};
+
+export const pricingConfig: PricingFormConfig = {
+    enablePricingForm: false,
+    enableMultiPricingForms: false,
 };
