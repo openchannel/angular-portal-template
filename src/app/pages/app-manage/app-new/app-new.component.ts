@@ -61,8 +61,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     modelFormArray: FormArray;
     planTypeSubscription: Subscription;
-    stripeAccountConnected: boolean;
-    stripeModalOpened: boolean;
+    isStripeAccountConnected: boolean;
+    isStripeModalOpened: boolean;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -160,12 +160,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     openConnectStripeModal(): void {
-        if (this.stripeModalOpened) {
+        if (this.isStripeModalOpened) {
             return;
         }
 
         const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-        this.stripeModalOpened = true;
+        this.isStripeModalOpened = true;
 
         modalRef.componentInstance.modalTitle = 'Stripe account required';
         modalRef.componentInstance.modalText = 'Connect your Stripe account to receive payments for your apps';
@@ -177,7 +177,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 this.connectStripeAccount();
             }
 
-            this.stripeModalOpened = false;
+            this.isStripeModalOpened = false;
         });
     }
 
@@ -353,7 +353,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 takeUntil(this.destroy$),
             )
             .subscribe(() => {
-                if (!this.stripeAccountConnected) {
+                if (!this.isStripeAccountConnected) {
                     this.setFreePlanType();
                     this.openConnectStripeModal();
                 }
@@ -378,7 +378,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 map(res => !!res.accounts.length),
                 takeUntil(this.destroy$),
             )
-            .subscribe(res => (this.stripeAccountConnected = res));
+            .subscribe(res => (this.isStripeAccountConnected = res));
     }
 
     private setInvalidAppTypeError(value: boolean): void {
