@@ -15,17 +15,18 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import { AppTypeFieldModel, AppTypeModel, AppFormField, FullAppData } from '@openchannel/angular-common-components';
+import { AppFormField, AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
+
 export type pageDestination = 'edit' | 'create';
 @Component({
     selector: 'app-app-new',
@@ -57,6 +58,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
     count;
     countText;
     downloadUrl = './assets/img/cloud-download.svg';
+
+    modelFormGroup: AbstractControl;
+    stripeAccountConnected: boolean;
+    stripeModalOpened: boolean;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -100,6 +105,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         } else {
             this.getAppData();
         }
+
+        this.getStripeAccountConnected();
     }
 
     ngOnDestroy(): void {
@@ -152,7 +159,12 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     openConnectStripeModal(): void {
+        if (this.stripeModalOpened) {
+            return;
+        }
+
         const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+        this.stripeModalOpened = true;
 
         modalRef.componentInstance.modalTitle = 'Stripe account required';
         modalRef.componentInstance.modalText = 'Connect your Stripe account to receive payments for your apps';
@@ -163,6 +175,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (res && res === 'success') {
                 this.connectStripeAccount();
             }
+
+            this.stripeModalOpened = false;
         });
     }
 
@@ -299,6 +313,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
         }
+        this.setModelFormGroup();
+        this.subscribeToPlanTypeChange();
     }
 
     hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
@@ -318,6 +334,46 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     goToAppManagePage(): void {
         this.router.navigate(['/manage-apps']).then();
+    }
+
+    private setFreePlanType(): void {
+        const newModels = this.modelFormGroup.value.map(model => ({ ...model, type: 'free' }));
+        this.modelFormGroup.setValue(newModels);
+    }
+
+    private subscribeToPlanTypeChange(): void {
+        this.modelFormGroup?.valueChanges
+            .pipe(
+                filter(values => values.some(value => value?.type && value.type !== 'free')),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                if (!this.stripeAccountConnected) {
+                    this.setFreePlanType();
+                    this.openConnectStripeModal();
+                }
+            });
+    }
+
+    private setModelFormGroup(): void {
+        const wizardEnabled = this.generatedForm instanceof FormArray;
+
+        if (wizardEnabled) {
+            const lastControlIndex = (this.generatedForm as FormArray).controls.length - 1;
+            this.modelFormGroup = this.generatedForm.controls[lastControlIndex]?.get('model');
+        } else {
+            this.modelFormGroup = this.generatedForm.get('model');
+        }
+    }
+
+    private getStripeAccountConnected(): void {
+        this.stripeService
+            .getConnectedAccounts()
+            .pipe(
+                map(res => !!res.accounts.length),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(res => (this.stripeAccountConnected = res));
     }
 
     private setInvalidAppTypeError(value: boolean): void {
