@@ -14,7 +14,7 @@ import {
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, throwError } from 'rxjs';
+import { Subject, Subscription, throwError } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
@@ -59,7 +59,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
     countText;
     downloadUrl = './assets/img/cloud-download.svg';
 
-    modelFormGroup: AbstractControl;
+    modelFormArray: FormArray;
+    planTypeSubscription: Subscription;
     stripeAccountConnected: boolean;
     stripeModalOpened: boolean;
 
@@ -337,12 +338,16 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     private setFreePlanType(): void {
-        const newModels = this.modelFormGroup.value.map(model => ({ ...model, type: 'free' }));
-        this.modelFormGroup.setValue(newModels);
+        setTimeout(() => {
+            const newModels = this.modelFormArray.value.map(model => ({ ...model, type: 'free' }));
+            this.modelFormArray.setValue(newModels);
+        }, 0);
     }
 
     private subscribeToPlanTypeChange(): void {
-        this.modelFormGroup?.valueChanges
+        this.planTypeSubscription?.unsubscribe();
+
+        this.planTypeSubscription = this.modelFormArray?.valueChanges
             .pipe(
                 filter(values => values.some(value => value?.type && value.type !== 'free')),
                 takeUntil(this.destroy$),
@@ -360,9 +365,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
         if (wizardEnabled) {
             const lastControlIndex = (this.generatedForm as FormArray).controls.length - 1;
-            this.modelFormGroup = this.generatedForm.controls[lastControlIndex]?.get('model');
+            this.modelFormArray = this.generatedForm.controls[lastControlIndex]?.get('model');
         } else {
-            this.modelFormGroup = this.generatedForm.get('model');
+            this.modelFormArray = this.generatedForm.get('model') as FormArray;
         }
     }
 
