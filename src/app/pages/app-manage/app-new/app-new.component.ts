@@ -314,7 +314,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
         }
-        this.setModelFormGroup();
+        this.setModelFormArray();
         this.subscribeToPlanTypeChange();
     }
 
@@ -360,7 +360,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             });
     }
 
-    private setModelFormGroup(): void {
+    private setModelFormArray(): void {
         const wizardEnabled = this.generatedForm instanceof FormArray;
 
         if (wizardEnabled) {
