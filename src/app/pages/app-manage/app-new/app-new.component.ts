@@ -540,7 +540,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     private injectPricingFormToAppFields(appFields: AppFormField[], appData?: any): AppFormField[] {
-        if (pricingConfig.enablePricingForm) {
+        // inject pricing form only on the create app page.
+        if (pricingConfig.enablePricingForm && this.pageType === 'create') {
             return [
                 ...(appFields || []),
                 ...this.pricingFormService.createFieldsByData(
