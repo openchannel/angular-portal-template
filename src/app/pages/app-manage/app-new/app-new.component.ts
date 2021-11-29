@@ -62,7 +62,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     modelFormArray: FormArray;
     planTypeSubscription: Subscription;
     isStripeAccountConnected: boolean;
-    isStripeModalOpened: boolean;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -160,12 +159,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     openConnectStripeModal(): void {
-        if (this.isStripeModalOpened) {
+        if (this.modal.hasOpenModals()) {
             return;
         }
 
         const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-        this.isStripeModalOpened = true;
 
         modalRef.componentInstance.modalTitle = 'Stripe account required';
         modalRef.componentInstance.modalText = 'Connect your Stripe account to receive payments for your apps';
@@ -173,11 +171,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.cancelButtonText = 'Cancel';
 
         modalRef.result.then(res => {
-            if (res && res === 'success') {
+            if (res === 'success') {
                 this.connectStripeAccount();
             }
-
-            this.isStripeModalOpened = false;
         });
     }
 
