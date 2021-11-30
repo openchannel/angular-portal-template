@@ -21,7 +21,7 @@ import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-m
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import { AppFormField, AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
+import { AppFormField, AppTypeFieldModel, AppTypeModel, FullAppData, OcConfirmationModalComponent } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
@@ -163,18 +163,21 @@ export class AppNewComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
+        const modalRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
 
         modalRef.componentInstance.modalTitle = 'Stripe account required';
         modalRef.componentInstance.modalText = 'Connect your Stripe account to receive payments for your apps';
         modalRef.componentInstance.buttonText = 'Connect Stripe';
         modalRef.componentInstance.cancelButtonText = 'Cancel';
 
-        modalRef.result.then(res => {
-            if (res === 'success') {
-                this.connectStripeAccount();
-            }
-        });
+        modalRef.result.then(
+            res => {
+                if (res) {
+                    this.connectStripeAccount();
+                }
+            },
+            () => {},
+        );
     }
 
     connectStripeAccount(): void {
