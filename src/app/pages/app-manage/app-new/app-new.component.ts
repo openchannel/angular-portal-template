@@ -15,14 +15,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { AppTypeFieldModel, AppTypeModel, FullAppData } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
+import { AppManageModalService } from '@core/services/app-manage-modal-service/app-manage-modal.service';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -78,7 +77,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private appVersionService: AppVersionService,
         private appTypeService: AppTypeService,
         private activeRoute: ActivatedRoute,
-        private modal: NgbModal,
+        private appManageModalService: AppManageModalService,
         private loadingBar: LoadingBarService,
         private titleService: TitleService,
         private toaster: ToastrService,
@@ -124,26 +123,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.generatedForm) {
             this.generatedForm.markAllAsTouched();
             if (!(this.generatedForm.invalid || this.submitInProcess || this.draftSaveInProcess)) {
-                const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-
-                modalRef.componentInstance.modalTitle = 'Submit app';
-                modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
-                modalRef.componentInstance.type = 'submission';
-                modalRef.componentInstance.buttonText = 'Yes, submit it';
-                modalRef.componentInstance.cancelButtonText = 'Save as draft';
-                if (this.hasPageAndAppStatus('edit', 'pending')) {
-                    modalRef.componentInstance.showCancel = false;
-                }
-                modalRef.result.then(
-                    res => {
-                        if (res && res === 'success') {
-                            this.saveApp('submit');
-                        } else if (res && res === 'draft') {
-                            this.saveApp('draft');
-                        }
-                    },
-                    () => {},
-                );
+                // when page type is 'edit' and app status is 'pending', we will hide 'Save as draft' button.
+                this.appManageModalService
+                    .openSubmitModal(!this.hasPageAndAppStatus('edit', 'pending'))
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(result => this.saveApp(result));
             }
         }
     }
