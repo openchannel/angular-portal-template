@@ -125,7 +125,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             if (!(this.generatedForm.invalid || this.submitInProcess || this.draftSaveInProcess)) {
                 // when page type is 'edit' and app status is 'pending', we will hide 'Save as draft' button.
                 this.appManageModalService
-                    .openSubmitModal(!this.hasPageAndAppStatus('edit', 'pending'))
+                    .openModalWithDraftAndSubmitButtons(!this.hasPageAndAppStatus('edit', 'pending'))
                     .pipe(takeUntil(this.destroy$))
                     .subscribe(result => this.saveApp(result));
             }
