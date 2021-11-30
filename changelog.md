@@ -1,3 +1,6 @@
+## Release notes - template3-portal-frontend - Version 1.54.2 (11/30/2021)<br>
+### Bug<br>
+AT-1619 - [Hotfix][Portal Market] Getting console error custom-account-type  is not a valid user / developer account type<br>
 ## Release notes - template3-portal-frontend - Version 1.53.1 (11/17/2021)<br>
 ### Bug<br>
 AT-1608 - [Market][Form submission - Buy Now] Image crop pop-up is not getting closed after clicking on Confirm button.<br>
