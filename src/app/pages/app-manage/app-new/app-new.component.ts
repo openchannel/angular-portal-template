@@ -7,24 +7,26 @@ import {
     AppVersionResponse,
     AppVersionService,
     CreateAppModel,
+    StripeService,
     TitleService,
     TypeModel,
     UpdateAppVersionModel,
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Subject, Subscription, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import { AppTypeFieldModel, AppTypeModel, AppFormField, FullAppData } from '@openchannel/angular-common-components';
+import { AppFormField, AppTypeFieldModel, AppTypeModel, FullAppData, OcConfirmationModalComponent } from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
+
 export type pageDestination = 'edit' | 'create';
 @Component({
     selector: 'app-app-new',
@@ -57,6 +59,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
     countText;
     downloadUrl = './assets/img/cloud-download.svg';
 
+    modelFormArray: FormArray;
+    planTypeSubscription: Subscription;
+    isStripeAccountConnected: boolean;
+
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
     // data from the form component
@@ -82,6 +88,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private loadingBar: LoadingBarService,
         private titleService: TitleService,
         private toaster: ToastrService,
+        private stripeService: StripeService,
         private pricingFormService: PricingFormService,
     ) {}
 
@@ -98,6 +105,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         } else {
             this.getAppData();
         }
+
+        this.getStripeAccountConnected();
     }
 
     ngOnDestroy(): void {
@@ -147,6 +156,47 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 );
             }
         }
+    }
+
+    openConnectStripeModal(): void {
+        if (this.modal.hasOpenModals()) {
+            return;
+        }
+
+        const modalRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
+
+        modalRef.componentInstance.modalTitle = 'Stripe account required';
+        modalRef.componentInstance.modalText = 'Connect your Stripe account to receive payments for your apps';
+        modalRef.componentInstance.buttonText = 'Connect Stripe';
+        modalRef.componentInstance.cancelButtonText = 'Cancel';
+
+        modalRef.result.then(
+            res => {
+                if (res) {
+                    this.connectStripeAccount();
+                }
+            },
+            () => {},
+        );
+    }
+
+    connectStripeAccount(): void {
+        // Window should be opened right after user interaction (button click), because some browsers
+        // will prevent opening window in async block
+        const stripeWindow = window.open();
+
+        this.stripeService
+            .connectAccount(window.location.origin)
+            .pipe(
+                takeUntil(this.destroy$),
+                catchError(err => {
+                    stripeWindow.close();
+                    return throwError(err);
+                }),
+            )
+            .subscribe(res => {
+                stripeWindow.location.href = res.targetUrl;
+            });
     }
 
     // saving app to the server
@@ -263,6 +313,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
         }
+        this.setModelFormArray();
+        this.subscribeToPlanTypeChange();
     }
 
     hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
@@ -282,6 +334,50 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     goToAppManagePage(): void {
         this.router.navigate(['/manage-apps']).then();
+    }
+
+    private setFreePlanType(): void {
+        setTimeout(() => {
+            const newModels = this.modelFormArray.value.map(model => ({ ...model, type: 'free' }));
+            this.modelFormArray.setValue(newModels);
+        }, 0);
+    }
+
+    private subscribeToPlanTypeChange(): void {
+        this.planTypeSubscription?.unsubscribe();
+
+        this.planTypeSubscription = this.modelFormArray?.valueChanges
+            .pipe(
+                filter(values => values.some(value => value?.type && value.type !== 'free')),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                if (!this.isStripeAccountConnected) {
+                    this.setFreePlanType();
+                    this.openConnectStripeModal();
+                }
+            });
+    }
+
+    private setModelFormArray(): void {
+        const wizardEnabled = this.generatedForm instanceof FormArray;
+
+        if (wizardEnabled) {
+            const lastControlIndex = (this.generatedForm as FormArray).controls.length - 1;
+            this.modelFormArray = this.generatedForm.controls[lastControlIndex]?.get('model');
+        } else {
+            this.modelFormArray = this.generatedForm.get('model') as FormArray;
+        }
+    }
+
+    private getStripeAccountConnected(): void {
+        this.stripeService
+            .getConnectedAccounts()
+            .pipe(
+                map(res => !!res.accounts.length),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(res => (this.isStripeAccountConnected = res));
     }
 
     private setInvalidAppTypeError(value: boolean): void {
