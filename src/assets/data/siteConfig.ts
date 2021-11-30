@@ -1,4 +1,4 @@
-import { MetaTagsPageConfig, SiteConfig} from '@openchannel/angular-common-services';
+import { MetaTagsPageConfig, SiteConfig, PaymentsGateways } from '@openchannel/angular-common-services';
 import { PricingFormConfig } from '../../app/pages/app-manage/app-new/pricing-form.service';
 
 export const metaTags: MetaTagsPageConfig = {
@@ -18,6 +18,8 @@ export const siteConfig: SiteConfig = {
         href: '',
         type: 'image/x-icon',
     },
+    paymentsEnabled: true,
+    paymentsGateway: PaymentsGateways.STRIPE,
 };
 
 export const pricingConfig: PricingFormConfig = {
