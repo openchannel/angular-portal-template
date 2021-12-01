@@ -3,10 +3,8 @@ import { OcConfirmationModalComponent, ConfirmationModalButton } from '@openchan
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { catchError, filter } from 'rxjs/operators';
 
-type LocalButtonType = 'draft' | 'submit' | 'cancel';
+type LocalButtonType = 'draft' | 'submit' | 'suspend' | 'cancel';
 type LocalConfirmationModalButton = ConfirmationModalButton & { id: LocalButtonType };
-
-export type AppManageModalResult = Exclude<LocalButtonType, 'cancel'>;
 
 /**
  * Will be injected to module {@link AppManageModule}
@@ -21,7 +19,7 @@ export class AppManageModalService {
      *
      * Note: Reject and cancel modal statuses will be converted to the empty observable.
      */
-    openModalWithDraftAndSubmitButtons(showButtonSaveAsDraft: boolean): Observable<AppManageModalResult> {
+    openModalWithDraftAndSubmitButtons(showButtonSaveAsDraft: boolean): Observable<'draft' | 'submit'> {
         const buttons: LocalConfirmationModalButton[] = [];
         if (showButtonSaveAsDraft) {
             buttons.push(this.getSaveAsDraftButton());
@@ -34,14 +32,31 @@ export class AppManageModalService {
 
     /**
      * Modal buttons:<br>
-     * 1. (optional) 'No, cancel', modal return value: 'cancel'.<br>
-     * 2. (always)   'Yes, submit it', modal return value: 'submit'.<br>
+     * 1. (always) 'No, cancel', modal return value: 'cancel'.<br>
+     * 2. (always) 'Yes, submit it', modal return value: 'submit'.<br>
      *
      * Note: Reject and cancel modal statuses will be converted to the empty observable.
      */
-    openModalWithCancelAndSubmitButtons(): Observable<AppManageModalResult> {
+    openModalWithCancelAndSubmitButtons(): Observable<'submit'> {
         const buttons: LocalConfirmationModalButton[] = [this.getCancelButton(), this.getSubmitButton()];
         const modalRef = this.createAppSubmitModalRef(buttons);
+        return this.catchCancelModalStatus(modalRef.result);
+    }
+
+    /**
+     * Modal buttons:<br>
+     * 1. (always) 'No, cancel', modal return value: 'cancel'.<br>
+     * 2. (always) 'Yes, suspend it', modal return value: 'suspend'.<br>
+     *
+     * Note: Reject and cancel modal statuses will be converted to the empty observable.
+     */
+    openModalWithCancelAndSuspendButtons(): Observable<'suspend'> {
+        const modalRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
+        const modalData = modalRef.componentInstance as OcConfirmationModalComponent;
+        modalData.modalTitle = 'Suspend app';
+        modalData.modalTitleHeadingTag = 'h4';
+        modalData.modalText = 'Suspend this app from the marketplace now?';
+        modalData.customButtons = [this.getCancelButton(), this.getSuspendedButton()];
         return this.catchCancelModalStatus(modalRef.result);
     }
 
@@ -86,6 +101,14 @@ export class AppManageModalService {
             type: 'secondary',
             id: 'cancel',
             text: 'No, cancel',
+        };
+    }
+
+    private getSuspendedButton(): LocalConfirmationModalButton {
+        return {
+            type: 'warning',
+            id: 'suspend',
+            text: 'Yes, suspend it',
         };
     }
 }

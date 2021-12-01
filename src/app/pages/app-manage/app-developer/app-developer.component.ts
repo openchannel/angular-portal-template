@@ -239,7 +239,6 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
             .openModalWithCancelAndSubmitButtons()
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => {
-
                 this.loader.complete();
                 this.appService
                     .publishAppByVersion(menuEvent.appId, {
@@ -320,30 +319,21 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     private suspendAppAction(menuEvent: AppListMenuAction): void {
         if (this.appListConfig.data.list.find(app => app.appId === menuEvent.appId).status.value === 'approved') {
-            const modalSuspendRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
-
-            modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
-            modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
-            modalSuspendRef.componentInstance.confirmButtonText = 'Yes, suspend it';
-            modalSuspendRef.componentInstance.confirmButtonClass = 'confirmation-modal__custom-button';
-
-            modalSuspendRef.result.then(
-                res => {
-                    if (res) {
-                        this.appService
-                            .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe(resp => {
-                                this.appListConfig.data.pageNumber = 0;
-                                this.toaster.success('Your app has been suspended');
-                                this.getApps(true);
-                                // load new chart apps
-                                this.chart.initChartWithAppsDropdown();
-                            });
-                    }
-                },
-                () => {},
-            );
+            this.appManageModalService
+                .openModalWithCancelAndSuspendButtons()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                    this.appService
+                        .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(() => {
+                            this.appListConfig.data.pageNumber = 0;
+                            this.toaster.success('Your app has been suspended');
+                            this.getApps(true);
+                            // load new chart apps
+                            this.chart.initChartWithAppsDropdown();
+                        });
+                });
         }
     }
 
@@ -360,7 +350,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     this.appService
                         .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
                         .pipe(takeUntil(this.destroy$))
-                        .subscribe(resp => {
+                        .subscribe(() => {
                             this.appListConfig.data.pageNumber = 0;
                             this.toaster.success('Your app has been unsuspended');
                             this.getApps(true);
