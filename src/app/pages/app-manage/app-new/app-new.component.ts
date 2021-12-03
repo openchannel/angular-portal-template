@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+    AppResponse,
     AppsService,
     AppStatusValue,
     AppTypeFieldModelResponse,
@@ -391,7 +392,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     private setAppFieldsByType(appTypeFields: AppTypeFieldModelResponse[], appData: AppVersionResponse): void {
         this.appFields = {
-            fields: this.mapFields(appTypeFields, appData),
+            fields: this.injectPricingFormToAppFields(this.mapFields(appTypeFields, appData), appData),
         };
     }
 
@@ -635,22 +636,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
             );
     }
 
-    private injectPricingFormToAppFields(appFields: AppFormField[], appData?: any): AppFormField[] {
-        // inject pricing form only on the create app page.
-        if (pricingConfig.enablePricingForm && this.pageType === 'create') {
-            return [
-                ...(appFields || []),
-                ...this.pricingFormService.createFieldsByData(
-                    this.isFormGroup(appFields),
-                    pricingConfig.enableMultiPricingForms,
-                    appData?.model,
-                ),
-            ];
+    private injectPricingFormToAppFields(formFields: AppFormField[], appData?: AppResponse): AppFormField[] {
+        if (pricingConfig.enablePricingForm) {
+            return this.pricingFormService.injectPricingFormToAppFields(pricingConfig.enableMultiPricingForms, formFields, appData);
         }
-        return appFields;
-    }
-
-    private isFormGroup(fields: AppFormField[]): boolean {
-        return !!fields?.find(field => field.type === 'fieldGroup');
+        return formFields;
     }
 }
