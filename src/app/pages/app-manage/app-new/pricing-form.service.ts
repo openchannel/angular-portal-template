@@ -39,7 +39,7 @@ export class PricingFormService {
         return [
             ...(fields || []),
             this.createPricingLabel(),
-            this.createForm(oldPricingData, enableMultiPricingForms)
+            this.createForm(oldPricingData, enableMultiPricingForms, true)
         ];
     }
 
@@ -48,11 +48,11 @@ export class PricingFormService {
             this.createTitleLabel('details', 'Details'),
             ...(fields || []),
             this.createTitleLabel('plans-and-pricing', 'Plans & Pricing'),
-            this.createForm(oldPricingData, enableMultiPricingForms),
+            this.createForm(oldPricingData, enableMultiPricingForms, false),
         ];
     }
 
-    private createForm(oldPricingData: AppModelResponse[], enableMultiPricingForms: boolean): AppFormField {
+    private createForm(oldPricingData: AppModelResponse[], enableMultiPricingForms: boolean, enableWizardForm: boolean): AppFormField {
         const dropdownField = this.createTypeField();
         const dropdownForms: { [formId in PricingFormType]: AppFormField[] } = {
             free: this.createFreeForm(),
@@ -71,7 +71,7 @@ export class PricingFormService {
             },
         };
 
-        return {
+        const field: AppFormField = {
             id: 'model',
             type: 'dynamicFieldArray',
             defaultValue: (oldPricingData?.length > 0 ? oldPricingData : [{} as any]).map(pricingForm => ({ pricingForm })),
@@ -79,9 +79,12 @@ export class PricingFormService {
             attributes: {
                 ordering: 'append',
                 onlyFirstDfaItem: !enableMultiPricingForms,
-                group: this.GROUP_ID,
             },
         };
+        if (enableWizardForm) {
+            field.attributes.group = this.GROUP_ID;
+        }
+        return field;
     }
 
     private createFreeForm(): AppFormField[] {
