@@ -3,7 +3,8 @@ import { StripeAccount, StripeService } from '@openchannel/angular-common-servic
 import { Subject, throwError } from 'rxjs';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { catchError, takeUntil } from 'rxjs/operators';
+import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { StripeAccountsService } from '@core/services/stripe-accounts.service';
 
 @Component({
     selector: 'app-payouts',
@@ -18,7 +19,11 @@ export class PayoutsComponent implements OnInit, OnDestroy {
     private loader: LoadingBarState;
     private $destroy: Subject<void> = new Subject();
 
-    constructor(private stripeService: StripeService, public loadingBar: LoadingBarService) {}
+    constructor(
+        private stripeService: StripeService,
+        public loadingBar: LoadingBarService,
+        private stripeAccountsService: StripeAccountsService,
+    ) {}
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
@@ -60,13 +65,21 @@ export class PayoutsComponent implements OnInit, OnDestroy {
     private connectAccount(): void {
         this.startProcessing();
 
-        this.stripeService
-            .connectAccount(window.location.href)
+        this.stripeAccountsService
+            .getIsAccountConnected()
             .pipe(
                 catchError(err => {
                     this.stopProcessing();
                     return throwError(err);
                 }),
+                tap(isAccountConnected => {
+                    if (isAccountConnected) {
+                        this.setAccountState();
+                        this.loader.complete();
+                    }
+                }),
+                filter(isAccountConnected => !isAccountConnected),
+                switchMap(() => this.stripeService.connectAccount(window.location.href)),
                 takeUntil(this.$destroy),
             )
             .subscribe(res => {

@@ -15,17 +15,24 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, Subscription, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
-import { AppFormField, AppTypeFieldModel, AppTypeModel, FullAppData, OcConfirmationModalComponent } from '@openchannel/angular-common-components';
+import {
+    AppFormField,
+    AppTypeFieldModel,
+    AppTypeModel,
+    FullAppData,
+    OcConfirmationModalComponent,
+} from '@openchannel/angular-common-components';
 import { get } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
+import { StripeAccountsService } from '@core/services/stripe-accounts.service';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -60,8 +67,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     downloadUrl = './assets/img/cloud-download.svg';
 
     modelFormArray: FormArray;
-    planTypeSubscription: Subscription;
-    isStripeAccountConnected: boolean;
+    private planTypeSubscription: Subscription;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -89,6 +95,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private titleService: TitleService,
         private toaster: ToastrService,
         private stripeService: StripeService,
+        private stripeAccountsService: StripeAccountsService,
         private pricingFormService: PricingFormService,
     ) {}
 
@@ -105,8 +112,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         } else {
             this.getAppData();
         }
-
-        this.getStripeAccountConnected();
     }
 
     ngOnDestroy(): void {
@@ -186,7 +191,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         const stripeWindow = window.open();
 
         this.stripeService
-            .connectAccount(window.location.origin)
+            .connectAccount(`${window.location.origin}/my-company/payouts`)
             .pipe(
                 takeUntil(this.destroy$),
                 catchError(err => {
@@ -340,23 +345,45 @@ export class AppNewComponent implements OnInit, OnDestroy {
         setTimeout(() => {
             const newModels = this.modelFormArray.value.map(model => ({ ...model, type: 'free' }));
             this.modelFormArray.setValue(newModels);
+            this.setModelDropdownValueFilter(false);
         }, 0);
+    }
+
+    private triggerPlanTypeChange(): void {
+        const newModels = this.modelFormArray.value.map(model => ({ ...model }));
+        this.modelFormArray.setValue(newModels);
     }
 
     private subscribeToPlanTypeChange(): void {
         this.planTypeSubscription?.unsubscribe();
 
+        // TODO: Need to subscribe only to type control, because of incorrect valueChanges event
         this.planTypeSubscription = this.modelFormArray?.valueChanges
             .pipe(
                 filter(values => values.some(value => value?.type && value.type !== 'free')),
+                tap(() => this.loader.start()),
+                switchMap(() => this.stripeAccountsService.getIsAccountConnected()),
                 takeUntil(this.destroy$),
             )
-            .subscribe(() => {
-                if (!this.isStripeAccountConnected) {
+            .subscribe(isStripeAccountConnected => {
+                if (!isStripeAccountConnected) {
                     this.setFreePlanType();
                     this.openConnectStripeModal();
+                } else {
+                    this.setModelDropdownValueFilter(true);
+                    this.triggerPlanTypeChange();
                 }
+
+                this.loader.complete();
             });
+    }
+
+    private setModelDropdownValueFilter(newReturnedValue: boolean): void {
+        const modelIndex = this.appFields.fields.length - 1;
+
+        this.appFields.fields[modelIndex].fields.forEach(field => {
+            field.attributes.dropdownSettings.dropdownValueFilter = () => newReturnedValue;
+        });
     }
 
     private setModelFormArray(): void {
@@ -368,16 +395,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
         } else {
             this.modelFormArray = this.generatedForm.get('model') as FormArray;
         }
-    }
-
-    private getStripeAccountConnected(): void {
-        this.stripeService
-            .getConnectedAccounts()
-            .pipe(
-                map(res => !!res.accounts.length),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(res => (this.isStripeAccountConnected = res));
     }
 
     private setInvalidAppTypeError(value: boolean): void {

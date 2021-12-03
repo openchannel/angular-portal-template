@@ -54,6 +54,7 @@ export class PricingFormService {
             type: 'dropdownForm',
             attributes: {
                 dropdownSettings: {
+                    dropdownValueFilter: () => false,
                     dropdownField,
                     dropdownForms,
                 },
