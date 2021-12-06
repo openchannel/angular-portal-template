@@ -19,10 +19,8 @@ import {
     catchError,
     debounceTime,
     distinctUntilChanged,
-    distinctUntilKeyChanged,
     filter,
     finalize,
-    skipWhile,
     switchMap,
     takeUntil,
 } from 'rxjs/operators';
@@ -43,6 +41,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
 import { StripeAccountsService } from '@core/services/stripe-accounts.service';
+import { isEqual } from 'lodash';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -77,8 +76,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
     downloadUrl = './assets/img/cloud-download.svg';
 
     modelFormArray: FormArray;
-    private planTypeSubscriptions: Subscription[];
-    private modelDfaAddedSubscription: Subscription;
+    private planTypeSubscription: Subscription;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -329,12 +327,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.setFormErrors) {
             this.generatedForm.markAllAsTouched();
         }
-        this.setModelFormArray();
 
+        this.setModelFormArray();
         this.subscribeToPlanTypeChange();
-        if (pricingConfig.enableMultiPricingForms) {
-            this.subscribeToModelDfaAdded();
-        }
     }
 
     hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
@@ -356,62 +351,44 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/manage-apps']).then();
     }
 
-    private setFreePlanType(control: AbstractControl): void {
-        control.setValue({ ...control.value, type: 'free' });
+    private setFreePlanType(): void {
+        setTimeout(() => {
+            const newModels = this.modelFormArray.value.map(model => ({ ...model, type: 'free' }));
+            this.modelFormArray.setValue(newModels);
+            this.pricingFormService.setCanModelBeChanged(false);
+        }, 0);
     }
 
-    private triggerPlanTypeChange(control: AbstractControl): void {
-        control.setValue({ ...control.value });
+    private triggerPlanTypeChange(): void {
+        this.modelFormArray.setValue(this.modelFormArray.value);
     }
 
     private subscribeToPlanTypeChange(): void {
-        this.planTypeSubscriptions?.forEach(subscription => subscription.unsubscribe());
+        this.planTypeSubscription?.unsubscribe();
 
-        this.planTypeSubscriptions = this.modelFormArray?.controls.map(control => {
-            return control
-                .get('type')
-                ?.valueChanges.pipe(
-                    distinctUntilChanged(),
-                    filter(type => type !== 'free'),
-                    switchMap(() => {
-                        this.loader.start();
-                        return this.stripeAccountsService.getIsAccountConnected().pipe(
-                            finalize(() => {
-                                this.loader.complete();
-                            }),
-                        );
-                    }),
-                    catchError(err => {
-                        // We need to resubscribe to plan type due to error
-                        this.subscribeToPlanTypeChange();
-                        return throwError(err);
-                    }),
-                    takeUntil(this.destroy$),
-                )
-                .subscribe(isStripeAccountConnected => {
-                    if (!isStripeAccountConnected) {
-                        this.setFreePlanType(control);
-                        this.pricingFormService.setCanModelBeChanged(false);
-                        this.openConnectStripeModal();
-                    } else {
-                        this.pricingFormService.setCanModelBeChanged(true);
-                        this.triggerPlanTypeChange(control);
-                    }
-                });
-        });
-    }
-
-    private subscribeToModelDfaAdded(): void {
-        this.modelDfaAddedSubscription?.unsubscribe();
-
-        this.modelDfaAddedSubscription = this.modelFormArray?.valueChanges
+        this.planTypeSubscription = this.modelFormArray?.valueChanges
             .pipe(
-                skipWhile(values => values.length === this.planTypeSubscriptions.length),
-                distinctUntilKeyChanged('length'),
+                debounceTime(0),
+                distinctUntilChanged(isEqual),
+                filter(values => values.some(value => value?.type && value.type !== 'free')),
+                switchMap(() => {
+                    this.loader.start();
+                    return this.stripeAccountsService.getIsAccountConnected().pipe(
+                        finalize(() => {
+                            this.loader.complete();
+                        }),
+                    );
+                }),
                 takeUntil(this.destroy$),
             )
-            .subscribe(() => {
-                this.subscribeToPlanTypeChange();
+            .subscribe(isStripeAccountConnected => {
+                if (!isStripeAccountConnected) {
+                    this.setFreePlanType();
+                    this.openConnectStripeModal();
+                } else {
+                    this.pricingFormService.setCanModelBeChanged(true);
+                    this.triggerPlanTypeChange();
+                }
             });
     }
 
