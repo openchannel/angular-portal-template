@@ -1,18 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AppFormField, DropdownAdditionalField, DropdownField, DropdownFormField } from '@openchannel/angular-common-components';
+import { AppVersionResponse } from '@openchannel/angular-common-services';
+import { AppModelResponse } from '@openchannel/angular-common-services/lib/model/api/app-data-model';
 
 export type PricingFormType = 'free' | 'single' | 'recurring';
-
-export type PricingFormModel = {
-    type: PricingFormType;
-    trial: number;
-    currency: 'USD' | string;
-    price: number;
-    billingPeriod: 'daily' | 'weekly' | 'monthly' | 'annually';
-    billingPeriodUnit: number;
-    license: string;
-    commission: number;
-};
 
 export interface PricingFormConfig {
     /**
@@ -31,17 +22,36 @@ export interface PricingFormConfig {
 })
 export class PricingFormService {
     private readonly GROUP_ID = 'model';
-    constructor() {}
 
-    createFieldsByData(isFormGroup: boolean, enableMultiPricingForms: boolean, oldPricingData: PricingFormModel[]): AppFormField[] {
-        if (isFormGroup) {
-            return [this.createPricingLabel(), this.createForm(oldPricingData, enableMultiPricingForms)];
-        } else {
-            return [this.createForm(oldPricingData, enableMultiPricingForms)];
+    injectPricingFormToAppFields(
+        enableMultiPricingForms: boolean,
+        formFields: AppFormField[],
+        appData?: AppVersionResponse,
+    ): AppFormField[] {
+        if (this.isWizardForm(formFields)) {
+            return this.buildWizardForm(formFields, enableMultiPricingForms, appData?.model);
         }
+        return this.buildSingleForm(formFields, enableMultiPricingForms, appData?.model);
     }
 
-    private createForm(oldPricingData: PricingFormModel[], enableMultiPricingForms: boolean): AppFormField {
+    private buildWizardForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {
+        return [
+            ...(fields || []),
+            this.createPricingLabel(),
+            this.createForm(oldPricingData, enableMultiPricingForms, true)
+        ];
+    }
+
+    private buildSingleForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {
+        return [
+            this.createTitleLabel('details', 'Details'),
+            ...(fields || []),
+            this.createTitleLabel('plans-and-pricing', 'Plans & Pricing'),
+            this.createForm(oldPricingData, enableMultiPricingForms, false),
+        ];
+    }
+
+    private createForm(oldPricingData: AppModelResponse[], enableMultiPricingForms: boolean, enableWizardForm: boolean): AppFormField {
         const dropdownField = this.createTypeField();
         const dropdownForms: { [formId in PricingFormType]: AppFormField[] } = {
             free: this.createFreeForm(),
@@ -60,7 +70,7 @@ export class PricingFormService {
             },
         };
 
-        return {
+        const field: AppFormField = {
             id: 'model',
             type: 'dynamicFieldArray',
             defaultValue: (oldPricingData?.length > 0 ? oldPricingData : [{} as any]).map(pricingForm => ({ pricingForm })),
@@ -68,9 +78,12 @@ export class PricingFormService {
             attributes: {
                 ordering: 'append',
                 onlyFirstDfaItem: !enableMultiPricingForms,
-                group: this.GROUP_ID,
             },
         };
+        if (enableWizardForm) {
+            field.attributes.group = this.GROUP_ID;
+        }
+        return field;
     }
 
     private createFreeForm(): AppFormField[] {
@@ -106,6 +119,7 @@ export class PricingFormService {
             type: 'number',
             attributes: {
                 min: 0,
+                decimalCount: 0,
             },
         };
     }
@@ -119,6 +133,7 @@ export class PricingFormService {
             defaultValue: 'USD',
             options,
             attributes: {
+                required: true,
                 subType: 'additionalField',
                 subTypeSettings: {
                     additionalFieldId: 'price',
@@ -134,8 +149,10 @@ export class PricingFormService {
             label: 'Pricing',
             type: 'number',
             attributes: {
+                required: true,
                 formHideRow: true,
                 min: 0,
+                decimalCount: 0,
             },
         };
     }
@@ -149,6 +166,7 @@ export class PricingFormService {
             defaultValue: 'daily',
             options,
             attributes: {
+                required: true,
                 transformText: 'titleCase',
             },
         };
@@ -160,7 +178,9 @@ export class PricingFormService {
             label: 'Billing period unit',
             type: 'number',
             attributes: {
+                required: true,
                 min: 0,
+                decimalCount: 0,
             },
         };
     }
@@ -178,5 +198,30 @@ export class PricingFormService {
                 transformText: 'titleCase',
             },
         };
+    }
+
+    private createTitleLabel(id: 'details' | 'plans-and-pricing', label: string): AppFormField {
+        // By this filed id will be added custom scss style in styles.scss
+        return {
+            id: `pricing-title-${id}`,
+            label,
+            type: null,
+        };
+    }
+
+    private isWizardForm(fields: AppFormField[]): boolean {
+        if (!fields) {
+            return false;
+        }
+
+        const groupFields = fields.filter(potentialGroupField => {
+            if (potentialGroupField.id && potentialGroupField.type === 'fieldGroup') {
+                const groupKey = potentialGroupField.id.replace('customData.', '');
+                return !!fields.find(field => field?.attributes?.group === groupKey);
+            }
+            return false;
+        });
+
+        return groupFields.length > 1;
     }
 }
