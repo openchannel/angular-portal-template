@@ -36,6 +36,7 @@ export type pageDestination = 'edit' | 'create';
 })
 export class AppNewComponent implements OnInit, OnDestroy {
     currentAppsTypesItems: AppTypeModel[] = [];
+    appTypesFetched: boolean = false;
 
     appTypeFormGroup: FormGroup;
     appTypeFormControl: AbstractControl;
@@ -421,6 +422,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
             .subscribe(
                 appTypesResponse => {
                     if (appTypesResponse?.list) {
+                        this.appTypesFetched = true;
                         this.currentAppsTypesItems = appTypesResponse.list;
                         if (this.pageType === 'create' && this.currentAppsTypesItems && this.currentAppsTypesItems.length > 0) {
                             this.appTypeFormControl.setValue(this.currentAppsTypesItems[0]);
