@@ -38,18 +38,8 @@ export class PricingFormService {
         this.dropdownValueFilterFunc = () => canModelBeChanged;
     }
 
-    createFieldsByData(isFormGroup: boolean, enableMultiPricingForms: boolean, oldPricingData: PricingFormModel[]): AppFormField[] {
-        if (isFormGroup) {
-            return [this.createPricingLabel(), this.createForm(oldPricingData, enableMultiPricingForms)];
-        } else {
-            return [this.createForm(oldPricingData, enableMultiPricingForms)];
-        }
     private buildWizardForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {
-        return [
-            ...(fields || []),
-            this.createPricingLabel(),
-            this.createForm(oldPricingData, enableMultiPricingForms, true)
-        ];
+        return [...(fields || []), this.createPricingLabel(), this.createForm(oldPricingData, enableMultiPricingForms, true)];
     }
 
     private buildSingleForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {

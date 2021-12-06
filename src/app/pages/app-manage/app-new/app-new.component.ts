@@ -369,6 +369,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
         this.planTypeSubscription = this.modelFormArray?.valueChanges
             .pipe(
+                // Wait for next change detection cycle, so the new value will be stable
                 debounceTime(0),
                 distinctUntilChanged(isEqual),
                 filter(values => values.some(value => value?.type && value.type !== 'free')),
