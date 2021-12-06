@@ -3,9 +3,7 @@ import { StripeService } from '@openchannel/angular-common-services';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable()
 export class StripeAccountsService {
     constructor(private stripeService: StripeService) {}
 
