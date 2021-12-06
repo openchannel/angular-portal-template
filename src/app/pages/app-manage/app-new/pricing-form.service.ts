@@ -22,7 +22,6 @@ export interface PricingFormConfig {
 })
 export class PricingFormService {
     private readonly GROUP_ID = 'model';
-    constructor() {}
 
     injectPricingFormToAppFields(
         enableMultiPricingForms: boolean,
@@ -120,6 +119,7 @@ export class PricingFormService {
             type: 'number',
             attributes: {
                 min: 0,
+                decimalCount: 0,
             },
         };
     }
@@ -133,6 +133,7 @@ export class PricingFormService {
             defaultValue: 'USD',
             options,
             attributes: {
+                required: true,
                 subType: 'additionalField',
                 subTypeSettings: {
                     additionalFieldId: 'price',
@@ -148,8 +149,10 @@ export class PricingFormService {
             label: 'Pricing',
             type: 'number',
             attributes: {
+                required: true,
                 formHideRow: true,
                 min: 0,
+                decimalCount: 0,
             },
         };
     }
@@ -163,6 +166,7 @@ export class PricingFormService {
             defaultValue: 'daily',
             options,
             attributes: {
+                required: true,
                 transformText: 'titleCase',
             },
         };
@@ -174,7 +178,9 @@ export class PricingFormService {
             label: 'Billing period unit',
             type: 'number',
             attributes: {
+                required: true,
                 min: 0,
+                decimalCount: 0,
             },
         };
     }
