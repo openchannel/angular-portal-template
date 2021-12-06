@@ -21,10 +21,10 @@ import {
     distinctUntilChanged,
     distinctUntilKeyChanged,
     filter,
+    finalize,
     skipWhile,
     switchMap,
     takeUntil,
-    tap,
 } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
@@ -175,6 +175,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     openConnectStripeModal(): void {
+        if (this.modal.hasOpenModals()) {
+            return;
+        }
+
         const modalRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
 
         modalRef.componentInstance.modalTitle = 'Stripe account required';
@@ -369,10 +373,17 @@ export class AppNewComponent implements OnInit, OnDestroy {
                 ?.valueChanges.pipe(
                     distinctUntilChanged(),
                     filter(type => type !== 'free'),
-                    tap(() => this.loader.start()),
-                    switchMap(() => this.stripeAccountsService.getIsAccountConnected()),
+                    switchMap(() => {
+                        this.loader.start();
+                        return this.stripeAccountsService.getIsAccountConnected().pipe(
+                            finalize(() => {
+                                this.loader.complete();
+                            }),
+                        );
+                    }),
                     catchError(err => {
-                        this.loader.complete();
+                        // We need to resubscribe to plan type due to error
+                        this.subscribeToPlanTypeChange();
                         return throwError(err);
                     }),
                     takeUntil(this.destroy$),
@@ -386,8 +397,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
                         this.pricingFormService.setCanModelBeChanged(true);
                         this.triggerPlanTypeChange(control);
                     }
-
-                    this.loader.complete();
                 });
         });
     }
