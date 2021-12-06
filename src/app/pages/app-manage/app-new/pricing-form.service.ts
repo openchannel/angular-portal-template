@@ -33,6 +33,10 @@ export class PricingFormService {
     private readonly GROUP_ID = 'model';
     constructor() {}
 
+    setCanModelBeChanged(canModelBeChanged: boolean): void {
+        this.dropdownValueFilterFunc = () => canModelBeChanged;
+    }
+
     createFieldsByData(isFormGroup: boolean, enableMultiPricingForms: boolean, oldPricingData: PricingFormModel[]): AppFormField[] {
         if (isFormGroup) {
             return [this.createPricingLabel(), this.createForm(oldPricingData, enableMultiPricingForms)];
@@ -54,7 +58,7 @@ export class PricingFormService {
             type: 'dropdownForm',
             attributes: {
                 dropdownSettings: {
-                    dropdownValueFilter: () => false,
+                    dropdownValueFilter: () => this.dropdownValueFilterFunc(),
                     dropdownField,
                     dropdownForms,
                 },
@@ -72,6 +76,12 @@ export class PricingFormService {
                 group: this.GROUP_ID,
             },
         };
+    }
+
+    // Function to pass to the formField while creating form, so we can change it later easily
+    // by reference
+    private dropdownValueFilterFunc(): boolean {
+        return false;
     }
 
     private createFreeForm(): AppFormField[] {

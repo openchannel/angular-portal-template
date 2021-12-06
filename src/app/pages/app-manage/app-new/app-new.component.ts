@@ -15,7 +15,17 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, Subscription, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    distinctUntilChanged,
+    distinctUntilKeyChanged,
+    filter,
+    skipWhile,
+    switchMap,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
@@ -67,7 +77,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
     downloadUrl = './assets/img/cloud-download.svg';
 
     modelFormArray: FormArray;
-    private planTypeSubscription: Subscription;
+    private planTypeSubscriptions: Subscription[];
+    private modelDfaAddedSubscription: Subscription;
 
     private appTypePageNumber = 1;
     private appTypePageLimit = 100;
@@ -164,10 +175,6 @@ export class AppNewComponent implements OnInit, OnDestroy {
     }
 
     openConnectStripeModal(): void {
-        if (this.modal.hasOpenModals()) {
-            return;
-        }
-
         const modalRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
 
         modalRef.componentInstance.modalTitle = 'Stripe account required';
@@ -319,7 +326,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.generatedForm.markAllAsTouched();
         }
         this.setModelFormArray();
+
         this.subscribeToPlanTypeChange();
+        if (pricingConfig.enableMultiPricingForms) {
+            this.subscribeToModelDfaAdded();
+        }
     }
 
     hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
@@ -341,49 +352,58 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/manage-apps']).then();
     }
 
-    private setFreePlanType(): void {
-        setTimeout(() => {
-            const newModels = this.modelFormArray.value.map(model => ({ ...model, type: 'free' }));
-            this.modelFormArray.setValue(newModels);
-            this.setModelDropdownValueFilter(false);
-        }, 0);
+    private setFreePlanType(control: AbstractControl): void {
+        control.setValue({ ...control.value, type: 'free' });
     }
 
-    private triggerPlanTypeChange(): void {
-        const newModels = this.modelFormArray.value.map(model => ({ ...model }));
-        this.modelFormArray.setValue(newModels);
+    private triggerPlanTypeChange(control: AbstractControl): void {
+        control.setValue({ ...control.value });
     }
 
     private subscribeToPlanTypeChange(): void {
-        this.planTypeSubscription?.unsubscribe();
+        this.planTypeSubscriptions?.forEach(subscription => subscription.unsubscribe());
 
-        // TODO: Need to subscribe only to type control, because of incorrect valueChanges event
-        this.planTypeSubscription = this.modelFormArray?.valueChanges
-            .pipe(
-                filter(values => values.some(value => value?.type && value.type !== 'free')),
-                tap(() => this.loader.start()),
-                switchMap(() => this.stripeAccountsService.getIsAccountConnected()),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(isStripeAccountConnected => {
-                if (!isStripeAccountConnected) {
-                    this.setFreePlanType();
-                    this.openConnectStripeModal();
-                } else {
-                    this.setModelDropdownValueFilter(true);
-                    this.triggerPlanTypeChange();
-                }
+        this.planTypeSubscriptions = this.modelFormArray?.controls.map(control => {
+            return control
+                .get('type')
+                ?.valueChanges.pipe(
+                    distinctUntilChanged(),
+                    filter(type => type !== 'free'),
+                    tap(() => this.loader.start()),
+                    switchMap(() => this.stripeAccountsService.getIsAccountConnected()),
+                    catchError(err => {
+                        this.loader.complete();
+                        return throwError(err);
+                    }),
+                    takeUntil(this.destroy$),
+                )
+                .subscribe(isStripeAccountConnected => {
+                    if (!isStripeAccountConnected) {
+                        this.setFreePlanType(control);
+                        this.pricingFormService.setCanModelBeChanged(false);
+                        this.openConnectStripeModal();
+                    } else {
+                        this.pricingFormService.setCanModelBeChanged(true);
+                        this.triggerPlanTypeChange(control);
+                    }
 
-                this.loader.complete();
-            });
+                    this.loader.complete();
+                });
+        });
     }
 
-    private setModelDropdownValueFilter(newReturnedValue: boolean): void {
-        const modelIndex = this.appFields.fields.length - 1;
+    private subscribeToModelDfaAdded(): void {
+        this.modelDfaAddedSubscription?.unsubscribe();
 
-        this.appFields.fields[modelIndex].fields.forEach(field => {
-            field.attributes.dropdownSettings.dropdownValueFilter = () => newReturnedValue;
-        });
+        this.modelDfaAddedSubscription = this.modelFormArray?.valueChanges
+            .pipe(
+                skipWhile(values => values.length === this.planTypeSubscriptions.length),
+                distinctUntilKeyChanged('length'),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                this.subscribeToPlanTypeChange();
+            });
     }
 
     private setModelFormArray(): void {
