@@ -129,6 +129,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     // getting app data from the form on form changing
     onFormDataUpdated(fields: any): void {
+        if (pricingConfig.enablePricingForm && fields?.model) {
+            fields.model = this.pricingFormService.normalizePricingData(fields.model, false);
+        }
         this.appFormData = fields;
     }
 
