@@ -35,6 +35,10 @@ export class PricingFormService {
         return this.buildSingleForm(formFields, enableMultiPricingForms, appData?.model);
     }
 
+    setCanModelBeChanged(canModelBeChanged: boolean): void {
+        this.dropdownValueFilterFunc = () => canModelBeChanged;
+    }
+
     /**
      * Remove or add cents for the price fields.
      * @param pricingData
@@ -55,11 +59,7 @@ export class PricingFormService {
     }
 
     private buildWizardForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {
-        return [
-            ...(fields || []),
-            this.createPricingLabel(),
-            this.createForm(oldPricingData, enableMultiPricingForms, true)
-        ];
+        return [...(fields || []), this.createPricingLabel(), this.createForm(oldPricingData, enableMultiPricingForms, true)];
     }
 
     private buildSingleForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {
@@ -84,6 +84,7 @@ export class PricingFormService {
             type: 'dropdownForm',
             attributes: {
                 dropdownSettings: {
+                    dropdownValueFilter: () => this.dropdownValueFilterFunc(),
                     dropdownField,
                     dropdownForms,
                 },
@@ -104,6 +105,12 @@ export class PricingFormService {
             field.attributes.group = this.GROUP_ID;
         }
         return field;
+    }
+
+    // Function to pass to the formField while creating form, so we can change it later easily
+    // by reference
+    private dropdownValueFilterFunc(): boolean {
+        return false;
     }
 
     private withCents(value: number): number {
