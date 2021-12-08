@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AppFormField, DropdownAdditionalField, DropdownField, DropdownFormField } from '@openchannel/angular-common-components';
 import { AppVersionResponse } from '@openchannel/angular-common-services';
 import { AppModelResponse } from '@openchannel/angular-common-services/lib/model/api/app-data-model';
+import { cloneDeep } from 'lodash';
 
 export type PricingFormType = 'free' | 'single' | 'recurring';
 
@@ -36,6 +37,25 @@ export class PricingFormService {
 
     setCanModelBeChanged(canModelBeChanged: boolean): void {
         this.dropdownValueFilterFunc = () => canModelBeChanged;
+    }
+
+    /**
+     * Remove or add cents for the price fields.
+     * @param pricingData
+     * @param withCents
+     * (true) -> will add cents. Ex. 1234 -> 12.34
+     * (false) -> will remove cents. Ex. 12.34 -> 1234
+     */
+    normalizePricingData(pricingData: AppModelResponse[], withCents: boolean): Partial<AppModelResponse>[] {
+        const tempPricingData = cloneDeep(pricingData);
+        if (tempPricingData && tempPricingData.length > 0) {
+            tempPricingData.forEach(pricingModel => {
+                if (pricingModel && pricingModel.price) {
+                    pricingModel.price = withCents ? this.withCents(pricingModel.price) : this.withoutCents(pricingModel.price);
+                }
+            });
+        }
+        return tempPricingData;
     }
 
     private buildWizardForm(fields: AppFormField[], enableMultiPricingForms: boolean, oldPricingData: AppModelResponse[]): AppFormField[] {
@@ -74,7 +94,7 @@ export class PricingFormService {
         const field: AppFormField = {
             id: 'model',
             type: 'dynamicFieldArray',
-            defaultValue: (oldPricingData?.length > 0 ? oldPricingData : [{} as any]).map(pricingForm => ({ pricingForm })),
+            defaultValue: (this.normalizePricingData(oldPricingData, true) || [{}]).map(pricingForm => ({ pricingForm })),
             fields: [formField],
             attributes: {
                 ordering: 'append',
@@ -91,6 +111,14 @@ export class PricingFormService {
     // by reference
     private dropdownValueFilterFunc(): boolean {
         return false;
+    }
+
+    private withCents(value: number): number {
+        return value ? value / 100 : value;
+    }
+
+    private withoutCents(value: number): number {
+        return value ? Math.round(value * 100) : value;
     }
 
     private createFreeForm(): AppFormField[] {
@@ -135,7 +163,7 @@ export class PricingFormService {
         const options = ['USD'];
         return {
             id: 'currency',
-            label: 'Pricing',
+            label: 'Price',
             type: 'dropdownList',
             defaultValue: 'USD',
             options,
@@ -153,13 +181,12 @@ export class PricingFormService {
     private createPriceField(): AppFormField {
         return {
             id: 'price',
-            label: 'Pricing',
+            label: 'Price',
             type: 'number',
             attributes: {
                 required: true,
                 formHideRow: true,
                 min: 0,
-                decimalCount: 0,
             },
         };
     }
@@ -196,7 +223,7 @@ export class PricingFormService {
         const options = ['free', 'single', 'recurring'];
         return {
             id: 'type',
-            label: 'Type',
+            label: 'Plan Type',
             type: 'dropdownList',
             defaultValue: 'free',
             options,

@@ -5,7 +5,7 @@
     <div class="my-5" *ngIf="pageType === 'edit'">
         <app-chart [appId]="appId"></app-chart>
     </div>
-    <form class="mb-2" [formGroup]="appTypeFormGroup" *ngIf="currentStep === 1 && currentAppsTypesItems.length > 1">
+    <form class="mb-2" [formGroup]="appTypeFormGroup" *ngIf="appTypesFetched && currentStep === 1 && currentAppsTypesItems.length > 1">
         <div class="d-flex flex-column flex-md-row align-items-md-center mb-2">
             <oc-label text="Choose your app type" required="true" class="text-nowrap col-md-3 mr-1 mb-1 mb-md-0 pl-0"></oc-label>
             <div class="d-flex flex-column w-100">
@@ -18,6 +18,9 @@
                 { validator: 'invalidAppType', message: 'The type for this app no longer exists, please choose a new type' }
             ]"></oc-error>
     </form>
+
+    <p class="mb-4 text-center" *ngIf="appTypesFetched && currentAppsTypesItems.length === 0">There are no app types defined</p>
+
     <div *ngIf="appFields?.fields">
         <oc-form
             displayType="wizard"
