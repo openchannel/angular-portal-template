@@ -16,15 +16,7 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, Subscription, throwError } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    finalize,
-    switchMap,
-    takeUntil,
-} from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
@@ -37,12 +29,11 @@ import {
     FullAppData,
     OcConfirmationModalComponent,
 } from '@openchannel/angular-common-components';
-import { get } from 'lodash';
+import { get, isEqual } from 'lodash';
 import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
 import { StripeAccountsService } from '@core/services/stripe-accounts.service';
-import { isEqual } from 'lodash';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -205,7 +196,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         const stripeWindow = window.open();
 
         this.stripeService
-            .connectAccount(`${window.location.origin}/my-company/payouts`)
+            .connectAccount(this.stripeAccountsService.getStripeUrlRedirect())
             .pipe(
                 takeUntil(this.destroy$),
                 catchError(err => {

@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StripeAccount, StripeService } from '@openchannel/angular-common-services';
-import { Subject, throwError } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { catchError, filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { StripeAccountsService } from '@core/services/stripe-accounts.service';
+import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-payouts',
@@ -21,13 +23,19 @@ export class PayoutsComponent implements OnInit, OnDestroy {
 
     constructor(
         private stripeService: StripeService,
-        public loadingBar: LoadingBarService,
+        private loadingBar: LoadingBarService,
         private stripeAccountsService: StripeAccountsService,
+        private toaster: ToastrService,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
     ) {}
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
-        this.setAccountState();
+        this.getIsShowSuccessConnectMsg().subscribe(isShowSuccessConnectMsg => {
+            this.removeQueryParams();
+            this.setAccountState(isShowSuccessConnectMsg);
+        });
     }
 
     ngOnDestroy(): void {
@@ -35,7 +43,7 @@ export class PayoutsComponent implements OnInit, OnDestroy {
         this.$destroy.complete();
     }
 
-    setAccountState(): void {
+    setAccountState(isShowSuccessOperationMsg: boolean = false): void {
         this.loader.start();
 
         this.stripeService
@@ -50,6 +58,9 @@ export class PayoutsComponent implements OnInit, OnDestroy {
             .subscribe(res => {
                 this.stripeAccounts = res.accounts;
                 this.connectedAccount = !!this.stripeAccounts.length;
+                if (isShowSuccessOperationMsg) {
+                    this.showSuccessOperationMsg();
+                }
                 this.stopProcessing();
             });
     }
@@ -59,6 +70,26 @@ export class PayoutsComponent implements OnInit, OnDestroy {
             this.disconnectAccount();
         } else {
             this.connectAccount();
+        }
+    }
+
+    private getIsShowSuccessConnectMsg(): Observable<boolean> {
+        return this.activatedRoute.queryParams.pipe(
+            map(queryParams => {
+                return !!queryParams[this.stripeAccountsService.SHOW_SUCCESS_MSG_QUERY_PARAM];
+            }),
+        );
+    }
+
+    private removeQueryParams(): void {
+        this.router.navigate([], { replaceUrl: true }).then();
+    }
+
+    private showSuccessOperationMsg(): void {
+        if (this.connectedAccount) {
+            this.toaster.success('Stripe account has been connected successfully!');
+        } else {
+            this.toaster.success('Stripe account has been disconnected successfully!');
         }
     }
 
@@ -79,7 +110,7 @@ export class PayoutsComponent implements OnInit, OnDestroy {
                     }
                 }),
                 filter(isAccountConnected => !isAccountConnected),
-                switchMap(() => this.stripeService.connectAccount(window.location.href)),
+                switchMap(() => this.stripeService.connectAccount(this.stripeAccountsService.getStripeUrlRedirect())),
                 takeUntil(this.$destroy),
             )
             .subscribe(res => {
@@ -101,7 +132,7 @@ export class PayoutsComponent implements OnInit, OnDestroy {
                 takeUntil(this.$destroy),
             )
             .subscribe(() => {
-                this.setAccountState();
+                this.setAccountState(true);
                 this.loader.complete();
             });
     }

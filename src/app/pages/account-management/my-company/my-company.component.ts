@@ -152,9 +152,15 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     }
 
     private initMainPage(): void {
-        const pagePath = this.router.url;
+        const pagePath = this.getUrlWithoutQueryParams();
         const pageByUrl = this.currentPages.find(page => page.routerLink === pagePath);
         this.selectedPage = pageByUrl || this.currentPages[0];
+    }
+
+    private getUrlWithoutQueryParams(): string {
+        const url = this.router.parseUrl(this.router.url);
+        url.queryParams = {};
+        return url.toString();
     }
 
     private filterPages(pagesToFilter: Page[]): Page[] {
