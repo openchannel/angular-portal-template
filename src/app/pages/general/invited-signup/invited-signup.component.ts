@@ -14,6 +14,7 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 import { merge } from 'lodash';
 import { LogOutService } from '@core/services/logout-service/log-out.service';
 import { AppFormField } from '@openchannel/angular-common-components';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-invited-signup',
@@ -49,6 +50,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         private nativeLoginService: NativeLoginService,
         private logOutService: LogOutService,
         private loadingBar: LoadingBarService,
+        private toaster: ToastrService,
     ) {}
 
     ngOnInit(): void {
@@ -120,6 +122,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                         }
                     },
                     () => {
+                        this.toaster.error('Invite has been deleted');
                         this.router.navigate(['']).then();
                     },
                 );
