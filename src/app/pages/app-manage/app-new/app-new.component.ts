@@ -15,8 +15,8 @@ import {
 } from '@openchannel/angular-common-services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, Subscription, throwError } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil } from 'rxjs/operators';
+import { Observable, of, Subject, Subscription, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
@@ -211,23 +211,29 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     // saving app to the server
     saveApp(saveType: 'submit' | 'draft'): void {
-        const isDraft = saveType === 'draft';
-        const isSubmit = saveType === 'submit';
-        if (
-            !this.draftSaveInProcess &&
-            !this.submitInProcess &&
-            ((isDraft && this.isValidAppName()) || (isSubmit && this.generatedForm?.valid))
-        ) {
-            this.disableOutgo = true;
-            this.draftSaveInProcess = isDraft;
-            this.submitInProcess = isSubmit;
+        this.getCanSaveApp()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(canSaveApp => {
+                if (canSaveApp) {
+                    const isDraft = saveType === 'draft';
+                    const isSubmit = saveType === 'submit';
+                    if (
+                        !this.draftSaveInProcess &&
+                        !this.submitInProcess &&
+                        ((isDraft && this.isValidAppName()) || (isSubmit && this.generatedForm?.valid))
+                    ) {
+                        this.disableOutgo = true;
+                        this.draftSaveInProcess = isDraft;
+                        this.submitInProcess = isSubmit;
 
-            if (this.pageType === 'create') {
-                this.saveNewApp(saveType);
-            } else {
-                this.updateApp(saveType);
-            }
-        }
+                        if (this.pageType === 'create') {
+                            this.saveNewApp(saveType);
+                        } else {
+                            this.updateApp(saveType);
+                        }
+                    }
+                }
+            });
     }
 
     publishApp(appId: string, appVersion: number): void {
@@ -279,6 +285,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (appVersion) {
                         this.parentApp = appVersion as FullAppData;
                         this.titleService.setSpecialTitle(this.parentApp.name);
+                        this.checkPlanTypeOnEditApp();
 
                         this.appTypeService
                             .getOneAppType(this.parentApp.type, new HttpHeaders({ 'x-handle-error': '404' }))
@@ -347,10 +354,61 @@ export class AppNewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/manage-apps']).then();
     }
 
+    private getNotFreePlanItemsIndexes(): number[] {
+        return this.modelFormArray.value.reduce((indexes, model, index) => {
+            if (model.type !== 'free') {
+                indexes.push(index);
+            }
+
+            return indexes;
+        }, []);
+    }
+
+    private getCanSaveApp(): Observable<boolean> {
+        const isNotFreePlan = this.modelFormArray.value.some(model => model.type !== 'free');
+        if (!isNotFreePlan) {
+            return of(true);
+        }
+
+        return this.stripeAccountsService.getIsAccountConnected().pipe(
+            tap(isAccountConnected => {
+                if (!isAccountConnected) {
+                    this.setFreePlanType();
+                    this.openConnectStripeModal();
+                }
+            }),
+            takeUntil(this.destroy$),
+        );
+    }
+
+    private checkPlanTypeOnEditApp(): void {
+        const isNotFreePlan = this.parentApp.model.some(model => model.type !== 'free');
+        if (isNotFreePlan) {
+            this.pricingFormService.setCanModelBeChanged(true);
+        }
+    }
+
     private setFreePlanType(): void {
         setTimeout(() => {
-            const newModels = this.modelFormArray.value.map(model => ({ ...model, type: 'free' }));
-            this.modelFormArray.setValue(newModels);
+            const notFreeItemsIndexes = this.getNotFreePlanItemsIndexes();
+
+            this.pricingFormService.setCanModelBeChanged(true);
+
+            // We need to set edit because functionality of setting model according to type
+            // is in dropdownForm component, but in edit mode this component is not rendered
+            if (pricingConfig.enableMultiPricingForms) {
+                this.pricingFormService.setDFAItemsEditMode.next(notFreeItemsIndexes);
+            }
+
+            this.modelFormArray.controls.forEach(control => {
+                control.get('type')?.setValue('free');
+            });
+
+            // Update form in model DFA
+            if (pricingConfig.enableMultiPricingForms) {
+                this.pricingFormService.updateDFAItems.next(notFreeItemsIndexes);
+            }
+
             this.pricingFormService.setCanModelBeChanged(false);
         }, 0);
     }
