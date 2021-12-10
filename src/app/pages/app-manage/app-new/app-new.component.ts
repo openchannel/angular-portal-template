@@ -211,10 +211,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
 
     // saving app to the server
     saveApp(saveType: 'submit' | 'draft'): void {
-        this.getCanSaveApp()
+        this.getIsPlanTypeCorrect()
             .pipe(takeUntil(this.destroy$))
-            .subscribe(canSaveApp => {
-                if (canSaveApp) {
+            .subscribe(isPlanTypeCorrect => {
+                if (isPlanTypeCorrect) {
                     const isDraft = saveType === 'draft';
                     const isSubmit = saveType === 'submit';
                     if (
@@ -285,7 +285,9 @@ export class AppNewComponent implements OnInit, OnDestroy {
                     if (appVersion) {
                         this.parentApp = appVersion as FullAppData;
                         this.titleService.setSpecialTitle(this.parentApp.name);
-                        this.checkPlanTypeOnEditApp();
+                        if (pricingConfig.enablePricingForm) {
+                            this.checkPlanTypeOnEditApp();
+                        }
 
                         this.appTypeService
                             .getOneAppType(this.parentApp.type, new HttpHeaders({ 'x-handle-error': '404' }))
@@ -331,8 +333,10 @@ export class AppNewComponent implements OnInit, OnDestroy {
             this.generatedForm.markAllAsTouched();
         }
 
-        this.setModelFormArray();
-        this.subscribeToPlanTypeChange();
+        if (pricingConfig.enablePricingForm) {
+            this.setModelFormArray();
+            this.subscribeToPlanTypeChange();
+        }
     }
 
     hasPageAndAppStatus(pageType: pageDestination, appStatus: AppStatusValue): boolean {
@@ -364,7 +368,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         }, []);
     }
 
-    private getCanSaveApp(): Observable<boolean> {
+    private getIsPlanTypeCorrect(): Observable<boolean> {
+        if (!pricingConfig.enablePricingForm) {
+            return of(true);
+        }
+
         const isNotFreePlan = this.modelFormArray.value.some(model => model.type !== 'free');
         if (!isNotFreePlan) {
             return of(true);
