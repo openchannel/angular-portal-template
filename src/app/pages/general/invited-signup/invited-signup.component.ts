@@ -8,11 +8,13 @@ import {
     NativeLoginService,
 } from '@openchannel/angular-common-services';
 import { Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { finalize, map, takeUntil } from 'rxjs/operators';
 import { merge } from 'lodash';
 import { LogOutService } from '@core/services/logout-service/log-out.service';
 import { AppFormField, OcEditUserFormConfig, OcEditUserResult } from '@openchannel/angular-common-components';
 import { OcEditUserTypeService } from '@core/services/user-type-service/user-type.service';
+import { LoadingBarService } from '@ngx-loading-bar/core';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 
 @Component({
     selector: 'app-invited-signup',
@@ -63,6 +65,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     inProcess = false;
 
     private destroy$: Subject<void> = new Subject<void>();
+    private loaderBar: LoadingBarState;
 
     constructor(
         private activeRouter: ActivatedRoute,
@@ -71,16 +74,19 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         private typeService: DeveloperAccountTypesService,
         private nativeLoginService: NativeLoginService,
         private logOutService: LogOutService,
+        private loadingBarService: LoadingBarService,
         private ocEditUserTypeService: OcEditUserTypeService,
     ) {}
 
     ngOnInit(): void {
+        this.loaderBar = this.loadingBarService.useRef();
         this.getInviteDetails();
     }
 
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+        this.loaderBar?.complete();
     }
 
     getFormConfigs(developerAccountTypeId: string): void {
@@ -91,6 +97,9 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                 .pipe(
                     map(type => this.mapDeveloperAccountTypeToFormConfigs(type)),
                     map(formConfigs => this.getFormConfigsWithConfiguredFields(formConfigs)),
+                    finalize(() => {
+                        this.loaderBar.complete();
+                    }),
                     takeUntil(this.destroy$),
                 )
                 .subscribe(formConfigs => {
@@ -103,6 +112,9 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                 .injectTypeDataIntoConfigs(this.formConfigsWithoutTypeData || this.formConfigsWithoutTypeDataDefault, false, true)
                 .pipe(
                     map(formConfigs => this.getFormConfigsWithConfiguredFields(formConfigs)),
+                    finalize(() => {
+                        this.loaderBar.complete();
+                    }),
                     takeUntil(this.destroy$),
                 )
                 .subscribe(formConfigs => {
@@ -114,6 +126,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
 
     // Get invitation details
     getInviteDetails(): void {
+        this.loaderBar.start();
         const userToken = this.activeRouter.snapshot.params.token;
 
         if (userToken) {
@@ -125,15 +138,18 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                         this.developerInviteData = response;
                         if (new Date(this.developerInviteData.expireDate) < new Date()) {
                             this.isExpired = true;
+                            this.loaderBar.complete();
                         } else {
                             this.getFormConfigs(this.developerInviteData.type);
                         }
                     },
                     () => {
+                        this.loaderBar.complete();
                         this.router.navigate(['']).then();
                     },
                 );
         } else {
+            this.loaderBar.complete();
             this.router.navigate(['']).then();
         }
     }
@@ -141,6 +157,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     // Register invited developer and delete invite on success
     submitForm(developerData: OcEditUserResult): void {
         if (developerData && !this.inProcess) {
+            this.loaderBar.start();
             this.inProcess = true;
             const request = merge(this.developerInviteData, developerData.account);
 
@@ -154,20 +171,19 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                     () => {
                         this.logOutService
                             .logOut()
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe(
-                                () => {
+                            .pipe(
+                                finalize(() => {
                                     this.inProcess = false;
                                     this.showSignupFeedbackPage = true;
-                                },
-                                () => {
-                                    this.inProcess = false;
-                                    this.showSignupFeedbackPage = true;
-                                },
-                            );
+                                    this.loaderBar.complete();
+                                }),
+                                takeUntil(this.destroy$),
+                            )
+                            .subscribe();
                     },
                     () => {
                         this.inProcess = false;
+                        this.loaderBar.complete();
                     },
                 );
         }
