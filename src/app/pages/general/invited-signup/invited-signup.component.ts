@@ -99,12 +99,12 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                     map(formConfigs => this.getFormConfigsWithConfiguredFields(formConfigs)),
                     finalize(() => {
                         this.loaderBar.complete();
+                        this.formConfigsLoading = false;
                     }),
                     takeUntil(this.destroy$),
                 )
                 .subscribe(formConfigs => {
                     this.formConfigs = formConfigs;
-                    this.formConfigsLoading = false;
                 });
         } else {
             // Make form config according to config property (formConfigsWithoutTypeData or formConfigsWithoutTypeDataDefault)
@@ -114,12 +114,12 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                     map(formConfigs => this.getFormConfigsWithConfiguredFields(formConfigs)),
                     finalize(() => {
                         this.loaderBar.complete();
+                        this.formConfigsLoading = false;
                     }),
                     takeUntil(this.destroy$),
                 )
                 .subscribe(formConfigs => {
                     this.formConfigs = formConfigs;
-                    this.formConfigsLoading = false;
                 });
         }
     }
