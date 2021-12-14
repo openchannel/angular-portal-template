@@ -3,6 +3,7 @@ import { AppFormField, DropdownAdditionalField, DropdownField, DropdownFormField
 import { AppVersionResponse } from '@openchannel/angular-common-services';
 import { AppModelResponse } from '@openchannel/angular-common-services/lib/model/api/app-data-model';
 import { cloneDeep } from 'lodash';
+import { Subject } from 'rxjs';
 
 export type PricingFormType = 'free' | 'single' | 'recurring';
 
@@ -23,6 +24,8 @@ export interface PricingFormConfig {
 })
 export class PricingFormService {
     private readonly GROUP_ID = 'model';
+    setDFAItemsEditMode: Subject<number[]> = new Subject<number[]>();
+    updateDFAItems: Subject<number[]> = new Subject<number[]>();
 
     injectPricingFormToAppFields(
         enableMultiPricingForms: boolean,
@@ -96,6 +99,10 @@ export class PricingFormService {
             type: 'dynamicFieldArray',
             defaultValue: (this.normalizePricingData(oldPricingData, true) || [{}]).map(pricingForm => ({ pricingForm })),
             fields: [formField],
+            controlUtils: {
+                setDFAItemsEditMode: this.setDFAItemsEditMode,
+                updateDFAItems: this.updateDFAItems,
+            },
             attributes: {
                 ordering: 'append',
                 onlyFirstDfaItem: !enableMultiPricingForms,
