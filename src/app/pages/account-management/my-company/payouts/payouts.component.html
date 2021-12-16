@@ -1,0 +1,13 @@
+<div class="stripe-account-manager" *ngIf="connectedAccount !== null">
+    <p class="stripe-account-manager__description">
+        {{ connectedAccount ? 'Your Stripe account is connected' : 'Connect your Stripe account to receive payments for your apps' }}
+    </p>
+    <div class="stripe-account-manager__buttons">
+        <oc-button
+            class="stripe-account-manager__button"
+            (click)="changeAccountState()"
+            [process]="process"
+            [text]="connectedAccount ? 'Disconnect Stripe' : 'Connect Stripe'"
+            [type]="connectedAccount ? 'danger' : 'primary'"></oc-button>
+    </div>
+</div>
