@@ -1,0 +1,25 @@
+@import '~assets/styles/mixins';
+@import '~assets/styles/theme';
+
+.stripe-account-manager {
+    &__description {
+        margin-bottom: 32px;
+
+        @include font-size-lg();
+        line-height: 32px;
+        color: $body-color;
+        text-align: center;
+    }
+
+    &__buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    &__button {
+        max-width: 255px;
+        width: 100%;
+    }
+}
