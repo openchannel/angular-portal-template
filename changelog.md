@@ -1,3 +1,7 @@
+## Release notes - template3-portal-frontend - Version 1.56.0 (12/16/2021)<br>
+### Story<br>
+AT-1555 - A developer is able to connect their Stripe account to receive payments for apps<br>
+AT-1551 - A developer is able to set pricing information for their app in the partner portal<br>
 ## Release notes - template3-portal-frontend - Version 1.55.0 (12/1/2021)<br>
 ### Task<br>
 AT-1607 - Ensure correct SSO behavior in all possible scenarios<br>
