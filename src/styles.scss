@@ -294,3 +294,14 @@ app-not-found header {
         }
     }
 }
+
+.form__field[class*='field-id-pricing-title'] {
+    .form__field-label {
+        margin-bottom: 0;
+        .tooltip-label__text {
+            font-size: 18px;
+            line-height: 28px;
+            font-weight: 500;
+        }
+    }
+}
