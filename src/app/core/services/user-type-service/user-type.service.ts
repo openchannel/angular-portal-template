@@ -105,12 +105,11 @@ export class OcEditUserTypeService {
     }
 
     private logInvalidAccountTypes(fetchedTypesData: DeveloperAccountTypeModel[], configTypes: string[]): void {
-        console.log(fetchedTypesData);
         const existingTypes = fetchedTypesData.map(typeData => typeData.developerAccountTypeId);
         const notExistingTypes = configTypes.filter(type => !existingTypes.includes(type));
 
         notExistingTypes.forEach(type => {
-            console.error(`${type} is not a valid developer account type`);
+            console.warn(`${type} is not a valid developer account type`);
         });
     }
 }
