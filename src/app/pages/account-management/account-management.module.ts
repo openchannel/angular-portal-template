@@ -10,6 +10,8 @@ import { ManagementComponent } from './my-company/management/management.componen
 import { MyCompanyComponent } from './my-company/my-company.component';
 import { CompanyDetailsComponent } from './my-company/company-details/company-details.component';
 import { OcFormComponentsModule, OcManagementComponentsModule, OcAuthComponentsModule } from '@openchannel/angular-common-components';
+import { PayoutsComponent } from './my-company/payouts/payouts.component';
+import { StripeAccountsService } from '@core/services/stripe-accounts.service';
 
 @NgModule({
     declarations: [
@@ -19,6 +21,7 @@ import { OcFormComponentsModule, OcManagementComponentsModule, OcAuthComponentsM
         ManagementComponent,
         MyCompanyComponent,
         CompanyDetailsComponent,
+        PayoutsComponent,
     ],
     imports: [
         CommonModule,
@@ -28,5 +31,6 @@ import { OcFormComponentsModule, OcManagementComponentsModule, OcAuthComponentsM
         OcFormComponentsModule,
         OcAuthComponentsModule,
     ],
+    providers: [StripeAccountsService],
 })
 export class AccountManagementModule {}

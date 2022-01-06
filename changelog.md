@@ -1,3 +1,31 @@
+## Release notes - template3-portal-frontend - Version 1.57.0 (1/6/2022)<br>
+### Bug<br>
+AT-1641 - [Stage1][Billing] Not able to add credit card information and billing address information for newly signed up user.<br>
+### Story<br>
+AT-1587 - Clicking on a tag should take to search results <br>
+AT-1564 - A user is able to view transactions and download invoices<br>
+### Bug<br>
+AT-1404 - [Logs-Prod] ERROR o.s.b.a.w.r.e.AbstractErrorWebExceptionHandler: [cdc297a5-389888]  500 Server Error for HTTP PATCH "/v2/developers/this"<br>
+AT-1362 - [Logs-Prod][CAP] ERROR o.s.b.a.w.r.e.AbstractErrorWebExceptionHandler: 500 Server Error for HTTP GET "/v2/apps/textSearch<br>
+AT-1301 - [Portal/Market][Invite] Sign Up- Success modal with 'Activate Account' button should be displayed for Invitee Sign up process.<br>
+## Release notes - template3-portal-frontend - Version 1.56.0 (12/16/2021)<br>
+### Story<br>
+AT-1555 - A developer is able to connect their Stripe account to receive payments for apps<br>
+AT-1551 - A developer is able to set pricing information for their app in the partner portal<br>
+## Release notes - template3-portal-frontend - Version 1.55.0 (12/1/2021)<br>
+### Task<br>
+AT-1607 - Ensure correct SSO behavior in all possible scenarios<br>
+### Story<br>
+AT-1565 - A user is able to set their billing address<br>
+AT-1559 - A user is able to view, add and remove credit card details<br>
+### Bug<br>
+AT-1546 - [Market][Review count] Review under Overall rating is getting increased even though Review is not yet approved.<br>
+AT-1528 - [UI] Various components fields are having wrong height<br>
+AT-1468 - [Reviews] Logged in user's review is not at the top of the Review list.<br>
+AT-1210 - [UI][Portal][Manage App / Edit App][Chart] UI issues on Chart component. Current Date is not showing and Count is cut off.<br>
+## Release notes - template3-portal-frontend - Version 1.54.2 (11/30/2021)<br>
+### Bug<br>
+AT-1619 - [Hotfix][Portal Market] Getting console error custom-account-type  is not a valid user / developer account type<br>
 ## Release notes - template3-portal-frontend - Version 1.53.1 (11/17/2021)<br>
 ### Bug<br>
 AT-1608 - [Market][Form submission - Buy Now] Image crop pop-up is not getting closed after clicking on Confirm button.<br>

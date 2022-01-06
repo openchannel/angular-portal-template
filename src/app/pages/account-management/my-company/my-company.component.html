@@ -21,6 +21,7 @@
         <div [ngSwitch]="selectedPage?.pageId" class="col-lg-10 col-xl-9 col-xxl-10 mt-3 mt-lg-1">
             <app-company *ngSwitchCase="pages[0].pageId"></app-company>
             <app-management #appManagement *ngSwitchCase="pages[1].pageId"></app-management>
+            <app-payouts *ngSwitchCase="pages[2].pageId"></app-payouts>
         </div>
     </div>
 </div>
