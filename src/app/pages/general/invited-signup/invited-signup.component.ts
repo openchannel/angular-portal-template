@@ -8,7 +8,7 @@ import {
 } from '@openchannel/angular-common-services';
 import { Subject } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { merge } from 'lodash';
@@ -173,17 +173,14 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                     () => {
                         this.logOutService
                             .logOut()
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe(
-                                r => {
+                            .pipe(
+                                finalize(() => {
                                     this.inProcess = false;
-                                    this.router.navigate(['login']).then();
-                                },
-                                () => {
-                                    this.inProcess = false;
-                                    this.router.navigate(['login']).then();
-                                },
-                            );
+                                    this.router.navigate(['signup'], { state: { showSignupFeedbackPage: true } }).then();
+                                }),
+                                takeUntil(this.destroy$),
+                            )
+                            .subscribe();
                     },
                     () => {
                         this.inProcess = false;
