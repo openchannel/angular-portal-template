@@ -33,6 +33,7 @@ import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
 import { StripeAccountsService } from '@core/services/stripe-accounts.service';
 import { AppManageModalService } from '@core/services/app-manage-modal-service/app-manage-modal.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -98,6 +99,7 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private stripeService: StripeService,
         private stripeAccountsService: StripeAccountsService,
         private pricingFormService: PricingFormService,
+        private modal: NgbModal,
     ) {}
 
     ngOnInit(): void {
