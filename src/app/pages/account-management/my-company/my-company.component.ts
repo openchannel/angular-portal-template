@@ -64,6 +64,8 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     selectedPage: Page;
     isProcessing = false;
 
+    isSSO: boolean;
+
     private organizationName: string;
 
     private $destroy: Subject<void> = new Subject();
@@ -80,6 +82,8 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        this.isSSO = this.authHolderService?.userDetails?.isSSO;
+
         this.organizationData = this.developerService.getDeveloper().pipe(takeUntil(this.$destroy));
         this.organizationData.subscribe(data => {
             this.organizationName = data?.name;
