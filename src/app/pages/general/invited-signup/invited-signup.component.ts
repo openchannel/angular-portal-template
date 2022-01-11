@@ -15,6 +15,7 @@ import { AppFormField, OcEditUserFormConfig, OcEditUserResult } from '@openchann
 import { OcEditUserTypeService } from '@core/services/user-type-service/user-type.service';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-invited-signup',
@@ -76,6 +77,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         private logOutService: LogOutService,
         private loadingBarService: LoadingBarService,
         private ocEditUserTypeService: OcEditUserTypeService,
+        private toaster: ToastrService,
     ) {}
 
     ngOnInit(): void {
@@ -144,6 +146,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                         }
                     },
                     () => {
+                        this.toaster.error('Invite has been deleted');
                         this.loaderBar.complete();
                         this.router.navigate(['']).then();
                     },
