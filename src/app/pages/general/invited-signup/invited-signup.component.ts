@@ -86,7 +86,7 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
-        this.loaderBar?.complete();
+        this.loaderBar.complete();
     }
 
     getFormConfigs(developerAccountTypeId: string): void {

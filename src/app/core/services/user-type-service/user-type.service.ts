@@ -17,7 +17,7 @@ import { cloneDeep, keyBy } from 'lodash';
     providedIn: 'root',
 })
 export class OcEditUserTypeService {
-    private readonly EMPTY_TYPE_RESPONSE: Observable<any> = of({
+    private readonly EMPTY_TYPE_RESPONSE: Observable<Page<DeveloperAccountTypeModel>> = of({
         list: [],
         pages: 1,
         count: 0,
