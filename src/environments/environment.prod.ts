@@ -5,8 +5,8 @@
 export const environment = {
  enableCMS: 'true',
  marketplaceName: 'OpenChannel',
- enableProxy: 'false',
  production: true,
+ enableProxy: 'false',
  apiUrl: 'https://client-api.openchannel.io/',
 };
 
