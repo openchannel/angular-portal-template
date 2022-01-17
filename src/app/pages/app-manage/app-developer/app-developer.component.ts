@@ -10,6 +10,7 @@ import { LoadingBarService } from '@ngx-loading-bar/core';
 import { FullAppData, AppListing, AppListMenuAction, OcConfirmationModalComponent } from '@openchannel/angular-common-components';
 import { AppChartComponent } from '@shared/components/app-chart/app-chart.component';
 import { AppGridSortChosen, AppGridSortColumn, AppGridSortOptions } from '@openchannel/angular-common-components/src/lib/portal-components';
+import { AppManageModalService } from '@core/services/app-manage-modal-service/app-manage-modal.service';
 
 @Component({
     selector: 'app-app-developer',
@@ -64,6 +65,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         private appTypeService: AppTypeService,
         private marketService: MarketService,
         private loadingBar: LoadingBarService,
+        private appManageModalService: AppManageModalService,
     ) {}
 
     ngOnInit(): void {
@@ -233,51 +235,42 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     }
 
     private submitApp(menuEvent: AppListMenuAction): void {
-        const modalRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
+        this.appManageModalService
+            .openModalWithCancelAndSubmitButtons()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                this.loader.complete();
+                this.appService
+                    .publishAppByVersion(menuEvent.appId, {
+                        version: menuEvent.appVersion,
+                        autoApprove: false,
+                    })
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(
+                        () => {
+                            this.loader.complete();
 
-        modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
-        modalRef.componentInstance.modalTitle = 'Submit app';
-        modalRef.componentInstance.confirmButtonText = 'Yes, submit it';
+                            this.appListConfig.data.pageNumber = 0;
+                            this.toaster.success('Your app has been submitted for approval');
+                            this.getApps(true);
+                        },
+                        err => {
+                            this.loader.complete();
 
-        modalRef.result.then(
-            res => {
-                if (res) {
-                    this.loader.complete();
-
-                    this.appService
-                        .publishAppByVersion(menuEvent.appId, {
-                            version: menuEvent.appVersion,
-                            autoApprove: false,
-                        })
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe(
-                            () => {
-                                this.loader.complete();
-
-                                this.appListConfig.data.pageNumber = 0;
-                                this.toaster.success('Your app has been submitted for approval');
-                                this.getApps(true);
-                            },
-                            err => {
-                                this.loader.complete();
-
-                                if (err.status === 400) {
-                                    this.router
-                                        .navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion], {
-                                            queryParams: { formStatus: 'invalid' },
-                                        })
-                                        .then(() => {
-                                            this.toaster.info('Fill out all mandatory fields before submitting');
-                                        });
-                                } else {
-                                    this.toaster.error(err.message);
-                                }
-                            },
-                        );
-                }
-            },
-            () => {},
-        );
+                            if (err.status === 400) {
+                                this.router
+                                    .navigate(['/manage-apps/edit', menuEvent.appId, menuEvent.appVersion], {
+                                        queryParams: { formStatus: 'invalid' },
+                                    })
+                                    .then(() => {
+                                        this.toaster.info('Fill out all mandatory fields before submitting');
+                                    });
+                            } else {
+                                this.toaster.error(err.message);
+                            }
+                        },
+                    );
+            });
     }
 
     private getPreviewAppUrl(): Observable<string> {
@@ -326,30 +319,21 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
 
     private suspendAppAction(menuEvent: AppListMenuAction): void {
         if (this.appListConfig.data.list.find(app => app.appId === menuEvent.appId).status.value === 'approved') {
-            const modalSuspendRef = this.modal.open(OcConfirmationModalComponent, { size: 'md' });
-
-            modalSuspendRef.componentInstance.modalText = 'Suspend this app from the marketplace now?';
-            modalSuspendRef.componentInstance.modalTitle = 'Suspend app';
-            modalSuspendRef.componentInstance.confirmButtonText = 'Yes, suspend it';
-            modalSuspendRef.componentInstance.confirmButtonClass = 'confirmation-modal__custom-button';
-
-            modalSuspendRef.result.then(
-                res => {
-                    if (res) {
-                        this.appService
-                            .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
-                            .pipe(takeUntil(this.destroy$))
-                            .subscribe(resp => {
-                                this.appListConfig.data.pageNumber = 0;
-                                this.toaster.success('Your app has been suspended');
-                                this.getApps(true);
-                                // load new chart apps
-                                this.chart.initChartWithAppsDropdown();
-                            });
-                    }
-                },
-                () => {},
-            );
+            this.appManageModalService
+                .openModalWithCancelAndSuspendButtons()
+                .pipe(takeUntil(this.destroy$))
+                .subscribe(() => {
+                    this.appService
+                        .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'suspended')
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe(() => {
+                            this.appListConfig.data.pageNumber = 0;
+                            this.toaster.success('Your app has been suspended');
+                            this.getApps(true);
+                            // load new chart apps
+                            this.chart.initChartWithAppsDropdown();
+                        });
+                });
         }
     }
 
@@ -366,7 +350,7 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
                     this.appService
                         .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
                         .pipe(takeUntil(this.destroy$))
-                        .subscribe(resp => {
+                        .subscribe(() => {
                             this.appListConfig.data.pageNumber = 0;
                             this.toaster.success('Your app has been unsuspended');
                             this.getApps(true);
