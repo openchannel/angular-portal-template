@@ -7,10 +7,19 @@ import { OcFormComponentsModule, OcPortalComponentsModule } from '@openchannel/a
 import { SharedModule } from '@shared/shared.module';
 import { AppNewComponent } from './app-new/app-new.component';
 import { StripeAccountsService } from '@core/services/stripe-accounts.service';
+import { AppManageModalService } from '@core/services/app-manage-modal-service/app-manage-modal.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [AppDeveloperComponent, AppNewComponent],
     imports: [CommonModule, AppManageRoutingModule, OcPortalComponentsModule, SharedModule, OcFormComponentsModule],
-    providers: [StripeAccountsService],
+    providers: [
+        StripeAccountsService,
+        {
+            provide: AppManageModalService,
+            deps: [NgbModal],
+            useFactory: (ngbModal: NgbModal) => new AppManageModalService(ngbModal),
+        },
+    ],
 })
 export class AppManageModule {}

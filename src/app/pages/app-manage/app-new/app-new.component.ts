@@ -17,8 +17,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppConfirmationModalComponent } from '@shared/modals/app-confirmation-modal/app-confirmation-modal.component';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
@@ -34,6 +32,8 @@ import { HttpHeaders } from '@angular/common/http';
 import { PricingFormService } from './pricing-form.service';
 import { pricingConfig } from '../../../../assets/data/siteConfig';
 import { StripeAccountsService } from '@core/services/stripe-accounts.service';
+import { AppManageModalService } from '@core/services/app-manage-modal-service/app-manage-modal.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export type pageDestination = 'edit' | 'create';
 @Component({
@@ -92,13 +92,14 @@ export class AppNewComponent implements OnInit, OnDestroy {
         private appVersionService: AppVersionService,
         private appTypeService: AppTypeService,
         private activeRoute: ActivatedRoute,
-        private modal: NgbModal,
+        private appManageModalService: AppManageModalService,
         private loadingBar: LoadingBarService,
         private titleService: TitleService,
         private toaster: ToastrService,
         private stripeService: StripeService,
         private stripeAccountsService: StripeAccountsService,
         private pricingFormService: PricingFormService,
+        private modal: NgbModal,
     ) {}
 
     ngOnInit(): void {
@@ -144,26 +145,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         if (this.generatedForm) {
             this.generatedForm.markAllAsTouched();
             if (!(this.generatedForm.invalid || this.submitInProcess || this.draftSaveInProcess)) {
-                const modalRef = this.modal.open(AppConfirmationModalComponent, { size: 'md' });
-
-                modalRef.componentInstance.modalTitle = 'Submit app';
-                modalRef.componentInstance.modalText = 'Submit this app to the marketplace now?';
-                modalRef.componentInstance.type = 'submission';
-                modalRef.componentInstance.buttonText = 'Yes, submit it';
-                modalRef.componentInstance.cancelButtonText = 'Save as draft';
-                if (this.hasPageAndAppStatus('edit', 'pending')) {
-                    modalRef.componentInstance.showCancel = false;
-                }
-                modalRef.result.then(
-                    res => {
-                        if (res && res === 'success') {
-                            this.saveApp('submit');
-                        } else if (res && res === 'draft') {
-                            this.saveApp('draft');
-                        }
-                    },
-                    () => {},
-                );
+                // when page type is 'edit' and app status is 'pending', we will hide 'Save as draft' button.
+                this.appManageModalService
+                    .openModalWithDraftAndSubmitButtons(!this.hasPageAndAppStatus('edit', 'pending'))
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(result => this.saveApp(result));
             }
         }
     }
