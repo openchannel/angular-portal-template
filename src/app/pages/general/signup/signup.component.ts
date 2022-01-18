@@ -5,7 +5,9 @@ import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { takeUntil } from 'rxjs/operators';
 import { OcEditUserFormConfig, OcEditUserResult } from '@openchannel/angular-common-components/src/lib/auth-components';
+import { SignupRouterState } from '@openchannel/angular-common-components';
 import { OcEditUserTypeService } from '@core/services/user-type-service/user-type.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-signup',
@@ -62,7 +64,12 @@ export class SignupComponent implements OnInit, OnDestroy {
         private nativeLoginService: NativeLoginService,
         private loadingBarService: LoadingBarService,
         private ocEditUserTypeService: OcEditUserTypeService,
-    ) {}
+        private router: Router,
+    ) {
+        // this.router.getCurrentNavigation() works only in constructor
+        const routerState = this.router.getCurrentNavigation().extras.state as SignupRouterState;
+        this.showSignupFeedbackPage = routerState?.showSignupFeedbackPage || false;
+    }
 
     ngOnInit(): void {
         this.loaderBar = this.loadingBarService.useRef();
