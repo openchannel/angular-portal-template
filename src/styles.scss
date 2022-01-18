@@ -200,6 +200,10 @@ body {
 }
 
 // modals - start
+.modal-dialog {
+    padding-left: 16px;
+    padding-right: 16px;
+}
 
 @media (min-width: 730px) {
     .modal-dialog {
@@ -285,12 +289,13 @@ app-not-found header {
     font-size: 28px;
 }
 
-.confirmation-modal__custom-button {
-    .oc-button_primary {
-        background-color: $suspended;
-        border-color: $suspended;
-        &:hover {
-            box-shadow: 1px 5px 30px 0 rgba($suspended, 0.5);
+.form__field[class*='field-id-pricing-title'] {
+    .form__field-label {
+        margin-bottom: 0;
+        .tooltip-label__text {
+            font-size: 18px;
+            line-height: 28px;
+            font-weight: 500;
         }
     }
 }
