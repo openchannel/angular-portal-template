@@ -35,12 +35,12 @@ export class SignupComponent implements OnInit, OnDestroy {
             organization: {
                 type: 'custom-developer-type',
                 typeData: null,
-                includeFields: ['name', 'customData.about-my-company'],
+                includeFields: ['name', 'customData.about-my-company', 'customData.dynamic-field-array'],
             },
             account: {
                 type: 'custom-account-type',
                 typeData: null,
-                includeFields: ['name', 'username', 'email', 'customData.about-me'],
+                includeFields: ['name', 'username', 'email'],
             },
         },
     ];
