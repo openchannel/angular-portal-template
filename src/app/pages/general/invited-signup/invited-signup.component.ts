@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+    AuthenticationService,
     DeveloperAccountTypesService,
     InviteDeveloperModel,
     InviteUserService,
@@ -8,7 +9,7 @@ import {
 } from '@openchannel/angular-common-services';
 import { Subject } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { filter, finalize, map, takeUntil } from 'rxjs/operators';
 import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { merge } from 'lodash';
@@ -49,11 +50,13 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         private nativeLoginService: NativeLoginService,
         private logOutService: LogOutService,
         private loadingBar: LoadingBarService,
+        private authService: AuthenticationService,
     ) {}
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
         this.loader.start();
+        this.checkSSO();
         this.getInviteDetails();
     }
 
@@ -191,5 +194,18 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
 
     setFormData(resultData: any): void {
         this.formResultData = resultData;
+    }
+
+    private checkSSO(): void {
+        this.authService
+            .getAuthConfig()
+            .pipe(
+                map(value => !!value),
+                filter(isSSO => isSSO),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => {
+                this.router.navigate(['login']).then();
+            });
     }
 }
