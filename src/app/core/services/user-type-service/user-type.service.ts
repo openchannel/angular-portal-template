@@ -1,16 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { OcEditUserFormConfig } from '@openchannel/angular-common-components/src/lib/auth-components';
-import { DeveloperAccountTypesService, DeveloperTypeService, Page, TypeFieldModel, TypeModel } from '@openchannel/angular-common-services';
+import {
+    DeveloperAccountTypeModel,
+    DeveloperAccountTypesService,
+    DeveloperTypeService,
+    Page,
+    TypeFieldModel,
+    TypeModel,
+} from '@openchannel/angular-common-services';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { cloneDeep, keyBy } from 'lodash';
 
 @Injectable({
     providedIn: 'root',
 })
 export class OcEditUserTypeService {
-    private readonly EMPTY_TYPE_RESPONSE: Observable<Page<TypeModel<TypeFieldModel>>> = of({
+    private readonly EMPTY_TYPE_RESPONSE: Observable<Page<DeveloperAccountTypeModel>> = of({
         list: [],
         pages: 1,
         count: 0,
@@ -84,14 +91,25 @@ export class OcEditUserTypeService {
     private getDeveloperAccountTypes(
         injectAccountType: boolean,
         configs: OcEditUserFormConfig[],
-    ): Observable<Page<TypeModel<TypeFieldModel>>> {
+    ): Observable<Page<DeveloperAccountTypeModel>> {
         if (injectAccountType) {
             const accTypesIDs = configs.map(config => config?.account?.type).filter(type => type);
             const searchQuery = accTypesIDs?.length > 0 ? `{'developerAccountTypeId':{'$in': ['${accTypesIDs.join("','")}']}}` : '';
             if (searchQuery) {
-                return this.accountTypeService.getAllDeveloperAccountsType(1, 100, searchQuery);
+                return this.accountTypeService
+                    .getAllDeveloperAccountsType(1, 100, searchQuery)
+                    .pipe(tap(types => this.logInvalidAccountTypes(types.list, accTypesIDs)));
             }
         }
         return this.EMPTY_TYPE_RESPONSE;
+    }
+
+    private logInvalidAccountTypes(fetchedTypesData: DeveloperAccountTypeModel[], configTypes: string[]): void {
+        const existingTypes = fetchedTypesData.map(typeData => typeData.developerAccountTypeId);
+        const notExistingTypes = configTypes.filter(type => !existingTypes.includes(type));
+
+        notExistingTypes.forEach(type => {
+            console.warn(`${type} is not a valid developer account type`);
+        });
     }
 }

@@ -1,19 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+    DeveloperAccountTypeModel,
     DeveloperAccountTypesService,
     InviteDeveloperModel,
     InviteUserService,
     NativeLoginService,
 } from '@openchannel/angular-common-services';
 import { Subject } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
-import { LoadingBarService } from '@ngx-loading-bar/core';
+import { finalize, map, takeUntil } from 'rxjs/operators';
 import { merge } from 'lodash';
 import { LogOutService } from '@core/services/logout-service/log-out.service';
-import { AppFormField } from '@openchannel/angular-common-components';
+import { AppFormField, OcEditUserFormConfig, OcEditUserResult } from '@openchannel/angular-common-components';
+import { OcEditUserTypeService } from '@core/services/user-type-service/user-type.service';
+import { LoadingBarService } from '@ngx-loading-bar/core';
+import { LoadingBarState } from '@ngx-loading-bar/core/loading-bar.state';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-invited-signup',
@@ -21,25 +23,50 @@ import { AppFormField } from '@openchannel/angular-common-components';
     styleUrls: ['./invited-signup.component.scss'],
 })
 export class InvitedSignupComponent implements OnInit, OnDestroy {
+    private readonly formConfigsWithoutTypeData: OcEditUserFormConfig[] = [
+        {
+            name: 'Default',
+            account: {
+                type: 'default',
+                typeData: null,
+                includeFields: ['name', 'email', 'username', 'customData.company'],
+            },
+        },
+        {
+            name: 'My custom 123321',
+            account: {
+                type: 'custom-account-type',
+                typeData: null,
+                includeFields: ['name', 'username', 'email', 'customData.about-me'],
+            },
+        },
+        {
+            name: 'Not existing type',
+            account: {
+                type: 'not-existing-type',
+                typeData: null,
+                includeFields: ['name', 'username', 'email'],
+            },
+        },
+    ];
+    private readonly formConfigsWithoutTypeDataDefault: OcEditUserFormConfig[] = [
+        {
+            name: 'default',
+            account: { type: 'default', typeData: null, includeFields: ['name', 'email'] },
+        },
+    ];
+    private readonly fieldsIdsToDisable = ['email', 'customData.company'];
+
     developerInviteData: InviteDeveloperModel;
     isExpired = false;
-    formConfig: any;
-    formResultData: any;
-    inProcess = false;
-    termsControl = new FormControl(false, Validators.requiredTrue);
+    formConfigs: OcEditUserFormConfig[];
+    formConfigsLoading = true;
+    showSignupFeedbackPage = false;
 
-    private signUpGroup: FormGroup;
+    inProcess = false;
 
     private destroy$: Subject<void> = new Subject<void>();
-
-    private loader: LoadingBarState;
-
-    private passwordField = {
-        id: 'password',
-        label: 'Password',
-        type: 'password',
-        attributes: { required: true },
-    };
+    private loaderBar: LoadingBarState;
 
     constructor(
         private activeRouter: ActivatedRoute,
@@ -48,63 +75,62 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
         private typeService: DeveloperAccountTypesService,
         private nativeLoginService: NativeLoginService,
         private logOutService: LogOutService,
-        private loadingBar: LoadingBarService,
+        private loadingBarService: LoadingBarService,
+        private ocEditUserTypeService: OcEditUserTypeService,
+        private toaster: ToastrService,
     ) {}
 
     ngOnInit(): void {
-        this.loader = this.loadingBar.useRef();
-        this.loader.start();
+        this.loaderBar = this.loadingBarService.useRef();
         this.getInviteDetails();
     }
 
     ngOnDestroy(): void {
-        if (this.loader) {
-            this.loader.stop();
-        }
+        this.destroy$.next();
+        this.destroy$.complete();
+        this.loaderBar.complete();
     }
 
-    // making form config according to form type
-    getFormType(type: string): void {
-        if (type) {
+    getFormConfigs(developerAccountTypeId: string): void {
+        if (developerAccountTypeId) {
+            // Make form config according to type passed from invite data
             this.typeService
-                .getAccountType(type)
-                .pipe(takeUntil(this.destroy$))
-                .subscribe(
-                    resp => {
-                        this.formConfig = {
-                            fields: this.mapDataToField(resp.fields),
-                        };
-                        this.loader.stop();
-                    },
-                    () => this.loader.stop(),
-                );
+                .getAccountType(developerAccountTypeId)
+                .pipe(
+                    map(type => this.mapDeveloperAccountTypeToFormConfigs(type)),
+                    map(formConfigs => this.getFormConfigsWithConfiguredFields(formConfigs)),
+                    finalize(() => {
+                        this.loaderBar.complete();
+                        this.formConfigsLoading = false;
+                    }),
+                    takeUntil(this.destroy$),
+                )
+                .subscribe(formConfigs => {
+                    this.formConfigs = formConfigs;
+                });
         } else {
-            this.formConfig = {
-                fields: [
-                    {
-                        id: 'name',
-                        label: 'Name',
-                        type: 'text',
-                        attributes: { required: false },
-                        defaultValue: this.developerInviteData?.name,
-                    },
-                    {
-                        id: 'email',
-                        label: 'Email',
-                        type: 'emailAddress',
-                        attributes: { required: true },
-                        defaultValue: this.developerInviteData?.email,
-                    },
-                    this.passwordField,
-                ],
-            };
-            this.loader.stop();
+            // Make form config according to config property (formConfigsWithoutTypeData or formConfigsWithoutTypeDataDefault)
+            this.ocEditUserTypeService
+                .injectTypeDataIntoConfigs(this.formConfigsWithoutTypeData || this.formConfigsWithoutTypeDataDefault, false, true)
+                .pipe(
+                    map(formConfigs => this.getFormConfigsWithConfiguredFields(formConfigs)),
+                    finalize(() => {
+                        this.loaderBar.complete();
+                        this.formConfigsLoading = false;
+                    }),
+                    takeUntil(this.destroy$),
+                )
+                .subscribe(formConfigs => {
+                    this.formConfigs = formConfigs;
+                });
         }
     }
 
-    // getting invitation details
+    // Get invitation details
     getInviteDetails(): void {
+        this.loaderBar.start();
         const userToken = this.activeRouter.snapshot.params.token;
+
         if (userToken) {
             this.inviteUserService
                 .getDeveloperInviteInfoByToken(userToken)
@@ -114,54 +140,29 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                         this.developerInviteData = response;
                         if (new Date(this.developerInviteData.expireDate) < new Date()) {
                             this.isExpired = true;
-                            this.loader.stop();
+                            this.loaderBar.complete();
                         } else {
-                            this.getFormType(this.developerInviteData.type);
+                            this.getFormConfigs(this.developerInviteData.type);
                         }
                     },
                     () => {
+                        this.toaster.error('Invite has been deleted');
+                        this.loaderBar.complete();
                         this.router.navigate(['']).then();
                     },
                 );
         } else {
+            this.loaderBar.complete();
             this.router.navigate(['']).then();
         }
     }
 
-    mapDataToField(fields: AppFormField[]): AppFormField[] {
-        const mappedFields = fields.map(field => {
-            if (!field.id.includes('customData') && this.developerInviteData[field.id]) {
-                field.defaultValue = this.developerInviteData[field.id];
-            } else if (field.id.includes('company')) {
-                field.defaultValue = this.developerInviteData.customData?.company;
-            }
-            return field;
-        });
-        mappedFields.push(this.passwordField);
-
-        return mappedFields;
-    }
-
-    // getting generated form group for disabling special fields
-    setCreatedForm(form: FormGroup): void {
-        form.get('email').disable();
-        const companyControlKey = Object.keys(form.controls).find(key => key.includes('company'));
-        if (companyControlKey) {
-            form.controls[companyControlKey].disable();
-        }
-        this.signUpGroup = form;
-        // add terms control into signup form
-        this.signUpGroup.addControl('terms', this.termsControl);
-    }
-
-    // register invited user and deleting invite on success
-    submitForm(): void {
-        this.signUpGroup.markAllAsTouched();
-        if (this.signUpGroup.valid && !this.inProcess) {
+    // Register invited developer and delete invite on success
+    submitForm(developerData: OcEditUserResult): void {
+        if (developerData && !this.inProcess) {
+            this.loaderBar.start();
             this.inProcess = true;
-
-            const request = merge(this.developerInviteData, this.formResultData);
-            delete request.terms;
+            const request = merge(this.developerInviteData, developerData.account);
 
             this.nativeLoginService
                 .signupByInvite({
@@ -176,7 +177,8 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                             .pipe(
                                 finalize(() => {
                                     this.inProcess = false;
-                                    this.router.navigate(['signup'], { state: { showSignupFeedbackPage: true } }).then();
+                                    this.showSignupFeedbackPage = true;
+                                    this.loaderBar.complete();
                                 }),
                                 takeUntil(this.destroy$),
                             )
@@ -184,12 +186,59 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
                     },
                     () => {
                         this.inProcess = false;
+                        this.loaderBar.complete();
                     },
                 );
         }
     }
 
-    setFormData(resultData: any): void {
-        this.formResultData = resultData;
+    private getConfiguredFields(fields: AppFormField[]): AppFormField[] {
+        return fields?.map(field => this.disableField(this.injectInviteDataToField(field)));
+    }
+
+    private injectInviteDataToField(field: AppFormField): AppFormField {
+        if (!field.id.includes('customData') && this.developerInviteData[field.id]) {
+            field.defaultValue = this.developerInviteData[field.id];
+        } else if (field.id.includes('company')) {
+            field.defaultValue = this.developerInviteData.customData?.company;
+        }
+
+        return field;
+    }
+
+    private disableField(field: AppFormField): AppFormField {
+        if (this.fieldsIdsToDisable.includes(field.id)) {
+            field.attributes.disabled = true;
+        }
+
+        return field;
+    }
+
+    private getFormConfigsWithConfiguredFields(formConfigs: OcEditUserFormConfig[]): OcEditUserFormConfig[] {
+        return formConfigs.map(item => {
+            return {
+                ...item,
+                account: {
+                    ...item.account,
+                    typeData: {
+                        ...item.account.typeData,
+                        fields: this.getConfiguredFields(item.account.typeData.fields),
+                    },
+                },
+            };
+        });
+    }
+
+    private mapDeveloperAccountTypeToFormConfigs(developerAccountType: DeveloperAccountTypeModel): OcEditUserFormConfig[] {
+        return [
+            {
+                name: '',
+                account: {
+                    type: developerAccountType.developerAccountTypeId,
+                    typeData: { ...developerAccountType },
+                    includeFields: developerAccountType.fields?.map(field => field.id),
+                },
+            },
+        ];
     }
 }
