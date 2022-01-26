@@ -23,18 +23,19 @@ import { CmsContentService } from '@core/services/cms-content-service/cms-conten
     styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
+    private readonly SAML_JWT_ACCESS_TOKEN_KEY = 'jwtAccessToken';
+    private readonly SAML_JWT_REFRESH_TOKEN_KEY = 'jwtRefreshToken';
+
     signupUrl = '/signup';
     forgotPwdUrl = '/forgot-password';
     signIn = new ComponentsUserLoginModel();
     inProcess = false;
-    isLoading = false;
 
     isSsoLogin = true;
 
     cmsData = {
         loginImageURL: '',
     };
-
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
     private returnUrl: string;
@@ -55,58 +56,69 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
+
+        // get redirect URL from the params
+        this.retrieveRedirectUrl();
+
+        const samlJwtTokens = this.getSamlJwtTokens();
+
         if (this.authHolderService.isLoggedInUser()) {
             this.router.navigate(['']).then();
-        }
+        } else if (samlJwtTokens) {
+            this.processLoginResponse(samlJwtTokens, this.returnUrl);
+        } else {
+            this.loader.start();
 
-        this.loader.start();
+            this.setupLoginFlowResponseProcess();
 
-        this.retrieveRedirectUrl();
-        this.setupLoginFlowResponseProcess();
+            this.openIdAuthService
+                .getAuthConfig()
+                .pipe(
+                    tap(value => (this.isSsoLogin = !!value)),
+                    filter(value => !!value),
+                    takeUntil(this.destroy$),
+                )
+                .subscribe(
+                    authConfig => {
+                        this.authConfig = authConfig;
 
-        this.openIdAuthService
-            .getAuthConfig()
-            .pipe(
-                tap(value => (this.isSsoLogin = !!value)),
-                filter(value => !!value),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(
-                authConfig => {
-                    this.authConfig = authConfig;
+                        const code = this.route.snapshot.queryParamMap.get('code');
 
-                    const code = this.route.snapshot.queryParamMap.get('code');
-                    if (code && this.isClientAccessTypeConfidential()) {
-                        if (this.checkState()) {
-                            this.openIdAuthService
-                                .verifyCode(code, this.redirectUri)
-                                .pipe(takeUntil(this.destroy$))
-                                .subscribe(
-                                    response => {
-                                        this.processLoginResponse(response, this.returnUrl);
-                                        this.loader.complete();
-                                    },
-                                    () => this.oauthService.logOut(true),
-                                );
+                        if (authConfig?.type === 'SAML_20') {
+                            // SAML 2.0 login
+                            this.processSamlLogin(authConfig);
+                        } else if (code && this.isClientAccessTypeConfidential()) {
+                            if (this.checkState()) {
+                                this.openIdAuthService
+                                    .verifyCode(code, this.redirectUri)
+                                    .pipe(takeUntil(this.destroy$))
+                                    .subscribe(
+                                        response => {
+                                            this.processLoginResponse(response, this.returnUrl);
+                                            this.loader.complete();
+                                        },
+                                        () => this.oauthService.logOut(true),
+                                    );
+                            } else {
+                                // tslint:disable-next-line:no-console
+                                console.error('State is incorrect');
+                            }
                         } else {
-                            // tslint:disable-next-line:no-console
-                            console.error('State is incorrect');
-                        }
-                    } else {
-                        this.configureOAuthService();
+                            this.configureOAuthService();
 
-                        this.oauthService
-                            .loadDiscoveryDocumentAndLogin({
-                                state: this.returnUrl,
-                            })
-                            .then(() => {
-                                this.loader.complete();
-                            });
-                    }
-                },
-                () => (this.isSsoLogin = false),
-                () => this.loader.complete(),
-            );
+                            this.oauthService
+                                .loadDiscoveryDocumentAndLogin({
+                                    state: this.returnUrl,
+                                })
+                                .then(() => {
+                                    this.loader.complete();
+                                });
+                        }
+                    },
+                    () => (this.isSsoLogin = false),
+                    () => this.loader.complete(),
+                );
+        }
 
         this.initCMSData();
     }
@@ -193,6 +205,23 @@ export class LoginComponent implements OnInit, OnDestroy {
     private processLoginResponse(response: LoginResponse, redirectUrl: string): void {
         this.authHolderService.persist(response.accessToken, response.refreshToken);
         this.router.navigate([redirectUrl || 'manage-apps']).then();
+    }
+
+    private processSamlLogin(authConfig: SiteAuthConfig): void {
+        this.loader.complete();
+        const samlLoginUrl = `${authConfig.singleSignOnUrl}?RelayState=${window.location.href}`;
+        window.open(samlLoginUrl);
+    }
+
+    private getSamlJwtTokens(): LoginResponse {
+        const queryParamMap = this.route.snapshot.queryParamMap;
+        if (queryParamMap.has(this.SAML_JWT_ACCESS_TOKEN_KEY) && queryParamMap.has(this.SAML_JWT_REFRESH_TOKEN_KEY)) {
+            return {
+                accessToken: queryParamMap.get(this.SAML_JWT_ACCESS_TOKEN_KEY),
+                refreshToken: queryParamMap.get(this.SAML_JWT_REFRESH_TOKEN_KEY),
+            };
+        }
+        return null;
     }
 
     private initCMSData(): void {
