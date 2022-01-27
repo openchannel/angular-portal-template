@@ -5,6 +5,7 @@ import { LogOutService } from '@core/services/logout-service/log-out.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { CmsContentService } from '@core/services/cms-content-service/cms-content-service.service';
+import { get } from 'lodash';
 
 interface HeaderItemDFA {
     label: string;
@@ -88,7 +89,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
                 headerItemsDFA: 'default-header.menu.items',
             })
             .subscribe(content => {
-                this.cmsData.headerLogoURL = content.headerLogoURL as string;
+                this.cmsData.headerLogoURL = content.headerLogoURL || get(this.cmsService.getContentDefault(), 'default-header.logo');
                 this.cmsData.headerItemsDFA = (content.headerItemsDFA as HeaderItemDFA[]) || [];
             });
     }
