@@ -52,15 +52,18 @@ export class LogOutService {
             .getAuthConfig()
             .pipe(
                 first(),
-                mergeMap(config => this.processNativeOrSSOLogout(config)),
+                mergeMap(config => this.processNativeOrSSOLogout(config, navigateTo)),
             )
-            .subscribe(() => this.router.navigateByUrl(navigateTo).then());
+            .subscribe();
     }
 
-    private processNativeOrSSOLogout(config: SiteAuthConfig): Observable<boolean> {
+    private processNativeOrSSOLogout(config: SiteAuthConfig, navigateTo?: string): Observable<boolean> {
         if (!config) {
             // Native Logout
-            return this.logOutNative().pipe(tap(() => this.authService.clearTokensInStorage()));
+            return this.logOutNative().pipe(
+                tap(() => this.authService.clearTokensInStorage()),
+                switchMap(() => this.navigateByUrl(navigateTo)),
+            );
         } else if (config.type === 'SAML_20') {
             // Saml 2.0 Logout
             return this.logOutNative().pipe(
@@ -69,14 +72,16 @@ export class LogOutService {
             );
         } else {
             // Auth2 Logout
-            this.authService.clearTokensInStorage();
-            return this.logOutSSO(config);
+            return this.logOutSSO(config).pipe(
+                tap(() => this.authService.clearTokensInStorage()),
+                switchMap(() => this.navigateByUrl(navigateTo)),
+            );
         }
     }
 
-    private processSamlLogout(config: SiteAuthConfig): Observable<never> {
+    private processSamlLogout(config: SiteAuthConfig): Observable<boolean> {
         window.location.href = config.singleLogOutUrl;
-        return of(); // no redirect need for SAML 2.0, redirect URL configured on the SAML provider.
+        return of(true); // no redirect need for SAML 2.0, redirect URL configured on the SAML provider.
     }
 
     private isAuthorizationCodeFlow(authConfig: SiteAuthConfig): boolean {
@@ -105,5 +110,13 @@ export class LogOutService {
             first(),
             map(() => true),
         );
+    }
+
+    private navigateByUrl(navigateTo: string): Observable<boolean> {
+        if (navigateTo?.length >= 0) {
+            return from(this.router.navigateByUrl(navigateTo));
+        } else {
+            return of(true);
+        }
     }
 }
