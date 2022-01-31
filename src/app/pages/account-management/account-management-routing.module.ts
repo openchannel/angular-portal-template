@@ -13,6 +13,13 @@ const paymentsEnabledSubPaths =
         : [];
 
 const routes: Routes = [
+    // Redirect to the first page in the block (`profile-details`),
+    // when the route doesn't contain an end part, `profile-details`, for example
+    {
+        path: 'my-profile',
+        pathMatch: 'full',
+        redirectTo: 'my-profile/profile-details',
+    },
     {
         path: 'my-profile',
         data: { title: 'My profile' },
@@ -20,6 +27,14 @@ const routes: Routes = [
             { path: 'profile-details', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard] },
             { path: 'password', component: MyProfileComponent, canActivate: [AuthGuard, NativeLoginGuard] },
         ],
+    },
+
+    // Redirect to the first page in the block (`company-details`),
+    // when the route doesn't contain an end part, `company-details`, for example
+    {
+        path: 'my-company',
+        pathMatch: 'full',
+        redirectTo: 'my-company/company-details',
     },
     {
         path: 'my-company',
