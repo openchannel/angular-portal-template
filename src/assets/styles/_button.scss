@@ -1,4 +1,7 @@
-.button {
+// You can use mixins if you don't have access to apply class, but can override styles.
+// For example, to override libs buttons styles.
+
+@mixin button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,9 +13,17 @@
     font-weight: 600;
     white-space: nowrap;
     user-select: none;
+}
+
+@mixin button_primary-type {
+    background-color: $button-primary;
+    color: $body-color;
+}
+
+.button {
+    @include button;
 
     &_primary-type {
-        background-color: $button-primary;
-        color: $body-color;
+        @include button-primary-type;
     }
 }
