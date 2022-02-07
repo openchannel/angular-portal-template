@@ -1,8 +1,21 @@
-@import './assets/styles/fonts';
-@import './assets/styles/theme';
-@import './assets/styles/mixins';
 @import '~@openchannel/angular-common-components/assets/styles/styles';
 @import '~@openchannel/angular-common-components/assets/styles/general-styles';
+
+@import './assets/styles/theme';
+@import './assets/styles/fonts';
+@import './assets/styles/mixins';
+@import './assets/styles/grid';
+@import './assets/styles/button';
+
+h1,
+h2,
+h4,
+h3,
+h5,
+h6 {
+    @include font-regular;
+    font-family: 'Nib Pro';
+}
 
 .bg-container {
     width: 100%;
@@ -148,12 +161,24 @@ button:focus {
 html,
 body {
     height: 100%;
+    font-size: 18px;
+    font-family: 'Metric';
 }
 
 body {
-    font-family: 'Rubik', sans-serif;
-    font-style: normal;
+    background-color: #fff;
+
+    font-size: 1rem;
+    font-family: Barlow, Helvetica, Arial, sans-serif;
     font-weight: 400;
+    line-height: 1.5;
+    color: #425966;
+
+    overflow-x: hidden;
+}
+
+body p {
+    font-family: 'Metric';
     margin: 0;
 }
 
