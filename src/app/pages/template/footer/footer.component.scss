@@ -3,86 +3,31 @@
 @import '~assets/styles/mixins';
 
 .footer {
-    border-top: 1px solid rgba(201, 213, 234, 0.5);
+    font-family: 'Metric';
+    font-weight: 400;
+    margin-top: 40px;
 
     .container {
-        padding: 48px 0 24px;
-        @include media-breakpoint-md() {
-            padding: 32px;
-        }
-
-        .footer-direction {
-            display: flex;
-            justify-content: space-between;
-            @include media-breakpoint-md() {
-                flex-direction: column;
-                justify-content: center;
-                align-items: flex-start;
-            }
-
-            .company-logo {
-                @include media-breakpoint-md() {
-                    margin-bottom: 24px;
-                }
-            }
-
-            .info-column {
-                white-space: nowrap;
-                width: 16%;
-                margin: 0 8px;
-
-                h2 {
-                    @include font-bold();
-                    color: $body-color;
-                    font-weight: 500;
-                    font-size: 12px;
-                    line-height: 20px;
-                    margin: 0 0 12px;
-                    width: 100%;
-                    cursor: pointer;
-                    outline: none;
-                }
-
-                li {
-                    padding-top: 3.5px;
-                    padding-bottom: 1px;
-                    cursor: pointer;
-                    @include media-breakpoint-md() {
-                        margin-bottom: 16px;
-                    }
-
-                    a {
-                        @include font-light();
-                        color: $secondary;
-                        font-size: 12px;
-                        text-align: center;
-                        cursor: pointer;
-                    }
-                }
-            }
-
-            .min-content {
-                width: min-content;
-            }
-
-            .social-networks {
-                max-width: 30%;
-                @include media-breakpoint-md() {
-                    max-width: 100%;
-                }
-            }
+        background: #f7f7f7;
+        @include media-breakpoint-sm {
+            padding: 0;
         }
 
         .bottom-info {
-            margin-top: 32px;
-            color: $secondary;
-            font-size: 12px;
-            font-weight: normal;
-            font-stretch: normal;
-            font-style: normal;
-            letter-spacing: normal;
-            text-align: center;
-            @include font-light();
+            padding: 20px;
+            color: #425966;
+            font-size: 14px;
+            margin: 0;
+
+            &__link {
+                color: inherit;
+                font-size: inherit;
+                transition: color .3s ease;
+
+                &:hover {
+                    color: #d47300;
+                }
+            }
         }
     }
 }
