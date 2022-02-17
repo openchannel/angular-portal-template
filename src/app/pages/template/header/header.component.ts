@@ -37,7 +37,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     cmsData = {
         headerItemsDFA: [] as HeaderItemDFA[],
-        secondaryItemsDFA: [] as HeaderItemDFA[],
         headerLogoURL: '',
     };
 
@@ -45,14 +44,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     constructor(
         public router: Router,
-        public authHolderService: AuthHolderService,
+        public authService: AuthHolderService,
         private openIdAuthService: AuthenticationService,
         private logOutService: LogOutService,
         private cmsService: CmsContentService,
     ) {}
 
     ngOnInit(): void {
-        this.isSSO = this.authHolderService?.userDetails?.isSSO;
+        this.isSSO = this.authService?.userDetails?.isSSO;
 
         this.openIdAuthService
             .getAuthConfig()

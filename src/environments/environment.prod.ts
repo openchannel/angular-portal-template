@@ -3,11 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
- enableCMS: 'true',
- marketplaceName: 'OpenChannel',
- production: true,
- enableProxy: 'false',
- apiUrl: 'https://client-api.openchannel.io/',
+    production: true,
+    apiUrl: 'https://client-api.openchannel.io/',
+    marketplaceName: 'OpenChannel',
+    enableProxy: false,
+    enableCMS: true,
 };
 
 /*
