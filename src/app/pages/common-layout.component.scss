@@ -1,0 +1,8 @@
+@import '~@openchannel/angular-common-components/assets/styles/mixins';
+
+.container-background {
+  background-image: url('~assets/img/background-image.png');
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: 0 400px;
+}
