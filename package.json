@@ -19,7 +19,8 @@
     "glob-parent": "5.1.2",
     "node-forge": "^1.0.0",
     "json-schema": "^0.4.0",
-    "ansi-regex": "^5.0.1"
+    "ansi-regex": "^5.0.1",
+    "minimist": "^1.2.6"
   },
   "dependencies": {
     "@angular/animations": "~11.2.14",
