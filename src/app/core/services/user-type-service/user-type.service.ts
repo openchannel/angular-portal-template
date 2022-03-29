@@ -26,6 +26,7 @@ export class OcEditUserTypeService {
 
     constructor(private organizationTypeService: DeveloperTypeService, private accountTypeService: DeveloperAccountTypesService) {}
 
+    // NOSONAR
     injectTypeDataIntoConfigs(
         configs: OcEditUserFormConfig[],
         injectOrganizationTypes: boolean,
