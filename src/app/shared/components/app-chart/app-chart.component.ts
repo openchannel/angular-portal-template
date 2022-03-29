@@ -121,7 +121,7 @@ export class AppChartComponent implements OnInit, OnDestroy {
                 this.chartData = {
                     ...this.chartData,
                     data: {
-                        labelsY: chartData.labelsY.map(String),
+                        labelsY: chartData.labelsY,
                         labelsX: (chartData.labelsX as any[]).map(String),
                         tabularLabels: chartData.tabularLabels,
                     },
