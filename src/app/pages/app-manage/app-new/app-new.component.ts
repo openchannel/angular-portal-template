@@ -86,7 +86,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         ['multiImage', 'multiFile'],
     ];
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         private router: Router,
         private appsService: AppsService,
         private fb: FormBuilder,

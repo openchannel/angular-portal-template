@@ -56,7 +56,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         public appService: AppsService,
         public appsVersionService: AppVersionService,
         public router: Router,
@@ -66,7 +67,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         private marketService: MarketService,
         private loadingBar: LoadingBarService,
         private appManageModalService: AppManageModalService,
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();

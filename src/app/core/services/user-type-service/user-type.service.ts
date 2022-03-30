@@ -26,8 +26,8 @@ export class OcEditUserTypeService {
 
     constructor(private organizationTypeService: DeveloperTypeService, private accountTypeService: DeveloperAccountTypesService) {}
 
-    // NOSONAR
-    injectTypeDataIntoConfigs(
+    // prettier-ignore
+    injectTypeDataIntoConfigs( // NOSONAR
         configs: OcEditUserFormConfig[],
         injectOrganizationTypes: boolean,
         injectAccountTypes: boolean,

@@ -60,7 +60,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
     private readonly DEVELOPERS_LIMIT_PER_REQUEST = 10;
     private inProcessGettingDevelopers = false;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         public loadingBar: LoadingBarService,
         private userService: UsersService,
         private inviteUserService: InviteUserService,
@@ -69,7 +70,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
         private toaster: ToastrService,
         private modal: NgbModal,
         private authHolderService: AuthHolderService,
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();

@@ -85,7 +85,8 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
 
     private $destroy: Subject<void> = new Subject();
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         private developerService: DeveloperService,
         private modal: NgbModal,
         private toaster: ToastrService,
