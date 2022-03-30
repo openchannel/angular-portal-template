@@ -1,3 +1,6 @@
+## Release notes - template3-portal-frontend - Version 1.66.3 (3/29/2022)<br>
+### Bug<br>
+AT-1760 - [Hot-fix] [Prod] Number field does not accept the value grater than 0.<br>
 ## Release notes - template3-portal-frontend - Version 1.64.0 (2/3/2022)<br>
 ### Bug<br>
 AT-1701 - [AT-1665] SAML 2.0 setup opens login page in new tab.<br>
