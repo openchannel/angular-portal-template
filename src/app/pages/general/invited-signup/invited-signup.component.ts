@@ -69,7 +69,8 @@ export class InvitedSignupComponent implements OnInit, OnDestroy {
     private destroy$: Subject<void> = new Subject<void>();
     private loaderBar: LoadingBarState;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         private activeRouter: ActivatedRoute,
         private router: Router,
         private inviteUserService: InviteUserService,
