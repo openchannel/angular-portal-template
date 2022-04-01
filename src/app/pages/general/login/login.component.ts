@@ -42,7 +42,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private redirectUri: string = window.location.origin + '/login';
     private authConfig: SiteAuthConfig;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         public loadingBar: LoadingBarService,
         private router: Router,
         private route: ActivatedRoute,
@@ -52,7 +53,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         private nativeLoginService: NativeLoginService,
         private toastService: ToastrService,
         private cmsService: CmsContentService,
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
@@ -210,7 +212,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private processSamlLogin(authConfig: SiteAuthConfig): void {
         this.loader.complete();
         const samlLoginUrl = `${authConfig.singleSignOnUrl}?RelayState=${window.location.href}`;
-        window.open(samlLoginUrl, "_self");
+        window.open(samlLoginUrl, '_self');
     }
 
     private getSamlJwtTokens(): LoginResponse {

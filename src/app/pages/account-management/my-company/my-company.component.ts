@@ -85,7 +85,8 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
 
     private $destroy: Subject<void> = new Subject();
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         private developerService: DeveloperService,
         private modal: NgbModal,
         private toaster: ToastrService,
@@ -133,13 +134,10 @@ export class MyCompanyComponent implements OnInit, OnDestroy {
             this.inviteService.sendDeveloperInvite(this.organizationName, accountData).pipe(takeUntil(this.$destroy));
 
         modalRef.componentInstance.modalData = modalData;
-        modalRef.result.then(
-            () => {
-                this.toaster.success('Invitation sent');
-                this.appManagement.getAllDevelopers(true);
-            },
-            () => {},
-        );
+        modalRef.result.then(() => {
+            this.toaster.success('Invitation sent');
+            this.appManagement.getAllDevelopers(true);
+        });
     }
 
     private initProfile(): void {

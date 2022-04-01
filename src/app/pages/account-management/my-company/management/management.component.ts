@@ -60,7 +60,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
     private readonly DEVELOPERS_LIMIT_PER_REQUEST = 10;
     private inProcessGettingDevelopers = false;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         public loadingBar: LoadingBarService,
         private userService: UsersService,
         private inviteUserService: InviteUserService,
@@ -69,7 +70,8 @@ export class ManagementComponent implements OnInit, OnDestroy {
         private toaster: ToastrService,
         private modal: NgbModal,
         private authHolderService: AuthHolderService,
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
@@ -300,13 +302,10 @@ export class ManagementComponent implements OnInit, OnDestroy {
         modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
             this.developerAccountService.updateAccountFieldsForAnotherUser(accountId, true, accountData);
         modalRef.componentInstance.modalData = modalData;
-        modalRef.result.then(
-            () => {
-                this.getAllDevelopers(true);
-                this.toaster.success('User details have been updated');
-            },
-            () => {},
-        );
+        modalRef.result.then(() => {
+            this.getAllDevelopers(true);
+            this.toaster.success('User details have been updated');
+        });
     }
 
     private openDeleteModal(
@@ -325,7 +324,7 @@ export class ManagementComponent implements OnInit, OnDestroy {
         if (cancelText) {
             modalSuspendRef.componentInstance.rejectButtonText = cancelText;
         }
-        modalSuspendRef.result.then(deleteCallback, () => {});
+        modalSuspendRef.result.then(deleteCallback);
     }
 
     private findUserByAction(userAction: UserGridActionModel): UserAccountGridModel {
@@ -349,12 +348,9 @@ export class ManagementComponent implements OnInit, OnDestroy {
         modalData.requestUpdateAccount = (accountId: string, accountData: any) =>
             this.inviteUserService.editDeveloperInvite(accountData.inviteId, accountData);
         modalRef.componentInstance.modalData = modalData;
-        modalRef.result.then(
-            () => {
-                this.getAllDevelopers(true);
-                this.toaster.success('User details have been updated');
-            },
-            () => {},
-        );
+        modalRef.result.then(() => {
+            this.getAllDevelopers(true);
+            this.toaster.success('User details have been updated');
+        });
     }
 }
