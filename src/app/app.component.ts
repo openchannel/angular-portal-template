@@ -19,7 +19,8 @@ export class AppComponent implements OnInit {
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         private router: Router,
         private authApiService: AuthenticationService,
         private siteService: SiteConfigService,
@@ -33,7 +34,6 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         // Clear user authorization, when in the URL params present specific key for SAML 2.0
         this.logOutService.removeSpecificParamKeyFromTheUrlForSaml2Logout();
 

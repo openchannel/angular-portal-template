@@ -56,7 +56,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         public appService: AppsService,
         public appsVersionService: AppVersionService,
         public router: Router,
@@ -66,7 +67,8 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         private marketService: MarketService,
         private loadingBar: LoadingBarService,
         private appManageModalService: AppManageModalService,
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         this.loader = this.loadingBar.useRef();
@@ -294,27 +296,24 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         modalDelRef.componentInstance.confirmButtonText = 'Yes, delete it';
         modalDelRef.componentInstance.confirmButtonType = 'danger';
 
-        modalDelRef.result.then(
-            res => {
-                if (res) {
-                    const deleteRequest = menuEvent.isChild
-                        ? this.appsVersionService.deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
-                        : this.appService.deleteApp(menuEvent.appId);
+        modalDelRef.result.then(res => {
+            if (res) {
+                const deleteRequest = menuEvent.isChild
+                    ? this.appsVersionService.deleteAppVersion(menuEvent.appId, menuEvent.appVersion)
+                    : this.appService.deleteApp(menuEvent.appId);
 
-                    deleteRequest.pipe(takeUntil(this.destroy$)).subscribe(() => {
-                        this.toaster.success('Your app has been deleted');
+                deleteRequest.pipe(takeUntil(this.destroy$)).subscribe(() => {
+                    this.toaster.success('Your app has been deleted');
 
-                        // start new pagination
-                        this.appListConfig.data.pageNumber = 0;
-                        this.getApps(true);
+                    // start new pagination
+                    this.appListConfig.data.pageNumber = 0;
+                    this.getApps(true);
 
-                        // load new chart apps
-                        this.chart.initChartWithAppsDropdown();
-                    });
-                }
-            },
-            () => {},
-        );
+                    // load new chart apps
+                    this.chart.initChartWithAppsDropdown();
+                });
+            }
+        });
     }
 
     private suspendAppAction(menuEvent: AppListMenuAction): void {
@@ -344,22 +343,19 @@ export class AppDeveloperComponent implements OnInit, OnDestroy {
         modalUnsuspendRef.componentInstance.modalTitle = 'Unsuspend app';
         modalUnsuspendRef.componentInstance.confirmButtonText = 'Yes, unsuspend it';
 
-        modalUnsuspendRef.result.then(
-            res => {
-                if (res) {
-                    this.appService
-                        .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
-                        .pipe(takeUntil(this.destroy$))
-                        .subscribe(() => {
-                            this.appListConfig.data.pageNumber = 0;
-                            this.toaster.success('Your app has been unsuspended');
-                            this.getApps(true);
-                            // load new chart apps
-                            this.chart.initChartWithAppsDropdown();
-                        });
-                }
-            },
-            () => {},
-        );
+        modalUnsuspendRef.result.then(res => {
+            if (res) {
+                this.appService
+                    .changeAppStatus(menuEvent.appId, menuEvent.appVersion, 'approved')
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe(() => {
+                        this.appListConfig.data.pageNumber = 0;
+                        this.toaster.success('Your app has been unsuspended');
+                        this.getApps(true);
+                        // load new chart apps
+                        this.chart.initChartWithAppsDropdown();
+                    });
+            }
+        });
     }
 }

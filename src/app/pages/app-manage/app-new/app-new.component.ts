@@ -36,6 +36,7 @@ import { AppManageModalService } from '@core/services/app-manage-modal-service/a
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 export type pageDestination = 'edit' | 'create';
+
 @Component({
     selector: 'app-app-new',
     templateUrl: './app-new.component.html',
@@ -85,7 +86,8 @@ export class AppNewComponent implements OnInit, OnDestroy {
         ['multiImage', 'multiFile'],
     ];
 
-    constructor(
+    // prettier-ignore
+    constructor( // NOSONAR
         private router: Router,
         private appsService: AppsService,
         private fb: FormBuilder,
@@ -166,14 +168,11 @@ export class AppNewComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.buttonText = 'Connect Stripe';
         modalRef.componentInstance.cancelButtonText = 'Cancel';
 
-        modalRef.result.then(
-            res => {
-                if (res) {
-                    this.connectStripeAccount();
-                }
-            },
-            () => {},
-        );
+        modalRef.result.then(res => {
+            if (res) {
+                this.connectStripeAccount();
+            }
+        });
     }
 
     connectStripeAccount(): void {
