@@ -1,7 +1,7 @@
 import { asyncScheduler, Observable, of, Subject } from 'rxjs';
-import { DeveloperService, Page, SortResponse, Transaction, UserAccount } from '@openchannel/angular-common-services';
+import { MarketService, Page, SortResponse, Transaction, UserAccount } from '@openchannel/angular-common-services';
 import { Filter } from '@openchannel/angular-common-components';
-import { observeOn, catchError } from 'rxjs/operators';
+import { observeOn } from 'rxjs/operators';
 import { InviteUserModel } from '@openchannel/angular-common-services/lib/model/api/invite-user.model';
 
 class MockPagination<T> {
@@ -424,6 +424,10 @@ export class MockInviteUserService {
         return of(this.userInvites.getByPaginate(pageNumber, limit));
     }
 
+    getDeveloperInvites(...args: any): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+
     getUserInviteInfoByToken(userToken: string): Observable<any> {
         return of(this.mockInviteUserModelGoodResponse);
     }
@@ -808,6 +812,14 @@ export class MockAppVersionService {
     getAppByVersion(): Observable<any> {
         return of({}).pipe(observeOn(asyncScheduler));
     }
+
+    getAppsVersions(): Observable<any> {
+        return of({}).pipe(observeOn(asyncScheduler));
+    }
+
+    deleteAppVersion(): Observable<any> {
+        return of({}).pipe(observeOn(asyncScheduler));
+    }
 }
 
 export class MockReviewsService {
@@ -882,6 +894,15 @@ export class MockStripeLoaderService {
     }
 }
 
+export class MockStripeAccountsService {
+    getIsAccountConnected(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+    getStripeUrlRedirect(): string {
+        return '1';
+    }
+}
+
 export class MockStripeService {
     getTaxesAndPayment(...args: any): Observable<any> {
         return of('1');
@@ -907,6 +928,58 @@ export class MockDeveloperRoleService {
     }
 }
 
+export class MockDeveloperTypeService {
+    getDeveloperType(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockAppTypeService {
+    getAppTypes(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+
+    getOneAppType(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockMarketService {
+    getCurrentMarket(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockAppManageModalService {
+    openModalWithCancelAndSubmitButtons(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+
+    openModalWithCancelAndSuspendButtons(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockDeveloperAccountTypesService {
+    getAccountType(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockDeveloperAccountService {
+    getDeveloperAccounts(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+
+    deleteDeveloperAccount(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+
+    updateAccountFieldsForAnotherUser(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
 export class MockDeveloperService {
     getDeveloper(): Observable<any> {
         return of('1').pipe(observeOn(asyncScheduler));
@@ -919,6 +992,16 @@ export class MockOwnershipService {
     }
 
     uninstallOwnership(): Observable<any> {
+        return of('1');
+    }
+}
+
+export class MockChartService {
+    getDateStartByCurrentPeriod(...args: any): Date {
+        return new Date();
+    }
+
+    getTimeSeries(): Observable<any> {
         return of('1');
     }
 }

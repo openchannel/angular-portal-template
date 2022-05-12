@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ActivationComponent } from './activation.component';
+import { mockNativeLoginService, mockToastrService } from '../../../../mock/providers.mock';
+import { RouterTestingModule } from '@angular/router/testing';
+import { MockOcActivationComponent } from '../../../../mock/components.mock';
 
 describe('ActivationComponent', () => {
     let component: ActivationComponent;
@@ -9,7 +12,9 @@ describe('ActivationComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [ActivationComponent],
+                declarations: [ActivationComponent, MockOcActivationComponent],
+                providers: [mockNativeLoginService(), mockToastrService()],
+                imports: [RouterTestingModule],
             }).compileComponents();
         }),
     );

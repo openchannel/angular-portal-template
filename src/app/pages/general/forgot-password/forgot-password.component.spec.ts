@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ForgotPasswordComponent } from './forgot-password.component';
+import { mockNativeLoginService } from '../../../../mock/providers.mock';
+import { MockOcForgotPasswordComponent } from '../../../../mock/components.mock';
 
 describe('ForgotPasswordComponent', () => {
     let component: ForgotPasswordComponent;
@@ -9,7 +11,8 @@ describe('ForgotPasswordComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [ForgotPasswordComponent],
+                declarations: [ForgotPasswordComponent, MockOcForgotPasswordComponent],
+                providers: [mockNativeLoginService()],
             }).compileComponents();
         }),
     );

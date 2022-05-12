@@ -1,6 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CompanyDetailsComponent } from './company-details.component';
+import {
+    mockAuthHolderService,
+    mockDeveloperService,
+    mockDeveloperTypeService,
+    mockLoadingBarService,
+    mockToastrService,
+} from '../../../../../mock/providers.mock';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CompanyComponent', () => {
     let component: CompanyDetailsComponent;
@@ -10,6 +18,14 @@ describe('CompanyComponent', () => {
         waitForAsync(() => {
             TestBed.configureTestingModule({
                 declarations: [CompanyDetailsComponent],
+                providers: [
+                    mockDeveloperService(),
+                    mockDeveloperTypeService(),
+                    mockAuthHolderService(),
+                    mockToastrService(),
+                    mockLoadingBarService(),
+                ],
+                imports: [RouterTestingModule],
             }).compileComponents();
         }),
     );

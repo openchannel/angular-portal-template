@@ -12,6 +12,7 @@ import {
     UserGridSortOrder,
     UserSortChosen,
 } from '@openchannel/angular-common-components';
+import { SafeUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-billing',
@@ -262,6 +263,66 @@ export class OcConfirmationModalComponent {
     @Input() rejectButtonType: 'primary' | 'secondary' | 'link' | 'danger' = 'secondary';
     @Input() rejectButtonHide: boolean = false;
     @Input() confirmButtonClass: string = '';
+}
+
+@Component({
+    selector: 'oc-chart',
+    template: '',
+})
+export class MockOcChartComponent {
+    @Input() chartData: any;
+    @Input() count: number = 0;
+    @Input() countText: string = '';
+    @Input() downloadUrl: SafeUrl = '';
+    @Output() readonly changeChartOptions: EventEmitter<any> = new EventEmitter<any>();
+}
+
+@Component({
+    selector: 'oc-error',
+    template: '',
+})
+export class MockOcErrorComponent {
+    @Input() control: any;
+    @Input() modifyErrors: any;
+}
+
+@Component({
+    selector: 'oc-select',
+    template: '',
+})
+export class MockOcSelectComponent {
+    @Input() labelField: string = '';
+    @Input() selectValArr: any;
+}
+
+@Component({
+    selector: 'app-header',
+    template: '',
+})
+export class MockAppHeaderComponent {}
+
+@Component({
+    selector: 'app-footer',
+    template: '',
+})
+export class MockAppFooterComponent {}
+
+@Component({
+    selector: 'oc-label',
+    template: '',
+})
+export class MockOcLabelComponent {
+    @Input() text: string = '';
+    @Input() selectValArr: any;
+}
+
+@Component({
+    selector: 'app-chart',
+    template: '',
+})
+export class MockAppChartComponent {
+    @Input() showAppsDropdown: boolean = true;
+    @Input() appId: string = '';
 }
 
 @Component({
@@ -549,12 +610,12 @@ export class MockNgbModalRef {
         this.reject();
     }
 
-    dismissAll():void{
+    dismissAll(): void {
         this.removeActiveModal();
         this.reject();
-    };
+    }
 
-    close(data?:any): void {
+    close(data?: any): void {
         this.removeActiveModal();
         this.resolve(data);
     }
@@ -583,14 +644,14 @@ export class MockNgbModal {
         return newModal;
     }
 
-    dismissAll():any{
+    dismissAll(): any {
         return true;
     }
 
-    hasOpenModals():any{
+    hasOpenModals(): any {
         return true;
     }
-}   
+}
 export class MockNgbActiveModal {
     close(...args: any): void {
         // do nothing

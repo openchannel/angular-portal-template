@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ResendActivationComponent } from './resend-activation.component';
+import { mockNativeLoginService, mockToastrService } from '../../../../mock/providers.mock';
+import { RouterTestingModule } from '@angular/router/testing';
+import {MockResendActivation} from "../../../../mock/components.mock";
 
 describe('ResendActivationComponent', () => {
     let component: ResendActivationComponent;
@@ -9,7 +12,9 @@ describe('ResendActivationComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [ResendActivationComponent],
+                declarations: [ResendActivationComponent, MockResendActivation],
+                providers: [mockNativeLoginService(), mockToastrService()],
+                imports: [RouterTestingModule],
             }).compileComponents();
         }),
     );

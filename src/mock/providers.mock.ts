@@ -24,6 +24,13 @@ import {
     AppVersionService,
     DeveloperRoleService,
     DeveloperService,
+    PrerenderRequestsWatcherService,
+    ChartService,
+    DeveloperTypeService,
+    DeveloperAccountService,
+    DeveloperAccountTypesService,
+    AppTypeService,
+    MarketService,
 } from '@openchannel/angular-common-services';
 import { InviteUserModel } from '@openchannel/angular-common-services/lib/model/api/invite-user.model';
 import { ToastrService } from 'ngx-toastr';
@@ -57,6 +64,15 @@ import {
     MockAppVersionService,
     MockDeveloperRoleService,
     MockDeveloperService,
+    MockPrerenderRequestsWatcherService,
+    MockChartService,
+    MockDeveloperTypeService,
+    MockStripeAccountsService,
+    MockDeveloperAccountService,
+    MockDeveloperAccountTypesService,
+    MockAppTypeService,
+    MockMarketService,
+    MockAppManageModalService,
 } from './services.mock';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -65,6 +81,8 @@ import { OcEditUserTypeService } from '@core/services/user-type-service/user-typ
 import { CmsContentService } from '@core/services/cms-content-service/cms-content-service.service';
 import { LogOutService } from '@core/services/logout-service/log-out.service';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { StripeAccountsService } from '@core/services/stripe-accounts.service';
+import { AppManageModalService } from '@core/services/app-manage-modal-service/app-manage-modal.service';
 
 export function mockUserServiceProvider(): Provider {
     return { provide: UsersService, useClass: MockUsersService };
@@ -182,10 +200,46 @@ export function mockStripeService(): Provider {
     return { provide: StripeService, useClass: MockStripeService };
 }
 
+export function mockStripeAccountsService(): Provider {
+    return { provide: StripeAccountsService, useClass: MockStripeAccountsService };
+}
+
 export function mockDeveloperRoleService(): Provider {
     return { provide: DeveloperRoleService, useClass: MockDeveloperRoleService };
 }
 
+export function mockDeveloperTypeService(): Provider {
+    return { provide: DeveloperTypeService, useClass: MockDeveloperTypeService };
+}
+
+export function mockAppTypeService(): Provider {
+    return { provide: AppTypeService, useClass: MockAppTypeService };
+}
+
+export function mockDeveloperAccountService(): Provider {
+    return { provide: DeveloperAccountService, useClass: MockDeveloperAccountService };
+}
+
+export function mockDeveloperAccountTypesService(): Provider {
+    return { provide: DeveloperAccountTypesService, useClass: MockDeveloperAccountTypesService };
+}
+
 export function mockDeveloperService(): Provider {
     return { provide: DeveloperService, useClass: MockDeveloperService };
+}
+
+export function mockPrerenderRequestsWatcherService(): Provider {
+    return { provide: PrerenderRequestsWatcherService, useClass: MockPrerenderRequestsWatcherService };
+}
+
+export function mockChartService(): Provider {
+    return { provide: ChartService, useClass: MockChartService };
+}
+
+export function mockMarketService(): Provider {
+    return { provide: MarketService, useClass: MockMarketService };
+}
+
+export function mockAppManageModalService(): Provider {
+    return { provide: AppManageModalService, useClass: MockAppManageModalService };
 }

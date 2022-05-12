@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ChangePasswordComponent } from './change-password.component';
+import { mockAuthHolderService, mockNativeLoginService, mockToastrService } from '../../../../../mock/providers.mock';
+import { MockButtonComponent, MockFormComponent } from '../../../../../mock/components.mock';
 
 describe('ChangePasswordComponent', () => {
     let component: ChangePasswordComponent;
@@ -9,7 +11,8 @@ describe('ChangePasswordComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [ChangePasswordComponent],
+                declarations: [ChangePasswordComponent, MockFormComponent, MockButtonComponent],
+                providers: [mockToastrService(), mockNativeLoginService(), mockAuthHolderService()],
             }).compileComponents();
         }),
     );

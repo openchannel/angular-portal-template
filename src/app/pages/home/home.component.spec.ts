@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HomeComponent } from './home.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { mockAuthHolderService, mockCmsContentService, mockSiteConfigService, mockTitleService } from '../../../mock/providers.mock';
+import { MockAppGetStartedComponent, MockButtonComponent } from '../../../mock/components.mock';
 
 describe('HomeComponent', () => {
     let component: HomeComponent;
@@ -9,7 +12,15 @@ describe('HomeComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [HomeComponent],
+                declarations: [HomeComponent, MockButtonComponent, MockAppGetStartedComponent],
+                providers: [
+                    mockAuthHolderService(),
+                    mockTitleService(),
+                    mockSiteConfigService(),
+                    mockSiteConfigService(),
+                    mockCmsContentService(),
+                ],
+                imports: [RouterTestingModule],
             }).compileComponents();
         }),
     );
