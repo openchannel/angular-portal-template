@@ -1,5 +1,5 @@
 import { asyncScheduler, Observable, of, Subject } from 'rxjs';
-import { Page, SortResponse, Transaction, UserAccount } from '@openchannel/angular-common-services';
+import { DeveloperService, Page, SortResponse, Transaction, UserAccount } from '@openchannel/angular-common-services';
 import { Filter } from '@openchannel/angular-common-components';
 import { observeOn, catchError } from 'rxjs/operators';
 import { InviteUserModel } from '@openchannel/angular-common-services/lib/model/api/invite-user.model';
@@ -177,6 +177,7 @@ export class MockSiteConfigService {
             type: 'string',
         },
     };
+    siteConfig = MockSiteConfigService.PAGE_CONFIG;
 
     getSiteConfigAsObservable(): Observable<any> {
         return of(MockSiteConfigService.PAGE_CONFIG);
@@ -897,6 +898,18 @@ export class MockAppFormService {
     }
     createFormSubmission(): Observable<any> {
         return of(1).pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockDeveloperRoleService {
+    getDeveloperRoles(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+}
+
+export class MockDeveloperService {
+    getDeveloper(): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
     }
 }
 

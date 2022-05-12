@@ -22,6 +22,8 @@ import {
     UserRoleService,
     UsersService,
     AppVersionService,
+    DeveloperRoleService,
+    DeveloperService,
 } from '@openchannel/angular-common-services';
 import { InviteUserModel } from '@openchannel/angular-common-services/lib/model/api/invite-user.model';
 import { ToastrService } from 'ngx-toastr';
@@ -30,7 +32,6 @@ import {
     MockAppsService,
     MockAuthenticationService,
     MockAuthHolderService,
-    MockButtonActionService,
     MockCmsContentService,
     MockEditUserTypeService,
     MockFileUploadDownloadService,
@@ -38,8 +39,6 @@ import {
     MockInviteUserService,
     MockLoadingBarService,
     MockLogOutService,
-    MockManagementModalService,
-    MockMarketMetaTagService,
     MockNativeLoginService,
     MockOAuthService,
     MockReviewsService,
@@ -47,7 +46,6 @@ import {
     MockSiteConfigService,
     MockSiteContentService,
     MockStatisticService,
-    MockStripeLoaderService,
     MockStripeService,
     MockTitleService,
     MockToastrService,
@@ -57,6 +55,8 @@ import {
     MockUserRoleService,
     MockUsersService,
     MockAppVersionService,
+    MockDeveloperRoleService,
+    MockDeveloperService,
 } from './services.mock';
 import { LoadingBarService } from '@ngx-loading-bar/core';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -180,4 +180,12 @@ export function mockAppVersionService(): Provider {
 
 export function mockStripeService(): Provider {
     return { provide: StripeService, useClass: MockStripeService };
+}
+
+export function mockDeveloperRoleService(): Provider {
+    return { provide: DeveloperRoleService, useClass: MockDeveloperRoleService };
+}
+
+export function mockDeveloperService(): Provider {
+    return { provide: DeveloperService, useClass: MockDeveloperService };
 }

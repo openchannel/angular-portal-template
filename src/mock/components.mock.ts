@@ -127,6 +127,18 @@ export class MockAppBillingForm {
 export class MockAppLoaderForm {}
 
 @Component({
+    selector: 'app-company',
+    template: '',
+})
+export class MockAppCompanyComponent {}
+
+@Component({
+    selector: 'app-payouts',
+    template: '',
+})
+export class MockAppPayoutsComponent {}
+
+@Component({
     selector: 'oc-profile-navbar',
     template: '',
 })
