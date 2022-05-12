@@ -428,6 +428,10 @@ export class MockInviteUserService {
         return of('1').pipe(observeOn(asyncScheduler));
     }
 
+    getDeveloperInviteInfoByToken(...args: any): Observable<any> {
+        return of('1').pipe(observeOn(asyncScheduler));
+    }
+
     getUserInviteInfoByToken(userToken: string): Observable<any> {
         return of(this.mockInviteUserModelGoodResponse);
     }
