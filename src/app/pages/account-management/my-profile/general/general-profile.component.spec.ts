@@ -1,7 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MyProfileComponent } from '../my-profile.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockButtonComponent, MockEditUserFormComponent, MockPageTitleComponent } from '../../../../../mock/components.mock';
+import {
+    MockAppChangePasswordComponent,
+    MockAppGeneralProfileComponent,
+    MockButtonComponent,
+    MockEditUserFormComponent,
+    MockPageTitleComponent,
+} from '../../../../../mock/components.mock';
 
 describe('MyProfileComponent', () => {
     let component: MyProfileComponent;
@@ -10,7 +16,14 @@ describe('MyProfileComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [MyProfileComponent, MockEditUserFormComponent, MockButtonComponent, MockPageTitleComponent],
+                declarations: [
+                    MyProfileComponent,
+                    MockAppGeneralProfileComponent,
+                    MockAppChangePasswordComponent,
+                    MockEditUserFormComponent,
+                    MockButtonComponent,
+                    MockPageTitleComponent,
+                ],
                 imports: [RouterTestingModule],
             }).compileComponents();
         }),

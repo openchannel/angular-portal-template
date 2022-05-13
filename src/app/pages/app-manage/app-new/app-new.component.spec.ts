@@ -14,7 +14,7 @@ import {
     mockTitleService,
     mockToastrService,
 } from '../../../../mock/providers.mock';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
     MockAppChartComponent,
     MockButtonComponent,
@@ -55,7 +55,7 @@ describe('AppNewComponent', () => {
                     mockAppTypeService(),
                     FormBuilder,
                 ],
-                imports: [RouterTestingModule],
+                imports: [RouterTestingModule, ReactiveFormsModule, FormsModule],
             }).compileComponents();
         }),
     );

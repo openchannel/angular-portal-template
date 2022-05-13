@@ -9,6 +9,7 @@ import {
     mockToastrService,
 } from '../../../../../mock/providers.mock';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MockButtonComponent, MockFormComponent } from '../../../../../mock/components.mock';
 
 describe('CompanyComponent', () => {
     let component: CompanyDetailsComponent;
@@ -17,7 +18,7 @@ describe('CompanyComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [CompanyDetailsComponent],
+                declarations: [CompanyDetailsComponent, MockFormComponent, MockButtonComponent],
                 providers: [
                     mockDeveloperService(),
                     mockDeveloperTypeService(),

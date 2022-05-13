@@ -65,6 +65,18 @@ export class MockAppLoaderForm {}
 export class MockAppCompanyComponent {}
 
 @Component({
+    selector: 'app-general-profile',
+    template: '',
+})
+export class MockAppGeneralProfileComponent {}
+
+@Component({
+    selector: 'app-change-password',
+    template: '',
+})
+export class MockAppChangePasswordComponent {}
+
+@Component({
     selector: 'app-payouts',
     template: '',
 })
