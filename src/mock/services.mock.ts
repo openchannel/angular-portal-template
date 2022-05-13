@@ -1,6 +1,5 @@
 import { asyncScheduler, Observable, of, Subject } from 'rxjs';
-import { MarketService, Page, SortResponse, Transaction, UserAccount } from '@openchannel/angular-common-services';
-import { Filter } from '@openchannel/angular-common-components';
+import { Page } from '@openchannel/angular-common-services';
 import { observeOn } from 'rxjs/operators';
 import { InviteUserModel } from '@openchannel/angular-common-services/lib/model/api/invite-user.model';
 
@@ -29,141 +28,6 @@ class MockPagination<T> {
             pages: Math.ceil(this.values.length / normalizedSizeNumber),
             pageNumber: normalizedPageNumber,
         };
-    }
-}
-export class MockManagementModalService {
-    openDeleteInviteModal(): Observable<boolean> {
-        return null;
-    }
-
-    openDeleteCurrentUserAccountModal(): Observable<boolean> {
-        return null;
-    }
-
-    openDeleteAnotherUserAccountModal(): Observable<boolean> {
-        return null;
-    }
-
-    openEditUserInviteModal(): Observable<any> {
-        return of('1');
-    }
-    openEditUserAccountModal(): Observable<any> {
-        return of('1');
-    }
-}
-export class MockSiteContentService {
-    getAllContent(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-
-    getSecuritySettings(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-}
-
-export class MockMarketMetaTagService {
-    getMetaTagsConfig(): any {
-        return {};
-    }
-
-    initDefaultPageDataForAllPages(): { [name: string]: any } {
-        return {
-            windowUrl: 'url',
-        };
-    }
-
-    pushSelectedFieldsToTempPageData(): void {
-        // do nothing.
-    }
-}
-
-export class MockStatisticService {
-    recordVisitToApp(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-
-    record(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-}
-
-export class MockFrontendService {
-    static MOCK_FILTER_VALUE = {
-        id: 'allApps',
-        label: 'All Apps',
-        sort: '{"randomize":1}',
-        description: 'All applications are listed here..',
-        query: '{"status.value":"approved"}',
-        checked: false,
-        values: [],
-    };
-
-    static MOCK_FILTERS_PAGE: Page<Filter> = {
-        count: 1,
-        pageNumber: 1,
-        pages: 1,
-        list: [
-            {
-                id: 'collections',
-                name: 'Collections',
-                description: '',
-                values: [
-                    MockFrontendService.MOCK_FILTER_VALUE,
-                    { ...MockFrontendService.MOCK_FILTER_VALUE, id: 'featured' },
-                    { ...MockFrontendService.MOCK_FILTER_VALUE, id: 'popular' },
-                    { ...MockFrontendService.MOCK_FILTER_VALUE, id: 'newest' },
-                ],
-            },
-            {
-                id: 'categories',
-                name: 'Categories',
-                description: '',
-                values: [
-                    { ...MockFrontendService.MOCK_FILTER_VALUE, id: 'analytics' },
-                    { ...MockFrontendService.MOCK_FILTER_VALUE, id: 'communication' },
-                    { ...MockFrontendService.MOCK_FILTER_VALUE, id: 'customer-support' },
-                ],
-            },
-        ],
-    };
-
-    static MOCK_SORTS_PAGE: Page<SortResponse> = {
-        count: 1,
-        list: [
-            {
-                id: 'en-us-1',
-                name: 'en-us 1',
-                description: 'en-us 1 Description',
-                values: [
-                    {
-                        id: '1-start',
-                        label: 'Popular',
-                        sort: '{"created":-1}',
-                        customData: null,
-                        description: 'fghfg',
-                        checked: false,
-                    },
-                    {
-                        id: 'newest',
-                        label: 'Newest',
-                        sort: '{"created":-1}',
-                        customData: null,
-                        description: 'fgdg dfg',
-                        checked: false,
-                    },
-                ],
-            },
-        ],
-        pageNumber: 1,
-        pages: 1,
-    };
-
-    getFilters(): Observable<any> {
-        return of(MockFrontendService.MOCK_FILTERS_PAGE).pipe(observeOn(asyncScheduler));
-    }
-
-    getSorts(): Observable<any> {
-        return of(MockFrontendService.MOCK_SORTS_PAGE);
     }
 }
 
@@ -250,141 +114,6 @@ export class MockAuthHolderService {
     }
 }
 
-export class MockUserRoleService {
-    static ADMIN_ROLE_ID = 'user-admin';
-    static ADMIN_ROLE_NAME = 'Admin';
-
-    static MOCK_USER_ROLES_PAGE = {
-        count: 5,
-        pages: 1,
-        pageNumber: 1,
-        list: [
-            {
-                userRoleId: MockUserRoleService.ADMIN_ROLE_ID,
-                name: MockUserRoleService.ADMIN_ROLE_NAME,
-                systemDefined: true,
-                created: 1614286695577,
-                lastUpdated: 1614286695577,
-                permissions: [
-                    'ORGANIZATIONS.READ',
-                    'ORGANIZATIONS.MODIFY',
-                    'OWNERSHIPS.READ',
-                    'OWNERSHIPS.MODIFY',
-                    'REVIEWS.READ',
-                    'REVIEWS.CREATE',
-                    'REVIEWS.MODIFY',
-                    'ACCOUNTS.READ',
-                    'ACCOUNTS.MODIFY',
-                    'ACCOUNTS.DELETE',
-                    'FILES.READ',
-                    'FILES.MODIFY',
-                    'APPS.READ',
-                    'FORMS.READ',
-                    'FORM_SUBMISSIONS.READ',
-                    'FORM_SUBMISSIONS.MODIFY',
-                    'REQUESTS.READ',
-                    'REQUESTS.CREATE',
-                    'REQUESTS.MODIFY',
-                    'REQUESTS.DELETE',
-                    'REQUESTS.MODERATE',
-                    'REVIEWS.DELETE',
-                ],
-            },
-            {
-                userRoleId: 'user-viewer',
-                created: 1614286695577,
-                lastUpdated: 1614286695577,
-                name: 'Viewer',
-                permissions: [
-                    'ORGANIZATIONS.READ',
-                    'OWNERSHIPS.READ',
-                    'REVIEWS.READ',
-                    'ACCOUNTS.READ',
-                    'FILES.READ',
-                    'APPS.READ',
-                    'FORMS.READ',
-                    'FORM_SUBMISSIONS.READ',
-                    'REQUESTS.READ',
-                ],
-                systemDefined: true,
-            },
-            {
-                userRoleId: 'user-custom_user',
-                name: 'custom_user',
-                systemDefined: false,
-                created: 1614685629236,
-                lastUpdated: 1627454502249,
-                permissions: [
-                    'APPS.READ',
-                    'REVIEWS.DELETE',
-                    'REQUESTS.READ',
-                    'REQUESTS.CREATE',
-                    'REQUESTS.MODIFY',
-                    'REQUESTS.MODERATE',
-                    'REQUESTS.DELETE',
-                    'OWNERSHIPS.READ',
-                    'OWNERSHIPS.MODIFY',
-                    'ORGANIZATIONS.READ',
-                    'ACCOUNTS.READ',
-                    'FILES.READ',
-                    'FILES.MODIFY',
-                    'FORMS.READ',
-                    'FORM_SUBMISSIONS.READ',
-                    'FORM_SUBMISSIONS.MODIFY',
-                ],
-            },
-            {
-                userRoleId: 'user-review-permissions',
-                name: 'Review Permissions',
-                systemDefined: false,
-                created: 1625816708480,
-                lastUpdated: 1627017170171,
-                permissions: [
-                    'APPS.CREATE',
-                    'REVIEWS.READ',
-                    'REVIEWS.CREATE',
-                    'REVIEWS.MODIFY',
-                    'REVIEWS.DELETE',
-                    'REQUESTS.CREATE',
-                    'REQUESTS.MODIFY',
-                    'REQUESTS.MODERATE',
-                    'REQUESTS.DELETE',
-                    'OWNERSHIPS.CREATE',
-                    'OWNERSHIPS.MODIFY',
-                    'ORGANIZATIONS.CREATE',
-                    'ORGANIZATIONS.MODIFY',
-                    'ACCOUNTS.CREATE',
-                    'ACCOUNTS.MODIFY',
-                    'ACCOUNTS.DELETE',
-                    'FILES.CREATE',
-                    'FILES.MODIFY',
-                    'FORMS.CREATE',
-                    'FORM_SUBMISSIONS.CREATE',
-                    'FORM_SUBMISSIONS.MODIFY',
-                ],
-            },
-            {
-                userRoleId: 'user-form-submission-modify',
-                name: 'Form Submission Modify',
-                systemDefined: false,
-                created: 1635164714417,
-                lastUpdated: 1637575016675,
-                permissions: ['ACCOUNTS.READ', 'FILES.READ', 'FORMS.READ', 'FORM_SUBMISSIONS.READ'],
-            },
-        ],
-    };
-
-    getUserRoles(): Observable<any> {
-        return of(MockUserRoleService.MOCK_USER_ROLES_PAGE);
-    }
-}
-
-export class MockUserAccountTypesService {
-    getUserAccountType(type: any): Observable<any> {
-        return of(1);
-    }
-}
-
 export class MockInviteUserService {
     userInvites: MockPagination<InviteUserModel>;
 
@@ -434,40 +163,6 @@ export class MockInviteUserService {
 
     getUserInviteInfoByToken(userToken: string): Observable<any> {
         return of(this.mockInviteUserModelGoodResponse);
-    }
-}
-
-export class MockUserAccountService {
-    currentUserAccount: UserAccount;
-    otherUserAccounts: MockPagination<UserAccount>;
-
-    constructor(currentUserAccount: UserAccount, otherUserAccounts: UserAccount[]) {
-        this.currentUserAccount = currentUserAccount;
-        this.otherUserAccounts = new MockPagination([currentUserAccount, ...(otherUserAccounts || [])]);
-    }
-
-    getUserAccount(): Observable<UserAccount> {
-        return of(this.currentUserAccount);
-    }
-
-    getUserAccounts(pageNumber?: number, limit?: number, sort?: string, query?: string): Observable<Page<UserAccount>> {
-        return of(this.otherUserAccounts.getByPaginate(pageNumber, limit));
-    }
-
-    updateUserAccountFieldsForAnotherUser(userAccountId: string, skipTypeValidation: boolean, body: any): Observable<UserAccount> {
-        return of({} as UserAccount);
-    }
-
-    updateUserAccount(accountData: any): Observable<any> {
-        return of('1').pipe(observeOn(asyncScheduler));
-    }
-
-    deleteUserAccount(userAccountId: string): Observable<any> {
-        return of({});
-    }
-
-    deleteCurrentUserAccount(): Observable<any> {
-        return of({});
     }
 }
 
@@ -648,28 +343,6 @@ export class MockCmsContentService {
     }
 }
 
-export class MockTypeMapperUtils {
-    static injectDefaultValues(): any {
-        return [];
-    }
-
-    static normalizeOptions(): any {
-        return [];
-    }
-
-    static buildDataForSaving(): any {
-        return {};
-    }
-
-    static createFormConfig(): any {
-        return {};
-    }
-
-    static mergeTwoData(): any {
-        return {};
-    }
-}
-
 export class MockNativeLoginService {
     signup(): Observable<any> {
         return of('1').pipe(observeOn(asyncScheduler));
@@ -772,36 +445,6 @@ export class MockEditUserTypeService {
     }
 }
 
-export class MockTransactionsService {
-    static MOCK_TRANSACTION: Transaction = {
-        transactionId: '61d4035a8ebc4e5af2cfdbc6',
-        ownershipId: '61d403278ebc4e5af2cfdbb2',
-        appId: '61d402ef8ebc4e5af2cfdba2',
-        userId: '644d352b-7be2-4b3e-8ee3-967f89d2bef0',
-        developerId: '34df9c9f-9257-4334-9462-93d70393a9f3',
-        date: 1641284441000,
-        invoiceUrl:
-            'https://pay.stripe.com/invoice/acct_1KC5ZkC6zKuu5PJY/test_YWNjdF8xS0M1WmtDNnpLdXU1UEpZLF9LdHc4OHhwb1Z4RmU5NERwM2VocFQzaFBGY3FLTGJ30100Zn7mRDfy/pdf',
-        recieptUrl:
-            'https://pay.stripe.com/receipts/acct_1KC5ZkC6zKuu5PJY/ch_3KE8G4C6zKuu5PJY0QOxir37/rcpt_Ktw8UTDAHQRegzIZK3cqLjGLtVe81Dn',
-        amount: 300,
-        feeAmount: 39,
-        marketplaceAmount: 0,
-        developerAmount: 261,
-        type: 'payment',
-    };
-    static MOCK_TRANSACTIONS_LIST = {
-        count: 2,
-        pages: 1,
-        pageNumber: 1,
-        list: [{ ...MockTransactionsService.MOCK_TRANSACTION }],
-    };
-
-    getTransactionsList(): Observable<any> {
-        return of(MockTransactionsService.MOCK_TRANSACTIONS_LIST);
-    }
-}
-
 export class MockLoginRequest {
     idToken: string;
     accessToken: string;
@@ -822,28 +465,6 @@ export class MockAppVersionService {
     }
 
     deleteAppVersion(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-}
-
-export class MockReviewsService {
-    getReviewsByAppId(): Observable<any> {
-        return of({ list: [] }).pipe(observeOn(asyncScheduler));
-    }
-
-    updateReview(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-
-    createReview(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-
-    getOneReview(): Observable<any> {
-        return of({}).pipe(observeOn(asyncScheduler));
-    }
-
-    deleteReview(): Observable<any> {
         return of({}).pipe(observeOn(asyncScheduler));
     }
 }
@@ -873,12 +494,6 @@ export class MockOAuthService {
     }
 }
 
-export class MockButtonActionService {
-    canBeShow(app: any, buttons: any): any {
-        return buttons;
-    }
-}
-
 export class MockLogOutService {
     removeSpecificParamKeyFromTheUrlForSaml2Logout(): void {
         // do nothing
@@ -889,12 +504,6 @@ export class MockLogOutService {
 
     logOut(): Observable<any> {
         return of('1');
-    }
-}
-
-export class MockStripeLoaderService {
-    loadStripe(): void {
-        // do nothing
     }
 }
 
@@ -914,15 +523,6 @@ export class MockStripeService {
 
     makePurchase(...args: any): Observable<any> {
         return of('1');
-    }
-}
-
-export class MockAppFormService {
-    getForm(): Observable<any> {
-        return of(1).pipe(observeOn(asyncScheduler));
-    }
-    createFormSubmission(): Observable<any> {
-        return of(1).pipe(observeOn(asyncScheduler));
     }
 }
 
@@ -990,32 +590,12 @@ export class MockDeveloperService {
     }
 }
 
-export class MockOwnershipService {
-    installOwnership(): Observable<any> {
-        return of('1');
-    }
-
-    uninstallOwnership(): Observable<any> {
-        return of('1');
-    }
-}
-
 export class MockChartService {
     getDateStartByCurrentPeriod(...args: any): Date {
         return new Date();
     }
 
     getTimeSeries(): Observable<any> {
-        return of('1');
-    }
-}
-
-export class MockFileUploadDownloadService {
-    downloadFileDetails(): Observable<any> {
-        return of('1');
-    }
-
-    getFileUrl(): Observable<any> {
         return of('1');
     }
 }

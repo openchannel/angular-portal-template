@@ -15,58 +15,6 @@ import {
 import { SafeUrl } from '@angular/platform-browser';
 
 @Component({
-    selector: 'app-billing',
-    template: '',
-})
-export class MockBillingComponent {}
-
-@Component({
-    selector: 'app-billing-history',
-    template: '',
-})
-export class MockBillingHistoryComponent {}
-
-@Component({
-    selector: 'app-button-action',
-    template: '',
-})
-export class MockButtonActionComponent {
-    @Input() buttonAction: any;
-    @Input() appData: any;
-    @Input() viewType: string = 'button';
-    @Output() readonly updateAppData: EventEmitter<void> = new EventEmitter<void>();
-}
-
-@Component({
-    selector: 'app-change-password',
-    template: '',
-})
-export class MockChangePasswordComponent {}
-
-@Component({
-    selector: 'app-collapse-with-title',
-    template: '',
-})
-export class MockCollapseWithTitleComponent {
-    @Input() titleForClose: string;
-    @Input() titleForOpen: string;
-    @Input() collapsed = true;
-    @Output() readonly collapseChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
-}
-
-@Component({
-    selector: 'app-company-details',
-    template: '',
-})
-export class MockCompanyDetailsComponent {}
-
-@Component({
-    selector: 'app-general-profile',
-    template: '',
-})
-export class MockGeneralProfileComponent {}
-
-@Component({
     selector: 'app-management',
     template: '',
 })
@@ -105,23 +53,6 @@ export class MockOcActivationComponent {
 }
 
 @Component({
-    selector: 'app-billing-form',
-    template: '',
-})
-export class MockAppBillingForm {
-    @Input() goBackOnCancel: boolean = false;
-    @Input() successButtonText: string = '';
-    @Input() categoryRouterLink: string = '';
-    @Input() successToasterMessage: string = '';
-    @Input() additionalFieldsTemplate: TemplateRef<any>;
-    @Input() process: any;
-    @Input() additionalButtonLock: boolean = false;
-
-    @Output() readonly cardDataLoaded: EventEmitter<any> = new EventEmitter<any>();
-    @Output() readonly successButtonPressed: EventEmitter<any> = new EventEmitter<any>();
-    @Output() readonly successAction: EventEmitter<any> = new EventEmitter<any>();
-}
-@Component({
     selector: 'app-loader',
     template: '',
 })
@@ -146,34 +77,6 @@ export class MockAppPayoutsComponent {}
 export class MockOcProfileNavbar {
     @Input() username: string;
 }
-@Component({
-    selector: 'oc-app-categories',
-    template: '',
-})
-export class MockAppCategoriesComponent {
-    @Input() data: any[] = [];
-    @Input() categoryHeaderTitle: string = '';
-    @Input() categoryRouterLink: string = '';
-}
-
-@Component({
-    selector: 'oc-app-gallery',
-    template: '',
-})
-export class MockAppGalleryComponent {
-    @Input() appsArr: any[] = [];
-    @Input() noAppMessage: string = '';
-    @Input() moreAppsTitle: string = 'More';
-    @Input() appGalleryTitle: string = '';
-    @Input() appGalleryDescription: string = '';
-    @Input() routerIcon: string = '';
-    @Input() customAppCardTemplate: TemplateRef<any>;
-    @Input() seeAllUrl: string | any[];
-    @Input() routerLinkForOneApp: string;
-    @Input() appNavigationParam: string = 'appId';
-    @Input() headingTag: string = 'h2';
-    @Output() readonly clickMoreApps: EventEmitter<void> = new EventEmitter<void>();
-}
 
 @Component({
     selector: 'oc-app-get-started',
@@ -187,29 +90,6 @@ export class MockAppGetStartedComponent {
     @Input() getStartedButtonText: string = '';
     @Input() getStartedType: 'home' | 'search' = 'home';
     @Output() readonly getStarted: EventEmitter<void> = new EventEmitter<void>();
-}
-
-@Component({
-    selector: 'oc-app-list-grid',
-    template: '',
-})
-export class MockOcAppListGridComponent {
-    @Input() appList: any;
-    @Input() baseLinkForOneApp: string = '';
-    @Input() appNavigationParam: string = '';
-    @Input() defaultAppIcon: string = '';
-}
-
-@Component({
-    selector: 'oc-app-short-info',
-    template: '',
-})
-export class MockAppShortInfoComponent {
-    @Input() app: any;
-    @Input() priceModelIndex: number = 0;
-    @Input() customDropdown: TemplateRef<any>;
-    @Input() defaultAppIcon: string = 'assets/angular-common-components/standard-app-icon.svg';
-    @Output() readonly clickByAppCard: EventEmitter<any> = new EventEmitter<any>();
 }
 
 @Component({
@@ -247,22 +127,6 @@ export class MockButtonComponent {
     @Input() process: boolean;
     @Input() customTemplate: TemplateRef<any>;
     @Output() readonly click: EventEmitter<void> = new EventEmitter<void>();
-}
-
-@Component({
-    selector: 'oc-confirmation-modal',
-    template: '',
-})
-export class OcConfirmationModalComponent {
-    @Input() modalTitle: string = '';
-    @Input() modalText: string = '';
-    @Input() confirmButtonText: string = 'Ok';
-    @Input() confirmButtonType: 'primary' | 'secondary' | 'link' | 'danger' = 'primary';
-    @Input() confirmButtonHide: boolean = false;
-    @Input() rejectButtonText = 'No, cancel';
-    @Input() rejectButtonType: 'primary' | 'secondary' | 'link' | 'danger' = 'secondary';
-    @Input() rejectButtonHide: boolean = false;
-    @Input() confirmButtonClass: string = '';
 }
 
 @Component({
@@ -326,26 +190,6 @@ export class MockAppChartComponent {
 }
 
 @Component({
-    selector: 'oc-consent',
-    template: '',
-})
-export class MockOcConsentComponent {
-    @Input() policyUrl: string = '';
-    @Input() termsUrl: string = '';
-}
-
-@Component({
-    selector: 'oc-dropdown',
-    template: '',
-})
-export class MockDropdownComponent {
-    @Input() selected: any;
-    @Input() title: string = 'Sort by';
-    @Input() options: any[];
-    @Output() readonly selectedChange: EventEmitter<any> = new EventEmitter<any>();
-}
-
-@Component({
     selector: 'oc-edit-user-form',
     template: '',
 })
@@ -363,22 +207,6 @@ export class MockEditUserFormComponent {
     @Input() formId: any = 'editUser';
     @Output() readonly resultFormDataChange = new EventEmitter<any>();
     @Output() readonly createdFormGroup = new EventEmitter<any>();
-}
-
-@Component({
-    selector: 'oc-featured-apps',
-    template: '',
-})
-export class MockFeaturedAppsComponent {
-    @Input() data: any[] = [];
-    @Input() label: string = 'Featured';
-    @Input() headingTag: string = 'h2';
-    @Input() appHeadingTag: string = 'h3';
-    @Input() emptyDataMessage: string = 'No Featured App';
-    @Input() customClasses: string = '';
-    @Input() customFeaturedAppCardTemplate: TemplateRef<any>;
-    @Input() mainRouterLink: string = '';
-    @Input() navigationParam: string;
 }
 
 @Component({
@@ -476,6 +304,7 @@ export class MockOcMenuUserGridComponent {
     @Output() readonly sortChosen: EventEmitter<SortField> = new EventEmitter<SortField>();
     @Output() readonly sortOptionsChosen: EventEmitter<UserSortChosen> = new EventEmitter<UserSortChosen>();
 }
+
 @Component({
     selector: 'oc-resend-activation',
     template: '',
@@ -500,25 +329,6 @@ export class MockOcResetPasswordComponent {
     @Input() signupUrl: any;
     @Output() readonly buttonClick: EventEmitter<any> = new EventEmitter<any>();
     @Input() resetModel: any;
-}
-
-@Component({
-    selector: 'oc-sidebar',
-    template: '',
-})
-export class MockSidebarComponent {
-    @Input() title: string;
-    @Input() titleHeadingTag: string = 'h2';
-    @Input() sidebarModel: any;
-    @Input() toggleIconDown: string = '';
-    @Input() toggleIconUp: string = '';
-    @Input() baseNavigation: string;
-    @Input() threshold: number = 10;
-    @Input() expandText: string = 'Show more';
-    @Input() collapseText: string = 'Show less';
-    @Input() toggleListButtonType: 'primary' | 'link' = 'link';
-    @Input() ngbCollapse: any;
-    @Output() readonly sidebarChange: EventEmitter<any> = new EventEmitter<any>();
 }
 
 @Component({
@@ -556,26 +366,6 @@ export class MockSocialLinks {
     @Input() socialLinks: SocialLink[];
 }
 
-@Component({
-    selector: 'oc-text-search',
-    template: '',
-})
-export class MockTextSearchComponent {
-    @Input() clearAllButtonType: string = 'link';
-    @Input() showClearAllTagsButton: boolean = true;
-    @Input() searchText: string;
-    @Input() placeHolder: string = 'Search';
-    @Input() hasMagnifier: boolean = true;
-    @Input() hasClearTextControl: boolean = false;
-    @Input() clearButtonText: string = 'Clear';
-    @Input() searchButtonText: string = 'Search';
-    @Input() clearTagsButtonText: string = 'Clear all';
-    @Input() tagsTitles: string[] = [];
-    @Output() readonly searchTextChange: EventEmitter<string> = new EventEmitter();
-    @Output() readonly enterSearch: EventEmitter<string> = new EventEmitter<string>();
-    @Output() readonly tagDeleted: EventEmitter<number> = new EventEmitter<number>();
-    @Output() readonly allTagsDeleted: EventEmitter<void> = new EventEmitter<void>();
-}
 @Component({
     selector: 'oc-toasts',
     template: '',
@@ -652,123 +442,5 @@ export class MockNgbModal {
         return true;
     }
 }
-export class MockNgbActiveModal {
-    close(...args: any): void {
-        // do nothing
-    }
-}
+
 export class MockModalInviteUserModel {}
-
-@Component({
-    selector: 'oc-rating',
-    template: '',
-})
-export class MockOcRatingComponent {
-    @Input() type: 'single-star' | 'multi-star' = 'single-star';
-    @Input() rating: number;
-    @Input() reviewCount: number = 0;
-    @Input() label: string = '';
-    @Input() labelClass: string = 'medium md';
-    @Input() disabled: boolean = false;
-}
-
-@Component({
-    selector: 'oc-video',
-    template: '',
-})
-export class MockOcVideoComponent {
-    @Input() videoUrl: string = '';
-}
-
-@Component({
-    selector: 'oc-image-gallery',
-    template: '',
-})
-export class MockOcImageGalleryComponent {
-    @Input() gallery: any = [];
-    @Input() maxItems: number = 3;
-    @Input() displayDetails: boolean = true;
-    @Input() allowArrowControllers: boolean = false;
-    @Input() mediaDimensions: any = {};
-    @Input() expandOnClick: boolean = false;
-    @Input() carouselOptions: any = {};
-    @Input() componentIconsPath: any = {};
-    @Input() imageModalIconsPath: any = {};
-    @Input() isShowCounterInImageModal: boolean = false;
-}
-
-@Component({
-    selector: 'oc-app-description',
-    template: '',
-})
-export class MockOcAppDescriptionComponent {
-    @Input() appDescription: string = '';
-    @Input() header: string = '';
-    @Input() headerTag: any = 'h4';
-    @Input() showFullDescription: boolean = false;
-    @Input() headerClass: string;
-    @Input() enableTruncateTextLogic: boolean = true;
-    @Input() truncateTextLength: number = 800;
-    @Input() showMoreDescriptionText: string = 'Show more';
-    @Input() showLessDescriptionText: string = 'Show less';
-}
-
-@Component({
-    selector: 'oc-overall-rating',
-    template: '',
-})
-export class MockOcOverallRatingComponent {
-    @Input() overallReviewLabel: string = 'Overall rating';
-    @Input() allReviewSummary: any = {};
-}
-
-@Component({
-    selector: 'oc-review-list',
-    template: '',
-})
-export class MockOcReviewListComponent {
-    @Input() reviewListTitle: string = 'Most recent reviews';
-    @Input() headingTag: any = 'h2';
-    @Input() reviewHeadingTag: any = 'h3';
-    @Input() totalReview: number;
-    @Input() maxReviewDisplay: number = 3;
-    @Input() noReviewMessage: string = 'There is no review for this app.';
-    @Input() reviewsList: any = [];
-    @Input() allowWriteReview: boolean = true;
-    @Input() menuUrl: string = 'assets/angular-common-components/dots-menu.svg';
-    @Input() currentUserId: string = '';
-    @Output() readonly writeAReview: EventEmitter<any> = new EventEmitter<any>();
-    @Output() readonly chosenAction: EventEmitter<any> = new EventEmitter<any>();
-}
-
-@Component({
-    selector: 'oc-review',
-    template: '',
-})
-export class MockOcReviewComponent {
-    @Input() heading: string = '';
-    @Input() enableButtons: boolean = false;
-    @Input() cancelButtonText: string = 'Cancel';
-    @Input() submitButtonText: string = 'Submit';
-    @Input() hidCancelButton: boolean = false;
-    @Input() reviewData: any;
-    @Input() submitInProgress: boolean = false;
-    @Output() readonly reviewFormData: EventEmitter<any> = new EventEmitter<any>();
-    @Output() readonly cancelReview: EventEmitter<boolean> = new EventEmitter<boolean>();
-    @Output() readonly isFormInvalid: EventEmitter<boolean> = new EventEmitter<boolean>();
-}
-
-@Component({
-    selector: 'oc-recommended-apps',
-    template: '',
-})
-export class MockOcRecomendedAppsComponent {
-    @Input() appList: any[] = [];
-    @Input() noAppMessage: string = '';
-    @Input() recommendedAppTitle: string = 'Recommended Apps';
-    @Input() headingTag: any = 'h2';
-    @Input() customAppCardTemplate: TemplateRef<any>;
-    @Input() routerLinkForOneApp: string | any;
-    @Input() appNavigationParam: string;
-    @Output() readonly clickByAppCard: EventEmitter<any> = new EventEmitter<any>();
-}
