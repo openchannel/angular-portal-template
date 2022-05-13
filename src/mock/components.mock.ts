@@ -137,6 +137,7 @@ export class MockButtonComponent {
     @Input() customClass: string;
     @Input() style: string;
     @Input() process: boolean;
+    @Input() appPermissions: any;
     @Input() customTemplate: TemplateRef<any>;
     @Output() readonly click: EventEmitter<void> = new EventEmitter<void>();
 }

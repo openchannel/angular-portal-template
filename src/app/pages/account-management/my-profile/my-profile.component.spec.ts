@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MyProfileComponent } from './my-profile.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockPageTitleComponent } from '../../../../mock/components.mock';
+import { MockAppChangePasswordComponent, MockAppGeneralProfileComponent, MockPageTitleComponent } from '../../../../mock/components.mock';
 
 describe('MyProfileComponent', () => {
     let component: MyProfileComponent;
@@ -11,7 +11,7 @@ describe('MyProfileComponent', () => {
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [MyProfileComponent, MockPageTitleComponent],
+                declarations: [MyProfileComponent, MockPageTitleComponent, MockAppGeneralProfileComponent, MockAppChangePasswordComponent],
                 imports: [RouterTestingModule],
             }).compileComponents();
         }),
