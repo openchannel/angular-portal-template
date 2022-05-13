@@ -6,7 +6,7 @@
     "start": "./node_modules/.bin/ng serve",
     "start-with-host": "./node_modules/.bin/ng serve --port 80 --host",
     "build": "./node_modules/.bin/ng build",
-    "test": "jest --coverage",
+    "test": "jest --coverage --no-cache",
     "test:watch": "jest --coverage --watch",
     "lint": "ng lint",
     "e2e": "ng e2e",
