@@ -1,16 +1,25 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { NotFoundComponent } from './not-found.component';
+import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
+import { MockButtonComponent, MockRoutingComponent } from '../../../mock/components.mock';
+import { mockPrerenderRequestsWatcherService } from '../../../mock/providers.mock';
 
 describe('NotFoundComponent', () => {
     let component: NotFoundComponent;
     let fixture: ComponentFixture<NotFoundComponent>;
+    let router: Router;
 
     beforeEach(
         waitForAsync(() => {
             TestBed.configureTestingModule({
-                declarations: [NotFoundComponent],
+                declarations: [NotFoundComponent, MockButtonComponent, MockRoutingComponent],
+                imports: [RouterTestingModule.withRoutes([{ path: 'some-page', component: MockRoutingComponent }])],
+                providers: [mockPrerenderRequestsWatcherService()],
             }).compileComponents();
+            router = TestBed.inject(Router);
         }),
     );
 
@@ -22,5 +31,25 @@ describe('NotFoundComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should route to / when home page link clicked', fakeAsync(() => {
+        router.navigate(['some-page']);
+        tick();
+
+        const homeLink = fixture.debugElement.query(By.css('.not-found__home-page-button')).nativeElement;
+        homeLink.click();
+        tick();
+
+        expect(router.url).toBe('/');
+    }));
+
+    it('should set scroll to 0 0 position when going to home page', () => {
+        window.scrollTo = jest.fn();
+
+        const homeButton = fixture.debugElement.query(By.css('.not-found__home-page-button oc-button')).nativeElement;
+        homeButton.click();
+
+        expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
     });
 });

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { first, takeUntil } from 'rxjs/operators';
 import { AuthenticationService, SiteConfigService, TitleService } from '@openchannel/angular-common-services';
@@ -15,7 +15,7 @@ import { LogOutService } from '@core/services/logout-service/log-out.service';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     private destroy$: Subject<void> = new Subject();
     private loader: LoadingBarState;
 
@@ -51,6 +51,12 @@ export class AppComponent implements OnInit {
 
         // init csrf
         this.authApiService.initCsrf().pipe(takeUntil(this.destroy$), first()).subscribe();
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+        this.loader.complete();
     }
 
     initSiteConfig(): void {

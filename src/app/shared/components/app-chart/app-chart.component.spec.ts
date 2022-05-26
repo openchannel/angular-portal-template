@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppChartComponent } from './app-chart.component';
+import { mockAppsService, mockAppVersionService, mockChartService, mockLoadingBarService } from '../../../../mock/providers.mock';
+import { MockOcChartComponent } from '../../../../mock/components.mock';
 
 describe('AppChartComponent', () => {
     let component: AppChartComponent;
@@ -8,7 +10,8 @@ describe('AppChartComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [AppChartComponent],
+            declarations: [AppChartComponent, MockOcChartComponent],
+            providers: [mockLoadingBarService(), mockAppsService(), mockChartService(), mockAppVersionService()],
         }).compileComponents();
     });
 
