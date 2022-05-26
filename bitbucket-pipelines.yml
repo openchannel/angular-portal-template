@@ -77,7 +77,7 @@ definitions:
     - step: &push-to-github
         name: Push to GitHub
         script:
-          - git remote set-url origin git@bitbucket.org:openchannel/template3-portal-frontend.git
+          - git remote set-url origin git@github.com:openchannel/angular-portal-template.git
           - git remote -v
           - git push origin master:main
           - git push origin --tags
